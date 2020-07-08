@@ -21,3 +21,42 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# C# Compiled class file
+*.suo  
+
+*.user  
+
+*.userosscache  
+
+*.sln.docstates
+
+*.userprefs
+
+*.pdb
+
+*.cache
+
+[Dd]ebug/
+
+[Dd]ebugPublic/
+
+[Rr]elease/
+
+[Rr]eleases/
+
+x64/
+
+x86/
+
+bld/
+
+[Bb]in/
+
+[Oo]bj/
+
+[Ll]og/
+
+.vs/
+
+packages/
