@@ -12,10 +12,10 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 {
     public class MainWindowViewModel : PropertyChangedBase
     {
-        private static IDictionary<string, IPartialView> _partialViewDic;
+        public static IDictionary<string, IPartialView> partialViewDic;
         public MainWindowViewModel()
         {
-            _partialViewDic = new Dictionary<string, IPartialView>();
+            partialViewDic = new Dictionary<string, IPartialView>();
             string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
             string path = BaseDirectoryPath + "plugs";
             List<string> plugs = FileHelper.GetAllFiles(path);
@@ -26,25 +26,24 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
                .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
-               .ForEach(x => _partialViewDic.Add(x.Tag, x));
+               .ForEach(x => partialViewDic.Add(x.Tag, x));
             }
 
-            //var centerMenus = _partialViewDic.Values.Where(x => x.MenuType == MenuType.Center);
             var centerMenus = new ObservableCollection<TreeViewItemModel>();
 
-            _partialViewDic.Values.Where(x => x.MenuType == MenuType.Center).ToList()
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.Center).ToList()
             .ForEach(x => centerMenus.Add(new TreeViewItemModel(x.MenuName, x.Tag)));
 
             var boxMenus = new ObservableCollection<TreeViewItemModel>();
-            _partialViewDic.Values.Where(x => x.MenuType == MenuType.Box).ToList()
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.Box).ToList()
             .ForEach(x => boxMenus.Add(new TreeViewItemModel(x.MenuName, x.Tag)));
 
             MenuItems = new ObservableCollection<TreeViewItemModel>()
             {
-                new TreeViewItemModel("中心","Center", "\uf05a"){
+                new TreeViewItemModel("中心","Center", "\uf17a"){
                 MenuItems = centerMenus
                 },
-                new TreeViewItemModel("盒子","Box", "\uf17a")
+                new TreeViewItemModel("盒子","Box", "\uf03d")
                 {
                      MenuItems = boxMenus
                 }

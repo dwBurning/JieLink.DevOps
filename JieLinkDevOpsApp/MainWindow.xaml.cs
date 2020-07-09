@@ -51,10 +51,10 @@ namespace JieShun.JieLink.DevOps.App
             if (tag.IsNullOrEmpty())
                 return;
 
-            //if (_partialViewDic.ContainsKey(tag))
-            //    ContentControl.Content = _partialViewDic[tag];
-            //else
-            //    ContentControl.Content = null;
+            if (MainWindowViewModel.partialViewDic.ContainsKey(tag))
+                ContentControl.Content = MainWindowViewModel.partialViewDic[tag];
+            else
+                ContentControl.Content = null;
         }
         #endregion
 

@@ -19,9 +19,9 @@ namespace PartialViewTest
     /// <summary>
     /// TestPartialView.xaml 的交互逻辑
     /// </summary>
-    public partial class TestPartialView : UserControl, IPartialView
+    public partial class CenterPartialView : UserControl, IPartialView
     {
-        public TestPartialView()
+        public CenterPartialView()
         {
             InitializeComponent();
         }

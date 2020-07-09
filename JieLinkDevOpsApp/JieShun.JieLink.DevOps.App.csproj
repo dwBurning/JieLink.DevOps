@@ -100,14 +100,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Resource Include="Resources\NeteaseExample\iconfont.ttf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PartialViews\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="PartialView\PartialViewInterface\PartialViewInterface.csproj">
       <Project>{3facc984-5886-4c2b-bfa3-c722125ee56d}</Project>
