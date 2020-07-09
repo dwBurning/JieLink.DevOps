@@ -7,7 +7,7 @@
             xmlns:localized="clr-namespace:JieShun.JieLink.DevOps.App.Properties"
             xmlns:local="clr-namespace:JieShun.JieLink.DevOps.App"
             mc:Ignorable="d"
-            Title="UIBrowser"
+            Title="JieLink运维工具"
             Height="700"
             Width="1200"
             WindowStartupLocation="CenterScreen"

@@ -16,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PartialViewInterface;
+using System.Reflection;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -24,10 +26,6 @@ namespace JieShun.JieLink.DevOps.App
     /// </summary>
     public partial class MainWindow : WindowX, IComponentConnector
     {
-        #region Identity
-        private static IDictionary<string, Type> _partialViewDic;
-        #endregion
-
         #region Property
         public MainWindowViewModel ViewModel { get; set; }
 
@@ -37,6 +35,8 @@ namespace JieShun.JieLink.DevOps.App
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel = new MainWindowViewModel();
+            DataContext = ViewModel;
         }
 
 
@@ -51,16 +51,21 @@ namespace JieShun.JieLink.DevOps.App
             if (tag.IsNullOrEmpty())
                 return;
 
-            if (_partialViewDic.ContainsKey(tag))
-                ContentControl.Content = Activator.CreateInstance(_partialViewDic[tag]);
-            else
-                ContentControl.Content = null;
+            //if (_partialViewDic.ContainsKey(tag))
+            //    ContentControl.Content = _partialViewDic[tag];
+            //else
+            //    ContentControl.Content = null;
         }
         #endregion
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
