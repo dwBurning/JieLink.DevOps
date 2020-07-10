@@ -9,7 +9,7 @@
             mc:Ignorable="d"
             Title="JieLink运维工具"
             Height="700"
-            Width="1200"
+            Width="1000"
             WindowStartupLocation="CenterScreen"
             Closing="WindowX_Closing">
     <Grid>
