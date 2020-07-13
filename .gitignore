@@ -62,3 +62,4 @@ bld/
 packages/
 
 build/
+node_modules
