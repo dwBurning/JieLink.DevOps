@@ -22,6 +22,10 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 
             foreach (var plug in plugs)
             {
+                //解决样式不生效问题
+                if (plug.Contains("Panuon.UI.Silver.dll"))
+                    continue;
+
                 Assembly.LoadFile(plug).GetTypes()
                .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
