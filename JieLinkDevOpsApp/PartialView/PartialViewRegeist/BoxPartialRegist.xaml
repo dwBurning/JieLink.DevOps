@@ -1,0 +1,55 @@
+﻿<UserControl
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PartialViewRegeist"
+      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+      xmlns:Core="clr-namespace:Panuon.UI.Silver.Core;assembly=Panuon.UI.Silver" x:Class="PartialViewRegeist.BoxPartialRegist"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <StackPanel HorizontalAlignment="Left" Height="430" Margin="10,10,0,0" VerticalAlignment="Top" Width="780">
+        <Grid>
+            <Label MaxWidth="550">
+                <TextBlock TextWrapping="Wrap" Width="464"><Run Text="开机启动盒子：操作系统启动的时候，只启动盒子程序。  "/><LineBreak/><Run Text="开机启动桌面：操作系统启动的时候，正常启动桌面，需要双击桌面快捷方式，才启动盒子程序。(一般只建议，共机部署的现场配置开机启动桌面)"/></TextBlock>
+            </Label>
+
+            <Button  Height="30"
+Width="150"
+Content="开机启动盒子"
+pu:ButtonHelper.ClickStyle="Sink"
+FontFamily="{StaticResource FontAwesome}"
+pu:ButtonHelper.ButtonStyle="Hollow"
+BorderBrush="#FF000000"
+Foreground="#FF000000"
+pu:ButtonHelper.HoverBrush="#000000"
+pu:ButtonHelper.CornerRadius="15" Margin="149,131,481,-105" Click="button_RegistOpenBox_Click" />
+
+            <Button  Height="30"
+Width="150"
+Content="开机启动桌面"
+pu:ButtonHelper.ClickStyle="Sink"
+FontFamily="{StaticResource FontAwesome}"
+pu:ButtonHelper.ButtonStyle="Hollow"
+BorderBrush="#FF000000"
+Foreground="#FF000000"
+pu:ButtonHelper.HoverBrush="#000000"
+pu:ButtonHelper.CornerRadius="15" Margin="379,131,251,-105" Click="button_RegistOpenExplorer_Click" />
+        </Grid>
+
+
+    </StackPanel>
+
+
+
+
+
+</UserControl>

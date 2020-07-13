@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewTest", "PartialV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInterface", "PartialView\PartialViewInterface\PartialViewInterface.csproj", "{3FACC984-5886-4C2B-BFA3-C722125EE56D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewRegeist", "PartialView\PartialViewRegeist\PartialViewRegeist.csproj", "{CF648C76-53C3-40CE-935F-87B065B2069E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3FACC984-5886-4C2B-BFA3-C722125EE56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FACC984-5886-4C2B-BFA3-C722125EE56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FACC984-5886-4C2B-BFA3-C722125EE56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF648C76-53C3-40CE-935F-87B065B2069E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF648C76-53C3-40CE-935F-87B065B2069E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF648C76-53C3-40CE-935F-87B065B2069E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF648C76-53C3-40CE-935F-87B065B2069E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -23,13 +23,14 @@
     <Grid>
         <StackPanel>
             <TextBlock>这是盒子测试程序</TextBlock>
-            <TextBox  Height="30" Width="200"
+            <TextBox  Height="78"
 pu:TextBoxHelper.Watermark="Watermark"
-pu:TextBoxHelper.Icon="&#xf11c;"
+pu:TextBoxHelper.Icon="&#xF11C;"
 pu:TextBoxHelper.FocusedBorderBrush="#00FF70"
 pu:TextBoxHelper.FocusedShadowColor="#00FF70"
 pu:TextBoxHelper.CornerRadius="5"
-pu:TextBoxHelper.IsClearButtonVisible="True" />
+pu:TextBoxHelper.IsClearButtonVisible="True" Margin="274,0,276,0" />
+            <Button x:Name="button" Content="Button"/>
         </StackPanel>
 
     </Grid>
