@@ -51,7 +51,12 @@ namespace SetWasgoneForSmartBox
         {
             try
             {
-                RegistryKey localMachine = Registry.LocalMachine;
+                //RegistryKey localMachine = Registry.LocalMachine;
+                //解决部分电脑看得见但是注册表访问不到的问题
+                //参考地址 https://blog.csdn.net/xuhuo1234/article/details/101564085
+                var useRegistryView = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32;
+                RegistryKey localMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, useRegistryView);
+
                 RegistryKey registryKey = localMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", true);
                 bool flag = registryKey != null;
                 if (flag)
@@ -82,8 +87,15 @@ namespace SetWasgoneForSmartBox
         {
             try
             {
-                RegistryKey localMachine = Registry.LocalMachine;
+                //RegistryKey localMachine = Registry.LocalMachine;
+                //解决部分电脑看得见但是注册表访问不到的问题
+                //参考地址 https://blog.csdn.net/xuhuo1234/article/details/101564085
+
+                var useRegistryView = Environment.Is64BitOperatingSystem ? RegistryView.Registry64 : RegistryView.Registry32;
+                RegistryKey localMachine = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, useRegistryView);
+
                 RegistryKey registryKey = localMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\SmartBox\\");
+                //RegistryKey registryKey = localMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion");
                 bool flag = registryKey != null;
                 if (flag)
                 {
