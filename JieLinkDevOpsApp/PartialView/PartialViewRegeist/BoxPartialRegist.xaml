@@ -7,7 +7,7 @@
       xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
       xmlns:Core="clr-namespace:Panuon.UI.Silver.Core;assembly=Panuon.UI.Silver" x:Class="PartialViewRegeist.BoxPartialRegist"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="450" d:DesignWidth="750">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -16,40 +16,37 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel HorizontalAlignment="Left" Height="430" Margin="10,10,0,0" VerticalAlignment="Top" Width="780">
-        <Grid>
-            <Label MaxWidth="550">
-                <TextBlock TextWrapping="Wrap" Width="464"><Run Text="开机启动盒子：操作系统启动的时候，只启动盒子程序。  "/><LineBreak/><Run Text="开机启动桌面：操作系统启动的时候，正常启动桌面，需要双击桌面快捷方式，才启动盒子程序。(一般只建议，共机部署的现场配置开机启动桌面)"/></TextBlock>
-            </Label>
+    <Grid MaxWidth="700">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center">开机启动盒子：操作系统启动的时候，只启动盒子程序。</TextBlock>
+        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Grid.Row="1" Grid.Column="0">开机启动桌面：操作系统启动的时候，正常启动桌面，需要双击桌面快捷方式，才启动盒子程序。(一般只建议，共机部署的现场配置开机启动桌面)</TextBlock>
 
-            <Button  Height="30"
-Width="150"
+            <Button  Grid.Column="0" Grid.Row="2" Height="40"
+Width="700"
 Content="开机启动盒子"
 pu:ButtonHelper.ClickStyle="Sink"
-FontFamily="{StaticResource FontAwesome}"
 pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#FF000000"
-Foreground="#FF000000"
-pu:ButtonHelper.HoverBrush="#000000"
-pu:ButtonHelper.CornerRadius="15" Margin="149,131,481,-105" Click="button_RegistOpenBox_Click" />
+BorderBrush="#FF00BCFF"
+Foreground="#FF00BCFF"
+pu:ButtonHelper.HoverBrush="#00BCFF"
+pu:ButtonHelper.CornerRadius="4" Click="button_RegistOpenBox_Click" />
 
-            <Button  Height="30"
-Width="150"
+        <Button Grid.Column="0" Grid.Row="3" Height="40"
+Width="700"
 Content="开机启动桌面"
 pu:ButtonHelper.ClickStyle="Sink"
-FontFamily="{StaticResource FontAwesome}"
 pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#FF000000"
-Foreground="#FF000000"
-pu:ButtonHelper.HoverBrush="#000000"
-pu:ButtonHelper.CornerRadius="15" Margin="379,131,251,-105" Click="button_RegistOpenExplorer_Click" />
-        </Grid>
-
-
-    </StackPanel>
-
-
-
-
-
+BorderBrush="#FF00BCFF"
+Foreground="#FF00BCFF"
+pu:ButtonHelper.HoverBrush="#00BCFF"
+pu:ButtonHelper.CornerRadius="4" Click="button_RegistOpenExplorer_Click" />
+    </Grid>
 </UserControl>

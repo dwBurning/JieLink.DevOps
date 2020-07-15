@@ -8,6 +8,7 @@
             xmlns:local="clr-namespace:JieShun.JieLink.DevOps.App"
             mc:Ignorable="d"
             Title="JieLink运维工具"
+            Icon="favicon.ico"
             Height="700"
             Width="1000"
             WindowStartupLocation="CenterScreen"
@@ -15,7 +16,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.3*"
-                              MinWidth="250" />
+                              MinWidth="250" MaxWidth="250" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid>
@@ -30,11 +31,14 @@
                      Text="{Binding SearchText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=300}" />
             <TreeView x:Name="TvMenu"
                       Grid.Row="1"
-                      pu:TreeViewHelper.SelectedForeground="#49A9C0"
+                      pu:TreeViewHelper.TreeViewStyle="Modern"
+                      pu:TreeViewHelper.ItemHeight="40"
+                      pu:TreeViewHelper.SelectedBackground="#220082FF"
                       pu:TreeViewHelper.ExpandMode="SingleClick"
                       pu:TreeViewHelper.SelectMode="ChildOnly"
                       SelectedItemChanged="TvMenu_SelectionChanged"
                       Margin="5,0,0,0"
+                      BorderBrush="#C800BCFF"
                       ItemsSource="{Binding MenuItems}">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}"

@@ -104,7 +104,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="favicon.ico" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="PartialView\PartialViewInterface\PartialViewInterface.csproj">
       <Project>{3facc984-5886-4c2b-bfa3-c722125ee56d}</Project>
