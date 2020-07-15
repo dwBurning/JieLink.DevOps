@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jieshun.devopsserver.mapper.VersionManagerMapper" >
+  <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.VersionManager" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="work_order_no" property="workOrderNo" jdbcType="VARCHAR" />
+    <result column="stand_version" property="standVersion" jdbcType="VARCHAR" />
+    <result column="compile_date" property="compileDate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.jieshun.devopsserver.bean.VersionManager" extends="BaseResultMap" >
+    <result column="version_describe" property="versionDescribe" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, work_order_no, stand_version, compile_date
+  </sql>
+  <sql id="Blob_Column_List" >
+    version_describe
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from version_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from version_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from version_manager
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from version_manager
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" >
+    delete from version_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
+    insert into version_manager (id, work_order_no, stand_version, 
+      compile_date, version_describe)
+    values (#{id,jdbcType=INTEGER}, #{workOrderNo,jdbcType=VARCHAR}, #{standVersion,jdbcType=VARCHAR}, 
+      #{compileDate,jdbcType=TIMESTAMP}, #{versionDescribe,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
+    insert into version_manager
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="workOrderNo != null" >
+        work_order_no,
+      </if>
+      <if test="standVersion != null" >
+        stand_version,
+      </if>
+      <if test="compileDate != null" >
+        compile_date,
+      </if>
+      <if test="versionDescribe != null" >
+        version_describe,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="workOrderNo != null" >
+        #{workOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="standVersion != null" >
+        #{standVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="compileDate != null" >
+        #{compileDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="versionDescribe != null" >
+        #{versionDescribe,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" resultType="java.lang.Integer" >
+    select count(*) from version_manager
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update version_manager
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.workOrderNo != null" >
+        work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.standVersion != null" >
+        stand_version = #{record.standVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.compileDate != null" >
+        compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.versionDescribe != null" >
+        version_describe = #{record.versionDescribe,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update version_manager
+    set id = #{record.id,jdbcType=INTEGER},
+      work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
+      stand_version = #{record.standVersion,jdbcType=VARCHAR},
+      compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
+      version_describe = #{record.versionDescribe,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update version_manager
+    set id = #{record.id,jdbcType=INTEGER},
+      work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
+      stand_version = #{record.standVersion,jdbcType=VARCHAR},
+      compile_date = #{record.compileDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
+    update version_manager
+    <set >
+      <if test="workOrderNo != null" >
+        work_order_no = #{workOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="standVersion != null" >
+        stand_version = #{standVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="compileDate != null" >
+        compile_date = #{compileDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="versionDescribe != null" >
+        version_describe = #{versionDescribe,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
+    update version_manager
+    set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
+      stand_version = #{standVersion,jdbcType=VARCHAR},
+      compile_date = #{compileDate,jdbcType=TIMESTAMP},
+      version_describe = #{versionDescribe,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
+    update version_manager
+    set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
+      stand_version = #{standVersion,jdbcType=VARCHAR},
+      compile_date = #{compileDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
