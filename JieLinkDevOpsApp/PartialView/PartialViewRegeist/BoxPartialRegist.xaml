@@ -3,9 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PartialViewRegeist"
-      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
-      xmlns:Core="clr-namespace:Panuon.UI.Silver.Core;assembly=Panuon.UI.Silver" x:Class="PartialViewRegeist.BoxPartialRegist"
+      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver" x:Class="PartialViewRegeist.BoxPartialRegist"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="750">
 
@@ -34,8 +32,8 @@ Width="700"
 Content="开机启动盒子"
 pu:ButtonHelper.ClickStyle="Sink"
 pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#FF00BCFF"
-Foreground="#FF00BCFF"
+BorderBrush="#20A0FF"
+Foreground="#20A0FF"
 pu:ButtonHelper.HoverBrush="#00BCFF"
 pu:ButtonHelper.CornerRadius="4" Click="button_RegistOpenBox_Click" />
 
@@ -44,8 +42,8 @@ Width="700"
 Content="开机启动桌面"
 pu:ButtonHelper.ClickStyle="Sink"
 pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#FF00BCFF"
-Foreground="#FF00BCFF"
+BorderBrush="#20A0FF"
+Foreground="#20A0FF"
 pu:ButtonHelper.HoverBrush="#00BCFF"
 pu:ButtonHelper.CornerRadius="4" Click="button_RegistOpenExplorer_Click" />
     </Grid>
