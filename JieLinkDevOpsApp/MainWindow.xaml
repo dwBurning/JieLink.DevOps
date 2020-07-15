@@ -23,7 +23,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBox pu:TextBoxHelper.Icon="&#xf002;"
-                     pu:TextBoxHelper.Watermark="Search ..."
+                     pu:TextBoxHelper.Watermark="搜索 ..."
                      pu:TextBoxHelper.IsClearButtonVisible="True"
                      Margin="5,2,8,2"
                      Text="{Binding SearchText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=300}" />
