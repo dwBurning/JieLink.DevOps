@@ -2,12 +2,14 @@ package com.jieshun.devopsserver.bean;
 
 import java.util.Date;
 
-public class VersionManager {
+public class VersionInfo {
     private Integer id;
 
     private String workOrderNo;
 
     private String standVersion;
+
+    private Integer versionType;
 
     private Date compileDate;
 
@@ -35,6 +37,14 @@ public class VersionManager {
 
     public void setStandVersion(String standVersion) {
         this.standVersion = standVersion == null ? null : standVersion.trim();
+    }
+
+    public Integer getVersionType() {
+        return versionType;
+    }
+
+    public void setVersionType(Integer versionType) {
+        this.versionType = versionType;
     }
 
     public Date getCompileDate() {

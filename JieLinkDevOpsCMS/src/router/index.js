@@ -5,8 +5,8 @@ import Home from '@/components/Home'
 
 import DemandManager from '@/components/DemandManager'
 import DevOpsManager from '@/components/DevOpsManager'
-import PatchManager from '@/components/PatchManager'
 import VersionManager from '@/components/VersionManager'
+import PublishVersion from '@/components/PublishVersion'
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -30,9 +30,9 @@ export default new Router({
             keepAlive: true
           }
         },{
-          path: '/patchmanager',
-          name: '补丁管理',
-          component: PatchManager
+          path: '/publishversion',
+          name: '发布工单',
+          component: PublishVersion
         }
       ]
     },{
