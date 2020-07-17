@@ -35,7 +35,6 @@
                       pu:TreeViewHelper.SelectedForeground="#20A0FF"
                       pu:TreeViewHelper.SelectedBackground="#220082FF"
                       pu:TreeViewHelper.ExpandMode="SingleClick"
-                      pu:TreeViewHelper.ExpandBehaviour="OnlyOne"
                       pu:TreeViewHelper.SelectMode="ChildOnly"
                       SelectedItemChanged="TvMenu_SelectionChanged"
                       Margin="5,0,0,0"
