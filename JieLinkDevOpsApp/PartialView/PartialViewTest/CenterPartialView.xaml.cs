@@ -31,7 +31,7 @@ namespace PartialViewTest
             get { return "测试"; }
         }
 
-        public string Tag
+        public string TagName
         {
             get { return "Test"; }
         }

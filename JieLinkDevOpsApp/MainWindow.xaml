@@ -9,6 +9,7 @@
             Icon="favicon.ico"
             Height="700"
             Width="1000"
+            MinWidth="1000"
             WindowStartupLocation="CenterScreen"
             Closing="WindowX_Closing">
     <Grid>

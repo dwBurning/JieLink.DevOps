@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInterface", "Par
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewRegeist", "PartialView\PartialViewRegeist\PartialViewRegeist.csproj", "{CF648C76-53C3-40CE-935F-87B065B2069E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewSyncTool", "PartialView\PartialViewSyncTool\PartialViewSyncTool.csproj", "{4276385B-4778-4846-B8E4-DBAD9313B28F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{CF648C76-53C3-40CE-935F-87B065B2069E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF648C76-53C3-40CE-935F-87B065B2069E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF648C76-53C3-40CE-935F-87B065B2069E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4276385B-4778-4846-B8E4-DBAD9313B28F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4276385B-4778-4846-B8E4-DBAD9313B28F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4276385B-4778-4846-B8E4-DBAD9313B28F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4276385B-4778-4846-B8E4-DBAD9313B28F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

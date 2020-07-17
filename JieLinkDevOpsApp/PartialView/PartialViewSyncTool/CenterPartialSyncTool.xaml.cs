@@ -20,7 +20,7 @@ using System.Data;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
-
+using UIBrowser.Helpers;
 
 namespace PartialViewSyncTool
 {
@@ -29,13 +29,12 @@ namespace PartialViewSyncTool
     /// </summary>
     public partial class CenterPartialSyncTool : UserControl, IPartialView
     {
-
         public string MenuName
         {
             get { return "中心数据同步工具"; }
         }
 
-        public string Tag
+        public string TagName
         {
             get { return "SyncTool"; }
         }
