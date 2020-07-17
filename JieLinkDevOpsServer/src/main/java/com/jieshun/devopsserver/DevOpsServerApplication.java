@@ -11,7 +11,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class DevOpsServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DevOpsServerApplication.class, args);
+		try {
+			SpringApplication.run(DevOpsServerApplication.class, args);
+		}catch (Exception ex){
+			ex.printStackTrace();
+		}
 	}
 
 }

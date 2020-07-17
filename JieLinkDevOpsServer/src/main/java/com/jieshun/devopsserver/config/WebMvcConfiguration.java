@@ -1,11 +1,16 @@
 package com.jieshun.devopsserver.config;
 
 import com.jieshun.devopsserver.config.properties.MinioProperties;
+import com.jieshun.devopsserver.service.impl.DiskFileStore;
+import com.jieshun.devopsserver.service.impl.FileStore;
+import com.jieshun.devopsserver.service.impl.MinioFileStore;
 import io.minio.MinioClient;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,5 +57,23 @@ public class WebMvcConfiguration {
                 .build();
     }
 
+    /**
+     * fileserver.type=minio时才生效
+     * @return
+     */
+    @ConditionalOnProperty(name = "fileserver.type",havingValue="minio")
+    @Bean
+    public MinioFileStore minioFileStore(){
+        return new MinioFileStore();
+    }
 
+    /**
+     * 容器中没有这个bean时才注入
+     * @return
+     */
+    @ConditionalOnMissingBean(FileStore.class)
+    @Bean
+    public FileStore diskFileStore(){
+        return new DiskFileStore();
+    }
 }

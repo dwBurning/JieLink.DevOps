@@ -2,14 +2,16 @@ package com.jieshun.devopsserver.service.impl;
 
 import io.minio.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.util.*;
 
-//@ConditionalOnProperty(prefix = "fileserver", name = "type", havingValue = "minio")
-//@Component
+
 public class MinioFileStore implements FileStore {
 
     @Autowired

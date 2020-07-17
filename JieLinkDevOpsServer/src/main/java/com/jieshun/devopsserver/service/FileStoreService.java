@@ -3,10 +3,11 @@ package com.jieshun.devopsserver.service;
 import com.jieshun.devopsserver.service.impl.FileStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 
-@Component
+@Service
 public class FileStoreService {
 
     @Autowired

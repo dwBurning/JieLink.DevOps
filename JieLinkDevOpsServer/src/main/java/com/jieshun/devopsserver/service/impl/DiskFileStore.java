@@ -10,14 +10,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-
-//@ConditionalOnBean(FileStore.class)
-@Component
 public class DiskFileStore implements FileStore {
 
     @Value("${fileserver.savepath}")
     String fileSavePath;
-
+    final String DEFAULT_BUCKTNAME_PREFIX="default/";
     @Override
     public boolean upload(String relativePath, String fileName, InputStream inStream) throws Exception {
 
@@ -56,7 +53,9 @@ public class DiskFileStore implements FileStore {
         if (file.exists() && file.isFile()) {
 
             return new FileInputStream(file);
+
         } else {
+            //如果是default文件夹，尝试从根目录再找下(兼容)
             throw new Exception("文件不存在：" + fullPath);
         }
 
