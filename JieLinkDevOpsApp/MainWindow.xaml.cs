@@ -39,7 +39,6 @@ namespace JieShun.JieLink.DevOps.App
             DataContext = ViewModel;
         }
 
-
         #region EventHandler
         private void TvMenu_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
@@ -52,9 +51,9 @@ namespace JieShun.JieLink.DevOps.App
                 return;
 
             if (MainWindowViewModel.partialViewDic.ContainsKey(tag))
-                ContentControl.Content = MainWindowViewModel.partialViewDic[tag];
+            { ContentControl.Content = MainWindowViewModel.partialViewDic[tag]; }
             else
-                ContentControl.Content = null;
+            { ContentControl.Content = null; }
         }
         #endregion
 

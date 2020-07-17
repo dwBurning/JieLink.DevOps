@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.jieshun.devopsserver.mapper.VersionManagerMapper" >
-  <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.VersionManager" >
+<mapper namespace="com.jieshun.devopsserver.mapper.ApplyInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.ApplyInfo" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="work_order_no" property="workOrderNo" jdbcType="VARCHAR" />
-    <result column="stand_version" property="standVersion" jdbcType="VARCHAR" />
-    <result column="compile_date" property="compileDate" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.jieshun.devopsserver.bean.VersionManager" extends="BaseResultMap" >
-    <result column="version_describe" property="versionDescribe" jdbcType="LONGVARCHAR" />
+    <result column="job_number" property="jobNumber" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="cell_phone" property="cellPhone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="apply_date" property="applyDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -69,20 +69,15 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, work_order_no, stand_version, compile_date
+    id, work_order_no, job_number, name, cell_phone, email, apply_date
   </sql>
-  <sql id="Blob_Column_List" >
-    version_describe
-  </sql>
-  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" >
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" >
     select
     <if test="distinct" >
       distinct
     </if>
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from version_manager
+    from order_apply_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
@@ -90,46 +85,32 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" >
-    select
-    <if test="distinct" >
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    from version_manager
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null" >
-      order by ${orderByClause}
-    </if>
-  </select>
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from version_manager
+    from order_apply_info
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from version_manager
+    delete from order_apply_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" >
-    delete from version_manager
+  <delete id="deleteByExample" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" >
+    delete from order_apply_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
-    insert into version_manager (id, work_order_no, stand_version, 
-      compile_date, version_describe)
-    values (#{id,jdbcType=INTEGER}, #{workOrderNo,jdbcType=VARCHAR}, #{standVersion,jdbcType=VARCHAR}, 
-      #{compileDate,jdbcType=TIMESTAMP}, #{versionDescribe,jdbcType=LONGVARCHAR})
+  <insert id="insert" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    insert into order_apply_info (id, work_order_no, job_number, 
+      name, cell_phone, email, 
+      apply_date)
+    values (#{id,jdbcType=INTEGER}, #{workOrderNo,jdbcType=VARCHAR}, #{jobNumber,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{cellPhone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{applyDate,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
-    insert into version_manager
+  <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    insert into order_apply_info
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -137,14 +118,20 @@
       <if test="workOrderNo != null" >
         work_order_no,
       </if>
-      <if test="standVersion != null" >
-        stand_version,
+      <if test="jobNumber != null" >
+        job_number,
       </if>
-      <if test="compileDate != null" >
-        compile_date,
+      <if test="name != null" >
+        name,
       </if>
-      <if test="versionDescribe != null" >
-        version_describe,
+      <if test="cellPhone != null" >
+        cell_phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="applyDate != null" >
+        apply_date,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -154,25 +141,31 @@
       <if test="workOrderNo != null" >
         #{workOrderNo,jdbcType=VARCHAR},
       </if>
-      <if test="standVersion != null" >
-        #{standVersion,jdbcType=VARCHAR},
+      <if test="jobNumber != null" >
+        #{jobNumber,jdbcType=VARCHAR},
       </if>
-      <if test="compileDate != null" >
-        #{compileDate,jdbcType=TIMESTAMP},
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
       </if>
-      <if test="versionDescribe != null" >
-        #{versionDescribe,jdbcType=LONGVARCHAR},
+      <if test="cellPhone != null" >
+        #{cellPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.jieshun.devopsserver.bean.VersionManagerExample" resultType="java.lang.Integer" >
-    select count(*) from version_manager
+  <select id="countByExample" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" resultType="java.lang.Integer" >
+    select count(*) from order_apply_info
     <if test="_parameter != null" >
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map" >
-    update version_manager
+    update order_apply_info
     <set >
       <if test="record.id != null" >
         id = #{record.id,jdbcType=INTEGER},
@@ -180,72 +173,71 @@
       <if test="record.workOrderNo != null" >
         work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
       </if>
-      <if test="record.standVersion != null" >
-        stand_version = #{record.standVersion,jdbcType=VARCHAR},
+      <if test="record.jobNumber != null" >
+        job_number = #{record.jobNumber,jdbcType=VARCHAR},
       </if>
-      <if test="record.compileDate != null" >
-        compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
+      <if test="record.name != null" >
+        name = #{record.name,jdbcType=VARCHAR},
       </if>
-      <if test="record.versionDescribe != null" >
-        version_describe = #{record.versionDescribe,jdbcType=LONGVARCHAR},
+      <if test="record.cellPhone != null" >
+        cell_phone = #{record.cellPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyDate != null" >
+        apply_date = #{record.applyDate,jdbcType=TIMESTAMP},
       </if>
     </set>
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExampleWithBLOBs" parameterType="map" >
-    update version_manager
-    set id = #{record.id,jdbcType=INTEGER},
-      work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
-      stand_version = #{record.standVersion,jdbcType=VARCHAR},
-      compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
-      version_describe = #{record.versionDescribe,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map" >
-    update version_manager
+    update order_apply_info
     set id = #{record.id,jdbcType=INTEGER},
       work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
-      stand_version = #{record.standVersion,jdbcType=VARCHAR},
-      compile_date = #{record.compileDate,jdbcType=TIMESTAMP}
+      job_number = #{record.jobNumber,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      cell_phone = #{record.cellPhone,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      apply_date = #{record.applyDate,jdbcType=TIMESTAMP}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
-    update version_manager
+  <update id="updateByPrimaryKeySelective" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    update order_apply_info
     <set >
       <if test="workOrderNo != null" >
         work_order_no = #{workOrderNo,jdbcType=VARCHAR},
       </if>
-      <if test="standVersion != null" >
-        stand_version = #{standVersion,jdbcType=VARCHAR},
+      <if test="jobNumber != null" >
+        job_number = #{jobNumber,jdbcType=VARCHAR},
       </if>
-      <if test="compileDate != null" >
-        compile_date = #{compileDate,jdbcType=TIMESTAMP},
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="versionDescribe != null" >
-        version_describe = #{versionDescribe,jdbcType=LONGVARCHAR},
+      <if test="cellPhone != null" >
+        cell_phone = #{cellPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        apply_date = #{applyDate,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
-    update version_manager
+  <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    update order_apply_info
     set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
-      stand_version = #{standVersion,jdbcType=VARCHAR},
-      compile_date = #{compileDate,jdbcType=TIMESTAMP},
-      version_describe = #{versionDescribe,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.VersionManager" >
-    update version_manager
-    set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
-      stand_version = #{standVersion,jdbcType=VARCHAR},
-      compile_date = #{compileDate,jdbcType=TIMESTAMP}
+      job_number = #{jobNumber,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      cell_phone = #{cellPhone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      apply_date = #{applyDate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

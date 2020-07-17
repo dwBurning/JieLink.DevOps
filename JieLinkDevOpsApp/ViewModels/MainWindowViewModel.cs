@@ -23,24 +23,24 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
             foreach (var plug in plugs)
             {
                 //解决样式不生效问题
-                if (plug.Contains("Panuon.UI.Silver.dll"))
+                if (!plug.Contains("PartialView"))
                     continue;
 
                 Assembly.LoadFile(plug).GetTypes()
                .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
                .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
-               .ForEach(x => partialViewDic.Add(x.Tag, x));
+               .ForEach(x => partialViewDic.Add(x.TagName, x));
             }
 
             var centerMenus = new ObservableCollection<TreeViewItemModel>();
 
             partialViewDic.Values.Where(x => x.MenuType == MenuType.Center).ToList()
-            .ForEach(x => centerMenus.Add(new TreeViewItemModel(x.MenuName, x.Tag)));
+            .ForEach(x => centerMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
 
             var boxMenus = new ObservableCollection<TreeViewItemModel>();
             partialViewDic.Values.Where(x => x.MenuType == MenuType.Box).ToList()
-            .ForEach(x => boxMenus.Add(new TreeViewItemModel(x.MenuName, x.Tag)));
+            .ForEach(x => boxMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
 
             MenuItems = new ObservableCollection<TreeViewItemModel>()
             {

@@ -33,7 +33,7 @@ namespace PartialViewRegeist
             get { return "设置开机启动项"; }
         }
 
-        public string Tag
+        public string TagName
         {
             get { return "Box2"; }
         }

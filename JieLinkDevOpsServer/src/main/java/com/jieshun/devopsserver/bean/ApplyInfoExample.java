@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class VersionManagerExample {
+public class ApplyInfoExample {
     protected String orderByClause;
 
     protected boolean distinct;
 
     protected List<Criteria> oredCriteria;
 
-    public VersionManagerExample() {
+    public ApplyInfoExample() {
         oredCriteria = new ArrayList<Criteria>();
     }
 
@@ -235,133 +235,343 @@ public class VersionManagerExample {
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionIsNull() {
-            addCriterion("stand_version is null");
+        public Criteria andJobNumberIsNull() {
+            addCriterion("job_number is null");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionIsNotNull() {
-            addCriterion("stand_version is not null");
+        public Criteria andJobNumberIsNotNull() {
+            addCriterion("job_number is not null");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionEqualTo(String value) {
-            addCriterion("stand_version =", value, "standVersion");
+        public Criteria andJobNumberEqualTo(String value) {
+            addCriterion("job_number =", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionNotEqualTo(String value) {
-            addCriterion("stand_version <>", value, "standVersion");
+        public Criteria andJobNumberNotEqualTo(String value) {
+            addCriterion("job_number <>", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionGreaterThan(String value) {
-            addCriterion("stand_version >", value, "standVersion");
+        public Criteria andJobNumberGreaterThan(String value) {
+            addCriterion("job_number >", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionGreaterThanOrEqualTo(String value) {
-            addCriterion("stand_version >=", value, "standVersion");
+        public Criteria andJobNumberGreaterThanOrEqualTo(String value) {
+            addCriterion("job_number >=", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionLessThan(String value) {
-            addCriterion("stand_version <", value, "standVersion");
+        public Criteria andJobNumberLessThan(String value) {
+            addCriterion("job_number <", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionLessThanOrEqualTo(String value) {
-            addCriterion("stand_version <=", value, "standVersion");
+        public Criteria andJobNumberLessThanOrEqualTo(String value) {
+            addCriterion("job_number <=", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionLike(String value) {
-            addCriterion("stand_version like", value, "standVersion");
+        public Criteria andJobNumberLike(String value) {
+            addCriterion("job_number like", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionNotLike(String value) {
-            addCriterion("stand_version not like", value, "standVersion");
+        public Criteria andJobNumberNotLike(String value) {
+            addCriterion("job_number not like", value, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionIn(List<String> values) {
-            addCriterion("stand_version in", values, "standVersion");
+        public Criteria andJobNumberIn(List<String> values) {
+            addCriterion("job_number in", values, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionNotIn(List<String> values) {
-            addCriterion("stand_version not in", values, "standVersion");
+        public Criteria andJobNumberNotIn(List<String> values) {
+            addCriterion("job_number not in", values, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionBetween(String value1, String value2) {
-            addCriterion("stand_version between", value1, value2, "standVersion");
+        public Criteria andJobNumberBetween(String value1, String value2) {
+            addCriterion("job_number between", value1, value2, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andStandVersionNotBetween(String value1, String value2) {
-            addCriterion("stand_version not between", value1, value2, "standVersion");
+        public Criteria andJobNumberNotBetween(String value1, String value2) {
+            addCriterion("job_number not between", value1, value2, "jobNumber");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateIsNull() {
-            addCriterion("compile_date is null");
+        public Criteria andNameIsNull() {
+            addCriterion("name is null");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateIsNotNull() {
-            addCriterion("compile_date is not null");
+        public Criteria andNameIsNotNull() {
+            addCriterion("name is not null");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateEqualTo(Date value) {
-            addCriterion("compile_date =", value, "compileDate");
+        public Criteria andNameEqualTo(String value) {
+            addCriterion("name =", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateNotEqualTo(Date value) {
-            addCriterion("compile_date <>", value, "compileDate");
+        public Criteria andNameNotEqualTo(String value) {
+            addCriterion("name <>", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateGreaterThan(Date value) {
-            addCriterion("compile_date >", value, "compileDate");
+        public Criteria andNameGreaterThan(String value) {
+            addCriterion("name >", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateGreaterThanOrEqualTo(Date value) {
-            addCriterion("compile_date >=", value, "compileDate");
+        public Criteria andNameGreaterThanOrEqualTo(String value) {
+            addCriterion("name >=", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateLessThan(Date value) {
-            addCriterion("compile_date <", value, "compileDate");
+        public Criteria andNameLessThan(String value) {
+            addCriterion("name <", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateLessThanOrEqualTo(Date value) {
-            addCriterion("compile_date <=", value, "compileDate");
+        public Criteria andNameLessThanOrEqualTo(String value) {
+            addCriterion("name <=", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateIn(List<Date> values) {
-            addCriterion("compile_date in", values, "compileDate");
+        public Criteria andNameLike(String value) {
+            addCriterion("name like", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateNotIn(List<Date> values) {
-            addCriterion("compile_date not in", values, "compileDate");
+        public Criteria andNameNotLike(String value) {
+            addCriterion("name not like", value, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateBetween(Date value1, Date value2) {
-            addCriterion("compile_date between", value1, value2, "compileDate");
+        public Criteria andNameIn(List<String> values) {
+            addCriterion("name in", values, "name");
             return (Criteria) this;
         }
 
-        public Criteria andCompileDateNotBetween(Date value1, Date value2) {
-            addCriterion("compile_date not between", value1, value2, "compileDate");
+        public Criteria andNameNotIn(List<String> values) {
+            addCriterion("name not in", values, "name");
+            return (Criteria) this;
+        }
+
+        public Criteria andNameBetween(String value1, String value2) {
+            addCriterion("name between", value1, value2, "name");
+            return (Criteria) this;
+        }
+
+        public Criteria andNameNotBetween(String value1, String value2) {
+            addCriterion("name not between", value1, value2, "name");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneIsNull() {
+            addCriterion("cell_phone is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneIsNotNull() {
+            addCriterion("cell_phone is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneEqualTo(String value) {
+            addCriterion("cell_phone =", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneNotEqualTo(String value) {
+            addCriterion("cell_phone <>", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneGreaterThan(String value) {
+            addCriterion("cell_phone >", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneGreaterThanOrEqualTo(String value) {
+            addCriterion("cell_phone >=", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneLessThan(String value) {
+            addCriterion("cell_phone <", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneLessThanOrEqualTo(String value) {
+            addCriterion("cell_phone <=", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneLike(String value) {
+            addCriterion("cell_phone like", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneNotLike(String value) {
+            addCriterion("cell_phone not like", value, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneIn(List<String> values) {
+            addCriterion("cell_phone in", values, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneNotIn(List<String> values) {
+            addCriterion("cell_phone not in", values, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneBetween(String value1, String value2) {
+            addCriterion("cell_phone between", value1, value2, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andCellPhoneNotBetween(String value1, String value2) {
+            addCriterion("cell_phone not between", value1, value2, "cellPhone");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailIsNull() {
+            addCriterion("email is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailIsNotNull() {
+            addCriterion("email is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailEqualTo(String value) {
+            addCriterion("email =", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotEqualTo(String value) {
+            addCriterion("email <>", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailGreaterThan(String value) {
+            addCriterion("email >", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailGreaterThanOrEqualTo(String value) {
+            addCriterion("email >=", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailLessThan(String value) {
+            addCriterion("email <", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailLessThanOrEqualTo(String value) {
+            addCriterion("email <=", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailLike(String value) {
+            addCriterion("email like", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotLike(String value) {
+            addCriterion("email not like", value, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailIn(List<String> values) {
+            addCriterion("email in", values, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotIn(List<String> values) {
+            addCriterion("email not in", values, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailBetween(String value1, String value2) {
+            addCriterion("email between", value1, value2, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andEmailNotBetween(String value1, String value2) {
+            addCriterion("email not between", value1, value2, "email");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateIsNull() {
+            addCriterion("apply_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateIsNotNull() {
+            addCriterion("apply_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateEqualTo(Date value) {
+            addCriterion("apply_date =", value, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateNotEqualTo(Date value) {
+            addCriterion("apply_date <>", value, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateGreaterThan(Date value) {
+            addCriterion("apply_date >", value, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateGreaterThanOrEqualTo(Date value) {
+            addCriterion("apply_date >=", value, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateLessThan(Date value) {
+            addCriterion("apply_date <", value, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateLessThanOrEqualTo(Date value) {
+            addCriterion("apply_date <=", value, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateIn(List<Date> values) {
+            addCriterion("apply_date in", values, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateNotIn(List<Date> values) {
+            addCriterion("apply_date not in", values, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateBetween(Date value1, Date value2) {
+            addCriterion("apply_date between", value1, value2, "applyDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andApplyDateNotBetween(Date value1, Date value2) {
+            addCriterion("apply_date not between", value1, value2, "applyDate");
             return (Criteria) this;
         }
     }
