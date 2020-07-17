@@ -7,7 +7,7 @@ import DemandManager from '@/components/DemandManager'
 import DevOpsManager from '@/components/DevOpsManager'
 import VersionManager from '@/components/VersionManager'
 import PublishVersion from '@/components/PublishVersion'
-
+import Test from '@/components/Test'
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err)
@@ -33,6 +33,10 @@ export default new Router({
           path: '/publishversion',
           name: '发布工单',
           component: PublishVersion
+        },{
+          path: '/test',
+          name: '上传测试',
+          component: Test
         }
       ]
     },{
