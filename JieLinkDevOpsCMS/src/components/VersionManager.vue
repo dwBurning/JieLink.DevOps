@@ -50,8 +50,8 @@
             <el-table-column fixed="left" prop="workOrderNo" label="工单号" width="120"></el-table-column>
             <el-table-column prop="standVersion" label="版本号" width="120"></el-table-column>
             <el-table-column prop="versionType" :formatter="versionTypeFormat" label="版本类型" width="120"></el-table-column>
-            <el-table-column prop="compileDate" label="编译时间" width="120"></el-table-column>
-            <el-table-column prop="versionDescribe" label="版本描述" width="180"></el-table-column>
+            <el-table-column prop="compileDate" label="编译时间" width="200"></el-table-column>
+            <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
             <el-table-column  label="操作" width="100">
               <template slot-scope="scope">
                 <el-button @click="handleClick(scope.row)" type="text" size="medium">申请</el-button>

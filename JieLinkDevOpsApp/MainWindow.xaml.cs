@@ -37,6 +37,7 @@ namespace JieShun.JieLink.DevOps.App
             InitializeComponent();
             ViewModel = new MainWindowViewModel();
             DataContext = ViewModel;
+            ContentControl.Content = MainWindowViewModel.partialViewDic["Information"];//加载介绍窗口
         }
 
         #region EventHandler

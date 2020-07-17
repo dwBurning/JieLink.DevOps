@@ -44,12 +44,16 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 
             MenuItems = new ObservableCollection<TreeViewItemModel>()
             {
-                new TreeViewItemModel("中心","Center", "\uf17a"){
-                MenuItems = centerMenus
-                },
-                new TreeViewItemModel("盒子","Box", "\uf03d")
+                new TreeViewItemModel("介绍","Information","\uf05a"){ IsSelected = true},
+                new TreeViewItemModel("中心","Center", "\uf17a")
                 {
-                     MenuItems = boxMenus
+                    MenuItems = centerMenus,
+                    IsExpanded = false
+                },
+                new TreeViewItemModel("盒子","Box", "\uf109")
+                {
+                     MenuItems = boxMenus,
+                     IsExpanded = false
                 }
             };
         }
