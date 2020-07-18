@@ -39,14 +39,18 @@
             </TextBlock>
             <TextBlock>2.引用
                 <Run Foreground="#20A0FF">PartialViewInterface.dll</Run></TextBlock>
-            <TextBlock>3.新建
+            <TextBlock>3.引用
+                <Run Foreground="#20A0FF">Panuon.UI.Silver.dll</Run></TextBlock>
+            <TextBlock>4.新建
                 <Run Foreground="#20A0FF">UserControl</Run></TextBlock>
-            <TextBlock>4.UserControl实现
+            <TextBlock>5.<Run Foreground="#20A0FF">UserControl</Run>
+                实现
                 <Run Foreground="#20A0FF">IPartialView</Run>
                 接口</TextBlock>
             <StackPanel HorizontalAlignment="Left">
                 <GroupBox Width="600" Header="IPartialView" VerticalAlignment="Center" HorizontalAlignment="Center"
                           pu:GroupBoxHelper.CornerRadius="4"
+                          pu:GroupBoxHelper.HeaderForeground="#20A0FF"
                           pu:GroupBoxHelper.HeaderPadding="5,10,0,10"
                           pu:GroupBoxHelper.IsSplitLineVisible="True"
                           pu:GroupBoxHelper.ShadowColor="LightGray" >
@@ -57,9 +61,10 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
-            <TextBlock>5.将编译之后的dll文件放在本集成工具的
+            <TextBlock>6.将编译之后的dll文件放在本集成工具的
                 <Run Foreground="#20A0FF">plugs</Run>
                 目录下，重启软件即可</TextBlock>
+            
         </StackPanel>
         <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
             <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://106.53.255.16:8090/" Click="Hyperlink_Click">由JieLink+V2.*团队提供技术支持</Hyperlink></TextBlock>
