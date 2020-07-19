@@ -15,6 +15,8 @@ public class VersionInfo {
 
     private String versionDescribe;
 
+    private String downloadMsg;
+
     public Integer getId() {
         return id;
     }
@@ -61,5 +63,13 @@ public class VersionInfo {
 
     public void setVersionDescribe(String versionDescribe) {
         this.versionDescribe = versionDescribe == null ? null : versionDescribe.trim();
+    }
+
+    public String getDownloadMsg() {
+        return downloadMsg;
+    }
+
+    public void setDownloadMsg(String downloadMsg) {
+        this.downloadMsg = downloadMsg == null ? null : downloadMsg.trim();
     }
 }
