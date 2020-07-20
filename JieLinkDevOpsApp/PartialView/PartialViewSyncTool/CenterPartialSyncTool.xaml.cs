@@ -308,12 +308,17 @@ namespace PartialViewSyncTool
         /// 显示消息
         /// </summary>
         /// <param name="message"></param>
+
         private void ShowMessage(string message)
         {
             try
             {
                 rtxShowMessage.AppendText(message);
                 rtxShowMessage.AppendText(Environment.NewLine);
+                //超过一定长度后清空richtextbox
+                TextRange MyText = new TextRange(rtxShowMessage.Document.ContentStart, rtxShowMessage.Document.ContentEnd);
+                if (MyText.Text.Length > 5000)
+                    rtxShowMessage.Document.Blocks.Clear();
             }
             catch (Exception)
             {
