@@ -124,12 +124,13 @@ export default {
           _this.loading = false;
         },
         resp => {
-          if (resp.response.status == 403) {
-            _this.$message({
+          if (resp.status == 403) {
+            _this.$notify({
+              title: "错误",
               type: "error",
-              message: resp.response.data
+              message: resp.data.msg
             });
-          }
+          };
           _this.loading = false;
         }
       );
@@ -155,10 +156,11 @@ export default {
               this.$refs[formName].resetFields();
             },
             resp => {
-              if (resp.response.status == 403) {
-                _this.$message({
+              if (resp.status == 403) {
+                _this.$notify({
+                  title: "错误",
                   type: "error",
-                  message: resp.response.data
+                  message: resp.data.msg
                 });
               }
               _this.loading = false;
@@ -181,9 +183,11 @@ export default {
       this.Height = document.documentElement.clientHeight - 200;
     };
 
+    console.log("8888888888888888888");
     this.loadVsersionInfo();
   },
   data() {
+    
     var checkPhone = (rule, value, callback) => {
       if (!value) {
         return callback(new Error("手机号不能为空"));
@@ -197,6 +201,7 @@ export default {
         }
       }
     };
+
     return {
       Height: 0,
       loading: false,

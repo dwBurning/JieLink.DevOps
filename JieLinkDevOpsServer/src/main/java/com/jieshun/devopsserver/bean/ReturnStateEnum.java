@@ -14,15 +14,15 @@ public enum ReturnStateEnum  {
 	/**
 	 * 状态值
 	 */
-	private int state;
+	private int code;
 	
 	/**
 	 * 状态描述
 	 */
 	private String message;
 
-	public int getState() {
-		return state;
+	public int getCode() {
+		return code;
 	}
 
 
@@ -30,8 +30,8 @@ public enum ReturnStateEnum  {
 		return message;
 	}
 
-	private ReturnStateEnum(int state, String message) {
-		this.state = state;
+	private ReturnStateEnum(int code, String message) {
+		this.code = code;
 		this.message = message;
 	}
 }

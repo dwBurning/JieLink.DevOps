@@ -26,9 +26,9 @@ export default new Router({
           path: '/versionmanager',
           name: '工单管理',
           component: VersionManager,
-          meta: {
+          /*meta: {
             keepAlive: true
-          }
+          }*/
         },{
           path: '/publishversion',
           name: '发布工单',

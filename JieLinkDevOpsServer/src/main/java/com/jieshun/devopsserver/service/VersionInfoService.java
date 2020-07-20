@@ -58,4 +58,8 @@ public class VersionInfoService {
 		criteria.andWorkOrderNoEqualTo(orderNo);
 		return versionInfoMapper.selectByExample(example).get(0);
 	}
+	
+	public int addVersionInfo(VersionInfo versionInfo) {
+		return versionInfoMapper.insertSelective(versionInfo);
+	}
 }

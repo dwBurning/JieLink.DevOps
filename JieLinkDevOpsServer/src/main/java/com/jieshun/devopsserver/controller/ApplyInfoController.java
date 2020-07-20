@@ -39,9 +39,9 @@ public class ApplyInfoController {
 		applyInfo.setEmail(email);
 		int result = applyInfoService.addApplyInfo(applyInfo);
 		if (result > 0) {
-			return new ReturnData(ReturnStateEnum.SUCCESS.getState(), ReturnStateEnum.SUCCESS.getMessage());
+			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), ReturnStateEnum.SUCCESS.getMessage());
 		} else {
-			return new ReturnData(ReturnStateEnum.FAILD.getState(), ReturnStateEnum.FAILD.getMessage());
+			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
 		}
 	}
 }

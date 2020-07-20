@@ -24,7 +24,7 @@
             size="small"
             style="margin-left: 3px"
             @click="addVersionInfo"
-          >新增</el-button>
+          >发布</el-button>
         </el-header>
         <el-main class="report_main">
           <el-dialog title="版本信息" :visible.sync="dialogVisible">
@@ -39,23 +39,45 @@
                 <el-input v-model="ruleForm.workOrderNo"></el-input>
               </el-form-item>
               <el-form-item label="版本号" prop="standVersion">
-                <el-input v-model="ruleForm.standVersion"></el-input>
+                <el-input v-model="ruleForm.standVersion" placeholder="V1.0.0"></el-input>
               </el-form-item>
-              <el-form-item label="版本类型" prop="versionType">
-                <el-input v-model="ruleForm.versionType"></el-input>
+              <el-form-item label="版本类型">
+                <el-select
+                  style="width: 100%;"
+                  v-model="ruleForm.versionType"
+                  placeholder="请选择版本类型"
+                >
+                  <el-option label="工单" value="0"></el-option>
+                  <el-option label="补丁" value="1"></el-option>
+                </el-select>
               </el-form-item>
+
               <el-form-item label="编译时间" prop="compileDate">
-                <el-input v-model="ruleForm.compileDate"></el-input>
+                <el-date-picker
+                  style="width: 100%;"
+                  v-model="ruleForm.compileDate"
+                  align="right"
+                  type="date"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="选择日期"
+                  :picker-options="pickerOptions"
+                ></el-date-picker>
               </el-form-item>
+
               <el-form-item label="版本描述" prop="versionDescribe">
-                <el-input v-model="ruleForm.versionDescribe"></el-input>
+                <el-input
+                  type="textarea"
+                  v-model="ruleForm.versionDescribe"
+                  placeholder="基于标准版本修改了*问题"
+                ></el-input>
               </el-form-item>
               <el-form-item label="下载信息" prop="downloadMsg">
-                <el-input v-model="ruleForm.downloadMsg"></el-input>
+                <el-input type="textarea" v-model="ruleForm.downloadMsg"></el-input>
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">申请</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')">发布</el-button>
                 <el-button @click="resetForm('ruleForm')">重置</el-button>
               </el-form-item>
             </el-form>
@@ -110,20 +132,24 @@ export default {
     //打开对话窗 请求对话参与方数据
     handleClick(row) {
       this.selItems = row;
-       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$notify({
+            title: "成功",
+            type: "success",
+            message: "删除成功!"
           });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
+        })
+        .catch(() => {
+          this.$notify({
+            title: "取消",
+            type: "info",
+            message: "已取消删除"
+          });
         });
     },
 
@@ -160,10 +186,11 @@ export default {
           _this.loading = false;
         },
         resp => {
-          if (resp.response.status == 403) {
-            _this.$message({
+          if (resp.status == 403) {
+            _this.$notify({
+              title: "错误",
               type: "error",
-              message: resp.response.data
+              message: resp.data.msg
             });
           }
           _this.loading = false;
@@ -174,12 +201,13 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          postRequest("/apply/addApplyInfo", {
-            workOrderNo: this.selItems.workOrderNo,
-            jobNumber: this.ruleForm.jobNumber,
-            name: this.ruleForm.name,
-            cellPhone: this.ruleForm.cellPhone,
-            email: this.ruleForm.email
+          postRequest("/version/addVersionInfo", {
+            workOrderNo: this.ruleForm.workOrderNo,
+            standVersion: this.ruleForm.standVersion,
+            versionType: this.ruleForm.versionType,
+            compileDate: this.ruleForm.compileDate,
+            versionDescribe: this.ruleForm.versionDescribe,
+            downloadMsg: this.ruleForm.downloadMsg
           }).then(
             resp => {
               this.$notify({
@@ -191,10 +219,11 @@ export default {
               this.$refs[formName].resetFields();
             },
             resp => {
-              if (resp.response.status == 403) {
-                _this.$message({
+              if (resp.status == 403) {
+                _this.$notify({
+                  title: "错误",
                   type: "error",
-                  message: resp.response.data
+                  message: resp.data.msg
                 });
               }
               _this.loading = false;
@@ -220,19 +249,6 @@ export default {
     this.loadVsersionInfo();
   },
   data() {
-    var checkPhone = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("手机号不能为空"));
-      } else {
-        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
-        console.log(reg.test(value));
-        if (reg.test(value)) {
-          callback();
-        } else {
-          return callback(new Error("请输入正确的手机号"));
-        }
-      }
-    };
     return {
       Height: 0,
       loading: false,
@@ -240,32 +256,66 @@ export default {
       dialogVisible: false,
       idVisible: false,
       keywords: null,
-      selItems: "",
       versionInfos: [],
       total: 0, //数据总条数
       page: 1, //默认显示第1页
       limit: 10, //默认一次显示10条数据
 
       ruleForm: {
-        jobNumber: "",
-        name: "",
-        cellPhone: "",
-        email: ""
+        workOrderNo: "",
+        standVersion: "",
+        versionType: "",
+        compileDate: "",
+        versionDescribe: "",
+        downloadMsg: ""
       },
 
       rules: {
-        jobNumber: [{ required: true, message: "请输入工号", trigger: "blur" }],
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-        cellPhone: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
-          { validator: checkPhone, trigger: "blur" }
+        workOrderNo: [
+          { required: true, message: "请输入工单号", trigger: "blur" }
         ],
-        email: [
-          { required: true, message: "请输入邮箱地址", trigger: "blur" },
+        standVersion: [
+          { required: true, message: "请输入版本信息", trigger: "blur" }
+        ],
+        versionType: [
+          { required: true, message: "请输入版本类型", trigger: "blur" }
+        ],
+        compileDate: [
+          { required: true, message: "请选择编译日期", trigger: "blur" }
+        ],
+        versionDescribe: [
+          { required: true, message: "请输入描述信息", trigger: "blur" }
+        ],
+        downloadMsg: [
+          { required: true, message: "请输入下载链接", trigger: "blur" }
+        ]
+      },
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+        shortcuts: [
           {
-            type: "email",
-            message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
+            text: "今天",
+            onClick(picker) {
+              picker.$emit("pick", new Date());
+            }
+          },
+          {
+            text: "昨天",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              picker.$emit("pick", date);
+            }
+          },
+          {
+            text: "一周前",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", date);
+            }
           }
         ]
       }
