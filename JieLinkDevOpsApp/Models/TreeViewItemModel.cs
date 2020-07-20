@@ -34,6 +34,13 @@ namespace JieShun.JieLink.DevOps.App.Models
         }
         private bool _isExpanded = true;
 
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set { _isSelected = value; NotifyPropertyChanged(); }
+        }
+        private bool _isSelected = false;
+
         public ObservableCollection<TreeViewItemModel> MenuItems
         {
             get => _menuItems;

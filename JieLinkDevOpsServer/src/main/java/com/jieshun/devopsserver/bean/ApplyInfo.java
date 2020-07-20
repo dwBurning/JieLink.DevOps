@@ -17,7 +17,19 @@ public class ApplyInfo {
 
     private Date applyDate;
 
-    public Integer getId() {
+    private Integer isSendEmail;
+    
+    private String DownloadMsg;
+
+    public String getDownloadMsg() {
+		return DownloadMsg;
+	}
+
+	public void setDownloadMsg(String downloadMsg) {
+		DownloadMsg = downloadMsg;
+	}
+
+	public Integer getId() {
         return id;
     }
 
@@ -71,5 +83,13 @@ public class ApplyInfo {
 
     public void setApplyDate(Date applyDate) {
         this.applyDate = applyDate;
+    }
+
+    public Integer getIsSendEmail() {
+        return isSendEmail;
+    }
+
+    public void setIsSendEmail(Integer isSendEmail) {
+        this.isSendEmail = isSendEmail;
     }
 }

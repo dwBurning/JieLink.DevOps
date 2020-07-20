@@ -9,6 +9,7 @@
     <result column="cell_phone" property="cellPhone" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
     <result column="apply_date" property="applyDate" jdbcType="TIMESTAMP" />
+    <result column="is_send_email" property="isSendEmail" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -69,7 +70,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, work_order_no, job_number, name, cell_phone, email, apply_date
+    id, work_order_no, job_number, name, cell_phone, email, apply_date, is_send_email
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" >
     select
@@ -104,10 +105,10 @@
   <insert id="insert" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
     insert into order_apply_info (id, work_order_no, job_number, 
       name, cell_phone, email, 
-      apply_date)
+      apply_date, is_send_email)
     values (#{id,jdbcType=INTEGER}, #{workOrderNo,jdbcType=VARCHAR}, #{jobNumber,jdbcType=VARCHAR}, 
       #{name,jdbcType=VARCHAR}, #{cellPhone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
-      #{applyDate,jdbcType=TIMESTAMP})
+      #{applyDate,jdbcType=TIMESTAMP}, #{isSendEmail,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
     insert into order_apply_info
@@ -133,6 +134,9 @@
       <if test="applyDate != null" >
         apply_date,
       </if>
+      <if test="isSendEmail != null" >
+        is_send_email,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -155,6 +159,9 @@
       </if>
       <if test="applyDate != null" >
         #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSendEmail != null" >
+        #{isSendEmail,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -188,6 +195,9 @@
       <if test="record.applyDate != null" >
         apply_date = #{record.applyDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.isSendEmail != null" >
+        is_send_email = #{record.isSendEmail,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -201,7 +211,8 @@
       name = #{record.name,jdbcType=VARCHAR},
       cell_phone = #{record.cellPhone,jdbcType=VARCHAR},
       email = #{record.email,jdbcType=VARCHAR},
-      apply_date = #{record.applyDate,jdbcType=TIMESTAMP}
+      apply_date = #{record.applyDate,jdbcType=TIMESTAMP},
+      is_send_email = #{record.isSendEmail,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -227,6 +238,9 @@
       <if test="applyDate != null" >
         apply_date = #{applyDate,jdbcType=TIMESTAMP},
       </if>
+      <if test="isSendEmail != null" >
+        is_send_email = #{isSendEmail,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -237,7 +251,8 @@
       name = #{name,jdbcType=VARCHAR},
       cell_phone = #{cellPhone,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},
-      apply_date = #{applyDate,jdbcType=TIMESTAMP}
+      apply_date = #{applyDate,jdbcType=TIMESTAMP},
+      is_send_email = #{isSendEmail,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

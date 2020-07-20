@@ -574,6 +574,66 @@ public class ApplyInfoExample {
             addCriterion("apply_date not between", value1, value2, "applyDate");
             return (Criteria) this;
         }
+
+        public Criteria andIsSendEmailIsNull() {
+            addCriterion("is_send_email is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailIsNotNull() {
+            addCriterion("is_send_email is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailEqualTo(Integer value) {
+            addCriterion("is_send_email =", value, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailNotEqualTo(Integer value) {
+            addCriterion("is_send_email <>", value, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailGreaterThan(Integer value) {
+            addCriterion("is_send_email >", value, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_send_email >=", value, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailLessThan(Integer value) {
+            addCriterion("is_send_email <", value, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailLessThanOrEqualTo(Integer value) {
+            addCriterion("is_send_email <=", value, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailIn(List<Integer> values) {
+            addCriterion("is_send_email in", values, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailNotIn(List<Integer> values) {
+            addCriterion("is_send_email not in", values, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailBetween(Integer value1, Integer value2) {
+            addCriterion("is_send_email between", value1, value2, "isSendEmail");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsSendEmailNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_send_email not between", value1, value2, "isSendEmail");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

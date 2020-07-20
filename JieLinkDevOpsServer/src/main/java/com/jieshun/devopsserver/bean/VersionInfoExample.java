@@ -424,6 +424,146 @@ public class VersionInfoExample {
             addCriterion("compile_date not between", value1, value2, "compileDate");
             return (Criteria) this;
         }
+
+        public Criteria andVersionDescribeIsNull() {
+            addCriterion("version_describe is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeIsNotNull() {
+            addCriterion("version_describe is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeEqualTo(String value) {
+            addCriterion("version_describe =", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotEqualTo(String value) {
+            addCriterion("version_describe <>", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeGreaterThan(String value) {
+            addCriterion("version_describe >", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeGreaterThanOrEqualTo(String value) {
+            addCriterion("version_describe >=", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeLessThan(String value) {
+            addCriterion("version_describe <", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeLessThanOrEqualTo(String value) {
+            addCriterion("version_describe <=", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeLike(String value) {
+            addCriterion("version_describe like", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotLike(String value) {
+            addCriterion("version_describe not like", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeIn(List<String> values) {
+            addCriterion("version_describe in", values, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotIn(List<String> values) {
+            addCriterion("version_describe not in", values, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeBetween(String value1, String value2) {
+            addCriterion("version_describe between", value1, value2, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotBetween(String value1, String value2) {
+            addCriterion("version_describe not between", value1, value2, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgIsNull() {
+            addCriterion("download_msg is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgIsNotNull() {
+            addCriterion("download_msg is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgEqualTo(String value) {
+            addCriterion("download_msg =", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotEqualTo(String value) {
+            addCriterion("download_msg <>", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgGreaterThan(String value) {
+            addCriterion("download_msg >", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgGreaterThanOrEqualTo(String value) {
+            addCriterion("download_msg >=", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgLessThan(String value) {
+            addCriterion("download_msg <", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgLessThanOrEqualTo(String value) {
+            addCriterion("download_msg <=", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgLike(String value) {
+            addCriterion("download_msg like", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotLike(String value) {
+            addCriterion("download_msg not like", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgIn(List<String> values) {
+            addCriterion("download_msg in", values, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotIn(List<String> values) {
+            addCriterion("download_msg not in", values, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgBetween(String value1, String value2) {
+            addCriterion("download_msg between", value1, value2, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotBetween(String value1, String value2) {
+            addCriterion("download_msg not between", value1, value2, "downloadMsg");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {
