@@ -53,7 +53,7 @@
 		<!-- 指定数据库表 -->
 		<table tableName="order_version_info"
 			domainObjectName="VersionInfo"></table>
-		<table tableName="order_apply_info"
-			domainObjectName="ApplyInfo"></table>
+		<!-- <table tableName="order_apply_info"
+			domainObjectName="ApplyInfo"></table> -->
 	</context>
 </generatorConfiguration>

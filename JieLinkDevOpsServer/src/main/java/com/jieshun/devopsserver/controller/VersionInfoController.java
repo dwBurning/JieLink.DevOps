@@ -1,7 +1,9 @@
 package com.jieshun.devopsserver.controller;
 
-import java.sql.Date;
+import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +25,10 @@ import com.jieshun.devopsserver.service.VersionInfoService;
 @RequestMapping(value = "/version")
 public class VersionInfoController {
 
+	
+	private static final Logger log = LoggerFactory.getLogger(VersionInfoController.class);
+
+	
 	@Autowired
 	VersionInfoService versionInfoService;
 
@@ -39,7 +45,18 @@ public class VersionInfoController {
 		return versionInfoService.getVersionInfoWithPages(orderNo, start, end);
 	}
 
-	@RequestMapping(value = "/addVersionInfo", method = RequestMethod.GET)
+	/**
+	 * 发布版本
+	 * 
+	 * @param workOrderNo
+	 * @param standVersion
+	 * @param versionType
+	 * @param compileDate
+	 * @param versionDescribe
+	 * @param downloadMsg
+	 * @return
+	 */
+	@RequestMapping(value = "/addVersionInfo", method = RequestMethod.POST)
 	public ReturnData addVersionInfo(String workOrderNo, String standVersion, int versionType, Date compileDate,
 			String versionDescribe, String downloadMsg) {
 		VersionInfo versionInfo = new VersionInfo();
@@ -50,6 +67,17 @@ public class VersionInfoController {
 		versionInfo.setVersionDescribe(versionDescribe);
 		versionInfo.setDownloadMsg(downloadMsg);
 		int result = versionInfoService.addVersionInfo(versionInfo);
+		if (result > 0) {
+			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), ReturnStateEnum.SUCCESS.getMessage());
+		} else {
+			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
+		}
+	}
+	
+	@RequestMapping(value = "/deleteVersionInfoById", method = RequestMethod.DELETE)
+	public ReturnData deleteVersionInfoById(int id) {
+		log.info(String.valueOf(id)+"dddddddddddddddddddddddddddddddddddddd");
+		int result = versionInfoService.deleteVersionInfoById(id);
 		if (result > 0) {
 			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), ReturnStateEnum.SUCCESS.getMessage());
 		} else {

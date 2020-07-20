@@ -62,7 +62,7 @@
             <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
             <el-table-column label="操作" width="100">
               <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row)" type="text" size="medium">申请</el-button>
+                <el-button @click="handleClick(scope.row)" icon="el-icon-unlock" type="primary" size="small">申请</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -103,7 +103,7 @@ export default {
     versionTypeFormat(row, column) {
       if (row.versionType == 0) {
         return "工单";
-      } else if (row.sessionStatus == 1) {
+      } else if (row.versionType == 1) {
         return "补丁";
       }
     },
@@ -182,8 +182,6 @@ export default {
     window.onresize = () => {
       this.Height = document.documentElement.clientHeight - 200;
     };
-
-    console.log("8888888888888888888");
     this.loadVsersionInfo();
   },
   data() {

@@ -95,7 +95,8 @@
             ></el-table-column>
             <el-table-column prop="compileDate" label="编译时间" width="200"></el-table-column>
             <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column prop="downloadMsg" label="下载信息" width="300"></el-table-column>
+            <el-table-column label="操作" width="100">
               <template slot-scope="scope">
                 <el-button
                   @click="handleClick(scope.row)"
@@ -125,6 +126,7 @@
 <script>
 import { postRequest } from "../utils/api";
 import { getRequest } from "../utils/api";
+import { deleteRequest } from "../utils/api";
 import Pagination from "@/components/Pagination";
 export default {
   components: { Pagination },
@@ -138,11 +140,28 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$notify({
-            title: "成功",
-            type: "success",
-            message: "删除成功!"
-          });
+          deleteRequest("/version/deleteVersionInfoById", {
+            id: this.selItems.id
+          }).then(
+            resp => {
+              this.$notify({
+                title: "成功",
+                type: "success",
+                message: "删除成功!"
+              });
+              this.loadVsersionInfo();
+            },
+            resp => {
+              if (resp.status == 403) {
+                this.$notify({
+                  title: "错误",
+                  type: "error",
+                  message: resp.data.msg
+                });
+              }
+              this.loading = false;
+            }
+          );
         })
         .catch(() => {
           this.$notify({
@@ -165,7 +184,7 @@ export default {
     versionTypeFormat(row, column) {
       if (row.versionType == 0) {
         return "工单";
-      } else if (row.sessionStatus == 1) {
+      } else if (row.versionType == 1) {
         return "补丁";
       }
     },
@@ -212,11 +231,12 @@ export default {
             resp => {
               this.$notify({
                 title: "成功",
-                message: "申请成功，请注意查收邮件",
+                message: "发布成功",
                 type: "success"
               });
               this.dialogVisible = false;
               this.$refs[formName].resetFields();
+              this.loadVsersionInfo();
             },
             resp => {
               if (resp.status == 403) {
