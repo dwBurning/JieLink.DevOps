@@ -2,6 +2,8 @@ package com.jieshun.devopsserver.bean;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class VersionInfo {
     private Integer id;
 
@@ -11,12 +13,14 @@ public class VersionInfo {
 
     private Integer versionType;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date compileDate;
 
     private String versionDescribe;
 
     private String downloadMsg;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date operatorDate;
 
     private Integer isDeleted;
