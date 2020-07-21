@@ -21,16 +21,6 @@ public class ApplyInfo {
     private Date applyDate;
 
     private Integer isSendEmail;
-    
-    private String DownloadMsg;
-
-    public String getDownloadMsg() {
-		return DownloadMsg;
-	}
-
-	public void setDownloadMsg(String downloadMsg) {
-		DownloadMsg = downloadMsg;
-	}
 
 	public Integer getId() {
         return id;

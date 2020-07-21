@@ -84,16 +84,16 @@
           </el-dialog>
 
           <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
-            <el-table-column v-if="idVisible" prop="id" label="主键ID" width="100"></el-table-column>
+            <el-table-column v-if="idVisible" prop="id" label="主键ID" width="50"></el-table-column>
             <el-table-column fixed="left" prop="workOrderNo" label="工单号" width="120"></el-table-column>
-            <el-table-column prop="standVersion" label="版本号" width="120"></el-table-column>
+            <el-table-column prop="standVersion" label="版本号" width="80"></el-table-column>
             <el-table-column
               prop="versionType"
               :formatter="versionTypeFormat"
               label="版本类型"
-              width="120"
+              width="80"
             ></el-table-column>
-            <el-table-column prop="compileDate" label="编译时间" width="200"></el-table-column>
+            <el-table-column prop="compileDate" label="编译时间" width="160"></el-table-column>
             <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
             <el-table-column prop="downloadMsg" label="下载信息" width="300"></el-table-column>
             <el-table-column label="操作" width="100">
