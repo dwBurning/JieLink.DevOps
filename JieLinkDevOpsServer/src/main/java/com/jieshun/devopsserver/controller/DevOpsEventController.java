@@ -30,7 +30,7 @@ public class DevOpsEventController {
 			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 根据分页查询版本信息
 	 * 
@@ -44,5 +44,14 @@ public class DevOpsEventController {
 		return devOpsEventService.getDevOpsEventWithPages(eventCode, start, end);
 	}
 
+	@RequestMapping(value = "/processed", method = RequestMethod.PUT)
+	public ReturnData processed(int id) {
+		int result = devOpsEventService.processed(id);
+		if (result > 0) {
+			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), ReturnStateEnum.SUCCESS.getMessage());
+		} else {
+			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
+		}
+	}
 
 }

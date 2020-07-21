@@ -43,6 +43,7 @@
             <el-table-column label="操作" width="150">
               <template slot-scope="scope">
                 <el-button
+                  :disabled="scope.row.isProcessed==1"
                   @click="handleClick(scope.row)"
                   icon="el-icon-finished"
                   type="primary"
@@ -68,7 +69,7 @@
 </template>
 
 <script>
-import { postRequest } from "../utils/api";
+import { putRequest } from "../utils/api";
 import { getRequest } from "../utils/api";
 import Pagination from "@/components/Pagination";
 export default {
@@ -77,7 +78,28 @@ export default {
     //打开对话窗 请求对话参与方数据
     handleClick(row) {
       this.selItems = row;
-      this.dialogVisible = true;
+      putRequest("/devops/processed", {
+        id: this.selItems.id
+      }).then(
+        resp => {
+          this.$notify({
+            title: "成功",
+            message: "标记成功",
+            type: "success"
+          });
+          this.loadVsersionInfo();
+        },
+        resp => {
+          if (resp.status == 403) {
+            _this.$notify({
+              title: "错误",
+              type: "error",
+              message: resp.data.msg
+            });
+          }
+          _this.loading = false;
+        }
+      );
     },
 
     //关键字搜索会话
@@ -93,8 +115,8 @@ export default {
       }
     },
 
-    eventTypeFormat(row,colume){
-        if (row.eventType == 0) {
+    eventTypeFormat(row, colume) {
+      if (row.eventType == 0) {
         return "内存溢出";
       } else if (row.eventType == 1) {
         return "其他";
@@ -128,46 +150,6 @@ export default {
           _this.loading = false;
         }
       );
-    },
-
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          postRequest("/apply/addApplyInfo", {
-            workOrderNo: this.selItems.workOrderNo,
-            jobNumber: this.ruleForm.jobNumber,
-            name: this.ruleForm.name,
-            cellPhone: this.ruleForm.cellPhone,
-            email: this.ruleForm.email
-          }).then(
-            resp => {
-              this.$notify({
-                title: "成功",
-                message: "申请成功，请注意查收邮件",
-                type: "success"
-              });
-              this.dialogVisible = false;
-              this.$refs[formName].resetFields();
-            },
-            resp => {
-              if (resp.status == 403) {
-                _this.$notify({
-                  title: "错误",
-                  type: "error",
-                  message: resp.data.msg
-                });
-              }
-              _this.loading = false;
-            }
-          );
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
     }
   },
   mounted() {

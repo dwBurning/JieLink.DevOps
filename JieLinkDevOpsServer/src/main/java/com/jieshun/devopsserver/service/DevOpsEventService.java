@@ -68,4 +68,11 @@ public class DevOpsEventService {
 		pageSet.setTotal(total);
 		return pageSet;
 	}
+
+	public int processed(int id) {
+		DevOpsEvent devOpsEvent = new DevOpsEvent();
+		devOpsEvent.setId(id);
+		devOpsEvent.setIsProcessed(1);
+		return devOpsEventMapper.updateByPrimaryKeySelective(devOpsEvent);
+	}
 }
