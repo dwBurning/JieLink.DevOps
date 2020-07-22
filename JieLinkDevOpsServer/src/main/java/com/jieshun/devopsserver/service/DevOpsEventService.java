@@ -57,7 +57,7 @@ public class DevOpsEventService {
 		String limitString = String.format("operator_date desc limit %d,%d", start, end - start);
 		DevOpsEventExample example = new DevOpsEventExample();
 		Criteria criteria = example.createCriteria();
-		if (eventCode >= 0) {
+		if (eventCode > 0) {
 			criteria.andEventTypeEqualTo(eventCode);
 		}
 		int total = devOpsEventMapper.countByExample(example);

@@ -10,7 +10,8 @@
             v-model="keywords"
             placeholder="请选择事件类型"
           >
-            <el-option label="内存溢出" value="0"></el-option>
+            <el-option label="内存溢出" value="1"></el-option>
+            <el-option label="CPU高" value="2"></el-option>
           </el-select>
           <el-button
             type="primary"
@@ -116,11 +117,12 @@ export default {
     },
 
     eventTypeFormat(row, colume) {
-      if (row.eventType == 0) {
+      if (row.eventType == 1) {
         return "内存溢出";
-      } else if (row.eventType == 1) {
-        return "其他";
+      } else if (row.eventType == 2) {
+        return "CPU高";
       }
+
     },
 
     //加载会话数据
@@ -130,7 +132,7 @@ export default {
       let _this = this;
       _this.loading = true;
       getRequest("/devops/getDevOpsEventWithPages", {
-        eventCode: this.keywords == null ? -1 : this.keywords,
+        eventCode: this.keywords,
         start: start,
         end: end
       }).then(
@@ -181,7 +183,7 @@ export default {
       dialogLoading: false,
       dialogVisible: false,
       idVisible: false,
-      keywords: null,
+      keywords: 0,
       selItems: "",
       events: [],
       total: 0, //数据总条数
