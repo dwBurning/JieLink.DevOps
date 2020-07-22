@@ -55,7 +55,7 @@
                  />
         <DockPanel Grid.Row="2" Grid.Column="1">
             <TextBox  x:Name="txtRemoteAccount"  Text="{Binding RemoteAccount,Mode=TwoWay}" pu:TextBoxHelper.Watermark="请输入远程账号"
-                 VerticalAlignment="Center" Height="40" Width="190"
+                 VerticalAlignment="Center" Height="40" Width="350"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
