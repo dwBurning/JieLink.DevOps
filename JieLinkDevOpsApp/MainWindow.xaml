@@ -11,6 +11,7 @@
             Width="1000"
             MinWidth="1000"
             WindowStartupLocation="CenterScreen"
+            Loaded="WindowX_Loaded"
             Closing="WindowX_Closing">
     <Grid>
         <Grid.ColumnDefinitions>

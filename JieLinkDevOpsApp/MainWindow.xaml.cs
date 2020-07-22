@@ -60,12 +60,24 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            foreach (var startup in ViewModel.startups)
+            {
+                startup.Exit();
+            }
             Application.Current.Shutdown();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void WindowX_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach(var startup in ViewModel.startups)
+            {
+                startup.Start();
+            }
         }
     }
 }

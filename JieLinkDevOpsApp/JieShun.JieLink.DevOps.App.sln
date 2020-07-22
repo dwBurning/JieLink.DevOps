@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.App", "JieShun.JieLink.DevOps.App.csproj", "{E535340A-0421-4939-94B8-06C112CABA29}"
 EndProject
@@ -16,6 +16,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInformation", "PartialView\PartialViewInformation\PartialViewInformation.csproj", "{53618417-7910-49BB-90F9-DF6816EF0183}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewDelRegeist", "PartialView\PartialViewDelRegeist\PartialViewDelRegeist.csproj", "{E70C9790-920E-4DEF-8288-6953F39E6F29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewHealthMonitor", "PartialView\PartialViewHealthMonitor\PartialViewHealthMonitor.csproj", "{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{E70C9790-920E-4DEF-8288-6953F39E6F29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E70C9790-920E-4DEF-8288-6953F39E6F29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E70C9790-920E-4DEF-8288-6953F39E6F29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
