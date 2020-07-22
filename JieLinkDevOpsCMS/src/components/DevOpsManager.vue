@@ -122,7 +122,6 @@ export default {
       } else if (row.eventType == 2) {
         return "CPU高";
       }
-
     },
 
     //加载会话数据
@@ -132,7 +131,7 @@ export default {
       let _this = this;
       _this.loading = true;
       getRequest("/devops/getDevOpsEventWithPages", {
-        eventCode: this.keywords,
+        eventCode: this.keywords == null ? 0 : this.keywords,
         start: start,
         end: end
       }).then(
@@ -183,7 +182,7 @@ export default {
       dialogLoading: false,
       dialogVisible: false,
       idVisible: false,
-      keywords: 0,
+      keywords: null,
       selItems: "",
       events: [],
       total: 0, //数据总条数
