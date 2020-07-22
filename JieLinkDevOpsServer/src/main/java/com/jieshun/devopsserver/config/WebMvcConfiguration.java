@@ -4,10 +4,15 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.jieshun.devopsserver.config.properties.MinioProperties;
+import com.jieshun.devopsserver.service.impl.DiskFileStore;
+import com.jieshun.devopsserver.service.impl.FileStore;
+import com.jieshun.devopsserver.service.impl.MinioFileStore;
+
 import io.minio.MinioClient;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -20,6 +25,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableConfigurationProperties(MinioProperties.class)
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
+
+	/**
+	 * fileserver.type=minio时才生效
+	 * 
+	 * @return
+	 */
+	@ConditionalOnProperty(name = "fileserver.type", havingValue = "minio")
+	@Bean
+	public MinioFileStore minioFileStore() {
+		return new MinioFileStore();
+	}
 
 	@Autowired
 	private MinioProperties minioProperties;
@@ -72,6 +88,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 		HttpMessageConverter<?> converter = fastConverter;
 		// 5.返回HttpMessageConverters对象
 		return new HttpMessageConverters(converter);
+	}
+
+	/**
+	 * 容器中没有这个bean时才注入
+	 * 
+	 * @return
+	 */
+	@ConditionalOnMissingBean(FileStore.class)
+	@Bean
+	public FileStore diskFileStore() {
+		return new DiskFileStore();
 	}
 
 }
