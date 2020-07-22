@@ -5,7 +5,7 @@ import java.util.Map;
 
 public enum DevOpsEventEnum {
 
-	OUTOFMEMORY(0, "内存溢出");
+	OUTOFMEMORY(1, "内存溢出"),CPU(2, "CPU高");
 
 	private int code;
 

@@ -12,6 +12,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 {
     public class MainWindowViewModel : PropertyChangedBase
     {
+        public List<IStartup> startups = new List<IStartup>();
         public static IDictionary<string, IPartialView> partialViewDic;
         public MainWindowViewModel()
         {
@@ -25,12 +26,18 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                 //解决样式不生效问题
                 if (!plug.Contains("PartialView"))
                     continue;
+                var asm = Assembly.LoadFile(plug);
+                asm.GetTypes()
+                .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
+                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
+                .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
+                .ForEach(x => partialViewDic.Add(x.TagName, x));
+                //加载插件的Startup启动类
+                startups.AddRange(asm.GetExportedTypes()
+                .Where(x => typeof(IStartup).IsAssignableFrom(x)).ToList()
+                .Select(x => (IStartup)Activator.CreateInstance(x)).ToList());
+                startups.Sort((a, b) => b.Priority - a.Priority);
 
-                Assembly.LoadFile(plug).GetTypes()
-               .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
-               .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
-               .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
-               .ForEach(x => partialViewDic.Add(x.TagName, x));
             }
 
             var centerMenus = new ObservableCollection<TreeViewItemModel>();

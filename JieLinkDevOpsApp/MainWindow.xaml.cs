@@ -84,6 +84,10 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            foreach (var startup in ViewModel.startups)
+            {
+                startup.Exit();
+            }
             Application.Current.Shutdown();
         }
 
@@ -92,6 +96,14 @@ namespace JieShun.JieLink.DevOps.App
             if (!backgroundWorker.IsBusy)
             {
                 backgroundWorker.RunWorkerAsync();
+            }
+        }
+
+        private void WindowX_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach(var startup in ViewModel.startups)
+            {
+                startup.Start();
             }
         }
     }

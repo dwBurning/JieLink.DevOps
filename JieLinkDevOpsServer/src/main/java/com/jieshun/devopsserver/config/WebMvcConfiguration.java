@@ -28,7 +28,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * fileserver.type=minio时才生效
-	 * 
+	 *
 	 * @return
 	 */
 	@ConditionalOnProperty(name = "fileserver.type", havingValue = "minio")
@@ -42,7 +42,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * 全局CORS设置
-	 * 
+	 *
 	 * @return
 	 */
 	@Bean
@@ -60,7 +60,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * 注册mini客户端
-	 * 
+	 *
 	 * @return
 	 * @throws InvalidPortException
 	 * @throws InvalidEndpointException
@@ -92,7 +92,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 	/**
 	 * 容器中没有这个bean时才注入
-	 * 
+	 *
 	 * @return
 	 */
 	@ConditionalOnMissingBean(FileStore.class)
