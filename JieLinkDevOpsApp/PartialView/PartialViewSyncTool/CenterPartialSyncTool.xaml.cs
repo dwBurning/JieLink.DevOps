@@ -36,7 +36,7 @@ namespace PartialViewSyncTool
 
         public string TagName
         {
-            get { return "SyncTool"; }
+            get { return "CenterPartialSyncTool"; }
         }
 
         public MenuType MenuType

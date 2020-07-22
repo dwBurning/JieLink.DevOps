@@ -13,44 +13,37 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SetWasgoneForSmartBox;
 
-namespace PartialViewRegeist
+namespace PartialViewSetting
 {
     /// <summary>
-    /// BoxPartialRegist.xaml 的交互逻辑
+    /// SystemSetting.xaml 的交互逻辑
     /// </summary>
-
-    public partial class BoxPartialRegist : UserControl, IPartialView
+    public partial class SystemSetting : UserControl,IPartialView
     {
-        public BoxPartialRegist()
+        public SystemSetting()
         {
             InitializeComponent();
         }
 
         public string MenuName
         {
-            get { return "设置开机启动项"; }
+            get { return "设置"; }
         }
 
         public string TagName
         {
-            get { return "BoxPartialRegist"; }
+            get { return "SystemSetting"; }
         }
 
         public MenuType MenuType
         {
-            get { return MenuType.Box; }
+            get { return MenuType.None; }
         }
 
-        private void button_RegistOpenBox_Click(object sender, RoutedEventArgs e)
+        private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            SetAutoRunProject.Instance().DoWork(0);
-        }
 
-        private void button_RegistOpenExplorer_Click(object sender, RoutedEventArgs e)
-        {
-            SetAutoRunProject.Instance().DoWork(1);
         }
     }
 }

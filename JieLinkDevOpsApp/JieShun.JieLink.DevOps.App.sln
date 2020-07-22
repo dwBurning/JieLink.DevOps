@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.App", "JieShun.JieLink.DevOps.App.csproj", "{E535340A-0421-4939-94B8-06C112CABA29}"
 EndProject
@@ -9,15 +9,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewTest", "PartialV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInterface", "PartialView\PartialViewInterface\PartialViewInterface.csproj", "{3FACC984-5886-4C2B-BFA3-C722125EE56D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewRegeist", "PartialView\PartialViewRegeist\PartialViewRegeist.csproj", "{CF648C76-53C3-40CE-935F-87B065B2069E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewRegist", "PartialView\PartialViewRegeist\PartialViewRegist.csproj", "{CF648C76-53C3-40CE-935F-87B065B2069E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewSyncTool", "PartialView\PartialViewSyncTool\PartialViewSyncTool.csproj", "{4276385B-4778-4846-B8E4-DBAD9313B28F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInformation", "PartialView\PartialViewInformation\PartialViewInformation.csproj", "{53618417-7910-49BB-90F9-DF6816EF0183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewDelRegeist", "PartialView\PartialViewDelRegeist\PartialViewDelRegeist.csproj", "{E70C9790-920E-4DEF-8288-6953F39E6F29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewDelRegist", "PartialView\PartialViewDelRegeist\PartialViewDelRegist.csproj", "{E70C9790-920E-4DEF-8288-6953F39E6F29}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewHealthMonitor", "PartialView\PartialViewHealthMonitor\PartialViewHealthMonitor.csproj", "{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewSetting", "PartialView\PartialViewSetting\PartialViewSetting.csproj", "{7460A897-482F-4ECA-9BB0-01213C3117B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

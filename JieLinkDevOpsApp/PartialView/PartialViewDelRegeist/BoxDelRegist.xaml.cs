@@ -33,7 +33,7 @@ namespace PartialViewDelRegeist
 
         public string TagName
         {
-            get { return "Box4"; }
+            get { return "BoxDelRegist"; }
         }
 
         public MenuType MenuType

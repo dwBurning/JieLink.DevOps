@@ -40,10 +40,8 @@ namespace JieShun.JieLink.DevOps.App
             EnvironmentInfo.RemotePassword = ViewModel.RemotePassword;
             EnvironmentInfo.ContactName = ViewModel.ContactName;
             EnvironmentInfo.ContactPhone = ViewModel.ContactPhone;
-
-            string setting = JsonConvert.SerializeObject(ViewModel);
-            MessageBoxX.Show(setting,"");
-
+            FileHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(ViewModel));
+            Notice.Show("保存成功", "通知", 3, MessageBoxIcon.Success);
             this.Close();
         }
     }

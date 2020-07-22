@@ -20,6 +20,7 @@ using PartialViewInterface;
 using System.Reflection;
 using System.ComponentModel;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -93,15 +94,27 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!backgroundWorker.IsBusy)
+            string projectInfoConfig = FileHelper.ReadAppConfig("ProjectInfo");
+            if (string.IsNullOrEmpty(projectInfoConfig))
             {
-                backgroundWorker.RunWorkerAsync();
+                if (!backgroundWorker.IsBusy)
+                {
+                    backgroundWorker.RunWorkerAsync();
+                }
             }
-        }
+            else
+            {
+                ProjectInfoWindowViewModel projectInfo = JsonConvert.DeserializeObject<ProjectInfoWindowViewModel>(projectInfoConfig);
+                EnvironmentInfo.ProjectNo = projectInfo.ProjectNo;
+                EnvironmentInfo.RemoteAccount = projectInfo.RemoteAccount;
+                EnvironmentInfo.RemotePassword = projectInfo.RemotePassword;
+                EnvironmentInfo.ContactName = projectInfo.ContactName;
+                EnvironmentInfo.ContactPhone = projectInfo.ContactPhone;
+            }
 
-        private void WindowX_Loaded(object sender, RoutedEventArgs e)
-        {
-            foreach(var startup in ViewModel.startups)
+            
+
+            foreach (var startup in ViewModel.startups)
             {
                 startup.Start();
             }
