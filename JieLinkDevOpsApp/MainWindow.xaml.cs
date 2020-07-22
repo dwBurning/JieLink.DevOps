@@ -18,6 +18,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PartialViewInterface;
 using System.Reflection;
+using System.ComponentModel;
+using System.Threading;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -26,6 +28,8 @@ namespace JieShun.JieLink.DevOps.App
     /// </summary>
     public partial class MainWindow : WindowX, IComponentConnector
     {
+        BackgroundWorker backgroundWorker = new BackgroundWorker();
+
         #region Property
         public MainWindowViewModel ViewModel { get; set; }
 
@@ -38,6 +42,26 @@ namespace JieShun.JieLink.DevOps.App
             ViewModel = new MainWindowViewModel();
             DataContext = ViewModel;
             ContentControl.Content = MainWindowViewModel.partialViewDic["Information"];//加载介绍窗口
+
+            
+            backgroundWorker.WorkerReportsProgress = true;
+            backgroundWorker.DoWork += BackgroundWorker_DoWork;
+            backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
+            
+        }
+
+        private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            ProjectInfoWindow windowX = new ProjectInfoWindow();
+            this.IsMaskVisible = true;
+            windowX.ShowDialog();
+            this.IsMaskVisible = false;
+        }
+
+        private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Thread.Sleep(1000);
+            backgroundWorker.ReportProgress(1);
         }
 
         #region EventHandler
@@ -63,9 +87,12 @@ namespace JieShun.JieLink.DevOps.App
             Application.Current.Shutdown();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void WindowX_Loaded(object sender, RoutedEventArgs e)
         {
-
+            if (!backgroundWorker.IsBusy)
+            {
+                backgroundWorker.RunWorkerAsync();
+            }
         }
     }
 }

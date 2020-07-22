@@ -44,6 +44,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnvironmentInfo.cs" />
     <Compile Include="FileHelper.cs" />
     <Compile Include="IPartialView.cs" />
     <Compile Include="MenuType.cs" />
