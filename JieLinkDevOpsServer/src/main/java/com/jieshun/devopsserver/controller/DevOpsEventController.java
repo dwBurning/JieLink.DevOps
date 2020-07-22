@@ -20,7 +20,7 @@ public class DevOpsEventController {
 	@Autowired
 	DevOpsEventService devOpsEventService;
 
-	@RequestMapping(value = "/addApplyInfo", method = RequestMethod.POST)
+	@RequestMapping(value = "/reportDevOpsEvent", method = RequestMethod.POST)
 	public ReturnData reportDevOpsEvent(String params) {
 		DevOpsEvent devOpsEvent = JSON.parseObject(params, DevOpsEvent.class);
 		int result = devOpsEventService.reportDevOpsEvent(devOpsEvent);
