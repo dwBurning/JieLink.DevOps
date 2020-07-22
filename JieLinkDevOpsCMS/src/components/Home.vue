@@ -75,14 +75,14 @@ export default {
   },
   mounted: function() {
     var _this = this;
-    getRequest("systemUser/currentUserName").then(
+    /*getRequest("systemUser/currentUserName").then(
       function(msg) {
         _this.currentUserName = msg.data;
       },
       function(msg) {
         _this.currentUserName = "游客";
       }
-    );
+    );*/
   },
   data() {
     return {

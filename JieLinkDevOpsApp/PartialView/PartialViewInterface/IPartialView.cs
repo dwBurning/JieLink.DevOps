@@ -16,7 +16,7 @@ namespace PartialViewInterface
         /// <summary>
         /// 标记
         /// </summary>
-        string Tag { get; }
+        string TagName { get; }
 
         /// <summary>
         /// 菜单类型

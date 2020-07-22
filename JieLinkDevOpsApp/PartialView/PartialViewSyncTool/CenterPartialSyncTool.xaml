@@ -7,21 +7,28 @@
       xmlns:Core="clr-namespace:Panuon.UI.Silver.Core;assembly=Panuon.UI.Silver" 
       xmlns:local="clr-namespace:PartialViewSyncTool"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="550" d:DesignWidth="800">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
         </ResourceDictionary>
+
     </UserControl.Resources>
 
     <Grid MaxWidth="{Binding ActualWidth}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"></RowDefinition>
@@ -35,10 +42,11 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-
-        <RichTextBox  x:Name="rtxShowMessage" HorizontalAlignment="Center" VerticalAlignment="Center"  Grid.Column="2" Grid.ColumnSpan="1" Grid.RowSpan="10" Height="500" Margin="0,0,1,0">
+        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                     Grid.Column="2" Grid.RowSpan="12" IsReadOnly="True" Margin="10,5,0,10">
             <FlowDocument>
                 <Paragraph>
                     <Run Text=""/>
@@ -46,51 +54,87 @@
             </FlowDocument>
         </RichTextBox>
 
-
-
-        <TextBlock Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock1" Margin="0,18" Height="14">中心IP地址：</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock2" Margin="0,18" Height="14">数据库名称：</TextBlock>
-        <TextBlock Grid.Row="2" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock3" Margin="0,18" Height="14">数据库端口：</TextBlock>
-        <TextBlock Grid.Row="3" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock4" Margin="0,18" Height="14">数据库用户：</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock5" Margin="0,18" Height="14">数据库密码：</TextBlock>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp"  Text="127.0.0.1" />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" />
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort"  Text="3306" />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser"  Text="test" />
-        <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtCenterDbPwd" />
-
-        <TextBlock Grid.Row="6" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock6" Margin="0,18" Height="14">频率:(秒)：</TextBlock>
-        <TextBlock Grid.Row="7" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock7" Margin="0,18" Height="14">检测天数：</TextBlock>
-        <TextBlock Grid.Row="8" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock8" Margin="0,18" Height="14">检测条数：</TextBlock>
-        <TextBlock Grid.Row="9" Grid.Column="0" TextAlignment="Center" VerticalAlignment="Center" x:Name="TextBlock9" Margin="0,18" Height="14">命令字：</TextBlock>
-        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtLoopSecond"   TextWrapping="Wrap" Text="5"  />
-        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCheckDay"  TextWrapping="Wrap" Text="1" />
-        <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtCheckRow"  TextWrapping="Wrap" Text="100" />
-        <TextBox Grid.Row="9" Grid.Column="1" x:Name="txtCmd"  TextWrapping="Wrap" Text="82A" />
-
-        <Button  Grid.Column="1" Grid.Row="5"
-MaxWidth="{Binding ActualWidth}"
-Content="测试连接"
-Name ="btnTestConn"
-pu:ButtonHelper.ClickStyle="Sink"
-pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#20A0FF"
-Foreground="#20A0FF"
-pu:ButtonHelper.HoverBrush="#00BCFF"
-pu:ButtonHelper.CornerRadius="4" Click="btnTestConn_Click" />
-
-        <Button  Grid.Column="1" Grid.Row="10"
-MaxWidth="{Binding ActualWidth}"
-Content="开启检测"
-Name="btnStartTask"
-pu:ButtonHelper.ClickStyle="Sink"
-pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#20A0FF"
-Foreground="#20A0FF"
-pu:ButtonHelper.HoverBrush="#00BCFF"
-pu:ButtonHelper.CornerRadius="4" Click="btnStartTask_Click"
-                 IsEnabled="False"/>
-
+        <TextBlock Grid.Row="0" Grid.Column="0" x:Name="TextBlock1">中心IP地址：</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" x:Name="TextBlock2" >数据库名称：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TextBlock3" >数据库端口：</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0" x:Name="TextBlock4" >数据库用户：</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="0" x:Name="TextBlock5" >数据库密码：</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="0" x:Name="TextBlock6" >频率:(秒)：</TextBlock>
+        <TextBlock Grid.Row="7" Grid.Column="0" x:Name="TextBlock7" >检测天数：</TextBlock>
+        <TextBlock Grid.Row="8" Grid.Column="0" x:Name="TextBlock8" >检测条数：</TextBlock>
+        <TextBlock Grid.Row="9" Grid.Column="0" x:Name="TextBlock9" >命令字：</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="127.0.0.1" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="3306" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="test" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtCenterDbPwd" 
+                     pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
+                     pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:PasswordBoxHelper.CornerRadius="4"
+                     pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
+                     />
+        <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtLoopSecond" Text="5" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCheckDay" Text="1" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtCheckRow" Text="100" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="9" Grid.Column="1" x:Name="txtCmd" Text="82A" 
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <Button Grid.Column="1" Grid.Row="10" Content="开启检测" Name="btnStartTask" Click="btnStartTask_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                IsEnabled="False"/>
     </Grid>
 
 </UserControl>

@@ -424,6 +424,266 @@ public class VersionInfoExample {
             addCriterion("compile_date not between", value1, value2, "compileDate");
             return (Criteria) this;
         }
+
+        public Criteria andVersionDescribeIsNull() {
+            addCriterion("version_describe is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeIsNotNull() {
+            addCriterion("version_describe is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeEqualTo(String value) {
+            addCriterion("version_describe =", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotEqualTo(String value) {
+            addCriterion("version_describe <>", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeGreaterThan(String value) {
+            addCriterion("version_describe >", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeGreaterThanOrEqualTo(String value) {
+            addCriterion("version_describe >=", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeLessThan(String value) {
+            addCriterion("version_describe <", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeLessThanOrEqualTo(String value) {
+            addCriterion("version_describe <=", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeLike(String value) {
+            addCriterion("version_describe like", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotLike(String value) {
+            addCriterion("version_describe not like", value, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeIn(List<String> values) {
+            addCriterion("version_describe in", values, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotIn(List<String> values) {
+            addCriterion("version_describe not in", values, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeBetween(String value1, String value2) {
+            addCriterion("version_describe between", value1, value2, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andVersionDescribeNotBetween(String value1, String value2) {
+            addCriterion("version_describe not between", value1, value2, "versionDescribe");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgIsNull() {
+            addCriterion("download_msg is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgIsNotNull() {
+            addCriterion("download_msg is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgEqualTo(String value) {
+            addCriterion("download_msg =", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotEqualTo(String value) {
+            addCriterion("download_msg <>", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgGreaterThan(String value) {
+            addCriterion("download_msg >", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgGreaterThanOrEqualTo(String value) {
+            addCriterion("download_msg >=", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgLessThan(String value) {
+            addCriterion("download_msg <", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgLessThanOrEqualTo(String value) {
+            addCriterion("download_msg <=", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgLike(String value) {
+            addCriterion("download_msg like", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotLike(String value) {
+            addCriterion("download_msg not like", value, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgIn(List<String> values) {
+            addCriterion("download_msg in", values, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotIn(List<String> values) {
+            addCriterion("download_msg not in", values, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgBetween(String value1, String value2) {
+            addCriterion("download_msg between", value1, value2, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andDownloadMsgNotBetween(String value1, String value2) {
+            addCriterion("download_msg not between", value1, value2, "downloadMsg");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateIsNull() {
+            addCriterion("operator_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateIsNotNull() {
+            addCriterion("operator_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateEqualTo(Date value) {
+            addCriterion("operator_date =", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateNotEqualTo(Date value) {
+            addCriterion("operator_date <>", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateGreaterThan(Date value) {
+            addCriterion("operator_date >", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateGreaterThanOrEqualTo(Date value) {
+            addCriterion("operator_date >=", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateLessThan(Date value) {
+            addCriterion("operator_date <", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateLessThanOrEqualTo(Date value) {
+            addCriterion("operator_date <=", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateIn(List<Date> values) {
+            addCriterion("operator_date in", values, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateNotIn(List<Date> values) {
+            addCriterion("operator_date not in", values, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateBetween(Date value1, Date value2) {
+            addCriterion("operator_date between", value1, value2, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateNotBetween(Date value1, Date value2) {
+            addCriterion("operator_date not between", value1, value2, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedIsNull() {
+            addCriterion("is_deleted is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedIsNotNull() {
+            addCriterion("is_deleted is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedEqualTo(Integer value) {
+            addCriterion("is_deleted =", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedNotEqualTo(Integer value) {
+            addCriterion("is_deleted <>", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedGreaterThan(Integer value) {
+            addCriterion("is_deleted >", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_deleted >=", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedLessThan(Integer value) {
+            addCriterion("is_deleted <", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedLessThanOrEqualTo(Integer value) {
+            addCriterion("is_deleted <=", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedIn(List<Integer> values) {
+            addCriterion("is_deleted in", values, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedNotIn(List<Integer> values) {
+            addCriterion("is_deleted not in", values, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedBetween(Integer value1, Integer value2) {
+            addCriterion("is_deleted between", value1, value2, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_deleted not between", value1, value2, "isDeleted");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

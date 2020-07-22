@@ -27,24 +27,16 @@
         <TextBlock VerticalAlignment="Center">开机启动盒子：操作系统启动的时候，只启动盒子程序。</TextBlock>
         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Grid.Row="1" Grid.Column="0">开机启动桌面：操作系统启动的时候，正常启动桌面，需要双击桌面快捷方式，才启动盒子程序。(一般只建议，共机部署的现场配置开机启动桌面)</TextBlock>
 
-            <Button  Grid.Column="0" Grid.Row="2" Height="40"
-MaxWidth="{Binding ActualWidth}"
-Content="开机启动盒子"
-pu:ButtonHelper.ClickStyle="Sink"
-pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#20A0FF"
-Foreground="#20A0FF"
-pu:ButtonHelper.HoverBrush="#00BCFF"
-pu:ButtonHelper.CornerRadius="4" Click="button_RegistOpenBox_Click" />
+        <Button Grid.Column="0" Grid.Row="2" Content="开机启动盒子" Click="button_RegistOpenBox_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" 
+                />
 
-        <Button Grid.Column="0" Grid.Row="3" Height="40"
-MaxWidth="{Binding ActualWidth}"
-Content="开机启动桌面"
-pu:ButtonHelper.ClickStyle="Sink"
-pu:ButtonHelper.ButtonStyle="Hollow"
-BorderBrush="#20A0FF"
-Foreground="#20A0FF"
-pu:ButtonHelper.HoverBrush="#00BCFF"
-pu:ButtonHelper.CornerRadius="4" Click="button_RegistOpenExplorer_Click" />
+        <Button Grid.Column="0" Grid.Row="3" Content="开机启动桌面" Click="button_RegistOpenExplorer_Click" 
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" 
+                />
     </Grid>
 </UserControl>

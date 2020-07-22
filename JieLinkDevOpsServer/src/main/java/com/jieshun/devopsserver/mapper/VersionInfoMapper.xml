@@ -7,9 +7,10 @@
     <result column="stand_version" property="standVersion" jdbcType="VARCHAR" />
     <result column="version_type" property="versionType" jdbcType="INTEGER" />
     <result column="compile_date" property="compileDate" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.jieshun.devopsserver.bean.VersionInfo" extends="BaseResultMap" >
-    <result column="version_describe" property="versionDescribe" jdbcType="LONGVARCHAR" />
+    <result column="version_describe" property="versionDescribe" jdbcType="VARCHAR" />
+    <result column="download_msg" property="downloadMsg" jdbcType="VARCHAR" />
+    <result column="operator_date" property="operatorDate" jdbcType="TIMESTAMP" />
+    <result column="is_deleted" property="isDeleted" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -70,27 +71,9 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, work_order_no, stand_version, version_type, compile_date
+    id, work_order_no, stand_version, version_type, compile_date, version_describe, download_msg, 
+    operator_date, is_deleted
   </sql>
-  <sql id="Blob_Column_List" >
-    version_describe
-  </sql>
-  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VersionInfoExample" >
-    select
-    <if test="distinct" >
-      distinct
-    </if>
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from order_version_info
-    <if test="_parameter != null" >
-      <include refid="Example_Where_Clause" />
-    </if>
-    <if test="orderByClause != null" >
-      order by ${orderByClause}
-    </if>
-  </select>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.VersionInfoExample" >
     select
     <if test="distinct" >
@@ -105,11 +88,9 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from order_version_info
     where id = #{id,jdbcType=INTEGER}
   </select>
@@ -125,10 +106,12 @@
   </delete>
   <insert id="insert" parameterType="com.jieshun.devopsserver.bean.VersionInfo" >
     insert into order_version_info (id, work_order_no, stand_version, 
-      version_type, compile_date, version_describe
+      version_type, compile_date, version_describe, 
+      download_msg, operator_date, is_deleted
       )
     values (#{id,jdbcType=INTEGER}, #{workOrderNo,jdbcType=VARCHAR}, #{standVersion,jdbcType=VARCHAR}, 
-      #{versionType,jdbcType=INTEGER}, #{compileDate,jdbcType=TIMESTAMP}, #{versionDescribe,jdbcType=LONGVARCHAR}
+      #{versionType,jdbcType=INTEGER}, #{compileDate,jdbcType=TIMESTAMP}, #{versionDescribe,jdbcType=VARCHAR}, 
+      #{downloadMsg,jdbcType=VARCHAR}, #{operatorDate,jdbcType=TIMESTAMP}, #{isDeleted,jdbcType=INTEGER}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.VersionInfo" >
@@ -152,6 +135,15 @@
       <if test="versionDescribe != null" >
         version_describe,
       </if>
+      <if test="downloadMsg != null" >
+        download_msg,
+      </if>
+      <if test="operatorDate != null" >
+        operator_date,
+      </if>
+      <if test="isDeleted != null" >
+        is_deleted,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -170,7 +162,16 @@
         #{compileDate,jdbcType=TIMESTAMP},
       </if>
       <if test="versionDescribe != null" >
-        #{versionDescribe,jdbcType=LONGVARCHAR},
+        #{versionDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadMsg != null" >
+        #{downloadMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorDate != null" >
+        #{operatorDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null" >
+        #{isDeleted,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -199,21 +200,18 @@
         compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
       </if>
       <if test="record.versionDescribe != null" >
-        version_describe = #{record.versionDescribe,jdbcType=LONGVARCHAR},
+        version_describe = #{record.versionDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="record.downloadMsg != null" >
+        download_msg = #{record.downloadMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.operatorDate != null" >
+        operator_date = #{record.operatorDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDeleted != null" >
+        is_deleted = #{record.isDeleted,jdbcType=INTEGER},
       </if>
     </set>
-    <if test="_parameter != null" >
-      <include refid="Update_By_Example_Where_Clause" />
-    </if>
-  </update>
-  <update id="updateByExampleWithBLOBs" parameterType="map" >
-    update order_version_info
-    set id = #{record.id,jdbcType=INTEGER},
-      work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
-      stand_version = #{record.standVersion,jdbcType=VARCHAR},
-      version_type = #{record.versionType,jdbcType=INTEGER},
-      compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
-      version_describe = #{record.versionDescribe,jdbcType=LONGVARCHAR}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -224,7 +222,11 @@
       work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
       stand_version = #{record.standVersion,jdbcType=VARCHAR},
       version_type = #{record.versionType,jdbcType=INTEGER},
-      compile_date = #{record.compileDate,jdbcType=TIMESTAMP}
+      compile_date = #{record.compileDate,jdbcType=TIMESTAMP},
+      version_describe = #{record.versionDescribe,jdbcType=VARCHAR},
+      download_msg = #{record.downloadMsg,jdbcType=VARCHAR},
+      operator_date = #{record.operatorDate,jdbcType=TIMESTAMP},
+      is_deleted = #{record.isDeleted,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -245,18 +247,18 @@
         compile_date = #{compileDate,jdbcType=TIMESTAMP},
       </if>
       <if test="versionDescribe != null" >
-        version_describe = #{versionDescribe,jdbcType=LONGVARCHAR},
+        version_describe = #{versionDescribe,jdbcType=VARCHAR},
+      </if>
+      <if test="downloadMsg != null" >
+        download_msg = #{downloadMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="operatorDate != null" >
+        operator_date = #{operatorDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDeleted != null" >
+        is_deleted = #{isDeleted,jdbcType=INTEGER},
       </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VersionInfo" >
-    update order_version_info
-    set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
-      stand_version = #{standVersion,jdbcType=VARCHAR},
-      version_type = #{versionType,jdbcType=INTEGER},
-      compile_date = #{compileDate,jdbcType=TIMESTAMP},
-      version_describe = #{versionDescribe,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.VersionInfo" >
@@ -264,7 +266,11 @@
     set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
       stand_version = #{standVersion,jdbcType=VARCHAR},
       version_type = #{versionType,jdbcType=INTEGER},
-      compile_date = #{compileDate,jdbcType=TIMESTAMP}
+      compile_date = #{compileDate,jdbcType=TIMESTAMP},
+      version_describe = #{versionDescribe,jdbcType=VARCHAR},
+      download_msg = #{downloadMsg,jdbcType=VARCHAR},
+      operator_date = #{operatorDate,jdbcType=TIMESTAMP},
+      is_deleted = #{isDeleted,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

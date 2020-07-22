@@ -16,6 +16,11 @@ namespace PartialViewInterface
         /// <summary>
         /// 盒子
         /// </summary>
-        Box
+        Box,
+
+        /// <summary>
+        /// 独立菜单
+        /// </summary>
+        None
     }
 }

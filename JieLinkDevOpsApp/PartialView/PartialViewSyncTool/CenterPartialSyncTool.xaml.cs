@@ -20,7 +20,7 @@ using System.Data;
 using System.Windows.Forms;
 using System.IO;
 using Newtonsoft.Json;
-
+using UIBrowser.Helpers;
 
 namespace PartialViewSyncTool
 {
@@ -29,13 +29,12 @@ namespace PartialViewSyncTool
     /// </summary>
     public partial class CenterPartialSyncTool : UserControl, IPartialView
     {
-
         public string MenuName
         {
             get { return "中心数据同步工具"; }
         }
 
-        public string Tag
+        public string TagName
         {
             get { return "SyncTool"; }
         }
@@ -100,7 +99,7 @@ namespace PartialViewSyncTool
 
 
         BackgroundWorker backgroundWorker = new BackgroundWorker();
-        private void btnStartTask_Click(object sender, EventArgs e)
+        private void btnStartTask_Click(object sender, RoutedEventArgs e)
         {
             //1.获取所有的界面配置
             Cmds = txtCmd.Text.Split('\n').ToList();
@@ -123,7 +122,7 @@ namespace PartialViewSyncTool
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnTestConn_Click(object sender, EventArgs e)
+        private void btnTestConn_Click(object sender, RoutedEventArgs e)
         {
             DbConnectString = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
 
@@ -309,12 +308,17 @@ namespace PartialViewSyncTool
         /// 显示消息
         /// </summary>
         /// <param name="message"></param>
+
         private void ShowMessage(string message)
         {
             try
             {
                 rtxShowMessage.AppendText(message);
                 rtxShowMessage.AppendText(Environment.NewLine);
+                //超过一定长度后清空richtextbox
+                TextRange MyText = new TextRange(rtxShowMessage.Document.ContentStart, rtxShowMessage.Document.ContentEnd);
+                if (MyText.Text.Length > 5000)
+                    rtxShowMessage.Document.Blocks.Clear();
             }
             catch (Exception)
             {
@@ -372,6 +376,5 @@ namespace PartialViewSyncTool
             }
             return;
         }
-
     }
 }

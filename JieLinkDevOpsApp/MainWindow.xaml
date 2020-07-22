@@ -9,6 +9,7 @@
             Icon="favicon.ico"
             Height="700"
             Width="1000"
+            MinWidth="1000"
             WindowStartupLocation="CenterScreen"
             Closing="WindowX_Closing">
     <Grid>
@@ -49,6 +50,8 @@
                                 Value="{Binding Icon}" />
                         <Setter Property="IsExpanded"
                                 Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected"
+                                Value="{Binding IsSelected}"></Setter>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 <TreeView.ItemTemplate>

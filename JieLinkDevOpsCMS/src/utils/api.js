@@ -46,9 +46,20 @@ export const putRequest = (url, params) => {
     }
   });
 }
-export const deleteRequest = (url) => {
+export const deleteRequest = (url,params) => {
   return axios({
     method: 'delete',
+    params:params,
+    transformRequest: [function (data) {
+      let ret = ''
+      for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+      }
+      return ret
+    }],
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     url: `${base}${url}`
   });
 }

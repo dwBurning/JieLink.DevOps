@@ -16,21 +16,15 @@ public interface VersionInfoMapper {
 
     int insertSelective(VersionInfo record);
 
-    List<VersionInfo> selectByExampleWithBLOBs(VersionInfoExample example);
-
     List<VersionInfo> selectByExample(VersionInfoExample example);
 
     VersionInfo selectByPrimaryKey(Integer id);
 
     int updateByExampleSelective(@Param("record") VersionInfo record, @Param("example") VersionInfoExample example);
 
-    int updateByExampleWithBLOBs(@Param("record") VersionInfo record, @Param("example") VersionInfoExample example);
-
     int updateByExample(@Param("record") VersionInfo record, @Param("example") VersionInfoExample example);
 
     int updateByPrimaryKeySelective(VersionInfo record);
-
-    int updateByPrimaryKeyWithBLOBs(VersionInfo record);
 
     int updateByPrimaryKey(VersionInfo record);
 }
