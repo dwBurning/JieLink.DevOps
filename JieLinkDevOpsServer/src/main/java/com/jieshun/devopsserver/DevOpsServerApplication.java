@@ -1,6 +1,8 @@
 package com.jieshun.devopsserver;
 
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -11,7 +13,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class DevOpsServerApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DevOpsServerApplication.class, args);
+		try {
+			SpringApplication.run(DevOpsServerApplication.class, args);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
