@@ -1,6 +1,7 @@
 package com.jieshun.devopsserver.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class DevOpsEventController {
 	DevOpsEventService devOpsEventService;
 
 	@RequestMapping(value = "/reportDevOpsEvent", method = RequestMethod.POST)
-	public ReturnData reportDevOpsEvent(String params) {
+	public ReturnData reportDevOpsEvent(@RequestBody String params) {
 		DevOpsEvent devOpsEvent = JSON.parseObject(params, DevOpsEvent.class);
 		int result = devOpsEventService.reportDevOpsEvent(devOpsEvent);
 		if (result > 0) {
