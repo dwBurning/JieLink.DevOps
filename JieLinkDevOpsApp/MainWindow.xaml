@@ -67,12 +67,5 @@
         <ContentControl x:Name="ContentControl"
                         Grid.Column="1"
                         Margin="20,0" />
-        <Button Grid.Column="1"
-                Height="30"
-                Width="200"
-                Visibility="Collapsed"
-                Click="Button_Click"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"/>
     </Grid>
 </pu:WindowX>
