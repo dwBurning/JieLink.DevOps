@@ -25,6 +25,7 @@ namespace PartialViewInterface.Utils
             settings.NullValueHandling = NullValueHandling.Ignore;
             settings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
             settings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+            settings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
             return settings;
         }
     }

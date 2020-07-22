@@ -14,7 +14,7 @@ namespace PartialViewHealthMonitor
         private PerformanceCounter cpuCounter = null;
         private string processName;
         private List<ProcessStatus> lastStatusList = new List<ProcessStatus>();
-        private int memoryThreshold = 1024;//1G
+        private int memoryThreshold = 1024;//1024M
         private int cpuThreshold = 80;//80%
         public ProcessStatusMonitor(string processName)
         {

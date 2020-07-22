@@ -103,7 +103,7 @@ namespace PartialViewHealthMonitor
 
             try
             {
-                var returnData = HttpHelper.PostAsync<ReturnData>("http://localhost:8080", opsEvent).Result;
+                var returnData = HttpHelper.PostAsync<ReturnData>("http://localhost:8080/devops/reportDevOpsEvent", opsEvent).Result;
             }
             catch (Exception ex)
             {
