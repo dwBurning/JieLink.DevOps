@@ -39,6 +39,7 @@ namespace PartialViewCheckUpdate
         private void CheckFiles_UpdateFaildNotify()
         {
             ContentControl.Content = updateFilesStepByStep;
+            Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
 
         public string MenuName

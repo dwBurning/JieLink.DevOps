@@ -39,8 +39,8 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="#20A0FF"
-                   FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#20A0FF"
+                   FontSize="26" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
                    Grid.ColumnSpan="2">请按照操作步骤依次往下执行！全屏查看，效果更佳...</TextBlock>
         <Button x:Name="btnDec" Click="btnDec_Click"
                 Grid.Row="2" Grid.Column="0" Margin="5"

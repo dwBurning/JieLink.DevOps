@@ -27,7 +27,6 @@ namespace PartialViewCheckUpdate.Views
 
         private void btnDec_Click(object sender, RoutedEventArgs e)
         {
-           
             CarouselImg.Index--;
         }
 
