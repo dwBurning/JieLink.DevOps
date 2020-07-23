@@ -7,7 +7,6 @@
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
              d:DesignHeight="1015" d:DesignWidth="800">
-
     <Grid Margin="0,10,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
@@ -284,11 +283,10 @@
                     Margin="2,2,2,2"
                     Index="3" >
                 <TextBlock TextWrapping="Wrap" xml:space="preserve">
-1. 手工替换文件的试升级中心
-                    
-1.1 升级SmartCenter
-1.1.1 找到SmartCenter安装目录
-在任务管理中找到“SmartCenter.Host.exe”中右键 -选择“打开文件位置”。
+                1. 手工替换文件的试升级中心
+                1.1 升级SmartCenter
+                1.1.1 找到SmartCenter安装目录
+                      在任务管理中找到“SmartCenter.Host.exe”中右键 -选择“打开文件位置”。
                 </TextBlock>
                 <TextBlock TextWrapping="Wrap" xml:space="preserve">
 1.1.2 备份现有的SmartCenter文件

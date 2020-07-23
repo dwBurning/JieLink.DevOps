@@ -63,23 +63,60 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckUpdate.xaml.cs">
+      <DependentUpon>CheckUpdate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Models\Enum\EnumCheckFileResult.cs" />
     <Compile Include="Models\ParameterModel.cs" />
     <Compile Include="ViewModels\CheckDBUpdate.cs" />
+    <Compile Include="ViewModels\CheckFilesStepByStepViewModel.cs" />
+    <Compile Include="ViewModels\CheckFilesViewModel.cs" />
     <Compile Include="ViewModels\CheckUpdateViewModel.cs" />
     <Compile Include="ViewModels\NotificationObject.cs" />
+    <Compile Include="Views\CheckFiles.xaml.cs">
+      <DependentUpon>CheckFiles.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CheckScripts.xaml.cs">
+      <DependentUpon>CheckScripts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CheckScriptStepByStep.xaml.cs">
+      <DependentUpon>CheckScriptStepByStep.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CheckUpdatePartialView2.xaml.cs">
       <DependentUpon>CheckUpdatePartialView2.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImgWindow.xaml.cs">
       <DependentUpon>ImgWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CheckFilesStepByStep.xaml.cs">
+      <DependentUpon>CheckFilesStepByStep.xaml</DependentUpon>
+    </Compile>
+    <Page Include="CheckUpdate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CheckFiles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CheckScripts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CheckScriptStepByStep.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\CheckUpdatePartialView2.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ImgWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CheckFilesStepByStep.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

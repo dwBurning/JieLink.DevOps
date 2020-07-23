@@ -21,7 +21,7 @@ namespace PartialViewCheckUpdate.Views
     /// <summary>
     /// CheckUpdatePartialView2.xaml 的交互逻辑
     /// </summary>
-    public partial class CheckUpdatePartialView2 : UserControl, IPartialView
+    public partial class CheckUpdatePartialView2 : UserControl
     {
         public CheckUpdatePartialView2()
         {
@@ -31,21 +31,6 @@ namespace PartialViewCheckUpdate.Views
             CarouselText2.Index = 0;
             CarouselImg2.Index = 0;
             this.DataContext = new CheckUpdateViewModel();
-        }
-
-        public string MenuName
-        {
-            get { return "检查升级"; }
-        }
-
-        public string TagName
-        {
-            get { return "update"; }
-        }
-
-        public MenuType MenuType
-        {
-            get { return MenuType.Center; }
         }
 
         private void Image_MouseDown(object sender, MouseButtonEventArgs e)

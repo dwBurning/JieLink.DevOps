@@ -58,6 +58,7 @@
     <Compile Include="Utils\ConfigHelper.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\JsonHelper.cs" />
+    <Compile Include="Utils\MessageBoxHelper.cs" />
     <Compile Include="Utils\TaskHelper.cs" />
   </ItemGroup>
   <ItemGroup>

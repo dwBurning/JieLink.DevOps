@@ -169,7 +169,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
 
 
-        
+
 
         public DelegateCommand ChoseSourceCommand { get; set; }
         private void GetSourceFile(object parameter)
@@ -228,7 +228,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     return;
                 }
                 string packagePath = this.PackageFilePath.Trim();
-            
+
                 packagePath = Path.Combine(packagePath, "sys\\DbInitScript");
                 var files = from file in Directory.EnumerateFiles(packagePath, "*.json*", SearchOption.TopDirectoryOnly)
                             select file;
@@ -283,7 +283,7 @@ namespace PartialViewCheckUpdate.ViewModels
         private void CheckUpdate(object parameter)
         {
             string msg = string.Empty;
-            EnumCheckFileResult r = EnumCheckFileResult.OK;
+            EnumCheckFileResult r = EnumCheckFileResult.Ok;
             if (string.IsNullOrEmpty(this.SourceFilePath) || string.IsNullOrEmpty(this.PackageFilePath))
             {
                 MessageBoxX.Show("软件安装目录和安装包路径不能为空", "失败");
@@ -306,11 +306,11 @@ namespace PartialViewCheckUpdate.ViewModels
             //    }
             //}
             r = CheckFileUpdate(sourcePath, packagePath);
-            if (r == EnumCheckFileResult.FILE_ERROR1)
+            if (r == EnumCheckFileResult.Error)
             {
                 MessageBoxX.Show("JieLink软件升级失败！\n请按照下方步骤升级。", "失败", null, MessageBoxButton.OK);
             }
-            else if (r == EnumCheckFileResult.OK)
+            else if (r == EnumCheckFileResult.Ok)
             {
                 MessageBoxX.Show("JieLink软件升级成功！", "成功", null, MessageBoxButton.OK);
             }
@@ -327,7 +327,7 @@ namespace PartialViewCheckUpdate.ViewModels
             "SmartWeb",
 
         };
-        
+
         /// <summary>
         /// 检测当前目录是否升级成功
         /// </summary>
@@ -352,7 +352,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     msg = $"未检测到文件，请检查软件安装目录和安装包路径是否正确！\n";
                     this.Result += msg;
                     MessageBoxX.Show(msg, "异常");
-                    return EnumCheckFileResult.FILE_ERROR2;
+                    return EnumCheckFileResult.Error;
                 }
                 foreach (var f in files)
                 {
@@ -371,35 +371,35 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     msg = $"[WARN] JieLink软件升级失败\n";
                     this.Result += msg;
-                    return EnumCheckFileResult.FILE_ERROR1;
+                    return EnumCheckFileResult.Error;
                 }
                 msg = $"升级成功！\n";
                 this.Result += msg;
-                return EnumCheckFileResult.OK;
+                return EnumCheckFileResult.Ok;
             }
             catch (UnauthorizedAccessException)
             {
                 msg = "检查升级出错，文件没有访问权限，请设置文件夹读写权限\n";
                 this.Result += msg;
-                return EnumCheckFileResult.OTHER_ERROR;
+                return EnumCheckFileResult.Error;
             }
             catch (PathTooLongException)
             {
                 msg = "检查升级出错，软件安装目录或安装包目录 指定的路径或文件名超过了系统定义的最大长度\n";
                 this.Result += msg;
-                return EnumCheckFileResult.OTHER_ERROR;
+                return EnumCheckFileResult.Error;
             }
             catch (DirectoryNotFoundException)
             {
                 msg = "检查升级出错，所检查的目录不存在\n";
                 this.Result += msg;
-                return EnumCheckFileResult.OTHER_ERROR;
+                return EnumCheckFileResult.Error;
             }
             catch (Exception)
             {
                 msg = "程序异常";
                 this.Result += msg;
-                return EnumCheckFileResult.OTHER_ERROR;
+                return EnumCheckFileResult.Error;
             }
         }
 
@@ -435,7 +435,7 @@ namespace PartialViewCheckUpdate.ViewModels
                 MessageBoxX.Show("数据库连接失败！", "失败");
                 return false;
             }
-            
+
         }
 
 
