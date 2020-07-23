@@ -32,6 +32,8 @@ namespace PartialViewCheckUpdate
             checkFiles.UpdateFaildNotify += CheckFiles_UpdateFaildNotify;
             checkScripts = new CheckScripts();
             updateFilesStepByStep = new UpdateFilesStepByStep();
+
+            ContentControl.Content = checkFiles;
         }
 
         private void CheckFiles_UpdateFaildNotify()
@@ -67,7 +69,7 @@ namespace PartialViewCheckUpdate
             }
             else
             {
-                ContentControl.Content = updateFilesStepByStep;
+                ContentControl.Content = checkScripts;
             }
         }
     }

@@ -23,13 +23,6 @@ namespace PartialViewCheckUpdate.Views
         public UpdateFilesStepByStep()
         {
             InitializeComponent();
-            List<string> messages = new List<string>();
-            messages.Add(@"1.手工替换文件的试升级中心
-                            \n1.1 升级SmartCenter
-                            \n1.1.1 找到SmartCenter安装目录
-                            \n在任务管理中找到“SmartCenter.Host.exe”中右键 - 选择“打开文件位置”。");
-
-            step1.Text = messages[0];
         }
 
         private void btnDec_Click(object sender, RoutedEventArgs e)
@@ -45,7 +38,10 @@ namespace PartialViewCheckUpdate.Views
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            if (e.ClickCount == 2)
+            {
+                Application.Current.MainWindow.WindowState = WindowState.Maximized;
+            }
         }
     }
 }

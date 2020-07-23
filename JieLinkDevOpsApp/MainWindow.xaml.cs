@@ -76,6 +76,9 @@ namespace JieShun.JieLink.DevOps.App
             if (tag.IsNullOrEmpty())
                 return;
 
+            if (tag == "CheckUpdate")
+            { this.WindowState = WindowState.Maximized; }
+
             if (MainWindowViewModel.partialViewDic.ContainsKey(tag))
             { ContentControl.Content = MainWindowViewModel.partialViewDic[tag]; }
             else

@@ -60,7 +60,7 @@ namespace PartialViewCheckUpdate.Views
 
         private void btnUpdateStepByStep_Click(object sender, RoutedEventArgs e)
         {
-
+            UpdateFaildNotify?.Invoke();
         }
     }
 }
