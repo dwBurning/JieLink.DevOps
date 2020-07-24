@@ -1,5 +1,4 @@
-﻿using JieShun.JieLink.DevOps.App.ViewModels;
-using Panuon.UI.Silver;
+﻿using Panuon.UI.Silver;
 using PartialViewInterface;
 using System;
 using System.Collections.Generic;
@@ -16,6 +15,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Newtonsoft.Json;
+using PartialViewInterface.ViewModels;
+using PartialViewInterface.Utils;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -42,7 +43,7 @@ namespace JieShun.JieLink.DevOps.App
             EnvironmentInfo.RemotePassword = viewModel.RemotePassword;
             EnvironmentInfo.ContactName = viewModel.ContactName;
             EnvironmentInfo.ContactPhone = viewModel.ContactPhone;
-            FileHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(viewModel));
+            ConfigHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(viewModel));
             Notice.Show("保存成功", "通知", 3, MessageBoxIcon.Success);
             this.Close();
         }

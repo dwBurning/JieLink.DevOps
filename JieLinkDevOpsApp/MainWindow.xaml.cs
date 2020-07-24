@@ -21,6 +21,8 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Threading;
 using Newtonsoft.Json;
+using PartialViewInterface.Utils;
+using PartialViewInterface.ViewModels;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -94,7 +96,9 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Loaded(object sender, RoutedEventArgs e)
         {
-            string projectInfoConfig = FileHelper.ReadAppConfig("ProjectInfo");
+            string url = ConfigHelper.ReadAppConfig("ServerUrl");
+            EnvironmentInfo.ServerUrl = url;
+            string projectInfoConfig = ConfigHelper.ReadAppConfig("ProjectInfo");
             if (string.IsNullOrEmpty(projectInfoConfig))
             {
                 if (!backgroundWorker.IsBusy)
@@ -111,8 +115,6 @@ namespace JieShun.JieLink.DevOps.App
                 EnvironmentInfo.ContactName = projectInfo.ContactName;
                 EnvironmentInfo.ContactPhone = projectInfo.ContactPhone;
             }
-
-            
 
             foreach (var startup in viewModel.startups)
             {

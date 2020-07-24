@@ -64,9 +64,11 @@
     <Compile Include="Utils\JsonHelper.cs" />
     <Compile Include="Utils\MessageBoxHelper.cs" />
     <Compile Include="Utils\TaskHelper.cs" />
+    <Compile Include="ViewModels\ProjectInfoWindowViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
