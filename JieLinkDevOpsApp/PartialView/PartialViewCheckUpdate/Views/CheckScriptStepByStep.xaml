@@ -68,8 +68,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1.手工替换文件的试升级中心
-1. 升级数据库
+                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1. 升级数据库
 1.1 备份数据库 - 使用Navicate备份数据库
 1.1.1 选择“db_newg3_main”数据库备份。
                 </TextBlock>
