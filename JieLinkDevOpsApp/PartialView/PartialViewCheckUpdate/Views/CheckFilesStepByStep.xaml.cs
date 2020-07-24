@@ -18,9 +18,9 @@ namespace PartialViewCheckUpdate.Views
     /// <summary>
     /// UpdateFilesStepByStep.xaml 的交互逻辑
     /// </summary>
-    public partial class UpdateFilesStepByStep : UserControl
+    public partial class CheckFilesStepByStep : UserControl
     {
-        public UpdateFilesStepByStep()
+        public CheckFilesStepByStep()
         {
             InitializeComponent();
         }

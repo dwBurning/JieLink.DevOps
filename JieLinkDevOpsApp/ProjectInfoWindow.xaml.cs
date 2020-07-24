@@ -24,23 +24,25 @@ namespace JieShun.JieLink.DevOps.App
     /// </summary>
     public partial class ProjectInfoWindow : WindowX, IComponentConnector
     {
+        private ProjectInfoWindowViewModel viewModel;
+
         public ProjectInfoWindow()
         {
             InitializeComponent();
-            ViewModel = new ProjectInfoWindowViewModel();
-            DataContext = ViewModel;
+            viewModel = new ProjectInfoWindowViewModel();
+            DataContext = viewModel;
         }
 
-        public ProjectInfoWindowViewModel ViewModel { get; set; }
+        
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            EnvironmentInfo.ProjectNo = ViewModel.ProjectNo;
-            EnvironmentInfo.RemoteAccount = ViewModel.RemoteAccount;
-            EnvironmentInfo.RemotePassword = ViewModel.RemotePassword;
-            EnvironmentInfo.ContactName = ViewModel.ContactName;
-            EnvironmentInfo.ContactPhone = ViewModel.ContactPhone;
-            FileHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(ViewModel));
+            EnvironmentInfo.ProjectNo = viewModel.ProjectNo;
+            EnvironmentInfo.RemoteAccount = viewModel.RemoteAccount;
+            EnvironmentInfo.RemotePassword = viewModel.RemotePassword;
+            EnvironmentInfo.ContactName = viewModel.ContactName;
+            EnvironmentInfo.ContactPhone = viewModel.ContactPhone;
+            FileHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(viewModel));
             Notice.Show("保存成功", "通知", 3, MessageBoxIcon.Success);
             this.Close();
         }

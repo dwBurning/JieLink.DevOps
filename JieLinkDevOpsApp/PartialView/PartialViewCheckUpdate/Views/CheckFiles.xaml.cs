@@ -22,20 +22,20 @@ namespace PartialViewCheckUpdate.Views
     /// </summary>
     public partial class CheckFiles : UserControl
     {
-        public event Action UpdateFaildNotify;
-        public CheckFilesViewModel ViewModel { get; set; }
+        public event Action<string> UpdateFaildNotify;
+        private CheckFilesViewModel viewModel { get; set; }
 
         public CheckFiles()
         {
             InitializeComponent();
-            ViewModel = new CheckFilesViewModel();
-            ViewModel.UpdateFaildNotify += ViewModel_UpdateFaildNotify;
-            DataContext = ViewModel;
+            viewModel = new CheckFilesViewModel();
+            viewModel.UpdateFaildNotify += ViewModel_UpdateFaildNotify;
+            DataContext = viewModel;
         }
 
-        private void ViewModel_UpdateFaildNotify()
+        private void ViewModel_UpdateFaildNotify(string action)
         {
-            UpdateFaildNotify?.Invoke();
+            UpdateFaildNotify?.Invoke(action);
         }
 
         private void btnChooseInstallPath_Click(object sender, RoutedEventArgs e)
@@ -44,7 +44,7 @@ namespace PartialViewCheckUpdate.Views
             System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                ViewModel.InstallPath = folderBrowserDialog.SelectedPath.Trim();
+                viewModel.InstallPath = folderBrowserDialog.SelectedPath.Trim();
             }
         }
 
@@ -54,13 +54,13 @@ namespace PartialViewCheckUpdate.Views
             System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                ViewModel.SetUpPackagePath = folderBrowserDialog.SelectedPath.Trim();
+                viewModel.SetUpPackagePath = folderBrowserDialog.SelectedPath.Trim();
             }
         }
 
         private void btnUpdateStepByStep_Click(object sender, RoutedEventArgs e)
         {
-            UpdateFaildNotify?.Invoke();
+            UpdateFaildNotify?.Invoke("CheckFiles");
         }
     }
 }

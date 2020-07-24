@@ -66,12 +66,14 @@
     <Compile Include="CheckUpdate.xaml.cs">
       <DependentUpon>CheckUpdate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CheckUpdateContext.cs" />
     <Compile Include="Commands\DelegateCommand.cs" />
     <Compile Include="Models\Enum\EnumCheckFileResult.cs" />
     <Compile Include="Models\ParameterModel.cs" />
     <Compile Include="ViewModels\CheckDBUpdate.cs" />
     <Compile Include="ViewModels\CheckFilesStepByStepViewModel.cs" />
     <Compile Include="ViewModels\CheckFilesViewModel.cs" />
+    <Compile Include="ViewModels\CheckScriptViewModel.cs" />
     <Compile Include="ViewModels\CheckUpdateViewModel.cs" />
     <Compile Include="ViewModels\NotificationObject.cs" />
     <Compile Include="Views\CheckFiles.xaml.cs">

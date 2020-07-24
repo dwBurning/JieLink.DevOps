@@ -32,7 +32,7 @@ namespace JieShun.JieLink.DevOps.App
         BackgroundWorker backgroundWorker = new BackgroundWorker();
 
         #region Property
-        public MainWindowViewModel ViewModel { get; set; }
+        private MainWindowViewModel viewModel;
 
         public string Text { get; set; }
         #endregion
@@ -40,8 +40,8 @@ namespace JieShun.JieLink.DevOps.App
         public MainWindow()
         {
             InitializeComponent();
-            ViewModel = new MainWindowViewModel();
-            DataContext = ViewModel;
+            viewModel = new MainWindowViewModel();
+            DataContext = viewModel;
             ContentControl.Content = MainWindowViewModel.partialViewDic["Information"];//加载介绍窗口
 
             
@@ -85,7 +85,7 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            foreach (var startup in ViewModel.startups)
+            foreach (var startup in viewModel.startups)
             {
                 startup.Exit();
             }
@@ -114,7 +114,7 @@ namespace JieShun.JieLink.DevOps.App
 
             
 
-            foreach (var startup in ViewModel.startups)
+            foreach (var startup in viewModel.startups)
             {
                 startup.Start();
             }

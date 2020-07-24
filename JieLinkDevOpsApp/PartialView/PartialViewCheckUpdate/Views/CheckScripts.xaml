@@ -4,9 +4,119 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PartialViewCheckUpdate.Views"
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock>checkscript</TextBlock>
+             d:DesignHeight="550" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
+    <Grid MaxWidth="{Binding ActualWidth}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                     Grid.Column="2" Grid.RowSpan="10" IsReadOnly="True" Margin="10,5,0,10">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text=""/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+        <TextBlock Grid.Row="0" Grid.Column="0">中心IP地址：</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0">数据库名称：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0">数据库端口：</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0">数据库用户：</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="0">数据库密码：</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="0">当前版本号：</TextBlock>
+        <TextBlock Grid.Row="7" Grid.Column="0">升级版本号：</TextBlock>
+
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="{Binding CenterIp}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="{Binding CenterDb}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="{Binding CenterDbPort}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="{Binding CenterDbUser}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtCenterDbPwd" 
+                     pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40" 
+                     pu:PasswordBoxHelper.Watermark="请输入密码"
+                     pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:PasswordBoxHelper.CornerRadius="4"
+                     pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
+                     />
+        <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" 
+                Command="{Binding TestConnCommand}" CommandParameter="{Binding ElementName=txtCenterDbPwd}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtCurrentVersion" Text="{Binding CurrentVersion}"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="1.0.0"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtUpdateVersion" Text="{Binding UpdateVersion}"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="2.7.0"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <Button Grid.Column="1" Grid.Row="8" Content="手工执行脚本" Name ="btnExecuteStepByStep" Click="btnExecuteStepByStep_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
     </Grid>
 </UserControl>

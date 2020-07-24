@@ -53,7 +53,7 @@
                  VerticalAlignment="Center" Height="40" Margin="5"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding InstallPath}"
+                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding InstallPath,Mode=TwoWay}"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb" pu:TextBoxHelper.Watermark="E:\Jielink+智能终端操作平台安装包\sys"
@@ -79,7 +79,7 @@
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 IsEnabled="{Binding EnableCheckUpdateResult}"/>
-        <Button Grid.Column="2" Grid.Row="3" Content="手工升级步骤" Name="btnUpdateStepByStep" Click="btnUpdateStepByStep_Click"
+        <Button Grid.Column="2" Grid.Row="3" Content="手工替换文件" Name="btnUpdateStepByStep" Click="btnUpdateStepByStep_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"

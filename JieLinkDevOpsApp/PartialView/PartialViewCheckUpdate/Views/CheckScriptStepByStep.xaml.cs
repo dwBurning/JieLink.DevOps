@@ -24,5 +24,20 @@ namespace PartialViewCheckUpdate.Views
         {
             InitializeComponent();
         }
+
+        private void btnDec_Click(object sender, RoutedEventArgs e)
+        {
+            CarouselImg.Index--;
+        }
+
+        private void btnInc_Click(object sender, RoutedEventArgs e)
+        {
+            CarouselImg.Index++;
+        }
+
+        private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }

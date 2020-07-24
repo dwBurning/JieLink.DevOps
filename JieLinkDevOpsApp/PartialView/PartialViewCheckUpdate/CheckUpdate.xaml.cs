@@ -24,21 +24,31 @@ namespace PartialViewCheckUpdate
     {
         CheckFiles checkFiles;
         CheckScripts checkScripts;
-        UpdateFilesStepByStep updateFilesStepByStep;
+        CheckFilesStepByStep checkFilesStepByStep;
+        CheckScriptStepByStep checkScriptStepByStep;
         public CheckUpdate()
         {
             InitializeComponent();
             checkFiles = new CheckFiles();
             checkFiles.UpdateFaildNotify += CheckFiles_UpdateFaildNotify;
             checkScripts = new CheckScripts();
-            updateFilesStepByStep = new UpdateFilesStepByStep();
-
+            checkScripts.UpdateFaildNotify += CheckFiles_UpdateFaildNotify;
+            checkFilesStepByStep = new CheckFilesStepByStep();
+            checkScriptStepByStep = new CheckScriptStepByStep();
             ContentControl.Content = checkFiles;
         }
 
-        private void CheckFiles_UpdateFaildNotify()
+        private void CheckFiles_UpdateFaildNotify(string action)
         {
-            ContentControl.Content = updateFilesStepByStep;
+            if (action == "CheckFiles")
+            {
+                ContentControl.Content = checkFilesStepByStep;
+            }
+            else
+            {
+                ContentControl.Content = checkScriptStepByStep;
+            }
+            
             Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
 

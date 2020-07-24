@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Panuon.UI.Silver;
+using PartialViewCheckUpdate.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,26 @@ namespace PartialViewCheckUpdate.Views
     /// </summary>
     public partial class CheckScripts : UserControl
     {
+        public event Action<string> UpdateFaildNotify;
+
+        private CheckScriptViewModel viewModel;
+
         public CheckScripts()
         {
             InitializeComponent();
+            viewModel = new CheckScriptViewModel();
+            viewModel.UpdateFaildNotify += ViewModel_UpdateFaildNotify;
+            DataContext = viewModel;
+        }
+
+        private void ViewModel_UpdateFaildNotify(string obj)
+        {
+            UpdateFaildNotify?.Invoke("CheckScripts");
+        }
+
+        private void btnExecuteStepByStep_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateFaildNotify?.Invoke("CheckScripts");
         }
     }
 }

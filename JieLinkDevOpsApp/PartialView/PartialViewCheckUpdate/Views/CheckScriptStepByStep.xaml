@@ -4,9 +4,172 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PartialViewCheckUpdate.Views"
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="textBlock" TargetType="TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                <Setter Property="TextAlignment" Value="Left"></Setter>
+                <Setter Property="VerticalAlignment" Value="Top"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+                <Setter Property="FontSize" Value="16"></Setter>
+            </Style>
+            <Style x:Key="image" TargetType="Image">
+                <Setter Property="Margin" Value="5"></Setter>
+                <Setter Property="Stretch" Value="Fill"></Setter>
+                <Setter Property="Cursor" Value="Hand"></Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#20A0FF"
+                   FontSize="26" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
+                   Grid.ColumnSpan="2">请按照操作步骤依次往下执行！全屏查看，效果更佳...</TextBlock>
+        <Button x:Name="btnDec" Click="btnDec_Click"
+                Grid.Row="2" Grid.Column="0" Margin="5"
+                pu:ButtonHelper.ClickStyle="Sink"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#20A0FF"
+                Foreground="#20A0FF"
+                pu:ButtonHelper.HoverBrush="#00BCFF"
+                pu:ButtonHelper.CornerRadius="4"
+                Height="40"
+                Content="上一步" />
+        <Button x:Name="btnInc" Click="btnInc_Click"
+                Grid.Row="2" Grid.Column="1" Margin="5"
+                pu:ButtonHelper.ClickStyle="Sink"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#20A0FF"
+                Foreground="#20A0FF"
+                pu:ButtonHelper.HoverBrush="#00BCFF"
+                pu:ButtonHelper.CornerRadius="4" 
+                Height="40"
+                Content="下一步" />
+        <pu:Carousel  x:Name="CarouselImg" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
+                      Recyclable="True" Margin="2,2,2,2" Index="0" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1.手工替换文件的试升级中心
+1. 升级数据库
+1.1 备份数据库 - 使用Navicate备份数据库
+1.1.1 选择“db_newg3_main”数据库备份。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="0" Source="..\Pic\0.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1.1.2 在“db_newg3_main”数据库右键 - 选择“数据传输”。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="1" Source="..\Pic\1.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.1.3 按上图配置参数后点击“开始”，直到进度完成至100%。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="2" Source="..\Pic\2.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.1.3 按上图配置参数后点击“开始”，直到进度完成至100%。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="3" Source="..\Pic\3.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2 升级数据库脚本
+注：如果原来是V2.0.0  需要升级到  V2.2.0 , 那么需要手工执行V2.0.0以上的脚本文件。
+1.2.1 找到数据脚本
+一般都是在Obj 目录下 JSOCT2016-VX.X.X.zip 解压即可。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="4" Source="..\Pic\4.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.2 执行数据库脚本
+选择数据库，打开查询窗口。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="5" Source="..\Pic\5.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.3 按顺序执行需要的脚本
+                </TextBlock>
+                <Image Grid.Column="1" Tag="6" Source="..\Pic\6.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.4 点击“运行”
+                </TextBlock>
+                <Image Grid.Column="1" Tag="7" Source="..\Pic\7.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.5 等待执行中……
+                </TextBlock>
+                <Image Grid.Column="1" Tag="8" Source="..\Pic\8.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.6 执行完成。
+重复以上步骤，按顺序执行需要升级的脚本 。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="9" Source="..\Pic\9.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+        </pu:Carousel>
     </Grid>
 </UserControl>
