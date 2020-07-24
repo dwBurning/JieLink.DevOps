@@ -29,6 +29,7 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
@@ -37,7 +38,8 @@
         <TextBlock Grid.Row="0" Grid.Column="0">服务器地址：</TextBlock>
         <TextBlock Grid.Row="1" Grid.Column="0">项目编号：</TextBlock>
         <TextBlock Grid.Row="2" Grid.Column="0">远程账号：</TextBlock>
-        <TextBlock Grid.Row="3" Grid.Column="0">现场联系人：</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0">远程密码：</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="0">联系人姓名：</TextBlock>
         <TextBlock Grid.Row="4" Grid.Column="0">联系人电话：</TextBlock>
         <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtServerUrl"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请配置服务器地址"
@@ -53,37 +55,35 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <DockPanel Grid.Row="2" Grid.Column="1">
-            <TextBox  x:Name="txtRemoteAccount"  Text="{Binding RemoteAccount}" pu:TextBoxHelper.Watermark="请输入远程账号"
-                 VerticalAlignment="Center" Height="40" Width="350"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
-            <TextBox  x:Name="txtRemotePassword"  Text="{Binding RemotePassword}" pu:TextBoxHelper.Watermark="请输入远程密码"
+        <TextBox Grid.Row="2" Grid.Column="1"  x:Name="txtRemoteAccount"  Text="{Binding RemoteAccount}" pu:TextBoxHelper.Watermark="请输入远程账号"
                  VerticalAlignment="Center" Height="40"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        </DockPanel>
-        <TextBox Grid.Row="3" Grid.Column="1"  x:Name="txtContactName"  Text="{Binding ContactName}" 
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtRemotePassword"  Text="{Binding RemotePassword}" pu:TextBoxHelper.Watermark="请输入远程密码"
+                 VerticalAlignment="Center" Height="40"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="4" Grid.Column="1"  x:Name="txtContactName"  Text="{Binding ContactName}" 
                  VerticalAlignment="Center" Height="40" MinWidth="150" pu:TextBoxHelper.Watermark="请输入姓名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="4" Grid.Column="1"  x:Name="txtContactPhone"  Text="{Binding ContactPhone}" 
+        <TextBox Grid.Row="5" Grid.Column="1"  x:Name="txtContactPhone"  Text="{Binding ContactPhone}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入手机号码"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <Button Grid.Column="1" Grid.Row="5" Content="保存" Name="btnSave" Click="btnSave_Click"
+        <Button Grid.Column="1" Grid.Row="6" Content="保存" Name="btnSave" Click="btnSave_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"

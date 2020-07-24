@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Panuon.UI.Silver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,7 +40,12 @@ namespace PartialViewCheckUpdate.Views
         {
             if (e.ClickCount == 2)
             {
-                Application.Current.MainWindow.WindowState = WindowState.Maximized;
+                DemonstrateWindow window = new DemonstrateWindow();
+                window.WindowState = WindowState.Maximized;
+                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                (Application.Current.MainWindow as WindowX).IsMaskVisible = true;
+                window.ShowDialog();
+                (Application.Current.MainWindow as WindowX).IsMaskVisible = false;
             }
         }
     }

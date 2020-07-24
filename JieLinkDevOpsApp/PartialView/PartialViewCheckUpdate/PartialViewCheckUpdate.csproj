@@ -61,6 +61,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WpfAnimatedGif, Version=2.0.0.0, Culture=neutral, PublicKeyToken=9e7cd3b544a090dc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WpfAnimatedGif.2.0.0\lib\net40\WpfAnimatedGif.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckUpdate.xaml.cs">
@@ -86,6 +89,9 @@
     <Compile Include="Views\CheckUpdatePartialView2.xaml.cs">
       <DependentUpon>CheckUpdatePartialView2.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DemonstrateWindow.xaml.cs">
+      <DependentUpon>DemonstrateWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ImgWindow.xaml.cs">
       <DependentUpon>ImgWindow.xaml</DependentUpon>
     </Compile>
@@ -109,6 +115,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CheckUpdatePartialView2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DemonstrateWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,6 +194,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Pic\010.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pic\test.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

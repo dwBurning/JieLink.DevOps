@@ -206,6 +206,7 @@ namespace PartialViewCheckUpdate.ViewModels
             }
 
             ShowMessage(msg);
+            MessageBoxHelper.MessageBoxShowError("检查升级出错！");
 
         }
 
@@ -246,7 +247,8 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private void ShowMessage(string message)
         {
-            this.CheckResult += message + Environment.NewLine;
+            string append = $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+            this.CheckResult += append;
         }
     }
 }
