@@ -22,5 +22,10 @@ namespace PartialViewCheckUpdate.Models.Enum
         /// 检测中断
         /// </summary>
         Error = 2,
+
+        /// <summary>
+        /// 提醒
+        /// </summary>
+        Warning = 3
     }
 }

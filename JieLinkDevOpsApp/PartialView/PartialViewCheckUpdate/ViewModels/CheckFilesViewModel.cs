@@ -1,5 +1,6 @@
 ﻿using Panuon.UI.Silver;
 using PartialViewCheckUpdate.Models.Enum;
+using PartialViewInterface;
 using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
 using System;
@@ -95,7 +96,6 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private void CheckUpdate(object parameter)
         {
-            string msg = string.Empty;
             EnumCheckFileResult result = EnumCheckFileResult.Ok;
 
             string sourcePath = this.InstallPath.Trim();
@@ -111,6 +111,11 @@ namespace PartialViewCheckUpdate.ViewModels
                 Notice.Show("JieLink软件升级失败", "通知", 3, MessageBoxIcon.Warning);
                 UpdateFaildNotify?.Invoke("CheckFiles");
             }
+            else if (result == EnumCheckFileResult.Error)
+            {
+                MessageBoxHelper.MessageBoxShowError("检查升级出错！");
+            }
+
         }
 
         /// <summary>
@@ -136,7 +141,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     msg = $"未检测到文件，请检查软件安装目录和安装包路径是否正确！";
                     ShowMessage(msg);
-                    return EnumCheckFileResult.Error;
+                    MessageBoxHelper.MessageBoxShowWarning(msg);
+                    return EnumCheckFileResult.Warning;
                 }
 
                 foreach (var f in files)
@@ -148,15 +154,15 @@ namespace PartialViewCheckUpdate.ViewModels
                 }
 
                 msg = $"[WARN] 检测到文件升级失败文件数量{failCount}个";
-                this.CheckResult += msg;
+                ShowMessage(msg);
                 if (failCount > 5)
                 {
                     msg = $"[WARN] JieLink软件升级失败";
-                    this.CheckResult += msg;
+                    ShowMessage(msg);
                     return EnumCheckFileResult.Faild;
                 }
                 msg = $"升级成功！";
-                this.CheckResult += msg;
+                ShowMessage(msg);
                 return EnumCheckFileResult.Ok;
             }
             catch (UnauthorizedAccessException)
@@ -171,9 +177,9 @@ namespace PartialViewCheckUpdate.ViewModels
             {
                 msg = "检查升级出错，所检查的目录不存在";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                msg = "程序异常";
+                msg = "程序异常：" + ex.ToString();
             }
             ShowMessage(msg);
             return EnumCheckFileResult.Error;
@@ -181,7 +187,8 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private void ShowMessage(string message)
         {
-            this.CheckResult += message + Environment.NewLine;
+            string append = $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+            this.CheckResult += append;
         }
     }
 }

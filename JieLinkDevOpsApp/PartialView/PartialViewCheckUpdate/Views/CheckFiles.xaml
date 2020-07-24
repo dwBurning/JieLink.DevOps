@@ -50,14 +50,14 @@
         <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TextBlock3" >检测结果：</TextBlock>
 
         <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" pu:TextBoxHelper.Watermark="C:\Program Files (x86)\JieLink"
-                 VerticalAlignment="Center" Height="40" Margin="5"
+                 VerticalAlignment="Center" Height="40" Margin="5" IsReadOnly="True"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4" Text="{Binding InstallPath,Mode=TwoWay}"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb" pu:TextBoxHelper.Watermark="E:\Jielink+智能终端操作平台安装包\sys"
-                 VerticalAlignment="Center" Height="40" Margin="5"
+                 VerticalAlignment="Center" Height="40" Margin="5" IsReadOnly="True"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4" Text="{Binding SetUpPackagePath}"

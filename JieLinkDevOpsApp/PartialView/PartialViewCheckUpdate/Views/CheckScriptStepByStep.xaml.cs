@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Panuon.UI.Silver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,15 @@ namespace PartialViewCheckUpdate.Views
 
         private void Image_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            if (e.ClickCount == 2)
+            {
+                DemonstrateWindow window = new DemonstrateWindow();
+                window.WindowState = WindowState.Maximized;
+                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                (Application.Current.MainWindow as WindowX).IsMaskVisible = true;
+                window.ShowDialog();
+                (Application.Current.MainWindow as WindowX).IsMaskVisible = false;
+            }
         }
     }
 }
