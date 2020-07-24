@@ -15,6 +15,8 @@ using System.Threading;
 using Newtonsoft.Json;
 using PartialViewInterface.Utils;
 using PartialViewInterface.Models;
+using Quartz;
+using Quartz.Impl;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -79,6 +81,7 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            StdSchedulerFactory.GetDefaultScheduler().Shutdown();
             foreach (var startup in viewModel.startups)
             {
                 startup.Exit();
@@ -107,10 +110,27 @@ namespace JieShun.JieLink.DevOps.App
                 EnvironmentInfo.ContactName = projectInfo.ContactName;
                 EnvironmentInfo.ContactPhone = projectInfo.ContactPhone;
             }
-
+            //运行插件的启动方法
             foreach (var startup in viewModel.startups)
             {
                 startup.Start();
+            }
+            //运行后台任务
+            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            scheduler.Start();
+            foreach (var jobType in viewModel.jobs)
+            {
+                string cron = ConfigHelper.GetValue<string>(jobType.Name, "");
+                if (string.IsNullOrEmpty(cron))
+                    continue;
+                var job = JobBuilder.Create(jobType)
+                                .Build();
+                var trigger = TriggerBuilder.Create()
+                                .StartNow()
+                                .WithCronSchedule(cron)
+                                .Build();
+                scheduler.ScheduleJob(job, trigger);
+
             }
         }
     }

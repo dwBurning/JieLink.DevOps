@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="DevOpsEvent.cs" />
     <Compile Include="HealthMonitor.cs" />
+    <Compile Include="Jobs\CheckUpdateJob.cs" />
     <Compile Include="ProcessStatus.cs" />
     <Compile Include="ProcessStatusMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,6 +62,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Quartz">
+      <Version>2.6.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

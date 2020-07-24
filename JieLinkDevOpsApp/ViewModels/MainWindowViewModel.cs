@@ -2,6 +2,7 @@
 using Panuon.UI.Silver.Core;
 using PartialViewInterface;
 using PartialViewInterface.Utils;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +15,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
     public class MainWindowViewModel : PropertyChangedBase
     {
         public List<IStartup> startups = new List<IStartup>();
+        public List<Type> jobs = new List<Type>();
         public static IDictionary<string, IPartialView> partialViewDic;
         public MainWindowViewModel()
         {
@@ -33,12 +35,14 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                 .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
                 .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
                 .ForEach(x => partialViewDic.Add(x.TagName, x));
-                //加载插件的Startup启动类
+                //获取插件的Startup启动类
                 startups.AddRange(asm.GetExportedTypes()
                 .Where(x => typeof(IStartup).IsAssignableFrom(x)).ToList()
                 .Select(x => (IStartup)Activator.CreateInstance(x)).ToList());
                 startups.Sort((a, b) => b.Priority - a.Priority);
-
+                //获取cron后台定时任务
+                jobs.AddRange(asm.GetExportedTypes()
+                .Where(x => typeof(IJob).IsAssignableFrom(x)).ToList());
             }
 
             var centerMenus = new ObservableCollection<TreeViewItemModel>();
