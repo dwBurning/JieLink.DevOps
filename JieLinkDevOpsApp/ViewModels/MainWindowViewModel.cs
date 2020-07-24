@@ -75,7 +75,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 
         private string _searchText;
 
-        public ObservableCollection<TreeViewItemModel> MenuItems { get; } = new ObservableCollection<TreeViewItemModel>();
+        public ObservableCollection<TreeViewItemModel> MenuItems { get; private set; }
 
         #region Event
         private void OnSearchTextChanged()
