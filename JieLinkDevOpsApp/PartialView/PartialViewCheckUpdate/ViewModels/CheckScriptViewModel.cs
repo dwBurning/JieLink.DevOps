@@ -1,5 +1,6 @@
 ﻿using Panuon.UI.Silver;
-using PartialViewCheckUpdate.Commands;
+using PartialViewInterface.Commands;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -138,7 +139,7 @@ namespace PartialViewCheckUpdate.ViewModels
             string mySqlConnStr = GetConnStr();
             if (string.IsNullOrEmpty(mySqlConnStr))
             {
-                MessageBoxX.Show("请输入完整的数据库连接信息", "错误");
+                MessageBoxHelper.MessageBoxShowWarning("请输入完整的数据库连接信息");
                 return;
             }
             TestMySql(mySqlConnStr);
@@ -152,12 +153,12 @@ namespace PartialViewCheckUpdate.ViewModels
                 string mySqlConnStr = GetConnStr();
                 if (string.IsNullOrEmpty(mySqlConnStr))
                 {
-                    MessageBoxX.Show("请输入完整的数据库连接信息", "错误");
+                    MessageBoxHelper.MessageBoxShowWarning("请输入完整的数据库连接信息");
                     return;
                 }
                 if (string.IsNullOrEmpty(CheckUpdateContext.SetUpPackagePath))
                 {
-                    MessageBoxX.Show("安装包路径不能为空", "失败");
+                    MessageBoxHelper.MessageBoxShowWarning("安装包路径不能为空");
                     return;
                 }
                 string packagePath = CheckUpdateContext.SetUpPackagePath.Trim();
@@ -168,7 +169,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
                 if (files == null || files.Count() == 0)
                 {
-                    MessageBoxX.Show($"未找到数据库对比文件{packagePath}\\xxxxx.json", "失败");
+                    MessageBoxHelper.MessageBoxShowWarning($"未找到数据库对比文件{packagePath}\\xxxxx.json");
                     return;
                 }
                 string packageDbJsonFile = files.First();
@@ -176,7 +177,7 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     if (CheckDBUpdateTool.CheckDBUpdate(packageDbJsonFile, mySqlConnStr))
                     {
-                        MessageBoxX.Show($"数据库升级成功！", "成功", null, MessageBoxButton.OK);
+                        MessageBoxHelper.MessageBoxShowSuccess("数据库升级成功！");
                         return;
                     }
                     else
@@ -201,7 +202,7 @@ namespace PartialViewCheckUpdate.ViewModels
             }
             catch (Exception ex)
             {
-                msg = "程序异常:" + ex.ToString();
+                msg = "程序异常：" + ex.ToString();
             }
 
             ShowMessage(msg);
@@ -223,6 +224,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
         public bool TestMySql(string connStr)
         {
+            string message = "数据库连接失败：";
             try
             {
                 connStr = connStr.Trim();
@@ -232,14 +234,14 @@ namespace PartialViewCheckUpdate.ViewModels
                     this.EnableCheckUpdateResult = true;
                     return true;
                 }
-                ShowMessage("数据库连接失败！");
-                return false;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ShowMessage("数据库连接失败！");
-                return false;
+                message += ex.ToString();
             }
+            ShowMessage(message);
+            MessageBoxHelper.MessageBoxShowWarning("数据库连接失败！");
+            return false;
         }
 
         private void ShowMessage(string message)

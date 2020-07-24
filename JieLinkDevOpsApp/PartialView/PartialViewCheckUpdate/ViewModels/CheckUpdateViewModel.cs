@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PartialViewCheckUpdate;
-using PartialViewCheckUpdate.Commands;
 using System.Windows;
 using PartialViewCheckUpdate.Models.Enum;
+using PartialViewInterface.Commands;
 
 namespace PartialViewCheckUpdate.ViewModels
 {

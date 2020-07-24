@@ -1,6 +1,7 @@
 ﻿using Panuon.UI.Silver;
-using PartialViewCheckUpdate.Commands;
 using PartialViewCheckUpdate.Models.Enum;
+using PartialViewInterface.Commands;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -103,14 +104,13 @@ namespace PartialViewCheckUpdate.ViewModels
             result = CheckFileUpdate(sourcePath, packagePath);
             if (result == EnumCheckFileResult.Ok)
             {
-                MessageBoxX.Show("JieLink软件升级成功！", "成功", null, MessageBoxButton.OK);
+                MessageBoxHelper.MessageBoxShowSuccess("文件替换成功！请继续核实脚本是否执行成功。");
             }
             else if (result == EnumCheckFileResult.Faild)
             {
                 Notice.Show("JieLink软件升级失败", "通知", 3, MessageBoxIcon.Warning);
                 UpdateFaildNotify?.Invoke("CheckFiles");
             }
-
         }
 
         /// <summary>
