@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using Newtonsoft.Json;
 using PartialViewInterface.ViewModels;
 using PartialViewInterface.Utils;
+using PartialViewInterface.Models;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -25,12 +26,12 @@ namespace JieShun.JieLink.DevOps.App
     /// </summary>
     public partial class ProjectInfoWindow : WindowX, IComponentConnector
     {
-        private ProjectInfoWindowViewModel viewModel;
+        private ProjectInfo viewModel;
 
         public ProjectInfoWindow()
         {
             InitializeComponent();
-            viewModel = new ProjectInfoWindowViewModel();
+            viewModel = new ProjectInfo();
             DataContext = viewModel;
         }
 

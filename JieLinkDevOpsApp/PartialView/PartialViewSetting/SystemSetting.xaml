@@ -46,7 +46,7 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtProjectNo"  Text="{Binding ProjectNo}" 
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtProjectNo"  Text="{Binding ProjectNo,Mode=TwoWay}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入项目编号"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
