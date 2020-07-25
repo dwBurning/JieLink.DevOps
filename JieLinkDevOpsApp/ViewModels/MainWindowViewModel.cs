@@ -67,6 +67,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                      MenuItems = boxMenus,
                      IsExpanded = false
                 },
+                new TreeViewItemModel("百科","KnowledgeWiki","\uf266"),
                 new TreeViewItemModel("设置","SystemSetting","\uf085"),
             };
         }

@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WpfAnimatedGif;
 
-namespace PartialViewCheckUpdate.Views
+namespace PartialViewWiki
 {
     /// <summary>
     /// DemonstrateWindow.xaml 的交互逻辑

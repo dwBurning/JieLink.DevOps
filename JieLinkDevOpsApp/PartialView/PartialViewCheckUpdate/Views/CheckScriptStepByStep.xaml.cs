@@ -40,13 +40,7 @@ namespace PartialViewCheckUpdate.Views
         {
             if (e.ClickCount == 2)
             {
-                Application.Current.MainWindow.WindowState = WindowState.Maximized;
-                DemonstrateWindow window = new DemonstrateWindow();
-                window.WindowState = WindowState.Maximized;
-                window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-                (Application.Current.MainWindow as WindowX).IsMaskVisible = true;
-                window.ShowDialog();
-                (Application.Current.MainWindow as WindowX).IsMaskVisible = false;
+                CheckUpdateContext.ShowDemonstrateWindow("CheckScripts","检查脚本");
             }
         }
     }
