@@ -95,25 +95,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\CheckFiles.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Gif\CheckScripts.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Gif\629112ac-ce58-11ea-a731-00ff2d2f18d8.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Gif\660d08ce-ce59-11ea-a731-00ff2d2f18d8.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Gif\dad00da5-ce53-11ea-a731-00ff2d2f18d8.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="favicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
