@@ -40,6 +40,7 @@ namespace PartialViewCheckUpdate.Views
         {
             if (e.ClickCount == 2)
             {
+                Application.Current.MainWindow.WindowState = WindowState.Maximized;
                 DemonstrateWindow window = new DemonstrateWindow();
                 window.WindowState = WindowState.Maximized;
                 window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
