@@ -40,7 +40,7 @@
         <TextBlock Grid.Row="2" Grid.Column="0">远程账号：</TextBlock>
         <TextBlock Grid.Row="3" Grid.Column="0">远程密码：</TextBlock>
         <TextBlock Grid.Row="4" Grid.Column="0">联系人姓名：</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="0">联系人电话：</TextBlock>
+        <TextBlock Grid.Row="5" Grid.Column="0">联系人电话：</TextBlock>
         <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtServerUrl"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请配置服务器地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
