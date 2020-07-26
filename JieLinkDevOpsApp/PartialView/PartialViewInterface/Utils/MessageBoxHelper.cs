@@ -46,5 +46,17 @@ namespace PartialViewInterface.Utils
                 ButtonBrush = "#F1C825".ToColor().ToBrush(),
             });
         }
+
+
+        public static MessageBoxResult MessageBoxShowQuestion(string message)
+        {
+            var result = MessageBoxX.Show(message, "询问", Application.Current.MainWindow, MessageBoxButton.YesNo, new MessageBoxXConfigurations()
+            {
+                MessageBoxIcon = MessageBoxIcon.Question,
+                ButtonBrush = "#F1C825".ToColor().ToBrush(),
+            });
+
+            return result;
+        }
     }
 }

@@ -37,10 +37,7 @@ namespace PartialViewWiki
             InitializeComponent();
             viewModel = new KnowledgeWikiViewModel();
             DataContext = viewModel;
-        }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
             foreach (var knowledge in viewModel.Knowledges)
             {
                 Button button = new Button();
@@ -67,7 +64,6 @@ namespace PartialViewWiki
                 button.Click += Button_Click;
                 this.content.Children.Add(button);
             }
-
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

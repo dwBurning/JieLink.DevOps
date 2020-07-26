@@ -17,6 +17,7 @@ using PartialViewInterface.Utils;
 using PartialViewInterface.Models;
 using Quartz;
 using Quartz.Impl;
+using System.Windows.Forms;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -31,6 +32,8 @@ namespace JieShun.JieLink.DevOps.App
         private MainWindowViewModel viewModel;
 
         public string Text { get; set; }
+
+        private NotifyIcon notifyIcon;
         #endregion
 
         public MainWindow()
@@ -40,11 +43,53 @@ namespace JieShun.JieLink.DevOps.App
             DataContext = viewModel;
             ContentControl.Content = MainWindowViewModel.partialViewDic["Information"];//加载介绍窗口
 
-            
+
             backgroundWorker.WorkerReportsProgress = true;
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
             backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
-            
+
+            this.notifyIcon = new NotifyIcon();
+            this.notifyIcon.Text = "JieLink运维工具持续工作中...";
+            this.notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
+            this.notifyIcon.Visible = true;
+            //打开菜单项
+            System.Windows.Forms.MenuItem open = new System.Windows.Forms.MenuItem("打开");
+            open.Click += Show;
+            //退出菜单项
+            System.Windows.Forms.MenuItem exit = new System.Windows.Forms.MenuItem("退出");
+            exit.Click += Exit;
+            //关联托盘控件
+            System.Windows.Forms.MenuItem[] childen = new System.Windows.Forms.MenuItem[] { open, exit };
+            notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu(childen);
+
+            this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler((o, e) =>
+            {
+                if (e.Button == MouseButtons.Left) this.Show(o, e);
+            });
+
+        }
+
+        private void Show(object sender, EventArgs e)
+        {
+            this.Visibility = System.Windows.Visibility.Visible;
+            this.ShowInTaskbar = true;
+            this.Activate();
+        }
+
+        bool isExit = false;
+        private void Exit(object sender, EventArgs e)
+        {
+            this.Show(sender, e);
+            if (MessageBoxHelper.MessageBoxShowQuestion("退出后将无法实时监控JieLink软件的运行状态，确定退出么？") == MessageBoxResult.Yes)
+            {
+                isExit = true;
+                StdSchedulerFactory.GetDefaultScheduler().Shutdown();
+                foreach (var startup in viewModel.startups)
+                {
+                    startup.Exit();
+                }
+                this.Close();
+            }
         }
 
         private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -81,12 +126,17 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            StdSchedulerFactory.GetDefaultScheduler().Shutdown();
-            foreach (var startup in viewModel.startups)
+            if (isExit)
             {
-                startup.Exit();
+                System.Windows.Application.Current.Shutdown();
             }
-            Application.Current.Shutdown();
+            else
+            {
+                this.notifyIcon.ShowBalloonTip(3, "提示", "运维工具已最小化到系统托盘", ToolTipIcon.Info);
+                e.Cancel = true;
+                this.ShowInTaskbar = false;
+                this.Visibility = System.Windows.Visibility.Hidden;
+            }
         }
 
         private void WindowX_Loaded(object sender, RoutedEventArgs e)
