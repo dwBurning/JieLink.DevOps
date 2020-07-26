@@ -42,16 +42,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DevOpsEvent.cs" />
-    <Compile Include="HealthMonitor.cs" />
-    <Compile Include="Jobs\CheckUpdateJob.cs" />
-    <Compile Include="ProcessStatus.cs" />
-    <Compile Include="ProcessStatusMonitor.cs" />
+    <Compile Include="Models\DevOpsEvent.cs" />
+    <Compile Include="CheckMemory\HealthMonitor.cs" />
+    <Compile Include="CheckUpdate\CheckUpdateJob.cs" />
+    <Compile Include="Models\ProcessStatus.cs" />
+    <Compile Include="CheckMemory\ProcessStatusMonitor.cs" />
+    <Compile Include="Models\UpdateRequest.cs" />
+    <Compile Include="Models\UpdateResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="SystemStatus.cs" />
-    <Compile Include="SystemStatusMonitor.cs" />
-    <Compile Include="WarningMessage.cs" />
+    <Compile Include="Models\SystemStatus.cs" />
+    <Compile Include="CheckMemory\SystemStatusMonitor.cs" />
+    <Compile Include="Models\WarningMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PartialViewInterface\PartialViewInterface.csproj">
