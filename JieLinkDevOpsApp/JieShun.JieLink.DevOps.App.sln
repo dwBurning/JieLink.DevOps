@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29926.136
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.App", "JieShun.JieLink.DevOps.App.csproj", "{E535340A-0421-4939-94B8-06C112CABA29}"
 EndProject
@@ -24,6 +24,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewCheckUpdate", "PartialView\PartialViewCheckUpdate\PartialViewCheckUpdate.csproj", "{B4AB2342-3419-476E-95D1-FF522BAF18C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewWiki", "PartialView\PartialViewWiki\PartialViewWiki.csproj", "{B3D464F0-ADA0-44EA-852E-F10821827328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.Updater", "Updater\JieShun.JieLink.DevOps.Updater.csproj", "{8CD4148A-534F-4634-980F-651B1128A6F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{B3D464F0-ADA0-44EA-852E-F10821827328}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3D464F0-ADA0-44EA-852E-F10821827328}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3D464F0-ADA0-44EA-852E-F10821827328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
