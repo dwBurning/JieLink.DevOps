@@ -1,4 +1,5 @@
-﻿using PartialViewInterface.Models;
+﻿using PartialViewInterface;
+using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
@@ -97,13 +98,16 @@ namespace PartialViewHealthMonitor
             DevOpsEvent opsEvent = new DevOpsEvent();
             opsEvent.EventType = (int)warning.WarningType;
             opsEvent.OperatorDate = DateTime.Now;
-            opsEvent.RemoteAccount = "123456789";
-            opsEvent.ContactPhone = string.Empty;
-            opsEvent.ContactName = string.Empty;
+            opsEvent.ProjectNo = EnvironmentInfo.ProjectNo ?? string.Empty;
+            opsEvent.RemoteAccount = EnvironmentInfo.ProjectNo ?? string.Empty;
+            opsEvent.RemotePassword = EnvironmentInfo.RemotePassword ?? string.Empty;
+            opsEvent.ContactPhone = EnvironmentInfo.ContactPhone ?? string.Empty;
+            opsEvent.ContactName = EnvironmentInfo.ContactName ?? string.Empty;
 
             try
             {
-                var returnData = HttpHelper.PostAsync<ReturnData>("http://localhost:8080/devops/reportDevOpsEvent", opsEvent).Result;
+                string url = string.Format("{0}/devops/reportDevOpsEvent", EnvironmentInfo.ServerUrl);
+                var returnData = HttpHelper.Post<ReturnData>(url, opsEvent, 3000);
             }
             catch (Exception ex)
             {

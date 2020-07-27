@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static PartialViewInterface.Utils.Win32API;
 //using static Vanara.PInvoke.Kernel32;
 
 namespace PartialViewHealthMonitor
@@ -14,7 +15,7 @@ namespace PartialViewHealthMonitor
     {
         private List<SystemStatus> lastStatusList = new List<SystemStatus>();
         private PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        private int memoryThreshold = 90;//95%
+        private int memoryThreshold = 95;//95%
         private int cpuThreshold = 80;//80%
         public SystemStatusMonitor()
         {
@@ -26,16 +27,16 @@ namespace PartialViewHealthMonitor
             
             SystemStatus systemStatus = new SystemStatus();
             systemStatus.CpuUsage = (int)cpuCounter.NextValue();
-            //暂时注释系统内存的使用，换种方式，带了太多依赖的dll来了
-            //MEMORYSTATUSEX memStat = new MEMORYSTATUSEX();
-            //memStat.dwLength = (uint)Marshal.SizeOf(memStat);
-            //if (GlobalMemoryStatusEx(ref memStat))
-            //{
-            //    //Console.WriteLine("总共内存{0}M，已用内存{1}M", memStat.ullTotalPhys / (1024 * 1024), (memStat.ullTotalPhys - memStat.ullAvailPhys) / (1024 * 1024));
-            //    systemStatus.MemoryTotal = (int)(memStat.ullTotalPhys / (1024 * 1024));
-            //    systemStatus.MemoryUsed = (int)((memStat.ullTotalPhys - memStat.ullAvailPhys) / (1024 * 1024));
-            //    systemStatus.MemoryUsage = (int)((systemStatus.MemoryUsed * 100.0f / systemStatus.MemoryTotal));
-            //}
+
+            MEMORYSTATUSEX memStat = new MEMORYSTATUSEX();
+            memStat.dwLength = (uint)Marshal.SizeOf(memStat);
+            if (GlobalMemoryStatusEx(ref memStat))
+            {
+                //Console.WriteLine("总共内存{0}M，已用内存{1}M", memStat.ullTotalPhys / (1024 * 1024), (memStat.ullTotalPhys - memStat.ullAvailPhys) / (1024 * 1024));
+                systemStatus.MemoryTotal = (int)(memStat.ullTotalPhys / (1024 * 1024));
+                systemStatus.MemoryUsed = (int)((memStat.ullTotalPhys - memStat.ullAvailPhys) / (1024 * 1024));
+                systemStatus.MemoryUsage = (int)((systemStatus.MemoryUsed * 100.0f / systemStatus.MemoryTotal));
+            }
             Console.WriteLine("总共内存{0}M，已用内存{1}M,CPU:{2}%", systemStatus.MemoryTotal, systemStatus.MemoryUsed, systemStatus.CpuUsage);
             //把状态缓存起来
             lastStatusList.RemoveAll(x => (DateTime.Now - x.CreateTime).TotalMinutes > 1);
