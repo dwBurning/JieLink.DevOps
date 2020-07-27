@@ -13,6 +13,7 @@
 	<artifactId>devopsserver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>devopsserver</name>
+	<packaging>jar</packaging>
 	<description>JieLink运维平台</description>
 
 	<properties>
@@ -72,11 +73,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.3.2</version>
-		</dependency>
+			<version>2.3.2</version> 
+		</dependency>-->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
@@ -122,6 +123,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+                    <mainClass>com.jieshun.devopsserver.DevOpsServerApplication</mainClass>
+                </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.mybatis.generator</groupId>
