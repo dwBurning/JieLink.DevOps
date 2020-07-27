@@ -149,6 +149,19 @@ namespace PartialViewInterface.Utils
 
 
         }
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct MEMORYSTATUSEX
+        {
+            public uint dwLength;
+            public uint dwMemoryLoad;
+            public ulong ullTotalPhys;
+            public ulong ullAvailPhys;
+            public ulong ullTotalPageFile;
+            public ulong ullAvailPageFile;
+            public ulong ullTotalVirtual;
+            public ulong ullAvailVirtual;
+            public ulong ullAvailExtendedVirtual;
+        }
         /// <summary>
         /// 以当前登录的windows用户(角色权限)运行指定程序进程
         /// </summary>
@@ -171,6 +184,8 @@ namespace PartialViewInterface.Utils
 
         [DllImport("KERNEL32.DLL", SetLastError = true, CharSet = CharSet.Auto)]
         static extern bool CloseHandle(IntPtr hHandle);
+        [DllImport("KERNEL32.DLL", CallingConvention = CallingConvention.Winapi, SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX mem);
         #endregion
         /// <summary>
         /// 服务程序执行消息提示,前台MessageBox.Show

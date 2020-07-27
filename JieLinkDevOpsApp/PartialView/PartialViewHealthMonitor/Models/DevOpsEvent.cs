@@ -9,13 +9,11 @@ namespace PartialViewHealthMonitor
     public class DevOpsEvent
     {
         public int EventType { get; set; }
-
+        public string ProjectNo { get; set; }
         public string RemoteAccount { get; set; }
-
+        public string RemotePassword { get; set; }
         public string ContactName { get; set; }
-
         public string ContactPhone { get; set; }
-
         public DateTime OperatorDate { get; set; }
     }
 }
