@@ -38,6 +38,7 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -55,8 +56,8 @@
         <TextBlock Grid.Row="2" Grid.Column="0">数据库端口：</TextBlock>
         <TextBlock Grid.Row="3" Grid.Column="0">数据库用户：</TextBlock>
         <TextBlock Grid.Row="4" Grid.Column="0">数据库密码：</TextBlock>
-        <TextBlock Grid.Row="6" Grid.Column="0">当前版本号：</TextBlock>
-        <TextBlock Grid.Row="7" Grid.Column="0">升级版本号：</TextBlock>
+        <TextBlock Grid.Row="7" Grid.Column="0">当前版本号：</TextBlock>
+        <TextBlock Grid.Row="8" Grid.Column="0">升级版本号：</TextBlock>
 
         <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="{Binding CenterIp}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
@@ -99,22 +100,28 @@
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+        <Button Grid.Column="1" Grid.Row="6" Content="检查" Name ="btnCheck" 
+                Command="{Binding CheckDBUpdateCommand}" CommandParameter="{Binding ElementName=txtCenterDbPwd}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtCurrentVersion" Text="{Binding CurrentVersion}"
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCurrentVersion" Text="{Binding CurrentVersion}"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="1.0.0"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtUpdateVersion" Text="{Binding UpdateVersion}"
+        <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtUpdateVersion" Text="{Binding UpdateVersion}"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="2.7.0"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <Button Grid.Column="1" Grid.Row="8" Content="手工执行脚本" Name ="btnExecuteStepByStep" Click="btnExecuteStepByStep_Click"
+        <Button Grid.Column="1" Grid.Row="9" Content="手工执行脚本" Name ="btnExecuteStepByStep" Click="btnExecuteStepByStep_Click"
+                Command="{Binding ExecuteStepByStepCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>

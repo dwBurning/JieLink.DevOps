@@ -26,7 +26,7 @@ namespace JieShun.JieLink.DevOps.Updater
         static void Main(string[] args)
         {
             //判断有无管理员权限
-            if (!CheckIsAdministrator(args))
+            if(!CheckIsAdministrator(args))
             {
                 Console.WriteLine("程序不是以管理员权限运行，程序退出...");
                 return;
@@ -124,14 +124,14 @@ namespace JieShun.JieLink.DevOps.Updater
                 //设置启动动作,确保以管理员身份运行
                 startInfo.Verb = "runas";
                 //如果不是管理员，则启动UAC
-                Process.Start(startInfo);
+                Process.Start(startInfo);  
                 return false;
 
             }
         }
         static bool CheckNeedUpdate(string[] args, UpdateRequest request)
         {
-            if (Debugger.IsAttached)
+            if(Debugger.IsAttached)
             {
                 return true;
             }
@@ -190,8 +190,6 @@ namespace JieShun.JieLink.DevOps.Updater
         static void CreatePackageInfoForTest()
         {
             //测试
-            ProgramInfo iis = new ProgramInfo();
-            iis.ServiceName = "W3SVC";
             ProgramInfo smartCenter = new ProgramInfo();
             smartCenter.ExecutablePath = "SmartCenter\\SmartCenter.Host.exe";
             smartCenter.ProcessName = "SmartCenter.Host.exe";
@@ -211,38 +209,11 @@ namespace JieShun.JieLink.DevOps.Updater
                 "Logs",
                 "*.config",
             };
-            SubPackage smartWebPackage = new SubPackage();
-            smartWebPackage.SubPath = "programfiles\\SmartWeb";
-            smartWebPackage.TargetPath = "SmartWeb";
-            smartWebPackage.ExcludeList = new List<string>() {
-                "Config",
-                "Web.config",
-            };
-            SubPackage smartApiPackage = new SubPackage();
-            smartApiPackage.SubPath = "programfiles\\SmartApi";
-            smartApiPackage.TargetPath = "SmartApi";
-            smartApiPackage.ExcludeList = new List<string>() {
-                "Config",
-                "Web.config",
-            };
-            SubPackage smartFileDownPackage = new SubPackage();
-            smartFileDownPackage.SubPath = "programfiles\\SmartFile\\down";
-            smartFileDownPackage.TargetPath = "SmartFile\\down";
-            smartFileDownPackage.ExcludeList = new List<string>() {
-                "Config",
-                "Web.config",
-            };
-            SubPackage smartFileUploadPackage = new SubPackage();
-            smartFileUploadPackage.SubPath = "programfiles\\SmartFile\\upload";
-            smartFileUploadPackage.TargetPath = "SmartFile\\upload";
-            smartFileUploadPackage.ExcludeList = new List<string>() {
-                "Config",
-                "Web.config",
-            };
+
             PackageInfo packageInfo = new PackageInfo();
-            packageInfo.KillProcessList = new List<ProgramInfo>() { iis, smartCenterDaemon, smartCenter };
-            packageInfo.RunProcessList = new List<ProgramInfo>() { iis, smartCenter, smartCenterDaemon };
-            packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage, smartWebPackage, smartApiPackage, smartFileDownPackage, smartFileUploadPackage };
+            packageInfo.KillProcessList = new List<ProgramInfo>() { smartCenterDaemon, smartCenter };
+            packageInfo.RunProcessList = new List<ProgramInfo>() { smartCenter, smartCenterDaemon };
+            packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage };
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JSOCT2016.json");
             if (!File.Exists(path))
             {

@@ -58,9 +58,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\UpdateRequest.cs" />
     <Compile Include="Utils\ConsoleRedirect.cs" />
     <Compile Include="Utils\UniversalUpdater.cs" />
+    <Compile Include="Models\UpdateRequest.cs" />
     <Compile Include="Models\UpdateResult.cs" />
     <Compile Include="Utils\UpdateUtils.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -100,9 +100,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Configs\JSOCT2016.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

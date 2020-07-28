@@ -2,7 +2,6 @@
 using PartialViewCheckUpdate.Models.Enum;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
-using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace PartialViewCheckUpdate.ViewModels
         public event Action<string> UpdateFaildNotify;
 
         public DelegateCommand CheckUpdateCommand { get; set; }
-        public DelegateCommand RepairCommand { get; set; }
+
         public string InstallPath
         {
             get { return (string)GetValue(InstallPathProperty); }
@@ -93,9 +92,6 @@ namespace PartialViewCheckUpdate.ViewModels
         {
             this.CheckUpdateCommand = new DelegateCommand();
             this.CheckUpdateCommand.ExecuteAction = new Action<object>(this.CheckUpdate);
-            this.RepairCommand = new DelegateCommand();
-            this.RepairCommand.ExecuteAction = this.Repair;
-            //this.RepairCommand.CanExecuteFunc = this.CanRepair;
         }
 
         private void CheckUpdate(object parameter)
@@ -188,72 +184,7 @@ namespace PartialViewCheckUpdate.ViewModels
             ShowMessage(msg);
             return EnumCheckFileResult.Error;
         }
-        private bool CanRepair(object parameter)
-        {
-            return !string.IsNullOrEmpty(this.SetUpPackagePath) && !string.IsNullOrEmpty(this.InstallPath);
 
-        }
-        private void Repair(object parameter)
-        {
-            if(string.IsNullOrEmpty(this.SetUpPackagePath) || string.IsNullOrEmpty(this.InstallPath))
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请选择正确的路径！");
-                return;
-            }
-
-            DirectoryInfo packageDir = new DirectoryInfo(this.SetUpPackagePath);
-            if (packageDir.Name.Equals("sys") || packageDir.Name.Equals("obj"))
-                packageDir = Directory.GetParent(this.SetUpPackagePath);
-            var zipPath = Directory.GetFiles(Path.Combine(packageDir.FullName, "obj"), "*.zip").FirstOrDefault();
-            if (string.IsNullOrEmpty(zipPath) || !zipPath.Contains("JSOCT"))//加上这个判断，防止选成盒子的包
-            {
-                MessageBoxHelper.MessageBoxShowWarning("升级包不存在！");
-                return;
-            }
-            DirectoryInfo installDir = new DirectoryInfo(this.InstallPath);
-            if (installDir.Name.Equals("SmartCenter", StringComparison.OrdinalIgnoreCase))
-            {
-                installDir = Directory.GetParent(this.InstallPath);
-            }
-            string rootPath = installDir.FullName;
-            //检测是否是一个有效的中心按照目录
-            if (!File.Exists(Path.Combine(rootPath, "NewG3Uninstall.exe")))
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请选择正确的中心安装目录！");
-                return;
-            }
-
-            UpdateRequest updateRequest = new UpdateRequest();
-            updateRequest.Guid = Guid.NewGuid().ToString();
-            updateRequest.Product = "JSOCT2016";
-            updateRequest.RootPath = rootPath;
-            updateRequest.PackagePath = zipPath;
-            ExecuteUpdate(updateRequest);
-
-        }
-        private void ExecuteUpdate(UpdateRequest request)
-        {
-            //1.升级请求写到update文件夹下
-            WriteRequestFile(request);
-            //2.启动升级程序
-            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Updater.exe");
-            ProcessHelper.StartProcessDotNet(executePath, "-file=UpdateRequest_2016.json");
-        }
-        private void WriteRequestFile(UpdateRequest request)
-        {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\UpdateRequest_2016.json");
-            if (!File.Exists(filePath))
-            {
-                File.Create(filePath).Close();
-            }
-            string json = JsonHelper.SerializeObject(request);
-            using (FileStream fs = new FileStream(filePath, FileMode.Truncate, FileAccess.ReadWrite))
-            {
-                StreamWriter sw = new StreamWriter(fs);
-                sw.Write(json);
-                sw.Close();
-            }
-        }
         private void ShowMessage(string message)
         {
             string append = $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
