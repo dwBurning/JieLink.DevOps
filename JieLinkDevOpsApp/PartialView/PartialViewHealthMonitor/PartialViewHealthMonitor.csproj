@@ -47,7 +47,6 @@
     <Compile Include="CheckUpdate\CheckUpdateJob.cs" />
     <Compile Include="Models\ProcessStatus.cs" />
     <Compile Include="CheckMemory\ProcessStatusMonitor.cs" />
-    <Compile Include="Models\UpdateRequest.cs" />
     <Compile Include="Models\UpdateResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
