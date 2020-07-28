@@ -1,0 +1,87 @@
+{
+  "KillProcessList": [
+    {
+      "ProcessName": null,
+      "ServiceName": "W3SVC",
+      "ExecutablePath": null,
+      "Args": null
+    },
+    {
+      "ProcessName": "JSST.JieLink.Daemon.exe",
+      "ServiceName": "JSST.JieLink.Daemon",
+      "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartCenter.Host.exe",
+      "ServiceName": "JsstJieLinkSmartCenter",
+      "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
+      "Args": null
+    }
+  ],
+  "SubPackages": [
+    {
+      "SubPath": "programfiles\\SmartCenter",
+      "TargetPath": "SmartCenter",
+      "ExcludeList": [
+        "Config",
+        "update",
+        "Agent.dat",
+        "Logs",
+        "*.config"
+      ]
+    },
+    {
+      "SubPath": "programfiles\\SmartWeb",
+      "TargetPath": "SmartWeb",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ]
+    },
+    {
+      "SubPath": "programfiles\\SmartApi",
+      "TargetPath": "SmartApi",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ]
+    },
+    {
+      "SubPath": "programfiles\\SmartFile\\down",
+      "TargetPath": "SmartFile\\down",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ]
+    },
+    {
+      "SubPath": "programfiles\\SmartFile\\upload",
+      "TargetPath": "SmartFile\\upload",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ]
+    }
+  ],
+  "RunProcessList": [
+    {
+      "ProcessName": null,
+      "ServiceName": "W3SVC",
+      "ExecutablePath": null,
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartCenter.Host.exe",
+      "ServiceName": "JsstJieLinkSmartCenter",
+      "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "JSST.JieLink.Daemon.exe",
+      "ServiceName": "JSST.JieLink.Daemon",
+      "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    }
+  ]
+}

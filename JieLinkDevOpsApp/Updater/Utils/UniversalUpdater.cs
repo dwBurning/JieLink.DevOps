@@ -98,7 +98,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             callback?.Invoke(progress, "解析升级包");
             packageInfo = UpdateUtils.TryParsePackageInfo<PackageInfo>(Path.Combine(packageDir, "package.json"));
             if (packageInfo == null && !string.IsNullOrEmpty(product))
-                packageInfo = UpdateUtils.ParsePackageInfo<PackageInfo>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, product + ".json"));
+                packageInfo = UpdateUtils.ParsePackageInfo<PackageInfo>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs\\" + product + ".json"));
 
             //结束目标进程
             progress = 30;

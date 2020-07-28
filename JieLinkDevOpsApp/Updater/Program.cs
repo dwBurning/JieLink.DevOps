@@ -26,7 +26,7 @@ namespace JieShun.JieLink.DevOps.Updater
         static void Main(string[] args)
         {
             //判断有无管理员权限
-            if(!CheckIsAdministrator(args))
+            if (!CheckIsAdministrator(args))
             {
                 Console.WriteLine("程序不是以管理员权限运行，程序退出...");
                 return;
@@ -124,14 +124,14 @@ namespace JieShun.JieLink.DevOps.Updater
                 //设置启动动作,确保以管理员身份运行
                 startInfo.Verb = "runas";
                 //如果不是管理员，则启动UAC
-                Process.Start(startInfo);  
+                Process.Start(startInfo);
                 return false;
 
             }
         }
         static bool CheckNeedUpdate(string[] args, UpdateRequest request)
         {
-            if(Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 return true;
             }
@@ -241,7 +241,7 @@ namespace JieShun.JieLink.DevOps.Updater
             };
             PackageInfo packageInfo = new PackageInfo();
             packageInfo.KillProcessList = new List<ProgramInfo>() { iis, smartCenterDaemon, smartCenter };
-            packageInfo.RunProcessList = new List<ProgramInfo>() { smartCenter, smartCenterDaemon };
+            packageInfo.RunProcessList = new List<ProgramInfo>() { iis, smartCenter, smartCenterDaemon };
             packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage, smartWebPackage, smartApiPackage, smartFileDownPackage, smartFileUploadPackage };
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JSOCT2016.json");
             if (!File.Exists(path))
