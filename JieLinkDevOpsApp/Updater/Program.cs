@@ -190,6 +190,8 @@ namespace JieShun.JieLink.DevOps.Updater
         static void CreatePackageInfoForTest()
         {
             //测试
+            ProgramInfo iis = new ProgramInfo();
+            iis.ServiceName = "W3SVC";
             ProgramInfo smartCenter = new ProgramInfo();
             smartCenter.ExecutablePath = "SmartCenter\\SmartCenter.Host.exe";
             smartCenter.ProcessName = "SmartCenter.Host.exe";
@@ -209,11 +211,38 @@ namespace JieShun.JieLink.DevOps.Updater
                 "Logs",
                 "*.config",
             };
-
+            SubPackage smartWebPackage = new SubPackage();
+            smartWebPackage.SubPath = "programfiles\\SmartWeb";
+            smartWebPackage.TargetPath = "SmartWeb";
+            smartWebPackage.ExcludeList = new List<string>() {
+                "Config",
+                "Web.config",
+            };
+            SubPackage smartApiPackage = new SubPackage();
+            smartApiPackage.SubPath = "programfiles\\SmartApi";
+            smartApiPackage.TargetPath = "SmartApi";
+            smartApiPackage.ExcludeList = new List<string>() {
+                "Config",
+                "Web.config",
+            };
+            SubPackage smartFileDownPackage = new SubPackage();
+            smartFileDownPackage.SubPath = "programfiles\\SmartFile\\down";
+            smartFileDownPackage.TargetPath = "SmartFile\\down";
+            smartFileDownPackage.ExcludeList = new List<string>() {
+                "Config",
+                "Web.config",
+            };
+            SubPackage smartFileUploadPackage = new SubPackage();
+            smartFileUploadPackage.SubPath = "programfiles\\SmartFile\\upload";
+            smartFileUploadPackage.TargetPath = "SmartFile\\upload";
+            smartFileUploadPackage.ExcludeList = new List<string>() {
+                "Config",
+                "Web.config",
+            };
             PackageInfo packageInfo = new PackageInfo();
-            packageInfo.KillProcessList = new List<ProgramInfo>() { smartCenterDaemon, smartCenter };
+            packageInfo.KillProcessList = new List<ProgramInfo>() { iis, smartCenterDaemon, smartCenter };
             packageInfo.RunProcessList = new List<ProgramInfo>() { smartCenter, smartCenterDaemon };
-            packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage };
+            packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage, smartWebPackage, smartApiPackage, smartFileDownPackage, smartFileUploadPackage };
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JSOCT2016.json");
             if (!File.Exists(path))
             {
