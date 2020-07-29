@@ -35,7 +35,7 @@
               label-width="100px"
               class="demo-ruleForm"
             >
-             <el-form-item label="产品类型">
+              <el-form-item label="产品类型">
                 <el-select
                   style="width: 100%;"
                   v-model="ruleForm.productType"
@@ -47,16 +47,25 @@
               <el-form-item label="版本号" prop="productVersion">
                 <el-input v-model="ruleForm.productVersion" placeholder="V1.0.0"></el-input>
               </el-form-item>
-              
-              
+
               <el-form-item label="版本描述" prop="versionDescribe">
-                <el-input
-                  type="textarea"
-                  v-model="ruleForm.versionDescribe"
-                  placeholder="新增了*功能"
-                ></el-input>
+                <el-input type="textarea" v-model="ruleForm.versionDescribe" placeholder="新增了*功能"></el-input>
               </el-form-item>
-              <el-form-item label="下载信息" prop="downloadUrl">
+              <el-form-item label="上传文件" prop="downloadUrl">
+                <el-upload
+                  class="upload-demo"
+                  :action="action"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :before-remove="beforeRemove"
+                  multiple
+                  :limit="3"
+                  :on-exceed="handleExceed"
+                  :file-list="fileList"
+                >
+                  <el-button size="small" type="primary">点击上传</el-button>
+                  <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+                </el-upload>
                 <el-input type="textarea" v-model="ruleForm.downloadUrl"></el-input>
               </el-form-item>
 
@@ -113,6 +122,7 @@ import { postRequest } from "../utils/api";
 import { getRequest } from "../utils/api";
 import { deleteRequest } from "../utils/api";
 import Pagination from "@/components/Pagination";
+const configDev = require("../config/dev.env");
 export default {
   components: { Pagination },
   methods: {
@@ -169,7 +179,7 @@ export default {
     versionTypeFormat(row, column) {
       if (row.deviceType == 0) {
         return "运维工具";
-      } 
+      }
     },
     //加载会话数据
     loadVsersionInfo() {
@@ -238,6 +248,18 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${ file.name }？`);
     }
   },
   mounted() {
@@ -247,10 +269,13 @@ export default {
       this.Height = document.documentElement.clientHeight - 200;
     };
 
+    console.log(this.action);
     this.loadVsersionInfo();
   },
   data() {
     return {
+      fileList:[],
+      action: configDev.baseUrl + "/upload/",
       Height: 0,
       loading: false,
       dialogLoading: false,
@@ -266,7 +291,7 @@ export default {
         productType: "",
         productVersion: "",
         versionDescribe: "",
-        downloadUrl: "",
+        downloadUrl: ""
       },
 
       rules: {
