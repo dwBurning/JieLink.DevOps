@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/': {
-        target: configDev.baseUrl,
+        target: configDev.BASE_URL.replace('"','').replace('"',''),
         changeOrigin: true,
         pathRewrite: {
           '^/': ''

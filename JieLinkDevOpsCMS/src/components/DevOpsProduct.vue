@@ -81,7 +81,7 @@
             <el-table-column
               fixed="left"
               prop="productType"
-              :formatter="deviceTypeFormat"
+              :formatter="productTypeFormat"
               label="产品类型"
               width="120"
             ></el-table-column>
@@ -122,7 +122,7 @@ import { postRequest } from "../utils/api";
 import { getRequest } from "../utils/api";
 import { deleteRequest } from "../utils/api";
 import Pagination from "@/components/Pagination";
-const configDev = require("../config/dev.env");
+console.log(process.env.BASE_URL)
 export default {
   components: { Pagination },
   methods: {
@@ -176,7 +176,7 @@ export default {
       this.dialogVisible = true;
     },
 
-    versionTypeFormat(row, column) {
+    productTypeFormat(row, column) {
       if (row.deviceType == 0) {
         return "运维工具";
       }
@@ -269,13 +269,13 @@ export default {
       this.Height = document.documentElement.clientHeight - 200;
     };
 
-    console.log(this.action);
+    
     this.loadVsersionInfo();
   },
   data() {
     return {
       fileList:[],
-      action: configDev.baseUrl + "/upload/",
+      action: "",
       Height: 0,
       loading: false,
       dialogLoading: false,
