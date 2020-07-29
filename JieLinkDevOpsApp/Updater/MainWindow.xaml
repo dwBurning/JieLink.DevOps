@@ -7,7 +7,7 @@
         xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="JieLink运维升级工具" MinHeight="320" MinWidth="480" Height="320" Width="480" 
+        Title="JieLink运维升级工具" MinHeight="320" MinWidth="480" Height="320" Width="480"  Topmost="True" ShowInTaskbar="False"
         Closing="Window_Closing"
         Loaded="WindowX_Loaded">
     <Grid Margin="20 20 20 0">
