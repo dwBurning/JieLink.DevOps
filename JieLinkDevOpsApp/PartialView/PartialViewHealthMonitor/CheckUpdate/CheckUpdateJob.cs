@@ -1,5 +1,4 @@
-﻿using PartialViewInterface.Models;
-using PartialViewInterface.Utils;
+﻿using PartialViewInterface.Utils;
 using Quartz;
 using System;
 using System.Collections.Generic;

@@ -3,6 +3,7 @@ using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,8 @@ namespace PartialViewCheckUpdate.ViewModels
         public DelegateCommand TestConnCommand { get; set; }
 
         public DelegateCommand CheckDBUpdateCommand { get; set; }
+
+        public DelegateCommand ExecuteStepByStepCommand { get; set; }
 
 
         public string CenterIp
@@ -129,6 +132,8 @@ namespace PartialViewCheckUpdate.ViewModels
             this.TestConnCommand.ExecuteAction = new Action<object>(this.TestMySqlConn);
             this.CheckDBUpdateCommand = new DelegateCommand();
             this.CheckDBUpdateCommand.ExecuteAction = new Action<object>(this.CheckDBUpdate);
+            this.ExecuteStepByStepCommand = new DelegateCommand();
+            this.ExecuteStepByStepCommand.ExecuteAction = new Action<object>(this.ExecuteStepByStep);
         }
 
         private void TestMySqlConn(object parameter)
@@ -150,6 +155,9 @@ namespace PartialViewCheckUpdate.ViewModels
             string msg = "";
             try
             {
+                PasswordBox passwordBox = parameter as PasswordBox;
+                //PasswordBox的Password属性因为安全原因不支持直接绑定
+                this.CenterDbPwd = PasswordBoxHelper.GetPassword(passwordBox);
                 string mySqlConnStr = GetConnStr();
                 if (string.IsNullOrEmpty(mySqlConnStr))
                 {
@@ -177,11 +185,13 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     if (CheckDBUpdateTool.CheckDBUpdate(packageDbJsonFile, mySqlConnStr))
                     {
+                        ShowMessage("数据库升级成功！");
                         MessageBoxHelper.MessageBoxShowSuccess("数据库升级成功！");
                         return;
                     }
                     else
                     {
+                        ShowMessage("数据库升级失败！");
                         Notice.Show("数据库升级失败", "通知", 3, MessageBoxIcon.Warning);
                         UpdateFaildNotify?.Invoke("CheckScripts");
                     }
@@ -208,6 +218,17 @@ namespace PartialViewCheckUpdate.ViewModels
             ShowMessage(msg);
             MessageBoxHelper.MessageBoxShowError("检查升级出错！");
 
+        }
+
+        private void ExecuteStepByStep(object parameter)
+        {
+            if (string.IsNullOrEmpty(this.CurrentVersion)||string.IsNullOrEmpty(this.UpdateVersion))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请输入完整的版本信息");
+                return;
+            }
+            string path = Path.Combine(CheckUpdateContext.SetUpPackagePath, "dbScript");
+            System.Diagnostics.Process.Start("explorer.exe", path);
         }
 
         /// <summary>

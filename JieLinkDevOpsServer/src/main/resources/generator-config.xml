@@ -51,9 +51,8 @@
 		</javaClientGenerator>
 
 		<!-- 指定数据库表 -->
-		<table tableName="devops_product" domainObjectName="DevOpsProduct"></table>
-		<!--<table tableName="devops_event" domainObjectName="DevOpsEvent"></table>
-		 	<table tableName="sys_user" domainObjectName="SysUser"></table>
+		<table tableName="devops_event" domainObjectName="DevOpsEvent"></table>
+		<!-- <table tableName="sys_user" domainObjectName="SysUser"></table>
 			<table tableName="order_version_info" domainObjectName="VersionInfo"></table>
 		 	<table tableName="order_apply_info" domainObjectName="ApplyInfo"></table> -->
 	</context>

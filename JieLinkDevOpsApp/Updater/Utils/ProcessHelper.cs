@@ -68,7 +68,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("StartProcess:" + ex.Message);
+                Console.WriteLine("StartProcess:"+ex.Message);
                 return false;
             }
         }
@@ -85,12 +85,6 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             {
                 processesByName[i].Kill();
                 Thread.Sleep(10);
-            }
-            int waitCount = 10;
-            while (Process.GetProcessesByName(name).Length > 0 && waitCount < 10)
-            {
-                Thread.Sleep(1000);
-                ++waitCount;
             }
         }
 

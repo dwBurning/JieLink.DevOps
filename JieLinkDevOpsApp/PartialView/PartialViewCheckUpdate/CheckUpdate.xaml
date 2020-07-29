@@ -37,12 +37,11 @@
                       pu:TreeViewHelper.ExpandMode="SingleClick"
                       pu:TreeViewHelper.SelectMode="ChildOnly"
                       SelectedItemChanged="TvMenu_SelectedItemChanged"
-                      
                       BorderBrush="#20A0FF">
             <TreeViewItem Tag="CheckFiles" IsSelected="True" Header="检查文件"/>
             <TreeViewItem Tag="CheckScript"  Header="检查脚本"/>
         </TreeView>
-        <ContentControl Grid.Column="1" x:Name="ContentControl"/>
+        <ContentControl Grid.Column="1" x:Name="ContentControl" />
         
     </Grid>
 </UserControl>
