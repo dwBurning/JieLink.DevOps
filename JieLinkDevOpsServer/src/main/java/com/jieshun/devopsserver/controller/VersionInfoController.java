@@ -76,7 +76,6 @@ public class VersionInfoController {
 	
 	@RequestMapping(value = "/deleteVersionInfoById", method = RequestMethod.DELETE)
 	public ReturnData deleteVersionInfoById(int id) {
-		log.info(String.valueOf(id)+"dddddddddddddddddddddddddddddddddddddd");
 		int result = versionInfoService.deleteVersionInfoById(id);
 		if (result > 0) {
 			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), ReturnStateEnum.SUCCESS.getMessage());

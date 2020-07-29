@@ -7,6 +7,7 @@ import DemandManager from '@/components/DemandManager'
 import DevOpsManager from '@/components/DevOpsManager'
 import VersionManager from '@/components/VersionManager'
 import PublishVersion from '@/components/PublishVersion'
+import DevOpsProduct from '@/components/DevOpsProduct'
 import Test from '@/components/Test'
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -49,6 +50,18 @@ export default new Router({
           iconCls: 'el-icon-first-aid-kit',
           name: '运维管理',
           component: DevOpsManager
+        }
+      ]
+    },{
+      path: '/',
+      component: Home,
+      name: '运维工具',
+      children: [
+        {
+          path: '/devopsproduct',
+          iconCls: 'el-icon-first-aid-kit',
+          name: '运维工具',
+          component: DevOpsProduct
         }
       ]
     }, {

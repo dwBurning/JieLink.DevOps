@@ -37,7 +37,7 @@ namespace PartialViewCheckUpdate
             checkScriptStepByStep = new CheckScriptStepByStep();
             ContentControl.Content = checkFiles;
         }
-      
+
         private void CheckFiles_UpdateFaildNotify(string action)
         {
             if (action == "CheckFiles")
@@ -82,16 +82,6 @@ namespace PartialViewCheckUpdate
             {
                 ContentControl.Content = checkScripts;
             }
-        }
-
-        private void TvMenu_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            
-        }
-
-        private void TvMenu_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            
         }
     }
 }
