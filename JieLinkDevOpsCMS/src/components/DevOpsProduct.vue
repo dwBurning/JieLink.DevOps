@@ -58,15 +58,15 @@
                   :on-preview="handlePreview"
                   :on-remove="handleRemove"
                   :before-remove="beforeRemove"
+                  :on-success="handleSuccess"
                   multiple
-                  :limit="3"
+                  :limit="1"
                   :on-exceed="handleExceed"
                   :file-list="fileList"
                 >
                   <el-button size="small" type="primary">点击上传</el-button>
                   <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                 </el-upload>
-                <el-input type="textarea" v-model="ruleForm.downloadUrl"></el-input>
               </el-form-item>
 
               <el-form-item>
@@ -89,7 +89,11 @@
 
             <el-table-column prop="operatorDate" label="上传时间" width="160"></el-table-column>
             <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
-            <el-table-column prop="downloadUrl" label="下载信息" width="300"></el-table-column>
+            <el-table-column prop="downloadUrl" label="下载信息" width="300">
+              <template slot-scope="scope">
+                <a :href="scope.row.downloadUrl" download title="下载">下载</a>
+              </template>
+            </el-table-column>
             <el-table-column label="操作" width="100">
               <template slot-scope="scope">
                 <el-button
@@ -122,7 +126,7 @@ import { postRequest } from "../utils/api";
 import { getRequest } from "../utils/api";
 import { deleteRequest } from "../utils/api";
 import Pagination from "@/components/Pagination";
-console.log(process.env.BASE_URL)
+
 export default {
   components: { Pagination },
   methods: {
@@ -177,7 +181,7 @@ export default {
     },
 
     productTypeFormat(row, column) {
-      if (row.deviceType == 0) {
+      if (row.productType == 0) {
         return "运维工具";
       }
     },
@@ -249,6 +253,11 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
+    handleSuccess(response, file, fileList) {
+      console.log(file, fileList);
+      this.ruleForm.downloadUrl =
+        process.env.BASE_URL + "/download/package/" + file.name;
+    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -256,10 +265,14 @@ export default {
       console.log(file);
     },
     handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      this.$message.warning(
+        `当前限制选择 3 个文件，本次选择了 ${
+          files.length
+        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
+      );
     },
     beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
+      return this.$confirm(`确定移除 ${file.name}？`);
     }
   },
   mounted() {
@@ -268,14 +281,12 @@ export default {
     window.onresize = () => {
       this.Height = document.documentElement.clientHeight - 200;
     };
-
-    
     this.loadVsersionInfo();
   },
   data() {
     return {
-      fileList:[],
-      action: "",
+      fileList: [],
+      action: process.env.BASE_URL + "/upload/package/",
       Height: 0,
       loading: false,
       dialogLoading: false,
