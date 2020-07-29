@@ -46,7 +46,6 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             rootDir = updateRequest.RootPath;
             packageTempFullPath = updateRequest.PackagePath;
             FileInfo fi = new FileInfo(updateRequest.PackagePath);
-
             packageTempDir = fi.DirectoryName;
             packageDir = Path.Combine(fi.DirectoryName, fi.Name.Replace(fi.Extension, ""));
 

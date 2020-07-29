@@ -6,6 +6,7 @@ using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -95,7 +96,13 @@ namespace PartialViewCheckUpdate.ViewModels
             this.CheckUpdateCommand.ExecuteAction = new Action<object>(this.CheckUpdate);
             this.RepairCommand = new DelegateCommand();
             this.RepairCommand.ExecuteAction = this.Repair;
-            //this.RepairCommand.CanExecuteFunc = this.CanRepair;
+            var process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+            if (process != null)
+            {
+                this.InstallPath = new FileInfo(process.MainModule.FileName).Directory.Parent.FullName;
+            }
+                
+
         }
 
         private void CheckUpdate(object parameter)
@@ -202,8 +209,9 @@ namespace PartialViewCheckUpdate.ViewModels
             }
 
             DirectoryInfo packageDir = new DirectoryInfo(this.SetUpPackagePath);
+            
             if (packageDir.Name.Equals("sys") || packageDir.Name.Equals("obj"))
-                packageDir = Directory.GetParent(this.SetUpPackagePath);
+                packageDir = packageDir.Parent;
             var zipPath = Directory.GetFiles(Path.Combine(packageDir.FullName, "obj"), "*.zip").FirstOrDefault();
             if (string.IsNullOrEmpty(zipPath) || !zipPath.Contains("JSOCT"))//加上这个判断，防止选成盒子的包
             {
@@ -213,7 +221,7 @@ namespace PartialViewCheckUpdate.ViewModels
             DirectoryInfo installDir = new DirectoryInfo(this.InstallPath);
             if (installDir.Name.Equals("SmartCenter", StringComparison.OrdinalIgnoreCase))
             {
-                installDir = Directory.GetParent(this.InstallPath);
+                installDir = installDir.Parent;
             }
             string rootPath = installDir.FullName;
             //检测是否是一个有效的中心按照目录
