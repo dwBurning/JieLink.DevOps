@@ -43,7 +43,7 @@
         </Grid.RowDefinitions>
 
         <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
-                     Grid.Column="2" Grid.RowSpan="10" IsReadOnly="True" Margin="10,5,0,10">
+                     Grid.Column="2" Grid.RowSpan="11" IsReadOnly="True" Margin="10,5,0,10">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding CheckResult}"/>

@@ -34,7 +34,19 @@ namespace PartialViewCheckUpdate
             checkScripts = new CheckScripts();
             checkScripts.UpdateFaildNotify += CheckFiles_UpdateFaildNotify;
             checkFilesStepByStep = new CheckFilesStepByStep();
+            checkFilesStepByStep.BackToCheckFile += CheckFilesStepByStep_BackToCheckFile;
             checkScriptStepByStep = new CheckScriptStepByStep();
+            checkScriptStepByStep.BackToCheckScript += CheckScriptStepByStep_BackToCheckScript;
+            ContentControl.Content = checkFiles;
+        }
+
+        private void CheckScriptStepByStep_BackToCheckScript()
+        {
+            ContentControl.Content = checkScripts;
+        }
+
+        private void CheckFilesStepByStep_BackToCheckFile()
+        {
             ContentControl.Content = checkFiles;
         }
 

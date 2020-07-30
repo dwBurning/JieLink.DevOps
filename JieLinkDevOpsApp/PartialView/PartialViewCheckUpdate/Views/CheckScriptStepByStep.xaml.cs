@@ -21,6 +21,8 @@ namespace PartialViewCheckUpdate.Views
     /// </summary>
     public partial class CheckScriptStepByStep : UserControl
     {
+        public event Action BackToCheckScript;
+
         public CheckScriptStepByStep()
         {
             InitializeComponent();
@@ -42,6 +44,11 @@ namespace PartialViewCheckUpdate.Views
             {
                 CheckUpdateContext.ShowDemonstrateWindow("CheckScripts","检查脚本");
             }
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            BackToCheckScript?.Invoke();
         }
     }
 }

@@ -41,8 +41,24 @@
         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#20A0FF"
                    FontSize="26" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
                    Grid.ColumnSpan="2">请按照操作步骤依次往下执行！全屏查看，效果更佳...</TextBlock>
-        <Button x:Name="btnDec" Click="btnDec_Click"
-                Grid.Row="2" Grid.Column="0" Margin="5"
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnBack" Click="btnBack_Click"
+                Grid.Row="0" Grid.Column="0" Margin="5"
+                pu:ButtonHelper.ClickStyle="Sink"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#20A0FF"
+                Foreground="#20A0FF"
+                pu:ButtonHelper.HoverBrush="#00BCFF"
+                pu:ButtonHelper.CornerRadius="4"
+                Height="40"
+                Content="返回" />
+            <Button x:Name="btnDec" Click="btnDec_Click"
+                Grid.Row="0" Grid.Column="1" Margin="5"
                 pu:ButtonHelper.ClickStyle="Sink"
                 pu:ButtonHelper.ButtonStyle="Hollow"
                 BorderBrush="#20A0FF"
@@ -51,8 +67,8 @@
                 pu:ButtonHelper.CornerRadius="4"
                 Height="40"
                 Content="上一步" />
-        <Button x:Name="btnInc" Click="btnInc_Click"
-                Grid.Row="2" Grid.Column="1" Margin="5"
+            <Button x:Name="btnInc" Click="btnInc_Click"
+                Grid.Row="0" Grid.Column="2" Margin="5"
                 pu:ButtonHelper.ClickStyle="Sink"
                 pu:ButtonHelper.ButtonStyle="Hollow"
                 BorderBrush="#20A0FF"
@@ -61,6 +77,8 @@
                 pu:ButtonHelper.CornerRadius="4" 
                 Height="40"
                 Content="下一步" />
+        </Grid>
+        
         <pu:Carousel  x:Name="CarouselImg" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                       Recyclable="True" Margin="2,2,2,2" Index="0" >
             <Grid>

@@ -21,6 +21,8 @@ namespace PartialViewCheckUpdate.Views
     /// </summary>
     public partial class CheckFilesStepByStep : UserControl
     {
+        public event Action BackToCheckFile;
+
         public CheckFilesStepByStep()
         {
             InitializeComponent();
@@ -42,6 +44,11 @@ namespace PartialViewCheckUpdate.Views
             {
                 CheckUpdateContext.ShowDemonstrateWindow("CheckFiles", "检查文件");
             }
+        }
+
+        private void btnBack_Click(object sender, RoutedEventArgs e)
+        {
+            BackToCheckFile?.Invoke();
         }
     }
 }

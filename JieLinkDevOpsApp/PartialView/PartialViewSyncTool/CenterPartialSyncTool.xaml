@@ -123,7 +123,7 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="9" Grid.Column="1" x:Name="txtCmd" Text="82A" 
+        <TextBox Grid.Row="9" Grid.Column="1" x:Name="txtCmd" Text="82A" MinLines="20"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入命令字"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"

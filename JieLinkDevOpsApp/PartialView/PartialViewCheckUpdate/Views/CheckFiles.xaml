@@ -38,7 +38,7 @@
         </Grid.RowDefinitions>
 
         <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
-                     Grid.Column="1" Grid.Row="2" Grid.RowSpan="3" IsReadOnly="True" Margin="5">
+                     Grid.Column="1" Grid.Row="2" Grid.RowSpan="4" IsReadOnly="True" Margin="5">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding CheckResult}"/>
@@ -50,7 +50,7 @@
         <TextBlock Grid.Row="1" Grid.Column="0" x:Name="TextBlock2" >安装包目录：</TextBlock>
         <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TextBlock3" >检测结果：</TextBlock>
 
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" pu:TextBoxHelper.Watermark="C:\Program Files (x86)\JieLink"
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\JieLink"
                  VerticalAlignment="Center" Height="40" Margin="5" IsReadOnly="True"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"

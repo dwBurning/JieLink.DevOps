@@ -42,8 +42,24 @@
         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#20A0FF"
                    FontSize="26" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
                    Grid.ColumnSpan="2">请按照操作步骤依次往下执行！全屏查看，效果更佳...</TextBlock>
-        <Button x:Name="btnDec" Click="btnDec_Click"
-                Grid.Row="2" Grid.Column="0" Margin="5"
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnBack" Click="btnBack_Click"
+                Grid.Row="0" Grid.Column="0" Margin="5"
+                pu:ButtonHelper.ClickStyle="Sink"
+                pu:ButtonHelper.ButtonStyle="Hollow"
+                BorderBrush="#20A0FF"
+                Foreground="#20A0FF"
+                pu:ButtonHelper.HoverBrush="#00BCFF"
+                pu:ButtonHelper.CornerRadius="4"
+                Height="40"
+                Content="返回" />
+            <Button x:Name="btnDec" Click="btnDec_Click"
+                Grid.Row="0" Grid.Column="1" Margin="5"
                 pu:ButtonHelper.ClickStyle="Sink"
                 pu:ButtonHelper.ButtonStyle="Hollow"
                 BorderBrush="#20A0FF"
@@ -52,8 +68,8 @@
                 pu:ButtonHelper.CornerRadius="4"
                 Height="40"
                 Content="上一步" />
-        <Button x:Name="btnInc" Click="btnInc_Click"
-                Grid.Row="2" Grid.Column="1" Margin="5"
+            <Button x:Name="btnInc" Click="btnInc_Click"
+                Grid.Row="0" Grid.Column="2" Margin="5"
                 pu:ButtonHelper.ClickStyle="Sink"
                 pu:ButtonHelper.ButtonStyle="Hollow"
                 BorderBrush="#20A0FF"
@@ -62,6 +78,8 @@
                 pu:ButtonHelper.CornerRadius="4" 
                 Height="40"
                 Content="下一步" />
+        </Grid>
+        
         <pu:Carousel  x:Name="CarouselImg" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                       Recyclable="True" Margin="2,2,2,2" Index="0" >
             <Grid>
@@ -257,6 +275,7 @@
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">6.重启站点。替换完成后，回到IIS管理器，先停止SmartWeb，再重启SmartWeb。
+<Run Foreground="#20A0FF">批注：其余站点的替换，与替换SmartWeb类似，不替换</Run><Run Foreground="Red">Config</Run><Run Foreground="#20A0FF">文件夹即可。</Run>
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\3-SmartWeb\6重启.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
