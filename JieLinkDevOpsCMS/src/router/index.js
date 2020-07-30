@@ -59,7 +59,7 @@ export default new Router({
       children: [
         {
           path: '/devopsproduct',
-          iconCls: 'el-icon-first-aid-kit',
+          iconCls: 'el-icon-monitor',
           name: '运维工具',
           component: DevOpsProduct
         }

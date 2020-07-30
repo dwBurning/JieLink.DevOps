@@ -254,9 +254,8 @@ export default {
       this.$refs[formName].resetFields();
     },
     handleSuccess(response, file, fileList) {
-      console.log(file, fileList);
       this.ruleForm.downloadUrl =
-        process.env.BASE_URL + "/download/package/" + file.name;
+        process.env.BASE_URL + response;
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -266,7 +265,7 @@ export default {
     },
     handleExceed(files, fileList) {
       this.$message.warning(
-        `当前限制选择 3 个文件，本次选择了 ${
+        `当前限制选择 1 个文件，本次选择了 ${
           files.length
         } 个文件，共选择了 ${files.length + fileList.length} 个文件`
       );
@@ -286,7 +285,7 @@ export default {
   data() {
     return {
       fileList: [],
-      action: process.env.BASE_URL + "/upload/package/",
+      action: process.env.BASE_URL + "/upload/package/" + Date.now(),
       Height: 0,
       loading: false,
       dialogLoading: false,
