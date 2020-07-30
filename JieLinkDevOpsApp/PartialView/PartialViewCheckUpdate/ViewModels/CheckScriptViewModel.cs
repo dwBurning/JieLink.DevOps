@@ -22,6 +22,8 @@ namespace PartialViewCheckUpdate.ViewModels
 
         public DelegateCommand CheckDBUpdateCommand { get; set; }
 
+        public DelegateCommand ExecuteStepByStepCommand { get; set; }
+
 
         public string CenterIp
         {
@@ -129,6 +131,13 @@ namespace PartialViewCheckUpdate.ViewModels
             this.TestConnCommand.ExecuteAction = new Action<object>(this.TestMySqlConn);
             this.CheckDBUpdateCommand = new DelegateCommand();
             this.CheckDBUpdateCommand.ExecuteAction = new Action<object>(this.CheckDBUpdate);
+            this.ExecuteStepByStepCommand = new DelegateCommand();
+            this.ExecuteStepByStepCommand.ExecuteAction = new Action<object>(this.ExecuteStepByStep);
+            this.CenterDb = "db_newg3_main";
+            this.CenterIp = "192.168.124.6";
+            this.CenterDbPort = "3306";
+            this.CenterDbPwd = "js*168";
+            this.CenterDbUser = "jieLink";
         }
 
         private void TestMySqlConn(object parameter)
@@ -208,6 +217,17 @@ namespace PartialViewCheckUpdate.ViewModels
             ShowMessage(msg);
             MessageBoxHelper.MessageBoxShowError("检查升级出错！");
 
+        }
+
+        private void ExecuteStepByStep(object parameter)
+        {
+            if (string.IsNullOrEmpty(this.CurrentVersion) || string.IsNullOrEmpty(this.UpdateVersion))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请输入完整的版本信息");
+                return;
+            }
+            string path = Path.Combine(CheckUpdateContext.SetUpPackagePath, "dbScript");
+            System.Diagnostics.Process.Start("explorer.exe", path);
         }
 
         /// <summary>
