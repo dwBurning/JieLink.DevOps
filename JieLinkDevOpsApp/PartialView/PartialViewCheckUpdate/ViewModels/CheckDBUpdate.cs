@@ -8,6 +8,7 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Dapper;
 using System.Diagnostics;
+using Panuon.UI.Silver;
 
 namespace PartialViewCheckUpdate.ViewModels
 {
@@ -15,18 +16,13 @@ namespace PartialViewCheckUpdate.ViewModels
     {
         public static bool CheckDBUpdate(string dbDicDir, string connectString)
         {
-            if (!Directory.Exists(dbDicDir))
-            {
-                Console.WriteLine("没有对比文件，默认成功");
-                return true;
-            }
-
+            
             try
             {
-                var dicFile = Directory.GetFiles(dbDicDir, "*.json").FirstOrDefault();
+                var dicFile = dbDicDir;
                 if (string.IsNullOrEmpty(dicFile))
                 {
-                    Console.WriteLine($"没有对比文件{dicFile}，默认成功");
+                    Notice.Show($"没有对比文件{dicFile}，默认成功", "通知", 3, MessageBoxIcon.Warning);
                     return true;
                 }
 
@@ -61,7 +57,7 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     dbName = conn.Database;
                     var tableListTemp = conn
-                        .Query($"SELECT TABLE_NAME,TABLE_TYPE from information_schema.'TABLES' where TABLE_SCHEMA = '{dbName}'", null, null, true, 120 * 1000)
+                        .Query($"SELECT TABLE_NAME,TABLE_TYPE from information_schema.`TABLES` where TABLE_SCHEMA = '{dbName}'", null, null, true, 120 * 1000)
                         .Select(x => new
                         {
                             tableName = x.TABLE_NAME,
@@ -79,7 +75,7 @@ namespace PartialViewCheckUpdate.ViewModels
                             continue;
                         }
 
-                        var columnList = conn.Query($"show full COLUMNS from '{table.tableName}'", null, null, true, 120 * 1000)
+                        var columnList = conn.Query($"show full COLUMNS from `{table.tableName}`", null, null, true, 120 * 1000)
                             .Select(x => new
                             {
                                 Field = x.Field,
@@ -124,18 +120,7 @@ namespace PartialViewCheckUpdate.ViewModels
                             }
                         }
                     }
-                    if (!result)
-                    {
-                        var targetContent = JsonConvert.SerializeObject(targetStruct);
-                        Console.WriteLine("数据库比对失败，请查看修复脚本");
-
-                        /* 待修改
-                        FileEx.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"logs/targetDbDic.json"), targetContent);
-                        FileEx.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"logs/targetDbDic.json"), newResult);
-                        修复脚本
-                        */
-                    }
-
+                    
                     return result;
                 }
 
