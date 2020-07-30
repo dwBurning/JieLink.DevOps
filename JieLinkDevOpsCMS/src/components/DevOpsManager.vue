@@ -10,7 +10,8 @@
             v-model="keywords"
             placeholder="请选择事件类型"
           >
-            <el-option label="内存溢出" value="0"></el-option>
+            <el-option label="内存溢出" value="1"></el-option>
+            <el-option label="CPU高" value="2"></el-option>
           </el-select>
           <el-button
             type="primary"
@@ -75,7 +76,7 @@ import Pagination from "@/components/Pagination";
 export default {
   components: { Pagination },
   methods: {
-    //打开对话窗 请求对话参与方数据
+    //打开对话窗
     handleClick(row) {
       this.selItems = row;
       putRequest("/devops/processed", {
@@ -102,7 +103,7 @@ export default {
       );
     },
 
-    //关键字搜索会话
+    //搜索
     searchClick() {
       this.loadVsersionInfo();
     },
@@ -116,14 +117,15 @@ export default {
     },
 
     eventTypeFormat(row, colume) {
-      if (row.eventType == 0) {
+      if (row.eventType == 1) {
         return "内存溢出";
-      } else if (row.eventType == 1) {
+      } else if (row.eventType == 2) {
+        return "CPU高";
+      } else {
         return "其他";
       }
     },
 
-    //加载会话数据
     loadVsersionInfo() {
       var start = (this.page - 1) * this.limit;
       var end = this.page * this.limit;
@@ -161,20 +163,6 @@ export default {
     this.loadVsersionInfo();
   },
   data() {
-    var checkPhone = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("手机号不能为空"));
-      } else {
-        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
-        console.log(reg.test(value));
-        if (reg.test(value)) {
-          callback();
-        } else {
-          return callback(new Error("请输入正确的手机号"));
-        }
-      }
-    };
-
     return {
       Height: 0,
       loading: false,
