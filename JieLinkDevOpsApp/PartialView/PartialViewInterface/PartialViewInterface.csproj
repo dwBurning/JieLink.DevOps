@@ -66,8 +66,10 @@
   <ItemGroup>
     <Compile Include="Command\DelegateCommand.cs" />
     <Compile Include="EnvironmentInfo.cs" />
+    <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ProjectInfo.cs" />
     <Compile Include="Models\UpdateRequest.cs" />
+    <Compile Include="Models\VersionInfo.cs" />
     <Compile Include="Utils\FileHelper.cs" />
     <Compile Include="IPartialView.cs" />
     <Compile Include="IStartup.cs" />

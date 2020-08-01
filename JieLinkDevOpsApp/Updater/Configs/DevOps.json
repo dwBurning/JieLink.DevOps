@@ -1,0 +1,28 @@
+{
+  "KillProcessList": [
+    {
+      "ProcessName": "JieShun.JieLink.DevOps.App.exe",
+      "ServiceName": null,
+      "ExecutablePath": "JieShun.JieLink.DevOps.App.exe",
+      "Args": null
+    }
+  ],
+  "SubPackages": [
+    {
+      "SubPath": "",
+      "TargetPath": "",
+      "ExcludeList": [
+        "Config",
+        "*.config"
+      ]
+    }
+  ],
+  "RunProcessList": [
+    {
+      "ProcessName": "JieShun.JieLink.DevOps.App.exe",
+      "ServiceName": null,
+      "ExecutablePath": "JieShun.JieLink.DevOps.App.exe",
+      "Args": null
+    }
+  ]
+}

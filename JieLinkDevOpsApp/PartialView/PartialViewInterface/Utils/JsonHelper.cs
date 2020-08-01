@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using Newtonsoft.Json;
 namespace PartialViewInterface.Utils
 {
@@ -27,6 +28,28 @@ namespace PartialViewInterface.Utils
             settings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
             settings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
             return settings;
+        }
+        public static T GetFromFile<T>(string path)
+        {
+            if(!File.Exists(path))
+            {
+                return default(T);
+            }
+            string json = null;
+            using (StreamReader sr = new StreamReader(path,Encoding.UTF8))
+            {
+                json = sr.ReadToEnd();
+            }
+            try
+            {
+                return DeserializeObject<T>(json);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                return default(T);
+            }
+
         }
     }
 }

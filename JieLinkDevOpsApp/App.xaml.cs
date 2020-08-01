@@ -1,4 +1,7 @@
 ﻿using Microsoft.Win32;
+using PartialViewInterface;
+using PartialViewInterface.Models;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -30,6 +33,8 @@ namespace JieShun.JieLink.DevOps.App
 
         private void App_Startup(object sender, StartupEventArgs e)
         {
+            EnvironmentInfo.CurrentVersion = GetCurrentVersion();
+
             if (!File.Exists("FileSystemWatcher.txt"))
             { File.Create("FileSystemWatcher.txt"); }
 
@@ -167,5 +172,15 @@ namespace JieShun.JieLink.DevOps.App
             Console.WriteLine(exception.ToString());
         }
 
+        private string GetCurrentVersion()
+        {
+            //查当前目录下的_v文件，和Jielink一样
+            VersionInfo vi = JsonHelper.GetFromFile<VersionInfo>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "version.json"));
+            if (vi == null)
+            {
+                return "V1.0.0";
+            }
+            return vi.Version;
+        }
     }
 }

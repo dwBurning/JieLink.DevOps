@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -40,11 +41,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckUpdate\CheckUpdateHelper.cs" />
+    <Compile Include="CheckUpdate\CheckUpdateOnStartupJob.cs" />
     <Compile Include="Models\DevOpsEvent.cs" />
     <Compile Include="CheckMemory\HealthMonitor.cs" />
     <Compile Include="CheckUpdate\CheckUpdateJob.cs" />
+    <Compile Include="Models\DevOpsProduct.cs" />
     <Compile Include="Models\ProcessStatus.cs" />
     <Compile Include="CheckMemory\ProcessStatusMonitor.cs" />
     <Compile Include="Models\UpdateResult.cs" />
