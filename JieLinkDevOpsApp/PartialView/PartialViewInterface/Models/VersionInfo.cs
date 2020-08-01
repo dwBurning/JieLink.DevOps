@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json;
 namespace PartialViewInterface.Models
 {
-    public class UpdateRequest
+    public class VersionInfo
     {
-        public string Product { get; set; }
         public string Version { get; set; }
-        public string Guid { get; set; }
-        public string RootPath { get; set; }
-        public string PackagePath { get; set; }
     }
 }

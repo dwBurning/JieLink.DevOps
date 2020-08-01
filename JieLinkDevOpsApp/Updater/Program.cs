@@ -37,6 +37,7 @@ namespace JieShun.JieLink.DevOps.Updater
 
             //CreateUpdateRequestForTest();
             //CreatePackageInfoForTest();
+            //CreatePackageInfoForDevOps();
 
             UpdateRequest request = UpdateUtils.ParseUpdateRequest(args);
             if (request != null)
@@ -256,6 +257,39 @@ namespace JieShun.JieLink.DevOps.Updater
                 sw.Close();
             }
         }
+        static void CreatePackageInfoForDevOps()
+        {
+            //测试
 
+            ProgramInfo devOpsCenter = new ProgramInfo();
+            devOpsCenter.ExecutablePath = "JieShun.JieLink.DevOps.App.exe";
+            devOpsCenter.ProcessName = "JieShun.JieLink.DevOps.App.exe";
+
+
+            SubPackage devOpsPackage = new SubPackage();
+            devOpsPackage.SubPath = "";
+            devOpsPackage.TargetPath = "";
+            devOpsPackage.ExcludeList = new List<string>() {
+                "Config",
+                "*.config",
+            };
+            
+            PackageInfo packageInfo = new PackageInfo();
+            packageInfo.KillProcessList = new List<ProgramInfo>() { devOpsCenter };
+            packageInfo.RunProcessList = new List<ProgramInfo>() { devOpsCenter };
+            packageInfo.SubPackages = new List<SubPackage>() { devOpsPackage };
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs\\DevOps.json");
+            if (!File.Exists(path))
+            {
+                File.Create(path).Close();
+            }
+            var json = JsonConvert.SerializeObject(packageInfo, Formatting.Indented);
+            using (FileStream fs = new FileStream(path, FileMode.Truncate, System.IO.FileAccess.ReadWrite))
+            {
+                StreamWriter sw = new StreamWriter(fs);
+                sw.Write(json);
+                sw.Close();
+            }
+        }
     }
 }

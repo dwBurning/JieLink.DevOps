@@ -21,6 +21,8 @@ namespace PartialViewInterface
 
         public static string ServerUrl = GetValue("ServerUrl", "");
 
+        public static string CurrentVersion { get; set; }
+
         public static string GetValue(string key, string value = "")
         {
             return ConfigurationManager.AppSettings[key] ?? value;

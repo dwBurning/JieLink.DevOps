@@ -1,4 +1,6 @@
-﻿using PartialViewInterface.Models;
+﻿using PartialViewHealthMonitor.Models;
+using PartialViewInterface;
+using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using Quartz;
 using System;
@@ -9,7 +11,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewHealthMonitor.Jobs
+namespace PartialViewHealthMonitor.CheckUpdate
 {
     /// <summary>
     /// 运维工具自动升级任务
@@ -18,8 +20,13 @@ namespace PartialViewHealthMonitor.Jobs
     {
         public void Execute(IJobExecutionContext context)
         {
+
             Console.WriteLine("CheckUpdateJob...");
-            //TODO:从服务端获取升级信息
+            UpdateRequest updateRequest = CheckUpdateHelper.GetUploadRequest();
+            if (updateRequest != null)
+            {
+                CheckUpdateHelper.ExecuteUpdate(updateRequest);
+            }
 
             //测试
             //UpdateRequest updateRequest = new UpdateRequest();
@@ -29,43 +36,6 @@ namespace PartialViewHealthMonitor.Jobs
             //updateRequest.PackagePath = @"D:\迅雷下载\JSOCT2016 V2.6.2 Jielink+智能终端操作平台安装包\obj\JSOCT2016-V2.6.2.zip";
             //ExecuteUpdate(updateRequest);
         }
-        private void ExecuteUpdate(UpdateRequest request)
-        {
-            //1.升级请求写到update文件夹下
-            WriteRequestFile(request);
-            //2.启动升级程序
-            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Updater.exe");
-            ProcessHelper.StartProcessDotNet(executePath,null);
-        }
-        private void WriteRequestFile(UpdateRequest request)
-        {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\UpdateRequest.json");
-            if (!File.Exists(filePath))
-            {
-                File.Create(filePath).Close();
-            }
-            string json = JsonHelper.SerializeObject(request);
-            using (FileStream fs = new FileStream(filePath, FileMode.Truncate, FileAccess.ReadWrite))
-            {
-                StreamWriter sw = new StreamWriter(fs);
-                sw.Write(json);
-                sw.Close();
-            }
-        }
-        private void Download(string url, string savePath)
-        {
-            if (File.Exists(savePath))
-            {
-                File.Delete(savePath);
-            }
-            using (var webClient = new WebClient())
-            {
-                webClient.DownloadFile(url, savePath);
-            }
-            if (!File.Exists(savePath))
-            {
-                throw new Exception("下载文件失败！");
-            }
-        }
+
     }
 }
