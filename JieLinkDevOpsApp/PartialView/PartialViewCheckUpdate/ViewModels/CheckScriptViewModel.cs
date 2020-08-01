@@ -133,11 +133,6 @@ namespace PartialViewCheckUpdate.ViewModels
             this.CheckDBUpdateCommand.ExecuteAction = new Action<object>(this.CheckDBUpdate);
             this.ExecuteStepByStepCommand = new DelegateCommand();
             this.ExecuteStepByStepCommand.ExecuteAction = new Action<object>(this.ExecuteStepByStep);
-            this.CenterDb = "db_newg3_main";
-            this.CenterIp = "192.168.124.6";
-            this.CenterDbPort = "3306";
-            this.CenterDbPwd = "js*168";
-            this.CenterDbUser = "jieLink";
         }
 
         private void TestMySqlConn(object parameter)
