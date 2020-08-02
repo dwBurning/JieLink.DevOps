@@ -38,11 +38,16 @@ public class SendEmailTask {
 	private void send() {
 		while (queue.size() > 0) {
 			synchronized (lock) {
-				SimpleMailMessage mailMessage = queue.poll();
-				mailMessage.setFrom("deadlineweismile@foxmail.com");
-				mailMessage.setSubject("JieLink运维平台推送消息");
-				javaMailSender.send(mailMessage);
-				log.info("发送邮件:{}\r\n给{}", mailMessage.getText(), mailMessage.getTo());
+				try {
+					SimpleMailMessage mailMessage = queue.poll();
+					mailMessage.setFrom("deadlineweismile@foxmail.com");
+					mailMessage.setSubject("JieLink运维平台推送消息");
+					javaMailSender.send(mailMessage);
+					log.info("发送邮件:{}\r\n给{}", mailMessage.getText(), mailMessage.getTo());
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
