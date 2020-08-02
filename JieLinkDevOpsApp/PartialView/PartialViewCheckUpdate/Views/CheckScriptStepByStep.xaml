@@ -86,11 +86,10 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1. 升级数据库
-1.1 备份数据库 - 使用Navicate备份数据库
-1.1.1 选择“db_newg3_main”数据库备份。
+                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">一、备份数据库
+1.使用Navicate备份数据库。选择“db_newg3_main”数据库备份。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="0" Source="..\Pic\0.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="0" Source="..\Pic\10-DB\0.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -98,9 +97,9 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1.1.2 在“db_newg3_main”数据库右键 - 选择“数据传输”。
+                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">2.在“db_newg3_main”数据库右键，选择“数据传输”。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="1" Source="..\Pic\1.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="1" Source="..\Pic\10-DB\1.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -108,9 +107,9 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.1.3 按上图配置参数后点击“开始”，直到进度完成至100%。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.按上图配置参数后点击“开始”。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="2" Source="..\Pic\2.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="2" Source="..\Pic\10-DB\2.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -118,9 +117,9 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.1.3 按上图配置参数后点击“开始”，直到进度完成至100%。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.等待执行完成，直到进度完成至100%。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="3" Source="..\Pic\3.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="3" Source="..\Pic\10-DB\3.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -128,12 +127,11 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2 升级数据库脚本
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">二、升级数据库
 注：如果原来是V2.0.0  需要升级到  V2.2.0 , 那么需要手工执行V2.0.0以上的脚本文件。
-1.2.1 找到数据脚本
-一般都是在Obj 目录下 JSOCT2016-VX.X.X.zip 解压即可。
+1.找到数据脚本。在安装包Obj目录下，JSOCT2016-VX.X.X.zip 解压即可，进入dbscript文件夹。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="4" Source="..\Pic\4.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="4" Source="..\Pic\10-DB\4.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -141,10 +139,10 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.2 执行数据库脚本
-选择数据库，打开查询窗口。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.执行数据库脚本。
+回到Navicat，选择数据库，打开查询窗口。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="5" Source="..\Pic\5.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="5" Source="..\Pic\10-DB\5.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -152,9 +150,10 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.3 按顺序执行需要的脚本
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.按顺序执行需要的脚本。
+注：如果原来是V2.0.0  需要升级到  V2.2.0 , 那么需要手工执行V2.0.0以上的脚本文件。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="6" Source="..\Pic\6.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="6" Source="..\Pic\10-DB\6.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -162,9 +161,9 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.4 点击“运行”
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.点击“运行”。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="7" Source="..\Pic\7.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="7" Source="..\Pic\10-DB\7.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -172,9 +171,9 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.5 等待执行中……
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.等待执行中……
                 </TextBlock>
-                <Image Grid.Column="1" Tag="8" Source="..\Pic\8.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="8" Source="..\Pic\10-DB\8.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -182,10 +181,10 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">1.2.6 执行完成。
-重复以上步骤，按顺序执行需要升级的脚本 。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">6.执行完成。
+重复以上步骤，按顺序执行需要升级的脚本。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="9" Source="..\Pic\9.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="9" Source="..\Pic\10-DB\9.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
         </pu:Carousel>
     </Grid>

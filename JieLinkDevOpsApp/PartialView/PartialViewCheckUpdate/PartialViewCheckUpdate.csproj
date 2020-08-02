@@ -236,5 +236,17 @@
     <Resource Include="Pic\9-SmartBoxDoor\7替换文件.png" />
     <Resource Include="Pic\9-SmartBoxDoor\8启动.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pic\10-DB\0.png" />
+    <Resource Include="Pic\10-DB\1.png" />
+    <Resource Include="Pic\10-DB\2.png" />
+    <Resource Include="Pic\10-DB\3.png" />
+    <Resource Include="Pic\10-DB\4.png" />
+    <Resource Include="Pic\10-DB\5.png" />
+    <Resource Include="Pic\10-DB\6.png" />
+    <Resource Include="Pic\10-DB\7.png" />
+    <Resource Include="Pic\10-DB\8.png" />
+    <Resource Include="Pic\10-DB\9.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
