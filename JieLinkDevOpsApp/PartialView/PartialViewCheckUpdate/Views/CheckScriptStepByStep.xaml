@@ -78,7 +78,7 @@
                 Height="40"
                 Content="下一步" />
         </Grid>
-        
+
         <pu:Carousel  x:Name="CarouselImg" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
                       Recyclable="True" Margin="2,2,2,2" Index="0" >
             <Grid>
@@ -86,18 +86,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">一、备份数据库
-1.使用Navicate备份数据库。选择“db_newg3_main”数据库备份。
-                </TextBlock>
-                <Image Grid.Column="1" Tag="0" Source="..\Pic\10-DB\0.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">2.在“db_newg3_main”数据库右键，选择“数据传输”。
+                <TextBlock xml:space="preserve" Style="{StaticResource textBlock}" Grid.Column="0">1.网页输入193.112.96.72，下载安装Notepad++、Navicat
                 </TextBlock>
                 <Image Grid.Column="1" Tag="1" Source="..\Pic\10-DB\1.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -107,7 +96,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.按上图配置参数后点击“开始”。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">
                 </TextBlock>
                 <Image Grid.Column="1" Tag="2" Source="..\Pic\10-DB\2.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -117,7 +106,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.等待执行完成，直到进度完成至100%。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.打开Navicat工具
                 </TextBlock>
                 <Image Grid.Column="1" Tag="3" Source="..\Pic\10-DB\3.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -127,9 +116,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">二、升级数据库
-注：如果原来是V2.0.0  需要升级到  V2.2.0 , 那么需要手工执行V2.0.0以上的脚本文件。
-1.找到数据脚本。在安装包Obj目录下，JSOCT2016-VX.X.X.zip 解压即可，进入dbscript文件夹。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.连接数据库服务器
                 </TextBlock>
                 <Image Grid.Column="1" Tag="4" Source="..\Pic\10-DB\4.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -139,8 +126,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.执行数据库脚本。
-回到Navicat，选择数据库，打开查询窗口。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.确认当前版本号、升级版本号
                 </TextBlock>
                 <Image Grid.Column="1" Tag="5" Source="..\Pic\10-DB\5.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -150,8 +136,8 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.按顺序执行需要的脚本。
-注：如果原来是V2.0.0  需要升级到  V2.2.0 , 那么需要手工执行V2.0.0以上的脚本文件。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.找到升级目录-->obj解压-->dbscript脚本文件夹-->确认需手动升级的脚本文件
+注：如果原来是V2.3.0  需要升级到  V2.7.1 , 那么需要手工执行V2.3.0及其以上的脚本文件；按顺序依次执行。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="6" Source="..\Pic\10-DB\6.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -161,7 +147,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.点击“运行”。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">6.Notepad++打开脚本-->复制-->在Navicat查询-->新建查询框中粘贴复制的脚本-->运行
                 </TextBlock>
                 <Image Grid.Column="1" Tag="7" Source="..\Pic\10-DB\7.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -171,21 +157,11 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.等待执行中……
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">
                 </TextBlock>
                 <Image Grid.Column="1" Tag="8" Source="..\Pic\10-DB\8.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">6.执行完成。
-重复以上步骤，按顺序执行需要升级的脚本。
-                </TextBlock>
-                <Image Grid.Column="1" Tag="9" Source="..\Pic\10-DB\9.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
         </pu:Carousel>
     </Grid>
 </UserControl>
