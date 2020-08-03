@@ -30,7 +30,7 @@ export default {
     return {
       loading: false,
       loginForm: {
-        username: "jielink",
+        username: "burning",
         password: "123",
         checked: true
       },

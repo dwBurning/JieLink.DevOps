@@ -36,7 +36,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
+		http.cors().and().authorizeRequests()
 				.anyRequest().authenticated()// 其他的路径都是登录后即可访问
 				.and().formLogin().loginPage("/index.html").successHandler(new AuthenticationSuccessHandler() {
 					@Override
@@ -67,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/index.html", "/static/**");
+		web.ignoring().antMatchers("/index.html", "/static/**","/upload/**","/download/**");
 	}
 
 	@Bean
