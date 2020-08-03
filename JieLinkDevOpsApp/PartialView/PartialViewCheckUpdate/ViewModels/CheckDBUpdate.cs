@@ -143,7 +143,7 @@ namespace PartialViewCheckUpdate.ViewModels
                 conn.Open();
                 IsConnected = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 IsConnected = false;
             }
