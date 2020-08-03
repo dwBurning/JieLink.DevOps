@@ -86,14 +86,8 @@
     <Compile Include="Views\CheckScriptStepByStep.xaml.cs">
       <DependentUpon>CheckScriptStepByStep.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CheckUpdatePartialView2.xaml.cs">
-      <DependentUpon>CheckUpdatePartialView2.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\DemonstrateWindow.xaml.cs">
       <DependentUpon>DemonstrateWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\ImgWindow.xaml.cs">
-      <DependentUpon>ImgWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CheckFilesStepByStep.xaml.cs">
       <DependentUpon>CheckFilesStepByStep.xaml</DependentUpon>
@@ -114,15 +108,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CheckUpdatePartialView2.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\DemonstrateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ImgWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

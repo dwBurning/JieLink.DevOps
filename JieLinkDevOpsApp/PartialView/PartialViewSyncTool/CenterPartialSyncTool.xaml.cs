@@ -31,7 +31,7 @@ namespace PartialViewSyncTool
     {
         public string MenuName
         {
-            get { return "中心数据同步工具"; }
+            get { return "数据同步"; }
         }
 
         public string TagName
@@ -102,7 +102,7 @@ namespace PartialViewSyncTool
         private void btnStartTask_Click(object sender, RoutedEventArgs e)
         {
             //1.获取所有的界面配置
-            Cmds = txtCmd.Text.Split('\n').ToList();
+            Cmds = txtCmd.Text.Split(';').ToList();
             Day = int.Parse(txtCheckDay.Text);
             Limit = int.Parse(txtCheckRow.Text);
             LoopSecond = int.Parse(txtLoopSecond.Text);
@@ -299,6 +299,7 @@ namespace PartialViewSyncTool
         /// <param name="syncBoxEntity"></param>
         private void InsertData(string ConnString, SyncBoxEntity syncBoxEntity)
         {
+            syncBoxEntity.JsonData = syncBoxEntity.JsonData.TrimStart('[').TrimEnd(']');
             string sql = $"INSERT INTO `sync_center_downloadprocess`(downloadid, serviceid, jsondata, status, processtime, datatype, remark) VALUES ({syncBoxEntity.Id},'{syncBoxEntity.Cmd}','{syncBoxEntity.JsonData}','0',NOW(),{syncBoxEntity.DataType},'add by auto tool')";
             MySqlHelper.ExecuteNonQuery(ConnString, sql);
             backgroundWorker.ReportProgress(1, $"插入遗漏数据Id={syncBoxEntity.Id} 命令字={syncBoxEntity.Cmd}");
@@ -375,6 +376,20 @@ namespace PartialViewSyncTool
                     return;
             }
             return;
+        }
+
+        private void chbVersion_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            { return; }
+            txtCmd.Text = "742;743;820;821;74A;811";
+        }
+
+        private void chbVersion_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            { return; }
+            txtCmd.Text = "82A";
         }
     }
 }
