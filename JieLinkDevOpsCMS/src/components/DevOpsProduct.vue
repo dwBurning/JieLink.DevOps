@@ -280,12 +280,13 @@ export default {
     window.onresize = () => {
       this.Height = document.documentElement.clientHeight - 200;
     };
+
     this.loadVsersionInfo();
   },
   data() {
     return {
       fileList: [],
-      action: process.env.BASE_URL + "/upload/package/" + Date.now(),
+      action: "/upload/package/" + Date.now(),// 生产环境 不需要配置前面的地址
       Height: 0,
       loading: false,
       dialogLoading: false,
