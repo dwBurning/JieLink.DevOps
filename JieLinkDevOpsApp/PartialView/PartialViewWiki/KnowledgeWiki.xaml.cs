@@ -70,10 +70,9 @@ namespace PartialViewWiki
         {
             Button button = sender as Button;
             string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
-            string path = BaseDirectoryPath + "plugs\\Gif\\" + button.Tag + ".gif";
+            string path = BaseDirectoryPath + "Gif\\" + button.Tag + ".gif";
             if (File.Exists(path))
             {
-
                 Application.Current.MainWindow.WindowState = WindowState.Maximized;
                 DemonstrateWindow window = new DemonstrateWindow(path, button.Content.ToString());
                 window.WindowState = WindowState.Maximized;

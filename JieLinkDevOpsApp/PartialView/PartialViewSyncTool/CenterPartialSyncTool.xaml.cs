@@ -19,8 +19,7 @@ using JieLinkSyncTool;
 using System.Data;
 using System.Windows.Forms;
 using System.IO;
-using Newtonsoft.Json;
-using UIBrowser.Helpers;
+
 
 namespace PartialViewSyncTool
 {

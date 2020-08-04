@@ -24,7 +24,7 @@ namespace PartialViewCheckUpdate
                 fileName = fileName + ".gif";
             }
             string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
-            string path = BaseDirectoryPath + "plugs\\Gif\\" + fileName;
+            string path = BaseDirectoryPath + "Gif\\" + fileName;
             if (File.Exists(path))
             {
                 Application.Current.MainWindow.WindowState = WindowState.Maximized;

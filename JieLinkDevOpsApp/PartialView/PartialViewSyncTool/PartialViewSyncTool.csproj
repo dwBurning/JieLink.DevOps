@@ -103,10 +103,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\JieShun.JieLink.DevOps.App.csproj">
-      <Project>{E535340A-0421-4939-94B8-06C112CABA29}</Project>
-      <Name>JieShun.JieLink.DevOps.App</Name>
-    </ProjectReference>
     <ProjectReference Include="..\PartialViewInterface\PartialViewInterface.csproj">
       <Project>{3facc984-5886-4c2b-bfa3-c722125ee56d}</Project>
       <Name>PartialViewInterface</Name>
