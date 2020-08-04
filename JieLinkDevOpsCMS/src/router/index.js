@@ -70,7 +70,6 @@ export default new Router({
           iconCls: 'el-icon-monitor',
           name: '运维工具',
           component: DevOpsProduct,
-          hidden: true,
         }
       ]
     }, {

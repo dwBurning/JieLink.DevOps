@@ -18,6 +18,7 @@
           @click="searchClick"
         >搜索</el-button>
         <el-button
+          :disabled="!isAdmin"
           type="primary"
           icon="el-icon-document-add"
           size="small"
@@ -92,6 +93,7 @@
           <el-table-column label="操作" width="100">
             <template slot-scope="scope">
               <el-button
+                :disabled="!isAdmin"
                 @click="handleClick(scope.row)"
                 type="danger"
                 icon="el-icon-delete"
@@ -265,10 +267,16 @@ export default {
     }
   },
   mounted() {
+    if (localStorage.getItem("username") === "jielink") {
+      this.isAdmin = false; //做了个假的权限控制
+    } else {
+      this.isAdmin = true;
+    }
     this.loadVsersionInfo();
   },
   data() {
     return {
+      isAdmin: false,
       fileList: [],
       action: "/upload/package/" + Date.now(), // 生产环境 不需要配置前面的地址
       Height: 0,
