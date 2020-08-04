@@ -1,71 +1,66 @@
 <template>
   <div id="app">
     <Header></Header>
-    <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
-      <el-container>
-        <el-header class="report_header">
-          <el-select
-            style="width: 400px"
-            prefix-icon="el-icon-search"
-            v-model="keywords"
-            placeholder="请选择事件类型"
-          >
-            <el-option label="内存溢出" value="1"></el-option>
-            <el-option label="CPU高" value="2"></el-option>
-          </el-select>
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="small"
-            style="margin-left: 3px"
-            @click="searchClick"
-          >搜索</el-button>
-        </el-header>
-        <el-main class="report_main">
-          <el-table v-loading="loading" :data="events" border style="width: 100%">
-            <el-table-column v-if="idVisible" prop="id" label="主键ID" width="100"></el-table-column>
-            <el-table-column
-              fixed="left"
-              prop="eventType"
-              label="事件类型"
-              :formatter="eventTypeFormat"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="remoteAccount" label="远程账号" width="300"></el-table-column>
-            <el-table-column prop="contactName" label="联系人姓名" width="100"></el-table-column>
-            <el-table-column prop="contactPhone" label="联系人电话" width="120"></el-table-column>
-            <el-table-column prop="operatorDate" label="入库时间" width="200"></el-table-column>
-            <el-table-column
-              prop="isProcessed"
-              label="处理状态"
-              :formatter="processStatusFormat"
-              width="100"
-            ></el-table-column>
-            <el-table-column label="操作" width="150">
-              <template slot-scope="scope">
-                <el-button
-                  :disabled="scope.row.isProcessed==1"
-                  @click="handleClick(scope.row)"
-                  icon="el-icon-finished"
-                  type="primary"
-                  size="small"
-                >标记为已处理</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="page"
-            :limit.sync="limit"
-            @pagination="loadVsersionInfo"
-          />
-        </el-main>
-      </el-container>
-    </div>
-    <Footer>
-      <a href="http://106.53.255.16:8090/" target="_blank">由JieLink+V2.*团队提供技术支持</a>
-    </Footer>
+    <el-container>
+      <el-header class="report_header">
+        <el-select
+          style="width: 400px"
+          prefix-icon="el-icon-search"
+          v-model="keywords"
+          placeholder="请选择事件类型"
+        >
+          <el-option label="内存溢出" value="1"></el-option>
+          <el-option label="CPU高" value="2"></el-option>
+        </el-select>
+        <el-button
+          type="primary"
+          icon="el-icon-search"
+          size="small"
+          style="margin-left: 3px"
+          @click="searchClick"
+        >搜索</el-button>
+      </el-header>
+      <el-main class="report_main">
+        <el-table v-loading="loading" :data="events" border style="width: 100%">
+          <el-table-column v-if="idVisible" prop="id" label="主键ID" width="100"></el-table-column>
+          <el-table-column
+            fixed="left"
+            prop="eventType"
+            label="事件类型"
+            :formatter="eventTypeFormat"
+            width="120"
+          ></el-table-column>
+          <el-table-column prop="remoteAccount" label="远程账号" width="300"></el-table-column>
+          <el-table-column prop="contactName" label="联系人姓名" width="100"></el-table-column>
+          <el-table-column prop="contactPhone" label="联系人电话" width="120"></el-table-column>
+          <el-table-column prop="operatorDate" label="入库时间" width="200"></el-table-column>
+          <el-table-column
+            prop="isProcessed"
+            label="处理状态"
+            :formatter="processStatusFormat"
+            width="100"
+          ></el-table-column>
+          <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button
+                :disabled="scope.row.isProcessed==1"
+                @click="handleClick(scope.row)"
+                icon="el-icon-finished"
+                type="primary"
+                size="small"
+              >标记为已处理</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <pagination
+          v-show="total>0"
+          :total="total"
+          :page.sync="page"
+          :limit.sync="limit"
+          @pagination="loadVsersionInfo"
+        />
+      </el-main>
+    </el-container>
   </div>
 </template>
 
@@ -155,11 +150,6 @@ export default {
     }
   },
   mounted() {
-    //动态设置内容高度 让footer始终居底   header+footer的高度是200
-    this.Height = document.documentElement.clientHeight - 200; //监听浏览器窗口变化
-    window.onresize = () => {
-      this.Height = document.documentElement.clientHeight - 200;
-    };
     this.loadVsersionInfo();
   },
   data() {

@@ -31,7 +31,7 @@ export default {
       loading: false,
       loginForm: {
         username: "burning",
-        password: "123",
+        password: "js*168",
         checked: true
       },
       rules: {

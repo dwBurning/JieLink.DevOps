@@ -28,7 +28,7 @@ public class DevOpsEventService {
 	public int reportDevOpsEvent(DevOpsEvent devOpsEvent) {
 		int result = devOpsEventMapper.insertSelective(devOpsEvent);
 		if (result > 0) {
-			List<SysUser> sysUsers = sysUserService.getAllUser();
+			List<SysUser> sysUsers = sysUserService.getSysUsers(null);
 			sysUsers.forEach((user) -> {
 				SimpleMailMessage message = new SimpleMailMessage();
 				StringBuilder emailTextString = new StringBuilder();

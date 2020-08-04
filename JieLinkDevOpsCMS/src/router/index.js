@@ -9,6 +9,7 @@ import VersionManager from '@/components/VersionManager'
 import PublishVersion from '@/components/PublishVersion'
 import DevOpsProduct from '@/components/DevOpsProduct'
 import Lonin from '@/components/Login'
+import UserManager from '@/components/UserManager'
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -82,6 +83,19 @@ export default new Router({
           iconCls: 'el-icon-chat-dot-square',
           name: '需求管理',
           component: DemandManager,
+        }
+      ]
+    }, {
+      path: '/home',
+      component: Home,
+      name: '用户管理-1',
+      children: [
+        {
+          path: '/userManager',
+          iconCls: 'el-icon-user',
+          name: '用户管理',
+          component: UserManager,
+          hidden: true,
         }
       ]
     }

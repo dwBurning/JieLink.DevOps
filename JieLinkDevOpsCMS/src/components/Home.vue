@@ -57,6 +57,9 @@
           </keep-alive>
           <router-view v-if="!this.$route.meta.keepAlive"></router-view>
         </el-main>
+        <el-footer heigh="50px">
+          <a href="http://106.53.255.16:8090/" target="_blank">由JieLink+V2.*团队提供技术支持</a>
+        </el-footer>
       </el-container>
     </el-container>
   </el-container>
