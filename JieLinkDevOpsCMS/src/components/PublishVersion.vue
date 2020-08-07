@@ -212,7 +212,7 @@ export default {
             versionType: this.ruleForm.versionType,
             compileDate: this.ruleForm.compileDate,
             versionDescribe:
-              "[" + this.operatorType + "]，" + this.ruleForm.versionDescribe,
+              "[" + this.ruleForm.operatorType + "]，" + this.ruleForm.versionDescribe,
             downloadMsg: this.ruleForm.downloadMsg
           }).then(
             resp => {
