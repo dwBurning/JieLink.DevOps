@@ -1,117 +1,114 @@
 <template>
-  <div id="app">
-    <Header></Header>
-    <el-container>
-      <el-header class="report_header">
-        <el-input
-          placeholder="请输入版本号..."
-          prefix-icon="el-icon-search"
-          v-model="keywords"
-          style="width: 400px"
-          size="medium"
-        ></el-input>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="small"
-          style="margin-left: 3px"
-          @click="searchClick"
-        >搜索</el-button>
-        <el-button
-          :disabled="!isAdmin"
-          type="primary"
-          icon="el-icon-document-add"
-          size="small"
-          style="margin-left: 3px"
-          @click="addVersionInfo"
-        >发布</el-button>
-      </el-header>
-      <el-main class="report_main">
-        <el-dialog title="版本信息" :visible.sync="dialogVisible">
-          <el-form
-            :model="ruleForm"
-            :rules="rules"
-            ref="ruleForm"
-            label-width="100px"
-            class="demo-ruleForm"
-          >
-            <el-form-item label="产品类型">
-              <el-select style="width: 100%;" v-model="ruleForm.productType" placeholder="请选择产品类型">
-                <el-option label="运维工具" value="0"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="版本号" prop="productVersion">
-              <el-input v-model="ruleForm.productVersion" placeholder="V1.0.0"></el-input>
-            </el-form-item>
+  <el-container>
+    <el-header class="report_header">
+      <el-input
+        placeholder="请输入版本号..."
+        prefix-icon="el-icon-search"
+        v-model="keywords"
+        style="width: 400px"
+        size="medium"
+      ></el-input>
+      <el-button
+        type="primary"
+        icon="el-icon-search"
+        size="small"
+        style="margin-left: 3px"
+        @click="searchClick"
+      >搜索</el-button>
+      <el-button
+        :disabled="!isAdmin"
+        type="primary"
+        icon="el-icon-document-add"
+        size="small"
+        style="margin-left: 3px"
+        @click="addVersionInfo"
+      >发布</el-button>
+    </el-header>
+    <el-main class="report_main">
+      <el-dialog title="版本信息" :visible.sync="dialogVisible">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="ruleForm"
+          label-width="100px"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="产品类型">
+            <el-select style="width: 100%;" v-model="ruleForm.productType" placeholder="请选择产品类型">
+              <el-option label="运维工具" value="0"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="版本号" prop="productVersion">
+            <el-input v-model="ruleForm.productVersion" placeholder="V1.0.0"></el-input>
+          </el-form-item>
 
-            <el-form-item label="版本描述" prop="versionDescribe">
-              <el-input type="textarea" v-model="ruleForm.versionDescribe" placeholder="新增了*功能"></el-input>
-            </el-form-item>
-            <el-form-item label="上传文件" prop="downloadUrl">
-              <el-upload
-                class="upload-demo"
-                :action="action"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :before-remove="beforeRemove"
-                :on-success="handleSuccess"
-                multiple
-                :limit="1"
-                :on-exceed="handleExceed"
-                :file-list="fileList"
-              >
-                <el-button size="small" type="primary">点击上传</el-button>
-                <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-              </el-upload>
-            </el-form-item>
+          <el-form-item label="版本描述" prop="versionDescribe">
+            <el-input type="textarea" v-model="ruleForm.versionDescribe" placeholder="新增了*功能"></el-input>
+          </el-form-item>
+          <el-form-item label="上传文件" prop="downloadUrl">
+            <el-upload
+              class="upload-demo"
+              :action="action"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :before-remove="beforeRemove"
+              :on-success="handleSuccess"
+              multiple
+              :limit="1"
+              :on-exceed="handleExceed"
+              :file-list="fileList"
+            >
+              <el-button size="small" type="primary">点击上传</el-button>
+              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+            </el-upload>
+          </el-form-item>
 
-            <el-form-item>
-              <el-button type="primary" @click="submitForm('ruleForm')">发布</el-button>
-              <el-button @click="resetForm('ruleForm')">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-dialog>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">发布</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
 
-        <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
-          <el-table-column v-if="idVisible" prop="id" label="主键ID" width="50"></el-table-column>
-          <el-table-column
-            fixed="left"
-            prop="productType"
-            :formatter="productTypeFormat"
-            label="产品类型"
-            width="120"
-          ></el-table-column>
-          <el-table-column prop="productVersion" label="版本号" width="80"></el-table-column>
+      <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
+        <el-table-column v-if="idVisible" prop="id" label="主键ID" width="50"></el-table-column>
+        <el-table-column
+          fixed="left"
+          prop="productType"
+          :formatter="productTypeFormat"
+          label="产品类型"
+          width="120"
+        ></el-table-column>
+        <el-table-column prop="productVersion" label="版本号" width="80"></el-table-column>
 
-          <el-table-column prop="operatorDate" label="上传时间" width="160"></el-table-column>
-          <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
-          <el-table-column prop="downloadUrl" label="下载信息" width="300">
-            <template slot-scope="scope">
-              <a :href="scope.row.downloadUrl" download title="下载">下载</a>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="100">
-            <template slot-scope="scope">
-              <el-button
-                :disabled="!isAdmin"
-                @click="handleClick(scope.row)"
-                type="danger"
-                icon="el-icon-delete"
-                size="small"
-              >删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <pagination
-          v-show="total>0"
-          :total="total"
-          :page.sync="page"
-          :limit.sync="limit"
-          @pagination="loadVsersionInfo"
-        />
-      </el-main>
-    </el-container>
-  </div>
+        <el-table-column prop="operatorDate" label="上传时间" width="160"></el-table-column>
+        <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
+        <el-table-column prop="downloadUrl" label="下载信息" width="300">
+          <template slot-scope="scope">
+            <a :href="scope.row.downloadUrl" download title="下载">下载</a>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button
+              :disabled="!isAdmin"
+              @click="handleClick(scope.row)"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="page"
+        :limit.sync="limit"
+        @pagination="loadVsersionInfo"
+      />
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -288,7 +285,7 @@ export default {
       versionInfos: [],
       total: 0, //数据总条数
       page: 1, //默认显示第1页
-      limit: 10, //默认一次显示10条数据
+      limit: 5, //默认一次显示5条数据
 
       ruleForm: {
         productType: "",
