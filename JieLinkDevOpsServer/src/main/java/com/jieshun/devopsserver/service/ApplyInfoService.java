@@ -28,6 +28,7 @@ public class ApplyInfoService {
 		emailTextString.append("工号：").append(applyInfo.getJobNumber()).append("\r\n");
 		emailTextString.append("姓名：").append(applyInfo.getName()).append("\r\n");
 		emailTextString.append("工单：").append(applyInfo.getWorkOrderNo()).append("\r\n");
+		emailTextString.append("补丁说明：").append(versionInfo.getVersionDescribe()).append("\r\n");
 		emailTextString.append(versionInfo.getDownloadMsg());
 		message.setText(emailTextString.toString());
 		SendEmailTask.Enqueue(message);
