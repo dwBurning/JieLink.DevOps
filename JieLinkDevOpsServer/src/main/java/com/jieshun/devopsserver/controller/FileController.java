@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,7 +44,9 @@ public class FileController {
 
         boolean ok = fileStoreService.upload(requestUrl, file.getOriginalFilename(), file.getInputStream());
 
-        return ResponseEntity.ok("上传成功");
+        String downloadUrl = "/download/" + requestUrl + "/" + file.getOriginalFilename();
+        System.out.println("上传成功，下载url=" + downloadUrl);
+        return ResponseEntity.ok(downloadUrl);
     }
 
     @GetMapping("/download/**/{fileName}")
@@ -51,15 +54,14 @@ public class FileController {
 
         //下载路径格式为 /download/bucktName/xxx/somepath.../xxx.txt
         String requestUrl = URLDecoder.decode(request.getRequestURI(), request.getCharacterEncoding());
+        //用fileName替换requestUrl里面的文件名（可能+号变成空格了）
+        requestUrl = requestUrl.substring(0, requestUrl.lastIndexOf('/')) + "/" + fileName;
         //去掉/upload
         requestUrl = requestUrl.substring(requestUrl.indexOf(DOWNLOAD_PREFIX) + DOWNLOAD_PREFIX.length(), requestUrl.length());///logs/2020071
-        //去掉开头和结尾的/
+        //去掉开头的/
         requestUrl = StringUtils.trimLeadingCharacter(requestUrl, '/');//logs/2020071
-        requestUrl = StringUtils.trimTrailingCharacter(requestUrl, '/');
-
         System.out.println(requestUrl);
         System.out.println(fileName);
-
         //获取文件流
         InputStream inStream = null;
         try {

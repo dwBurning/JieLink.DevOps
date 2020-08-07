@@ -35,7 +35,7 @@ namespace PartialViewRegeist
 
         public string TagName
         {
-            get { return "Box2"; }
+            get { return "BoxPartialRegist"; }
         }
 
         public MenuType MenuType

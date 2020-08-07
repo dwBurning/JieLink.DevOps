@@ -4,7 +4,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
-      xmlns:Core="clr-namespace:Panuon.UI.Silver.Core;assembly=Panuon.UI.Silver" 
       xmlns:local="clr-namespace:PartialViewSyncTool"
       mc:Ignorable="d" 
       d:DesignHeight="550" d:DesignWidth="800">
@@ -42,11 +41,12 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
         <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
-                     Grid.Column="2" Grid.RowSpan="12" IsReadOnly="True" Margin="10,5,0,10">
+                     Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
             <FlowDocument>
                 <Paragraph>
                     <Run Text=""/>
@@ -54,38 +54,39 @@
             </FlowDocument>
         </RichTextBox>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" x:Name="TextBlock1">中心IP地址：</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" x:Name="TextBlock2" >数据库名称：</TextBlock>
-        <TextBlock Grid.Row="2" Grid.Column="0" x:Name="TextBlock3" >数据库端口：</TextBlock>
-        <TextBlock Grid.Row="3" Grid.Column="0" x:Name="TextBlock4" >数据库用户：</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="0" x:Name="TextBlock5" >数据库密码：</TextBlock>
-        <TextBlock Grid.Row="6" Grid.Column="0" x:Name="TextBlock6" >频率:(秒)：</TextBlock>
-        <TextBlock Grid.Row="7" Grid.Column="0" x:Name="TextBlock7" >检测天数：</TextBlock>
-        <TextBlock Grid.Row="8" Grid.Column="0" x:Name="TextBlock8" >检测条数：</TextBlock>
-        <TextBlock Grid.Row="9" Grid.Column="0" x:Name="TextBlock9" >命令字：</TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="0" >中心IP地址：</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" >数据库名称：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0" >数据库端口：</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0" >数据库用户：</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="0" >频率:(秒)：</TextBlock>
+        <TextBlock Grid.Row="7" Grid.Column="0" >检测天数：</TextBlock>
+        <TextBlock Grid.Row="8" Grid.Column="0" >检测条数：</TextBlock>
+        <TextBlock Grid.Row="9" Grid.Column="0" >版本：</TextBlock>
+        <TextBlock Grid.Row="10" Grid.Column="0" x:Name="TextBlock10" >命令字：</TextBlock>
         <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="127.0.0.1" 
-                 VerticalAlignment="Center" Height="40"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" 
-                 VerticalAlignment="Center" Height="40"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="3306" 
-                 VerticalAlignment="Center" Height="40"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="test" 
-                 VerticalAlignment="Center" Height="40"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
@@ -93,6 +94,7 @@
                  />
         <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtCenterDbPwd" 
                      pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
+                     pu:PasswordBoxHelper.Watermark="请输入密码"
                      pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
                      pu:PasswordBoxHelper.CornerRadius="4"
@@ -110,27 +112,36 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCheckDay" Text="1" 
-                 VerticalAlignment="Center" Height="40"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入检测天数"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtCheckRow" Text="100" 
-                 VerticalAlignment="Center" Height="40"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入检测条数"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="9" Grid.Column="1" x:Name="txtCmd" Text="82A" 
-                 VerticalAlignment="Center" Height="40"
+
+        <CheckBox Grid.Row="9" Grid.Column="1" x:Name="chbVersion" Height="30" Content="2.0以下版本"
+                 pu:CheckBoxHelper.CheckBoxStyle="Switch"
+                 pu:CheckBoxHelper.BoxHeight="22"
+                 pu:CheckBoxHelper.BoxWidth="33" Unchecked="chbVersion_Unchecked"
+                 pu:CheckBoxHelper.CheckedBackground="#20A0FF"
+                 pu:CheckBoxHelper.CornerRadius="4" Checked="chbVersion_Checked"
+                 />
+        
+        <TextBox Grid.Row="10" Grid.Column="1" x:Name="txtCmd" Text="82A" MinLines="20"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="命令字以分号“;”分割"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <Button Grid.Column="1" Grid.Row="10" Content="开启检测" Name="btnStartTask" Click="btnStartTask_Click"
+        <Button Grid.Column="1" Grid.Row="11" Content="开启检测" Name="btnStartTask" Click="btnStartTask_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"

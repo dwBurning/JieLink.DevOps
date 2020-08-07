@@ -2,6 +2,8 @@ package com.jieshun.devopsserver.bean;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class VersionInfo {
     private Integer id;
 
@@ -11,11 +13,17 @@ public class VersionInfo {
 
     private Integer versionType;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date compileDate;
 
     private String versionDescribe;
 
     private String downloadMsg;
+
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
+    private Date operatorDate;
+
+    private Integer isDeleted;
 
     public Integer getId() {
         return id;
@@ -71,5 +79,21 @@ public class VersionInfo {
 
     public void setDownloadMsg(String downloadMsg) {
         this.downloadMsg = downloadMsg == null ? null : downloadMsg.trim();
+    }
+
+    public Date getOperatorDate() {
+        return operatorDate;
+    }
+
+    public void setOperatorDate(Date operatorDate) {
+        this.operatorDate = operatorDate;
+    }
+
+    public Integer getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Integer isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

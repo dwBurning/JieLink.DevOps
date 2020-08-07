@@ -36,9 +36,10 @@ public class VersionInfoService {
 	 * @return 分页对象
 	 */
 	public PageSet<VersionInfo> getVersionInfoWithPages(String orderNo, int start, int end) {
-		String limitString = String.format("compile_date desc limit %d,%d", start, end - start);
+		String limitString = String.format("operator_date desc limit %d,%d", start, end - start);
 		VersionInfoExample example = new VersionInfoExample();
 		Criteria criteria = example.createCriteria();
+		criteria.andIsDeletedEqualTo(0);
 		if (orderNo != null && orderNo != "") {
 
 			criteria.andWorkOrderNoLike("%" + orderNo + "%");
@@ -52,10 +53,40 @@ public class VersionInfoService {
 		return pageSet;
 	}
 
+	/**
+	 * 根据工单号查询版本信息
+	 * 
+	 * @param orderNo 工单号
+	 * @return 版本信息对象
+	 */
 	public VersionInfo getVersionInfoByOrderNo(String orderNo) {
 		VersionInfoExample example = new VersionInfoExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andWorkOrderNoEqualTo(orderNo);
 		return versionInfoMapper.selectByExample(example).get(0);
 	}
+
+	/**
+	 * 发不版本
+	 * 
+	 * @param versionInfo 版本信息对象
+	 * @return 受影响行数
+	 */
+	public int addVersionInfo(VersionInfo versionInfo) {
+		return versionInfoMapper.insertSelective(versionInfo);
+	}
+
+	/**
+	 * 根据Id删除版本信息
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public int deleteVersionInfoById(int id) {
+		VersionInfo versionInfo = new VersionInfo();
+		versionInfo.setId(id);
+		versionInfo.setIsDeleted(1);
+		return versionInfoMapper.updateByPrimaryKeySelective(versionInfo);
+	}
+
 }

@@ -11,10 +11,11 @@
             Width="1000"
             MinWidth="1000"
             WindowStartupLocation="CenterScreen"
+            Loaded="WindowX_Loaded"
             Closing="WindowX_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.3*"
+            <ColumnDefinition Width="200"
                               MinWidth="250" MaxWidth="350" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -63,15 +64,7 @@
         </Grid>
         <GridSplitter Width="2"
                       VerticalAlignment="Stretch" />
-        <ContentControl x:Name="ContentControl"
-                        Grid.Column="1"
-                        Margin="20,0" />
-        <Button Grid.Column="1"
-                Height="30"
-                Width="200"
-                Visibility="Collapsed"
-                Click="Button_Click"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"/>
+        <ContentControl Grid.Column="1" x:Name="ContentControl"
+                        Margin="5,0" />
     </Grid>
 </pu:WindowX>

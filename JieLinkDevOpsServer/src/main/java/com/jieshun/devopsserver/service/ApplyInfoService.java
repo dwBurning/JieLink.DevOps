@@ -22,9 +22,16 @@ public class ApplyInfoService {
 	public int addApplyInfo(ApplyInfo applyInfo) {
 		int result = applyInfoMapper.insertSelective(applyInfo);
 		VersionInfo versionInfo = versionInfoService.getVersionInfoByOrderNo(applyInfo.getWorkOrderNo());
-		applyInfo.setDownloadMsg(versionInfo.getDownloadMsg());
-		SendEmailTask.Enqueue(applyInfo);
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(applyInfo.getEmail());
+		StringBuilder emailTextString = new StringBuilder();
+		emailTextString.append("工号：").append(applyInfo.getJobNumber()).append("\r\n");
+		emailTextString.append("姓名：").append(applyInfo.getName()).append("\r\n");
+		emailTextString.append("工单：").append(applyInfo.getWorkOrderNo()).append("\r\n");
+		emailTextString.append("补丁说明：").append(versionInfo.getVersionDescribe()).append("\r\n");
+		emailTextString.append(versionInfo.getDownloadMsg());
+		message.setText(emailTextString.toString());
+		SendEmailTask.Enqueue(message);
 		return result;
-
 	}
 }

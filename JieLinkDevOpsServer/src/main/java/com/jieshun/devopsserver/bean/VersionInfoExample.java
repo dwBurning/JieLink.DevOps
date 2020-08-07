@@ -564,6 +564,126 @@ public class VersionInfoExample {
             addCriterion("download_msg not between", value1, value2, "downloadMsg");
             return (Criteria) this;
         }
+
+        public Criteria andOperatorDateIsNull() {
+            addCriterion("operator_date is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateIsNotNull() {
+            addCriterion("operator_date is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateEqualTo(Date value) {
+            addCriterion("operator_date =", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateNotEqualTo(Date value) {
+            addCriterion("operator_date <>", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateGreaterThan(Date value) {
+            addCriterion("operator_date >", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateGreaterThanOrEqualTo(Date value) {
+            addCriterion("operator_date >=", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateLessThan(Date value) {
+            addCriterion("operator_date <", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateLessThanOrEqualTo(Date value) {
+            addCriterion("operator_date <=", value, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateIn(List<Date> values) {
+            addCriterion("operator_date in", values, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateNotIn(List<Date> values) {
+            addCriterion("operator_date not in", values, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateBetween(Date value1, Date value2) {
+            addCriterion("operator_date between", value1, value2, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorDateNotBetween(Date value1, Date value2) {
+            addCriterion("operator_date not between", value1, value2, "operatorDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedIsNull() {
+            addCriterion("is_deleted is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedIsNotNull() {
+            addCriterion("is_deleted is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedEqualTo(Integer value) {
+            addCriterion("is_deleted =", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedNotEqualTo(Integer value) {
+            addCriterion("is_deleted <>", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedGreaterThan(Integer value) {
+            addCriterion("is_deleted >", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_deleted >=", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedLessThan(Integer value) {
+            addCriterion("is_deleted <", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedLessThanOrEqualTo(Integer value) {
+            addCriterion("is_deleted <=", value, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedIn(List<Integer> values) {
+            addCriterion("is_deleted in", values, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedNotIn(List<Integer> values) {
+            addCriterion("is_deleted not in", values, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedBetween(Integer value1, Integer value2) {
+            addCriterion("is_deleted between", value1, value2, "isDeleted");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsDeletedNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_deleted not between", value1, value2, "isDeleted");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

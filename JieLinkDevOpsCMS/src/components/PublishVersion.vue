@@ -1,108 +1,118 @@
 <template>
-  <div id="app">
-    <Header></Header>
-    <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
-      <el-container>
-        <el-header class="report_header">
-          <el-input
-            placeholder="请输入工单号..."
-            prefix-icon="el-icon-search"
-            v-model="keywords"
-            style="width: 400px"
-            size="medium"
-          ></el-input>
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="small"
-            style="margin-left: 3px"
-            @click="searchClick"
-          >搜索</el-button>
-          <el-button
-            type="primary"
-            icon="el-icon-document-add"
-            size="small"
-            style="margin-left: 3px"
-            @click="addVersionInfo"
-          >新增</el-button>
-        </el-header>
-        <el-main class="report_main">
-          <el-dialog title="版本信息" :visible.sync="dialogVisible">
-            <el-form
-              :model="ruleForm"
-              :rules="rules"
-              ref="ruleForm"
-              label-width="100px"
-              class="demo-ruleForm"
-            >
-              <el-form-item label="工单号" prop="workOrderNo">
-                <el-input v-model="ruleForm.workOrderNo"></el-input>
-              </el-form-item>
-              <el-form-item label="版本号" prop="standVersion">
-                <el-input v-model="ruleForm.standVersion"></el-input>
-              </el-form-item>
-              <el-form-item label="版本类型" prop="versionType">
-                <el-input v-model="ruleForm.versionType"></el-input>
-              </el-form-item>
-              <el-form-item label="编译时间" prop="compileDate">
-                <el-input v-model="ruleForm.compileDate"></el-input>
-              </el-form-item>
-              <el-form-item label="版本描述" prop="versionDescribe">
-                <el-input v-model="ruleForm.versionDescribe"></el-input>
-              </el-form-item>
-              <el-form-item label="下载信息" prop="downloadMsg">
-                <el-input v-model="ruleForm.downloadMsg"></el-input>
-              </el-form-item>
+  <el-container>
+    <el-header class="report_header">
+      <el-input
+        placeholder="请输入工单号..."
+        prefix-icon="el-icon-search"
+        v-model="keywords"
+        style="width: 400px"
+        size="medium"
+      ></el-input>
+      <el-button
+        type="primary"
+        icon="el-icon-search"
+        size="small"
+        style="margin-left: 3px"
+        @click="searchClick"
+      >搜索</el-button>
+      <el-button
+        type="primary"
+        icon="el-icon-document-add"
+        size="small"
+        style="margin-left: 3px"
+        @click="addVersionInfo"
+      >发布</el-button>
+    </el-header>
+    <el-main class="report_main">
+      <el-dialog title="版本信息" :visible.sync="dialogVisible">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="ruleForm"
+          label-width="100px"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="工单号" prop="workOrderNo">
+            <el-input v-model="ruleForm.workOrderNo"></el-input>
+          </el-form-item>
+          <el-form-item label="版本号" prop="standVersion">
+            <el-input v-model="ruleForm.standVersion" placeholder="V1.0.0"></el-input>
+          </el-form-item>
+          <el-form-item label="版本类型">
+            <el-select style="width: 100%;" v-model="ruleForm.versionType" placeholder="请选择版本类型">
+              <el-option label="工单" value="0"></el-option>
+              <el-option label="补丁" value="1"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="操作方式">
+            <el-select style="width: 100%;" v-model="ruleForm.operatorType" placeholder="请选择操作方式">
+              <el-option label="替换盒子的文件" value="替换盒子的文件"></el-option>
+              <el-option label="替换中心的文件" value="替换中心的文件"></el-option>
+              <el-option label="替换Web的文件" value="替换Web的文件"></el-option>
+            </el-select>
+          </el-form-item>
 
-              <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">申请</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </el-dialog>
+          <el-form-item label="编译时间" prop="compileDate">
+            <el-date-picker
+              style="width: 100%;"
+              v-model="ruleForm.compileDate"
+              align="right"
+              type="date"
+              format="yyyy-MM-dd HH:mm:ss"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              placeholder="选择日期"
+              :picker-options="pickerOptions"
+            ></el-date-picker>
+          </el-form-item>
 
-          <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
-            <el-table-column v-if="idVisible" prop="id" label="主键ID" width="100"></el-table-column>
-            <el-table-column fixed="left" prop="workOrderNo" label="工单号" width="120"></el-table-column>
-            <el-table-column prop="standVersion" label="版本号" width="120"></el-table-column>
-            <el-table-column
-              prop="versionType"
-              :formatter="versionTypeFormat"
-              label="版本类型"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="compileDate" label="编译时间" width="200"></el-table-column>
-            <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
-            <el-table-column label="操作" width="150">
-              <template slot-scope="scope">
-                <el-button
-                  @click="handleClick(scope.row)"
-                  type="danger"
-                  icon="el-icon-delete"
-                  size="small"
-                >删除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="page"
-            :limit.sync="limit"
-            @pagination="loadVsersionInfo"
-          />
-        </el-main>
-      </el-container>
-    </div>
-    <Footer>
-      <a href="http://106.53.255.16:8090/" target="_blank">由JieLink+V2.*团队提供技术支持</a>
-    </Footer>
-  </div>
+          <el-form-item label="版本描述" prop="versionDescribe">
+            <el-input type="textarea" v-model="ruleForm.versionDescribe" placeholder="基于标准版本修改了*问题"></el-input>
+          </el-form-item>
+          <el-form-item label="下载信息" prop="downloadMsg">
+            <el-input type="textarea" v-model="ruleForm.downloadMsg"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">发布</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
+
+      <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
+        <el-table-column v-if="idVisible" prop="id" label="主键ID" width="50"></el-table-column>
+        <el-table-column fixed="left" prop="workOrderNo" label="工单号" width="300"></el-table-column>
+        <el-table-column prop="standVersion" label="版本号" width="80"></el-table-column>
+        <el-table-column prop="versionType" :formatter="versionTypeFormat" label="版本类型" width="80"></el-table-column>
+        <el-table-column prop="compileDate" label="编译时间" width="160"></el-table-column>
+        <el-table-column prop="versionDescribe" label="版本描述" width="400"></el-table-column>
+        <el-table-column prop="downloadMsg" label="下载信息" width="400"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button
+              @click="handleClick(scope.row)"
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="page"
+        :limit.sync="limit"
+        @pagination="loadVsersionInfo"
+      />
+    </el-main>
+  </el-container>
 </template>
 
 <script>
 import { postRequest } from "../utils/api";
 import { getRequest } from "../utils/api";
+import { deleteRequest } from "../utils/api";
 import Pagination from "@/components/Pagination";
 export default {
   components: { Pagination },
@@ -110,20 +120,41 @@ export default {
     //打开对话窗 请求对话参与方数据
     handleClick(row) {
       this.selItems = row;
-       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '删除成功!'
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          deleteRequest("/version/deleteVersionInfoById", {
+            id: this.selItems.id
+          }).then(
+            resp => {
+              this.$notify({
+                title: "成功",
+                type: "success",
+                message: "删除成功!"
+              });
+              this.loadVsersionInfo();
+            },
+            resp => {
+              if (resp.status == 403) {
+                this.$notify({
+                  title: "错误",
+                  type: "error",
+                  message: resp.data.msg
+                });
+              }
+              this.loading = false;
+            }
+          );
+        })
+        .catch(() => {
+          this.$notify({
+            title: "取消",
+            type: "info",
+            message: "已取消删除"
           });
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
         });
     },
 
@@ -139,7 +170,7 @@ export default {
     versionTypeFormat(row, column) {
       if (row.versionType == 0) {
         return "工单";
-      } else if (row.sessionStatus == 1) {
+      } else if (row.versionType == 1) {
         return "补丁";
       }
     },
@@ -160,10 +191,11 @@ export default {
           _this.loading = false;
         },
         resp => {
-          if (resp.response.status == 403) {
-            _this.$message({
+          if (resp.status == 403) {
+            _this.$notify({
+              title: "错误",
               type: "error",
-              message: resp.response.data
+              message: resp.data.msg
             });
           }
           _this.loading = false;
@@ -174,27 +206,31 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          postRequest("/apply/addApplyInfo", {
-            workOrderNo: this.selItems.workOrderNo,
-            jobNumber: this.ruleForm.jobNumber,
-            name: this.ruleForm.name,
-            cellPhone: this.ruleForm.cellPhone,
-            email: this.ruleForm.email
+          postRequest("/version/addVersionInfo", {
+            workOrderNo: this.ruleForm.workOrderNo,
+            standVersion: this.ruleForm.standVersion,
+            versionType: this.ruleForm.versionType,
+            compileDate: this.ruleForm.compileDate,
+            versionDescribe:
+              "[" + this.ruleForm.operatorType + "]，" + this.ruleForm.versionDescribe,
+            downloadMsg: this.ruleForm.downloadMsg
           }).then(
             resp => {
               this.$notify({
                 title: "成功",
-                message: "申请成功，请注意查收邮件",
+                message: "发布成功",
                 type: "success"
               });
               this.dialogVisible = false;
               this.$refs[formName].resetFields();
+              this.loadVsersionInfo();
             },
             resp => {
-              if (resp.response.status == 403) {
-                _this.$message({
+              if (resp.status == 403) {
+                _this.$notify({
+                  title: "错误",
                   type: "error",
-                  message: resp.response.data
+                  message: resp.data.msg
                 });
               }
               _this.loading = false;
@@ -211,28 +247,9 @@ export default {
     }
   },
   mounted() {
-    //动态设置内容高度 让footer始终居底   header+footer的高度是200
-    this.Height = document.documentElement.clientHeight - 200; //监听浏览器窗口变化
-    window.onresize = () => {
-      this.Height = document.documentElement.clientHeight - 200;
-    };
-
     this.loadVsersionInfo();
   },
   data() {
-    var checkPhone = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error("手机号不能为空"));
-      } else {
-        const reg = /^1[3|4|5|7|8][0-9]\d{8}$/;
-        console.log(reg.test(value));
-        if (reg.test(value)) {
-          callback();
-        } else {
-          return callback(new Error("请输入正确的手机号"));
-        }
-      }
-    };
     return {
       Height: 0,
       loading: false,
@@ -240,32 +257,67 @@ export default {
       dialogVisible: false,
       idVisible: false,
       keywords: null,
-      selItems: "",
       versionInfos: [],
       total: 0, //数据总条数
       page: 1, //默认显示第1页
-      limit: 10, //默认一次显示10条数据
+      limit: 5, //默认一次显示5条数据
 
       ruleForm: {
-        jobNumber: "",
-        name: "",
-        cellPhone: "",
-        email: ""
+        workOrderNo: "",
+        standVersion: "",
+        versionType: "",
+        operatorType: "",
+        compileDate: "",
+        versionDescribe: "",
+        downloadMsg: ""
       },
 
       rules: {
-        jobNumber: [{ required: true, message: "请输入工号", trigger: "blur" }],
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-        cellPhone: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
-          { validator: checkPhone, trigger: "blur" }
+        workOrderNo: [
+          { required: true, message: "请输入工单号", trigger: "blur" }
         ],
-        email: [
-          { required: true, message: "请输入邮箱地址", trigger: "blur" },
+        standVersion: [
+          { required: true, message: "请输入版本信息", trigger: "blur" }
+        ],
+        versionType: [
+          { required: true, message: "请输入版本类型", trigger: "blur" }
+        ],
+        compileDate: [
+          { required: true, message: "请选择编译日期", trigger: "blur" }
+        ],
+        versionDescribe: [
+          { required: true, message: "请输入描述信息", trigger: "blur" }
+        ],
+        downloadMsg: [
+          { required: true, message: "请输入下载链接", trigger: "blur" }
+        ]
+      },
+      pickerOptions: {
+        disabledDate(time) {
+          return time.getTime() > Date.now();
+        },
+        shortcuts: [
           {
-            type: "email",
-            message: "请输入正确的邮箱地址",
-            trigger: ["blur", "change"]
+            text: "今天",
+            onClick(picker) {
+              picker.$emit("pick", new Date());
+            }
+          },
+          {
+            text: "昨天",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              picker.$emit("pick", date);
+            }
+          },
+          {
+            text: "一周前",
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit("pick", date);
+            }
           }
         ]
       }

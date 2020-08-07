@@ -23,11 +23,11 @@ public class SendEmailTask {
 	@Autowired
 	private JavaMailSender javaMailSender;
 
-	static Queue<ApplyInfo> queue = new LinkedList<ApplyInfo>();
+	static Queue<SimpleMailMessage> queue = new LinkedList<SimpleMailMessage>();
 
-	public static void Enqueue(ApplyInfo applyInfo) {
+	public static void Enqueue(SimpleMailMessage mailMessage) {
 		synchronized (lock) {
-			queue.offer(applyInfo);
+			queue.offer(mailMessage);
 		}
 	}
 
@@ -38,19 +38,16 @@ public class SendEmailTask {
 	private void send() {
 		while (queue.size() > 0) {
 			synchronized (lock) {
-				ApplyInfo applyInfo = queue.poll();
-				SimpleMailMessage message = new SimpleMailMessage();
-				message.setFrom("deadlineweismile@foxmail.com");
-				message.setTo(applyInfo.getEmail());
-				message.setSubject("JieLink运维平台推送消息");
-				StringBuilder emailTextString = new StringBuilder();
-				emailTextString.append("工号：").append(applyInfo.getJobNumber()).append("\r\n");
-				emailTextString.append("姓名：").append(applyInfo.getName()).append("\r\n");
-				emailTextString.append("工单：").append(applyInfo.getWorkOrderNo()).append("\r\n");
-				emailTextString.append(applyInfo.getDownloadMsg());
-				message.setText(emailTextString.toString());
-				javaMailSender.send(message);
-				log.info("发送工单{}给{}", applyInfo.getWorkOrderNo(), applyInfo.getName());
+				try {
+					SimpleMailMessage mailMessage = queue.poll();
+					mailMessage.setFrom("deadlineweismile@foxmail.com");
+					mailMessage.setSubject("JieLink运维平台推送消息");
+					javaMailSender.send(mailMessage);
+					log.info("发送邮件:{}\r\n给{}", mailMessage.getText(), mailMessage.getTo());
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

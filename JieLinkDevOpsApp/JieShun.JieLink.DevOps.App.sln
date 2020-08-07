@@ -1,21 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.App", "JieShun.JieLink.DevOps.App.csproj", "{E535340A-0421-4939-94B8-06C112CABA29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewTest", "PartialView\PartialViewTest\PartialViewTest.csproj", "{40BC649F-BA42-4806-993A-9EAA6C806267}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInterface", "PartialView\PartialViewInterface\PartialViewInterface.csproj", "{3FACC984-5886-4C2B-BFA3-C722125EE56D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewRegeist", "PartialView\PartialViewRegeist\PartialViewRegeist.csproj", "{CF648C76-53C3-40CE-935F-87B065B2069E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewRegist", "PartialView\PartialViewRegeist\PartialViewRegist.csproj", "{CF648C76-53C3-40CE-935F-87B065B2069E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewSyncTool", "PartialView\PartialViewSyncTool\PartialViewSyncTool.csproj", "{4276385B-4778-4846-B8E4-DBAD9313B28F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewInformation", "PartialView\PartialViewInformation\PartialViewInformation.csproj", "{53618417-7910-49BB-90F9-DF6816EF0183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewDelRegeist", "PartialView\PartialViewDelRegeist\PartialViewDelRegeist.csproj", "{E70C9790-920E-4DEF-8288-6953F39E6F29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewDelRegist", "PartialView\PartialViewDelRegeist\PartialViewDelRegist.csproj", "{E70C9790-920E-4DEF-8288-6953F39E6F29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewHealthMonitor", "PartialView\PartialViewHealthMonitor\PartialViewHealthMonitor.csproj", "{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewSetting", "PartialView\PartialViewSetting\PartialViewSetting.csproj", "{7460A897-482F-4ECA-9BB0-01213C3117B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewCheckUpdate", "PartialView\PartialViewCheckUpdate\PartialViewCheckUpdate.csproj", "{B4AB2342-3419-476E-95D1-FF522BAF18C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewWiki", "PartialView\PartialViewWiki\PartialViewWiki.csproj", "{B3D464F0-ADA0-44EA-852E-F10821827328}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.Updater", "Updater\JieShun.JieLink.DevOps.Updater.csproj", "{8CD4148A-534F-4634-980F-651B1128A6F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +35,6 @@ Global
 		{E535340A-0421-4939-94B8-06C112CABA29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E535340A-0421-4939-94B8-06C112CABA29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E535340A-0421-4939-94B8-06C112CABA29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40BC649F-BA42-4806-993A-9EAA6C806267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40BC649F-BA42-4806-993A-9EAA6C806267}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40BC649F-BA42-4806-993A-9EAA6C806267}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40BC649F-BA42-4806-993A-9EAA6C806267}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3FACC984-5886-4C2B-BFA3-C722125EE56D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3FACC984-5886-4C2B-BFA3-C722125EE56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FACC984-5886-4C2B-BFA3-C722125EE56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -51,6 +55,26 @@ Global
 		{E70C9790-920E-4DEF-8288-6953F39E6F29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E70C9790-920E-4DEF-8288-6953F39E6F29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E70C9790-920E-4DEF-8288-6953F39E6F29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A48306B3-0227-4F9F-9E9E-F7DB30E1B899}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7460A897-482F-4ECA-9BB0-01213C3117B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4AB2342-3419-476E-95D1-FF522BAF18C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4AB2342-3419-476E-95D1-FF522BAF18C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4AB2342-3419-476E-95D1-FF522BAF18C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4AB2342-3419-476E-95D1-FF522BAF18C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3D464F0-ADA0-44EA-852E-F10821827328}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3D464F0-ADA0-44EA-852E-F10821827328}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3D464F0-ADA0-44EA-852E-F10821827328}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3D464F0-ADA0-44EA-852E-F10821827328}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD4148A-534F-4634-980F-651B1128A6F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

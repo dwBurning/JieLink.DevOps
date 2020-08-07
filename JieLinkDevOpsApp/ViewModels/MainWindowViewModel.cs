@@ -1,6 +1,8 @@
 ﻿using JieShun.JieLink.DevOps.App.Models;
 using Panuon.UI.Silver.Core;
 using PartialViewInterface;
+using PartialViewInterface.Utils;
+using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +14,8 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 {
     public class MainWindowViewModel : PropertyChangedBase
     {
+        public List<IStartup> startups = new List<IStartup>();
+        public List<Type> jobs = new List<Type>();
         public static IDictionary<string, IPartialView> partialViewDic;
         public MainWindowViewModel()
         {
@@ -25,12 +29,20 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                 //解决样式不生效问题
                 if (!plug.Contains("PartialView"))
                     continue;
-
-                Assembly.LoadFile(plug).GetTypes()
-               .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
-               .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
-               .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
-               .ForEach(x => partialViewDic.Add(x.TagName, x));
+                var asm = Assembly.LoadFile(plug);
+                asm.GetTypes()
+                .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
+                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
+                .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
+                .ForEach(x => partialViewDic.Add(x.TagName, x));
+                //获取插件的Startup启动类
+                startups.AddRange(asm.GetExportedTypes()
+                .Where(x => typeof(IStartup).IsAssignableFrom(x)).ToList()
+                .Select(x => (IStartup)Activator.CreateInstance(x)).ToList());
+                startups.Sort((a, b) => b.Priority - a.Priority);
+                //获取cron后台定时任务
+                jobs.AddRange(asm.GetExportedTypes()
+                .Where(x => typeof(IJob).IsAssignableFrom(x)).ToList());
             }
 
             var centerMenus = new ObservableCollection<TreeViewItemModel>();
@@ -44,7 +56,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 
             MenuItems = new ObservableCollection<TreeViewItemModel>()
             {
-                new TreeViewItemModel("介绍","Information","\uf05a"){ IsSelected = true},
+                new TreeViewItemModel("设计","Information","\uf05a"){ IsSelected = true},
                 new TreeViewItemModel("中心","Center", "\uf17a")
                 {
                     MenuItems = centerMenus,
@@ -54,7 +66,9 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                 {
                      MenuItems = boxMenus,
                      IsExpanded = false
-                }
+                },
+                new TreeViewItemModel("百科","KnowledgeWiki","\uf266"),
+                new TreeViewItemModel("设置","SystemSetting","\uf085"),
             };
         }
 
@@ -67,7 +81,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 
         private string _searchText;
 
-        public ObservableCollection<TreeViewItemModel> MenuItems { get; } = new ObservableCollection<TreeViewItemModel>();
+        public ObservableCollection<TreeViewItemModel> MenuItems { get; private set; }
 
         #region Event
         private void OnSearchTextChanged()

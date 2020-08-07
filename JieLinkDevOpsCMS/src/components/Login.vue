@@ -30,8 +30,8 @@ export default {
     return {
       loading: false,
       loginForm: {
-        username: "burning",
-        password: "123",
+        username: "jielink",
+        password: "js*168",
         checked: true
       },
       rules: {
@@ -58,8 +58,9 @@ export default {
               if (resp.status == 200) {
                 //成功
                 var json = resp.data;
-                if (json.status == this.global.success) {
-                  _this.$router.replace({ path: "/devicemanager" });
+                if (json.status == 0) {
+                  localStorage.setItem('username', this.loginForm.username);
+                  _this.$router.replace({ path: "/versionmanager" });
                 } else {
                   _this.$alert("登录失败!", "失败!");
                 }

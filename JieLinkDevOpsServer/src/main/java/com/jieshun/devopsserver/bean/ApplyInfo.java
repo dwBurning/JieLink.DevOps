@@ -2,6 +2,8 @@ package com.jieshun.devopsserver.bean;
 
 import java.util.Date;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class ApplyInfo {
     private Integer id;
 
@@ -15,19 +17,10 @@ public class ApplyInfo {
 
     private String email;
 
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date applyDate;
 
     private Integer isSendEmail;
-    
-    private String DownloadMsg;
-
-    public String getDownloadMsg() {
-		return DownloadMsg;
-	}
-
-	public void setDownloadMsg(String downloadMsg) {
-		DownloadMsg = downloadMsg;
-	}
 
 	public Integer getId() {
         return id;

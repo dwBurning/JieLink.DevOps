@@ -1,85 +1,77 @@
 <template>
-  <div id="app">
-    <Header></Header>
-    <div id="v-content" v-bind:style="{minHeight: Height+'px'}">
-      <el-container>
-        <el-header class="report_header">
-          <el-input
-            placeholder="请输入工单号..."
-            prefix-icon="el-icon-search"
-            v-model="keywords"
-            style="width: 400px"
-            size="medium"
-          ></el-input>
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="small"
-            style="margin-left: 3px"
-            @click="searchClick"
-          >搜索</el-button>
-        </el-header>
-        <el-main class="report_main">
-          <el-dialog title="申请人信息" :visible.sync="dialogVisible">
-            <el-form
-              :model="ruleForm"
-              :rules="rules"
-              ref="ruleForm"
-              label-width="100px"
-              class="demo-ruleForm"
-            >
-              <el-form-item label="工号" prop="jobNumber">
-                <el-input v-model="ruleForm.jobNumber"></el-input>
-              </el-form-item>
-              <el-form-item label="姓名" prop="name">
-                <el-input v-model="ruleForm.name"></el-input>
-              </el-form-item>
-              <el-form-item label="手机" prop="cellPhone">
-                <el-input v-model="ruleForm.cellPhone"></el-input>
-              </el-form-item>
-              <el-form-item label="邮箱" prop="email">
-                <el-input v-model="ruleForm.email"></el-input>
-              </el-form-item>
+  <el-container>
+    <el-header class="report_header">
+      <el-input
+        placeholder="请输入工单号..."
+        prefix-icon="el-icon-search"
+        v-model="keywords"
+        style="width: 400px"
+        size="medium"
+      ></el-input>
+      <el-button
+        type="primary"
+        icon="el-icon-search"
+        size="small"
+        style="margin-left: 3px"
+        @click="searchClick"
+      >搜索</el-button>
+    </el-header>
+    <el-main class="report_main">
+      <el-dialog title="申请人信息" :visible.sync="dialogVisible">
+        <el-form
+          :model="ruleForm"
+          :rules="rules"
+          ref="ruleForm"
+          label-width="100px"
+          class="demo-ruleForm"
+        >
+          <el-form-item label="工号" prop="jobNumber">
+            <el-input v-model="ruleForm.jobNumber"></el-input>
+          </el-form-item>
+          <el-form-item label="姓名" prop="name">
+            <el-input v-model="ruleForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" prop="cellPhone">
+            <el-input v-model="ruleForm.cellPhone"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="ruleForm.email"></el-input>
+          </el-form-item>
 
-              <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">申请</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
-              </el-form-item>
-            </el-form>
-          </el-dialog>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">申请</el-button>
+            <el-button @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
 
-          <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
-            <el-table-column v-if="idVisible" prop="id" label="主键ID" width="100"></el-table-column>
-            <el-table-column fixed="left" prop="workOrderNo" label="工单号" width="120"></el-table-column>
-            <el-table-column prop="standVersion" label="版本号" width="120"></el-table-column>
-            <el-table-column
-              prop="versionType"
-              :formatter="versionTypeFormat"
-              label="版本类型"
-              width="120"
-            ></el-table-column>
-            <el-table-column prop="compileDate" label="编译时间" width="200"></el-table-column>
-            <el-table-column prop="versionDescribe" label="版本描述" width="300"></el-table-column>
-            <el-table-column label="操作" width="100">
-              <template slot-scope="scope">
-                <el-button @click="handleClick(scope.row)" type="text" size="medium">申请</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <pagination
-            v-show="total>0"
-            :total="total"
-            :page.sync="page"
-            :limit.sync="limit"
-            @pagination="loadVsersionInfo"
-          />
-        </el-main>
-      </el-container>
-    </div>
-    <Footer>
-      <a href="http://106.53.255.16:8090/" target="_blank">由JieLink+V2.*团队提供技术支持</a>
-    </Footer>
-  </div>
+      <el-table v-loading="loading" :data="versionInfos" border style="width: 100%">
+        <el-table-column v-if="idVisible" prop="id" label="主键ID" width="100"></el-table-column>
+        <el-table-column fixed="left" prop="workOrderNo" label="工单号" width="300"></el-table-column>
+        <el-table-column prop="standVersion" label="版本号" width="80"></el-table-column>
+        <el-table-column prop="versionType" :formatter="versionTypeFormat" label="版本类型" width="120"></el-table-column>
+        <el-table-column prop="compileDate" label="编译时间" width="200"></el-table-column>
+        <el-table-column prop="versionDescribe" label="版本描述" width="400"></el-table-column>
+        <el-table-column fixed="right" label="操作" width="100">
+          <template slot-scope="scope">
+            <el-button
+              @click="handleClick(scope.row)"
+              icon="el-icon-unlock"
+              type="primary"
+              size="small"
+            >申请</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="page"
+        :limit.sync="limit"
+        @pagination="loadVsersionInfo"
+      />
+    </el-main>
+  </el-container>
 </template>
 
 <script>
@@ -103,7 +95,7 @@ export default {
     versionTypeFormat(row, column) {
       if (row.versionType == 0) {
         return "工单";
-      } else if (row.sessionStatus == 1) {
+      } else if (row.versionType == 1) {
         return "补丁";
       }
     },
@@ -124,10 +116,11 @@ export default {
           _this.loading = false;
         },
         resp => {
-          if (resp.response.status == 403) {
-            _this.$message({
+          if (resp.status == 403) {
+            _this.$notify({
+              title: "错误",
               type: "error",
-              message: resp.response.data
+              message: resp.data.msg
             });
           }
           _this.loading = false;
@@ -155,10 +148,11 @@ export default {
               this.$refs[formName].resetFields();
             },
             resp => {
-              if (resp.response.status == 403) {
-                _this.$message({
+              if (resp.status == 403) {
+                _this.$notify({
+                  title: "错误",
                   type: "error",
-                  message: resp.response.data
+                  message: resp.data.msg
                 });
               }
               _this.loading = false;
@@ -175,12 +169,6 @@ export default {
     }
   },
   mounted() {
-    //动态设置内容高度 让footer始终居底   header+footer的高度是200
-    this.Height = document.documentElement.clientHeight - 200; //监听浏览器窗口变化
-    window.onresize = () => {
-      this.Height = document.documentElement.clientHeight - 200;
-    };
-
     this.loadVsersionInfo();
   },
   data() {
@@ -197,6 +185,7 @@ export default {
         }
       }
     };
+
     return {
       Height: 0,
       loading: false,
@@ -208,7 +197,7 @@ export default {
       versionInfos: [],
       total: 0, //数据总条数
       page: 1, //默认显示第1页
-      limit: 10, //默认一次显示10条数据
+      limit: 5, //默认一次显示5条数据
 
       ruleForm: {
         jobNumber: "",

@@ -36,10 +36,13 @@
             <TextBlock>1.新建
                 <Run Foreground="#20A0FF">WPF</Run>
                 类库项目
+                命名必须以
+                <Run Foreground="#20A0FF">PartialView</Run>
+                开头
             </TextBlock>
-            <TextBlock>2.引用
+            <TextBlock>2.本地引用
                 <Run Foreground="#20A0FF">PartialViewInterface.dll</Run></TextBlock>
-            <TextBlock>3.引用
+            <TextBlock>3.从Nuget引用
                 <Run Foreground="#20A0FF">Panuon.UI.Silver.dll</Run></TextBlock>
             <TextBlock>4.新建
                 <Run Foreground="#20A0FF">UserControl</Run></TextBlock>
