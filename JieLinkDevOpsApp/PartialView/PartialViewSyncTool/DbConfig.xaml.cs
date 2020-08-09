@@ -32,7 +32,7 @@ namespace PartialViewSyncTool
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
         {
-            string boxConn = $"Data Source={Ip};port={txtBoxDbPort.Text};User ID={txtBoxDbUser.Text};Password={txtBoxDbPwd.Text};Initial Catalog=smartbox;";
+            string boxConn = $"Data Source={Ip};port={txtBoxDbPort.Text};User ID={txtBoxDbUser.Text};Password={txtBoxDbPwd.Password};Initial Catalog=smartbox;";
 
             try
             {
