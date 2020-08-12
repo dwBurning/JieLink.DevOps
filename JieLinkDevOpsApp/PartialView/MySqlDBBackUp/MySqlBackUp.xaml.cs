@@ -64,5 +64,15 @@ namespace PartialViewMySqlBackUp
         {
             //GetTables();
         }
+
+        private void btnAddPolicy_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnStart_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
