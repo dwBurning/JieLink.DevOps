@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JieLinkSyncTool
+namespace PartialViewInterface.Models
 {
     /// <summary>
     /// 数据库连接信息

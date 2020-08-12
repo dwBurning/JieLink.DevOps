@@ -6,7 +6,7 @@
       xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
       xmlns:local="clr-namespace:PartialViewSyncTool"
       mc:Ignorable="d" 
-      d:DesignHeight="550" d:DesignWidth="800">
+      d:DesignHeight="550" d:DesignWidth="800" Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -85,7 +85,7 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="test" 
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="jieLink" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"

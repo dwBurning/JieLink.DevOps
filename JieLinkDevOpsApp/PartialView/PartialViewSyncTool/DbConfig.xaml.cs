@@ -12,13 +12,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using Panuon.UI.Silver;
 
 namespace PartialViewSyncTool
 {
     /// <summary>
     /// DbConfig.xaml 的交互逻辑
     /// </summary>
-    public partial class DbConfig : Window
+    public partial class DbConfig : WindowX
     {
         public DbConfig(string Ip)
         {

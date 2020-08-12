@@ -1,17 +1,16 @@
-﻿<Window x:Class="PartialViewSyncTool.DbConfig"
+﻿<pu:WindowX x:Class="PartialViewSyncTool.DbConfig"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         xmlns:local="clr-namespace:PartialViewSyncTool"
-        mc:Ignorable="d"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="盒子数据库连接" Height="350" Width="350">
 
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid Margin="10,0,10,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition Width="200"></ColumnDefinition>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -96,4 +95,4 @@
         <Label x:Name="label5" Content="数据库密码" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top"/>
 
     </Grid>-->
-</Window>
+</pu:WindowX>

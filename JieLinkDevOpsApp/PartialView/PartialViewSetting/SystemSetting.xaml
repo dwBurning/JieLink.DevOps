@@ -12,81 +12,152 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
             <Style TargetType="TextBlock">
                 <Setter Property="TextAlignment" Value="Right"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
                 <Setter Property="Margin" Value="5"></Setter>
             </Style>
         </ResourceDictionary>
-
     </UserControl.Resources>
-    <Grid Margin="10,0,10,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0">服务器地址：</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0">项目编号：</TextBlock>
-        <TextBlock Grid.Row="2" Grid.Column="0">远程账号：</TextBlock>
-        <TextBlock Grid.Row="3" Grid.Column="0">远程密码：</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="0">联系人姓名：</TextBlock>
-        <TextBlock Grid.Row="5" Grid.Column="0">联系人电话：</TextBlock>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtServerUrl"
+    <Grid>
+        <TabControl
+        pu:TabControlHelper.SelectedForeground="#00BCFF" >
+            <TabItem Header="项目信息配置">
+                <Grid x:Name="gridProjectConfig" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0">服务器地址：</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="0">项目编号：</TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="0">远程账号：</TextBlock>
+                    <TextBlock Grid.Row="3" Grid.Column="0">远程密码：</TextBlock>
+                    <TextBlock Grid.Row="4" Grid.Column="0">联系人姓名：</TextBlock>
+                    <TextBlock Grid.Row="5" Grid.Column="0">联系人电话：</TextBlock>
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtServerUrl"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请配置服务器地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtProjectNo"  Text="{Binding ProjectNo,Mode=TwoWay}" 
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtProjectNo"  Text="{Binding ProjectNo,Mode=TwoWay}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入项目编号"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="2" Grid.Column="1"  x:Name="txtRemoteAccount"  Text="{Binding RemoteAccount}" pu:TextBoxHelper.Watermark="请输入远程账号"
+                    <TextBox Grid.Row="2" Grid.Column="1"  x:Name="txtRemoteAccount"  Text="{Binding RemoteAccount}" pu:TextBoxHelper.Watermark="请输入远程账号"
                  VerticalAlignment="Center" Height="40"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtRemotePassword"  Text="{Binding RemotePassword}" pu:TextBoxHelper.Watermark="请输入远程密码"
+                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtRemotePassword"  Text="{Binding RemotePassword}" pu:TextBoxHelper.Watermark="请输入远程密码"
                  VerticalAlignment="Center" Height="40"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="4" Grid.Column="1"  x:Name="txtContactName"  Text="{Binding ContactName}" 
+                    <TextBox Grid.Row="4" Grid.Column="1"  x:Name="txtContactName"  Text="{Binding ContactName}" 
                  VerticalAlignment="Center" Height="40" MinWidth="150" pu:TextBoxHelper.Watermark="请输入姓名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="5" Grid.Column="1"  x:Name="txtContactPhone"  Text="{Binding ContactPhone}" 
+                    <TextBox Grid.Row="5" Grid.Column="1"  x:Name="txtContactPhone"  Text="{Binding ContactPhone}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入手机号码"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <Button Grid.Column="1" Grid.Row="6" Content="保存" Name="btnSave" Click="btnSave_Click"
+                    <Button Grid.Column="1" Grid.Row="6" Content="保存" Name="btnSave" Click="btnSave_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 IsEnabled="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="数据库信息配置">
+                <Grid x:Name="gridDBConfig" Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" >中心IP地址：</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="0" >数据库名称：</TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="0" >数据库端口：</TextBlock>
+                    <TextBlock Grid.Row="3" Grid.Column="0" >数据库用户：</TextBlock>
+                    <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
+
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="127.0.0.1" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="3306" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="jieLink" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+                    <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtCenterDbPwd" 
+                     pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
+                     pu:PasswordBoxHelper.Watermark="请输入密码"
+                     pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:PasswordBoxHelper.CornerRadius="4"
+                     pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
+                     />
+                    <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+                </Grid>
+
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>

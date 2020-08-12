@@ -19,7 +19,9 @@ using JieLinkSyncTool;
 using System.Data;
 using System.Windows.Forms;
 using System.IO;
-
+using PartialViewInterface.Models;
+using PartialViewInterface.Utils;
+using Panuon.UI.Silver;
 
 namespace PartialViewSyncTool
 {
@@ -53,16 +55,6 @@ namespace PartialViewSyncTool
             //读取到配置文件，加载参数
             DbConfig.CenterDbConnStr = new DbConnEntity();
             DbConfig.BoxDbConnStrs = new List<DbConnEntity>();
-            if (File.Exists(@"DbCenterConfig.ini"))
-            {
-                string ReadStr = File.ReadAllText(@"DbCenterConfig.ini");
-                DbConfig.CenterDbConnStr = Newtonsoft.Json.JsonConvert.DeserializeObject<DbConnEntity>(ReadStr);
-                txtCenterIp.Text = DbConfig.CenterDbConnStr.Ip;
-                txtCenterDbPort.Text = DbConfig.CenterDbConnStr.Port.ToString();
-                txtCenterDbUser.Text = DbConfig.CenterDbConnStr.UserName;
-                txtCenterDbPwd.Password = DbConfig.CenterDbConnStr.Password;
-                txtCenterDb.Text = DbConfig.CenterDbConnStr.DbName;
-            }
         }
 
         /// <summary>
@@ -130,7 +122,7 @@ namespace PartialViewSyncTool
                 MySqlHelper.ExecuteDataset(DbConnectString, "select * from sys_user limit 1");
                 ShowMessage("中心数据库连接成功！");
                 //存储中心连接字符串
-                SaveCenterDbConfig(DbConfig);
+                SaveCenterDbConfig();
                 CheckBoxConnStr();
                 if (dictBoxConnStr.Count > 0)
                 {
@@ -182,6 +174,7 @@ namespace PartialViewSyncTool
                     }
                     catch (Exception)
                     {
+                        (Application.Current.MainWindow as WindowX).IsMaskVisible = true;
                         DbConfig dbConfig = new DbConfig(ip);
                         if (dbConfig.ShowDialog() == true)
                         {
@@ -190,6 +183,7 @@ namespace PartialViewSyncTool
                             SaveBoxDbConfig(DbConfig, dbConfig.DbConnString);
                             dictBoxConnStr.Add(ip, dbConfig.DbConnString);
                         }
+                        (Application.Current.MainWindow as WindowX).IsMaskVisible = false;
                     }
                 }
                 //全部保存盒子字符串后保存到文件
@@ -331,15 +325,14 @@ namespace PartialViewSyncTool
         //    isRuning = false;
         //}
 
-        private void SaveCenterDbConfig(DbConfigEntity dbconfig)
+        private void SaveCenterDbConfig()
         {
-            dbconfig.CenterDbConnStr.Ip = txtCenterIp.Text;
-            dbconfig.CenterDbConnStr.Port = Convert.ToInt32(txtCenterDbPort.Text);
-            dbconfig.CenterDbConnStr.UserName = txtCenterDbUser.Text;
-            dbconfig.CenterDbConnStr.Password = txtCenterDbPwd.Password;
-            dbconfig.CenterDbConnStr.DbName = txtCenterDb.Text;
-
-            System.IO.File.WriteAllText("DbCenterConfig.ini", Newtonsoft.Json.JsonConvert.SerializeObject(dbconfig.CenterDbConnStr), Encoding.UTF8);
+            EnvironmentInfo.DbConnEntity.Ip = txtCenterIp.Text;
+            EnvironmentInfo.DbConnEntity.Port = Convert.ToInt32(txtCenterDbPort.Text);
+            EnvironmentInfo.DbConnEntity.UserName = txtCenterDbUser.Text;
+            EnvironmentInfo.DbConnEntity.Password = txtCenterDbPwd.Password;
+            EnvironmentInfo.DbConnEntity.DbName = txtCenterDb.Text;
+            ConfigHelper.WriterAppConfig("ConnectionString", JsonHelper.SerializeObject(EnvironmentInfo.DbConnEntity));
         }
 
         private void SaveBoxDbConfig(DbConfigEntity dbconfig, string conbox)
@@ -389,6 +382,18 @@ namespace PartialViewSyncTool
             if (!IsLoaded)
             { return; }
             txtCmd.Text = "82A";
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(EnvironmentInfo.ConnectionString))
+            {
+                txtCenterIp.Text = EnvironmentInfo.DbConnEntity.Ip;
+                txtCenterDbPort.Text = EnvironmentInfo.DbConnEntity.Port.ToString();
+                txtCenterDbUser.Text = EnvironmentInfo.DbConnEntity.UserName;
+                txtCenterDbPwd.Password = EnvironmentInfo.DbConnEntity.Password;
+                txtCenterDb.Text = EnvironmentInfo.DbConnEntity.DbName;
+            }
         }
     }
 }

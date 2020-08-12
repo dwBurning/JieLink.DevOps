@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="Command\DelegateCommand.cs" />
     <Compile Include="EnvironmentInfo.cs" />
+    <Compile Include="Models\DbConnEntity.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ProjectInfo.cs" />
     <Compile Include="Models\UpdateRequest.cs" />

@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using Panuon.UI.Silver;
 using PartialViewInterface;
+using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using PartialViewInterface.ViewModels;
-
+using System;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -20,7 +22,7 @@ namespace PartialViewSetting
         {
             InitializeComponent();
             viewModel = new ProjectInfoWindowViewModel();
-            DataContext = viewModel;
+            gridProjectConfig.DataContext = viewModel;
         }
 
         public string MenuName
@@ -48,7 +50,15 @@ namespace PartialViewSetting
             EnvironmentInfo.RemotePassword = viewModel.RemotePassword;
             EnvironmentInfo.ContactName = viewModel.ContactName;
             EnvironmentInfo.ContactPhone = viewModel.ContactPhone;
-            ConfigHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(viewModel));
+
+            ProjectInfo projectInfo = new ProjectInfo();
+            projectInfo.ProjectNo = viewModel.ProjectNo;
+            projectInfo.RemoteAccount = viewModel.RemoteAccount;
+            projectInfo.RemotePassword = viewModel.RemotePassword;
+            projectInfo.ContactName = viewModel.ContactName;
+            projectInfo.ContactPhone = viewModel.ContactPhone;
+
+            ConfigHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(projectInfo));
             Notice.Show("保存成功", "通知", 3, MessageBoxIcon.Success);
         }
 
@@ -64,6 +74,30 @@ namespace PartialViewSetting
             viewModel.RemotePassword = EnvironmentInfo.RemotePassword;
             viewModel.ContactName = EnvironmentInfo.ContactName;
             viewModel.ContactPhone = EnvironmentInfo.ContactPhone;
+        }
+
+        private void btnTestConn_Click(object sender, RoutedEventArgs e)
+        {
+           string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
+
+            try
+            {
+                MySqlHelper.ExecuteDataset(connStr, "select * from sys_user limit 1");
+                Notice.Show("中心数据库连接成功,已自动保存!", "通知", 3, MessageBoxIcon.Success);
+                //存储中心连接字符串
+
+                EnvironmentInfo.DbConnEntity.Ip = txtCenterIp.Text;
+                EnvironmentInfo.DbConnEntity.Port = Convert.ToInt32(txtCenterDbPort.Text);
+                EnvironmentInfo.DbConnEntity.UserName = txtCenterDbUser.Text;
+                EnvironmentInfo.DbConnEntity.Password = txtCenterDbPwd.Password;
+                EnvironmentInfo.DbConnEntity.DbName = txtCenterDb.Text;
+                ConfigHelper.WriterAppConfig("ConnectionString", JsonHelper.SerializeObject(EnvironmentInfo.DbConnEntity));
+
+            }
+            catch (Exception)
+            {
+                Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Success);
+            }
         }
     }
 }
