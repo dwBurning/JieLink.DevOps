@@ -15,7 +15,7 @@ namespace PartialViewMySqlBackUp.Models
         [ColumnWidth("3*")]
         public string TableName { get; set; }
 
-        [DisplayName("是否备份")]
+        [DisplayName("备份")]
         [ColumnWidth("*")]
         public bool IsChecked { get; set; }
     }

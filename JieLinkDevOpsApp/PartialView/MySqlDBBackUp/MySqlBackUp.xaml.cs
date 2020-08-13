@@ -74,5 +74,15 @@ namespace PartialViewMySqlBackUp
         {
 
         }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnChoosePath_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
