@@ -35,7 +35,7 @@
                 <RowDefinition></RowDefinition>
                 <RowDefinition Height="50"></RowDefinition>
             </Grid.RowDefinitions>
-            <DataGrid x:Name="dgTables" Margin="5" ItemsSource="{Binding tables,Mode=TwoWay}"
+            <DataGrid x:Name="dgTables" Margin="5" ItemsSource="{Binding Tables}"
                   BorderBrush="LightGray"
                   BorderThickness="1"
                   pu:DataGridHelper.HeaderMinHeight="30"
@@ -47,6 +47,7 @@
                   CanUserAddRows="False" >
                 <pu:DataGridHelper.AutoGenerateCheckBoxStyle>
                     <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Setter Property="IsChecked" Value="{Binding ElementName=cbChooseAll,Path=IsChecked}"></Setter>
                         <Setter Property="pu:CheckBoxHelper.CheckBoxStyle" Value="Switch" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=(pu:CheckBoxHelper.CheckBoxStyle),
@@ -63,11 +64,11 @@
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <CheckBox Grid.Column="0" Height="40" Margin="5" Content="全选"
-                          Background="LightGray"
+                          Background="LightGray" x:Name="cbChooseAll"
                           pu:CheckBoxHelper.CheckedContent="取消全选"
                           pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                          pu:CheckBoxHelper.CheckBoxStyle="Button"
-                          pu:CheckBoxHelper.CornerRadius="4" />
+                          pu:CheckBoxHelper.CheckBoxStyle="Button" IsChecked="{Binding IsSelectedAll}"
+                          pu:CheckBoxHelper.CornerRadius="4" Click="cbChooseAll_Click"/>
                 <Button Grid.Column="1" Margin="5" Content="恢复默认" Name ="btnRecoverDefault"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
@@ -93,44 +94,45 @@
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <WrapPanel VerticalAlignment="Center">
+                    <WrapPanel x:Name="wpDayOfWeek" VerticalAlignment="Center">
                         <CheckBox Margin="5" Height="30" Content="周日" 
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Sunday}" />
                         <CheckBox Margin="5" Height="30" Content="周一" 
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Monday}" />
                         <CheckBox Margin="5" Height="30" Content="周二" 
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Tuesday}" />
                         <CheckBox Margin="5" Height="30" Content="周三"
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Wednesday}" />
                         <CheckBox Margin="5" Height="30" Content="周四"
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Thursday}" />
                         <CheckBox Margin="5" Height="30" Content="周五"
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Friday}" />
                         <CheckBox Margin="5" Height="30" Content="周六"
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
-                                  pu:CheckBoxHelper.CornerRadius="4" />
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Saturday}" />
                     </WrapPanel>
-                    <pu:DateTimePicker Grid.Row="1" DateTimePickerMode="Time" 
-                                       Margin="5" ThemeBrush="#00BCFF" Height="40">
+                    <pu:DateTimePicker x:Name="dtpTime" Grid.Row="1" DateTimePickerMode="Time" 
+                                       SelectedDateTime="{Binding SelectedTime}"
+                                       Margin="5" CornerRadius="4" ThemeBrush="#00BCFF" Height="40">
 
                     </pu:DateTimePicker>
-                    <Grid Grid.Row="2">
+                    <Grid x:Name="gridBackUpType" Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <RadioButton Grid.Column="0" Height="40" Margin="5" Content="全库备份"
-                                     Background="LightGray"
+                                     Background="LightGray" IsChecked="{Binding IsTaskBackUpDataBase}"
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
                         <RadioButton Grid.Column="1" Height="40" Margin="5" Content="基础业务备份"
-                                     Background="LightGray"
+                                     Background="LightGray" IsChecked="{Binding IsTaskBackUpTables}"
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
                     </Grid>
@@ -143,11 +145,10 @@
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     <ListBox Margin="5" BorderBrush="#20A0FF" Grid.Column="1" Grid.Row="0" Grid.RowSpan="5"
-                             pu:ListBoxHelper.SelectedBackground="#220082FF"
-                             pu:ListBoxHelper.SelectedForeground="#00BCFF"
-                             pu:ListBoxHelper.HoverBackground="#220082FF"
-                             pu:ListBoxHelper.ItemHeight="30">
-
+                             pu:ListBoxHelper.SelectedBackground="#220082FF" ItemsSource="{Binding Policys}"
+                             pu:ListBoxHelper.SelectedForeground="#00BCFF" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                             pu:ListBoxHelper.HoverBackground="#220082FF" SelectionChanged="ListBox_SelectionChanged"
+                             pu:ListBoxHelper.ItemHeight="30" DisplayMemberPath="ItemString" >
                     </ListBox>
                     <Grid Grid.Row="5" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
@@ -158,7 +159,7 @@
                             VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择文件保存路径"
                             pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                             pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                            pu:TextBoxHelper.CornerRadius="4"
+                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding TaskBackUpPath}"
                             pu:TextBoxHelper.IsClearButtonVisible="True"/>
                         <Button Grid.Row="0" Margin="5" Grid.Column="1" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"

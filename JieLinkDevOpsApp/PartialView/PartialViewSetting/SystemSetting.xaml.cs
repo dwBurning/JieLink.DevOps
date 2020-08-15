@@ -51,6 +51,15 @@ namespace PartialViewSetting
             EnvironmentInfo.ContactName = viewModel.ContactName;
             EnvironmentInfo.ContactPhone = viewModel.ContactPhone;
 
+            if (string.IsNullOrEmpty(EnvironmentInfo.ProjectNo)
+                || string.IsNullOrEmpty(EnvironmentInfo.RemoteAccount)
+                || string.IsNullOrEmpty(EnvironmentInfo.RemotePassword)
+                || string.IsNullOrEmpty(EnvironmentInfo.ServerUrl))
+            {
+                Notice.Show("检测到配置信息有误，请重新确认！", "通知", 3, MessageBoxIcon.Warning);
+                return;
+            }
+
             ProjectInfo projectInfo = new ProjectInfo();
             projectInfo.ProjectNo = viewModel.ProjectNo;
             projectInfo.RemoteAccount = viewModel.RemoteAccount;
