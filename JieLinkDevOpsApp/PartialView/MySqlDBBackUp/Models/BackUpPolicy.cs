@@ -157,7 +157,15 @@ namespace PartialViewMySqlBackUp.Models
         public static readonly DependencyProperty ItemStringProperty =
             DependencyProperty.Register("ItemString", typeof(string), typeof(BackUpPolicy));
 
-
+        public BackUpType BackUpType
+        {
+            get
+            {
+                if (IsTaskBackUpDataBase) return BackUpType.DataBase;
+                else if (IsTaskBackUpTables) return BackUpType.Tables;
+                return BackUpType.Tables;
+            }
+        }
 
 
         public string PolicyToString

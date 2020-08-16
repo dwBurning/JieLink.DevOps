@@ -70,16 +70,12 @@ namespace PartialViewMySqlBackUp
 
         private void btnAddPolicy_Click(object sender, RoutedEventArgs e)
         {
-            BackUpPolicy policy;
+
+            if (CheckDayOfWeek())
+            { return; }
+
             viewModel.CurrentPolicy.SelectedTime = dtpTime.SelectedDateTime;//通过绑定无法获取到值 原因不明
-            if (viewModel.CurrentPolicy.IsTaskBackUpDataBase)
-            {
-                policy = viewModel.Policys.Where(x => x.IsTaskBackUpDataBase).FirstOrDefault();
-            }
-            else
-            {
-                policy = viewModel.Policys.Where(x => x.IsTaskBackUpTables).FirstOrDefault();
-            }
+            BackUpPolicy policy = viewModel.Policys.FirstOrDefault(x => x.BackUpType == viewModel.CurrentPolicy.BackUpType);
 
             if (policy == null)
             {
@@ -92,7 +88,7 @@ namespace PartialViewMySqlBackUp
                     Thursday = viewModel.CurrentPolicy.Thursday,
                     Friday = viewModel.CurrentPolicy.Friday,
                     Saturday = viewModel.CurrentPolicy.Saturday,
-                    
+
                     SelectedTime = viewModel.CurrentPolicy.SelectedTime,
                     IsTaskBackUpDataBase = viewModel.CurrentPolicy.IsTaskBackUpDataBase,
                     IsTaskBackUpTables = viewModel.CurrentPolicy.IsTaskBackUpTables,
@@ -114,6 +110,101 @@ namespace PartialViewMySqlBackUp
                 policy.ItemString = viewModel.CurrentPolicy.PolicyToString;
             }
 
+            //Clear();
+        }
+
+        private bool CheckDayOfWeek()
+        {
+            if (!viewModel.CurrentPolicy.Sunday
+               && !viewModel.CurrentPolicy.Monday
+               && !viewModel.CurrentPolicy.Monday
+               && !viewModel.CurrentPolicy.Tuesday
+               && !viewModel.CurrentPolicy.Wednesday
+               && !viewModel.CurrentPolicy.Thursday
+               && !viewModel.CurrentPolicy.Friday
+               && !viewModel.CurrentPolicy.Saturday)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请至少选择一个周期！");
+                return true;
+            }
+
+            if (!viewModel.CurrentPolicy.IsTaskBackUpDataBase && !viewModel.CurrentPolicy.IsTaskBackUpTables)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择备份类型！");
+                return true;
+            }
+
+            BackUpPolicy policy;
+            if (viewModel.CurrentPolicy.Sunday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Sunday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Sunday = false;
+            }
+            if (viewModel.CurrentPolicy.Monday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Monday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Monday = false;
+            }
+            if (viewModel.CurrentPolicy.Tuesday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Tuesday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Tuesday = false;
+            }
+            if (viewModel.CurrentPolicy.Wednesday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Wednesday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Wednesday = false;
+            }
+            if (viewModel.CurrentPolicy.Thursday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Thursday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Thursday = false;
+            }
+            if (viewModel.CurrentPolicy.Friday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Friday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Friday = false;
+            }
+            if (viewModel.CurrentPolicy.Saturday)
+            {
+                policy = viewModel.Policys.FirstOrDefault(x => x.Saturday
+                && x.BackUpType != viewModel.CurrentPolicy.BackUpType);
+                if (policy != null) viewModel.CurrentPolicy.Saturday = false;
+            }
+
+            if (!viewModel.CurrentPolicy.Sunday
+               && !viewModel.CurrentPolicy.Monday
+               && !viewModel.CurrentPolicy.Monday
+               && !viewModel.CurrentPolicy.Tuesday
+               && !viewModel.CurrentPolicy.Wednesday
+               && !viewModel.CurrentPolicy.Thursday
+               && !viewModel.CurrentPolicy.Friday
+               && !viewModel.CurrentPolicy.Saturday)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("已有策略占用所有周期，如果需要添加新的策略，请至少预留一个周期！");
+                return true;
+            }
+
+            return false;
+        }
+
+        private void Clear()
+        {
+            viewModel.CurrentPolicy.Sunday = false;
+            viewModel.CurrentPolicy.Monday = false;
+            viewModel.CurrentPolicy.Tuesday = false;
+            viewModel.CurrentPolicy.Wednesday = false;
+            viewModel.CurrentPolicy.Thursday = false;
+            viewModel.CurrentPolicy.Friday = false;
+            viewModel.CurrentPolicy.Saturday = false;
+            viewModel.CurrentPolicy.IsTaskBackUpDataBase = false;
+            viewModel.CurrentPolicy.IsTaskBackUpTables = false;
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -138,6 +229,7 @@ namespace PartialViewMySqlBackUp
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (e.AddedItems.Count == 0) return;
             var selectItem = (BackUpPolicy)e.AddedItems[0];
 
             viewModel.CurrentPolicy.Sunday = selectItem.Sunday;
@@ -150,6 +242,16 @@ namespace PartialViewMySqlBackUp
             viewModel.CurrentPolicy.SelectedTime = selectItem.SelectedTime;
             viewModel.CurrentPolicy.IsTaskBackUpDataBase = selectItem.IsTaskBackUpDataBase;
             viewModel.CurrentPolicy.IsTaskBackUpTables = selectItem.IsTaskBackUpTables;
+        }
+
+        private void btnRemovePolicy_Click(object sender, RoutedEventArgs e)
+        {
+            BackUpPolicy policy = viewModel.Policys.FirstOrDefault(x => x.BackUpType == viewModel.CurrentPolicy.BackUpType);
+            if (policy != null)
+            {
+                viewModel.Policys.Remove(policy);
+                Clear();
+            }
         }
     }
 }
