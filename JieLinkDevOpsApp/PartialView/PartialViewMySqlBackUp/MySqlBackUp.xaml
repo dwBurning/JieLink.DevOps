@@ -68,7 +68,7 @@
                           pu:CheckBoxHelper.CheckedContent="取消全选"
                           pu:CheckBoxHelper.CheckedBackground="#00BCFF"
                           pu:CheckBoxHelper.CheckBoxStyle="Button" IsChecked="{Binding IsSelectedAll}"
-                          pu:CheckBoxHelper.CornerRadius="4" Click="cbChooseAll_Click"/>
+                          pu:CheckBoxHelper.CornerRadius="4" Command="{Binding ChooseAllCommand}"/>
                 <Button Grid.Column="1" Margin="5" Content="恢复默认" Name ="btnRecoverDefault"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
@@ -136,11 +136,12 @@
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
                     </Grid>
-                    <Button Grid.Row="3" Margin="5" Content="添加策略" Name ="btnAddPolicy" Click="btnAddPolicy_Click"
+                    <Button Grid.Row="3" Margin="5" Content="添加策略" Name ="btnAddPolicy" Command="{Binding AddPolicyCommand}"
+                            CommandParameter="{Binding ElementName=dtpTime, Path=SelectedDateTime}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                    <Button Grid.Row="4" Margin="5" Content="移除策略" Name ="btnRemovePolicy" Click="btnRemovePolicy_Click"
+                    <Button Grid.Row="4" Margin="5" Content="移除策略" Name ="btnRemovePolicy" Command="{Binding RemovePolicyCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
@@ -167,11 +168,11 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
 
-                    <Button Grid.Row="6" Margin="5" Grid.ColumnSpan="2" Content="执行任务" Name ="btnStart" Click="btnStart_Click"
+                    <Button Grid.Row="6" Margin="5" Grid.ColumnSpan="2" Content="执行任务" Name ="btnStart" Command="{Binding TaskStartCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                    <Button Grid.Row="7" Margin="5" Grid.ColumnSpan="2" Content="终止任务" Name ="btnStop" Click="btnStop_Click"
+                    <Button Grid.Row="7" Margin="5" Grid.ColumnSpan="2" Content="终止任务" Name ="btnStop" Command="{Binding TaskStopCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
@@ -213,7 +214,7 @@
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
-                    <Button Grid.Row="2" Margin="5" Grid.ColumnSpan="2" Content="执行备份" Name ="btnStart1" Click="btnStart_Click"
+                    <Button Grid.Row="2" Margin="5" Grid.ColumnSpan="2" Content="执行备份" Name ="btnStart1" Command="{Binding ManualExecuteCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>

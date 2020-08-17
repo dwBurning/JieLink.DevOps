@@ -180,7 +180,6 @@ namespace JieShun.JieLink.DevOps.App
                                 .WithCronSchedule(cron)
                                 .Build();
                 scheduler.ScheduleJob(job, trigger);
-
             }
         }
     }
