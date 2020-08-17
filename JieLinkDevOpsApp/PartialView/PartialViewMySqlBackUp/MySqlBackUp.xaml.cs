@@ -31,7 +31,7 @@ namespace PartialViewMySqlBackUp
         public MySqlBackUp()
         {
             InitializeComponent();
-            viewModel = new MySqlBackUpViewModel();
+            viewModel = MySqlBackUpViewModel.Instance();
             DataContext = viewModel;
             wpDayOfWeek.DataContext = viewModel.CurrentPolicy;
             dtpTime.DataContext = viewModel.CurrentPolicy;

@@ -222,7 +222,11 @@
             </TabItem>
         </TabControl>
         <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
-
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="{Binding Message}"/>
+                </Paragraph>
+            </FlowDocument>
         </RichTextBox>
     </Grid>
 </UserControl>

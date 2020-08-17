@@ -19,6 +19,24 @@ namespace PartialViewMySqlBackUp.ViewModels
 {
     public class MySqlBackUpViewModel : DependencyObject
     {
+        private static MySqlBackUpViewModel instance;
+        private static readonly object locker = new object();
+
+        public static MySqlBackUpViewModel Instance()
+        {
+            if (instance == null)
+            {
+                lock (locker)
+                {
+                    if (instance == null)
+                    {
+                        instance = new MySqlBackUpViewModel();
+                    }
+                }
+            }
+            return instance;
+        }
+
         public DelegateCommand TaskStartCommand { get; set; }
 
         public DelegateCommand TaskStopCommand { get; set; }
@@ -33,7 +51,7 @@ namespace PartialViewMySqlBackUp.ViewModels
 
 
 
-        public MySqlBackUpViewModel()
+        private MySqlBackUpViewModel()
         {
             TaskStartCommand = new DelegateCommand();
             TaskStopCommand = new DelegateCommand();
@@ -302,9 +320,18 @@ namespace PartialViewMySqlBackUp.ViewModels
             DependencyProperty.Register("ManualBackUpPath", typeof(string), typeof(MySqlBackUpViewModel));
 
 
+
+        public string Message
+        {
+            get { return (string)GetValue(MessageProperty); }
+            set { SetValue(MessageProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register("Message", typeof(string), typeof(MySqlBackUpViewModel));
+
+
         #endregion
-
-
-
     }
 }
