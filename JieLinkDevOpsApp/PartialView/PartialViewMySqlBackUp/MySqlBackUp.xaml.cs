@@ -36,6 +36,7 @@ namespace PartialViewMySqlBackUp
             wpDayOfWeek.DataContext = viewModel.CurrentPolicy;
             dtpTime.DataContext = viewModel.CurrentPolicy;
             gridBackUpType.DataContext = viewModel.CurrentPolicy;
+            gridManualBackUpType.DataContext = viewModel.CurrentPolicy;
         }
 
         public string MenuName

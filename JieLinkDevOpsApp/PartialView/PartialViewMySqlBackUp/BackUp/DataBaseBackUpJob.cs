@@ -1,6 +1,10 @@
-﻿using Quartz;
+﻿using PartialViewInterface;
+using PartialViewInterface.Utils;
+using PartialViewMySqlBackUp.ViewModels;
+using Quartz;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +18,8 @@ namespace PartialViewMySqlBackUp.BackUp
     {
         public void Execute(IJobExecutionContext context)
         {
-            throw new NotImplementedException();
+            ExecuteBackUp executeBackUp = new ExecuteBackUp();
+            executeBackUp.BackUpDataBase();
         }
     }
 }

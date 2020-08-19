@@ -79,7 +79,7 @@ namespace PartialViewInterface.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("StartProcess:"+ex.Message);
+                Console.WriteLine("StartProcess:" + ex.Message);
                 return false;
             }
         }
@@ -96,6 +96,37 @@ namespace PartialViewInterface.Utils
             {
                 processesByName[i].Kill();
                 Thread.Sleep(10);
+            }
+        }
+        
+        /// <summary>
+        /// 执行CMD命令
+        /// </summary>
+        public static void ExecuteCommand(List<string> cmds)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.OutputDataReceived += Process_OutputDataReceived;
+            process.Start();
+            foreach (var cmd in cmds)
+            {
+                process.StandardInput.WriteLine(cmd);
+            }
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+        }
+
+        public static event Action<string> ShowOutputMessage;
+        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (null != e)
+            {
+                ShowOutputMessage?.Invoke(e.Data);
             }
         }
 

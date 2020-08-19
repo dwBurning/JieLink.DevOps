@@ -1,14 +1,20 @@
 ﻿using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
+using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
+using PartialViewMySqlBackUp.BackUp;
 using PartialViewMySqlBackUp.Models;
+using Quartz;
+using Quartz.Impl;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
@@ -49,6 +55,8 @@ namespace PartialViewMySqlBackUp.ViewModels
 
         public DelegateCommand ChooseAllCommand { get; set; }
 
+        public DelegateCommand RecoverDefaultCommand { get; set; }
+
 
 
         private MySqlBackUpViewModel()
@@ -59,6 +67,7 @@ namespace PartialViewMySqlBackUp.ViewModels
             RemovePolicyCommand = new DelegateCommand();
             AddPolicyCommand = new DelegateCommand();
             ChooseAllCommand = new DelegateCommand();
+            RecoverDefaultCommand = new DelegateCommand();
 
             TaskStartCommand.ExecuteAction = Start;
             TaskStopCommand.ExecuteAction = Stop;
@@ -67,26 +76,204 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             AddPolicyCommand.ExecuteAction = AddPolicy;
             ChooseAllCommand.ExecuteAction = ChooseAll;
+            RecoverDefaultCommand.ExecuteAction = RecoverDefault;
 
-            GetTables();
+
             Policys = new ObservableCollection<BackUpPolicy>();
             CurrentPolicy = new BackUpPolicy();
+
+            string cron = ConfigHelper.ReadAppConfig("TablesBackUpJob");
+            if (!string.IsNullOrEmpty(cron))
+            {
+                BackUpPolicy policy = ConvertToPolicy(cron);
+                policy.IsTaskBackUpTables = true;
+                policy.ItemString = policy.PolicyToString;
+                Policys.Add(policy);
+            }
+
+            cron = ConfigHelper.ReadAppConfig("DataBaseBackUpJob");
+            if (!string.IsNullOrEmpty(cron))
+            {
+                BackUpPolicy policy = ConvertToPolicy(cron);
+                policy.IsTaskBackUpDataBase = true;
+                policy.ItemString = policy.PolicyToString;
+                Policys.Add(policy);
+            }
+
+            GetTables();
+
+            ProcessHelper.ShowOutputMessage += ProcessHelper_ShowOutputMessage;
         }
 
+        private void ProcessHelper_ShowOutputMessage(string message)
+        {
+            ShowMessage(message);
+        }
+
+        IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
         private void Start(object parameter)
         {
+            if (string.IsNullOrEmpty(TaskBackUpPath))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请配置保存文件的路径！");
+                return;
+            }
 
+            foreach (var policy in Policys)
+            {
+                string cron = ConvertToCron(policy);
+                if (policy.BackUpType == BackUpType.DataBase)
+                {
+                    ConfigHelper.WriterAppConfig("DataBaseBackUpJob", cron);
+                    if (scheduler.CheckExists(new JobKey("DataBaseBackUpJob")))
+                    {
+                        scheduler.UnscheduleJob(new TriggerKey("DataBaseBackUpTrigger"));
+                    }
+                    var job = JobBuilder.Create(typeof(DataBaseBackUpJob))
+                        .WithIdentity("DataBaseBackUpJob", "BackUp").Build();
+                    var trigger = TriggerBuilder.Create()
+                                    .StartNow()
+                                    .WithIdentity("DataBaseBackUpTrigger", "BackUp")
+                                    .WithCronSchedule(cron)
+                                    .Build();
+                    scheduler.ScheduleJob(job, trigger);
+                }
+                else
+                {
+                    ConfigHelper.WriterAppConfig("TablesBackUpJob", cron);
+                    if (scheduler.CheckExists(new JobKey("TablesBackUpJob")))
+                    {
+                        scheduler.UnscheduleJob(new TriggerKey("TablesBackUpTrigger", "BackUp"));
+                    }
+                    var job = JobBuilder.Create(typeof(TablesBackUpJob))
+                        .WithIdentity("TablesBackUpJob").Build();
+                    var trigger = TriggerBuilder.Create()
+                                    .StartNow()
+                                    .WithIdentity("TablesBackUpTrigger", "BackUp")
+                                    .WithCronSchedule(cron)
+                                    .Build();
+                    scheduler.ScheduleJob(job, trigger);
+                }
+            }
+
+            Notice.Show("定时任务已经启动....", "通知", 3, MessageBoxIcon.Success);
         }
 
         private void Stop(object parameter)
         {
-
+            scheduler.PauseJobs(Quartz.Impl.Matchers.GroupMatcher<JobKey>.GroupEquals("BackUp"));
+            Notice.Show("定时任务已经停止....", "通知", 3, MessageBoxIcon.Success);
         }
 
         private void ManualExecute(object parameter)
         {
+            if (string.IsNullOrEmpty(TaskBackUpPath))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请配置文件的路径！");
+                return;
+            }
 
+            if (!(CurrentPolicy.IsTaskBackUpDataBase || CurrentPolicy.IsTaskBackUpTables))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择备份类型！");
+                return;
+            }
+            ExecuteBackUp executeBackUp = new ExecuteBackUp();
+            if (CurrentPolicy.BackUpType == BackUpType.DataBase)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    executeBackUp.BackUpDataBase();
+                });
+            }
+            else
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    executeBackUp.BackUpTables();
+                });
+            }
         }
+
+        #region 数据转换
+        private BackUpPolicy ConvertToPolicy(string cron)
+        {
+            BackUpPolicy policy = new BackUpPolicy();
+            string[] cronArry = cron.Split(' ');
+            int second = int.Parse(cronArry[0]);
+            int minute = int.Parse(cronArry[1]);
+            int hour = int.Parse(cronArry[2]);
+            policy.SelectedTime = DateTime.Now.Date.AddHours(hour).AddMinutes(minute).AddSeconds(second);
+            string dayOfWeek = cronArry[cronArry.Length - 1];
+            string[] week = dayOfWeek.Split(',');
+            foreach (var day in week)
+            {
+                switch (day)
+                {
+                    case "1":
+                        policy.Sunday = true;
+                        break;
+                    case "2":
+                        policy.Monday = true;
+                        break;
+                    case "3":
+                        policy.Tuesday = true;
+                        break;
+                    case "4":
+                        policy.Wednesday = true;
+                        break;
+                    case "5":
+                        policy.Thursday = true;
+                        break;
+                    case "6":
+                        policy.Saturday = true;
+                        break;
+                }
+            }
+
+            return policy;
+        }
+
+        private string ConvertToCron(BackUpPolicy policy)
+        {
+            //周日 1 周一 2...
+            //0 15 10 ? * 1,5 每周日，周四 上午10:15分执行
+            string second = policy.SelectedTime.ToString("ss");//秒
+            string minute = policy.SelectedTime.ToString("mm");
+            string hour = policy.SelectedTime.ToString("HH");
+            string dayOfWeek = "";
+            if (policy.Sunday)
+            {
+                dayOfWeek += "1,";
+            }
+            if (policy.Monday)
+            {
+                dayOfWeek += "2,";
+            }
+            if (policy.Tuesday)
+            {
+                dayOfWeek += "3,";
+            }
+            if (policy.Wednesday)
+            {
+                dayOfWeek += "4,";
+            }
+            if (policy.Thursday)
+            {
+                dayOfWeek += "5,";
+            }
+            if (policy.Friday)
+            {
+                dayOfWeek += "6,";
+            }
+            if (policy.Saturday)
+            {
+                dayOfWeek += "7";
+            }
+
+            return $"{second} {minute} {hour} ? * {dayOfWeek}".Trim(',');
+        }
+        #endregion
 
         private void RemovePolicy(object parameter)
         {
@@ -95,6 +282,11 @@ namespace PartialViewMySqlBackUp.ViewModels
             {
                 Policys.Remove(policy);
                 Clear();
+                Notice.Show("策略已移除成功", "通知", 3, MessageBoxIcon.Success);
+            }
+            else
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择你需要移除的策略");
             }
         }
 
@@ -123,6 +315,8 @@ namespace PartialViewMySqlBackUp.ViewModels
                     IsTaskBackUpTables = CurrentPolicy.IsTaskBackUpTables,
                     ItemString = CurrentPolicy.PolicyToString
                 });
+
+                Notice.Show("策略已添加成功", "通知");
             }
             else
             {
@@ -137,27 +331,103 @@ namespace PartialViewMySqlBackUp.ViewModels
                 policy.IsTaskBackUpDataBase = CurrentPolicy.IsTaskBackUpDataBase;
                 policy.IsTaskBackUpTables = CurrentPolicy.IsTaskBackUpTables;
                 policy.ItemString = CurrentPolicy.PolicyToString;
+
+                Notice.Show("策略已更新成功", "通知", 3, MessageBoxIcon.Success);
             }
+
+            if (CurrentPolicy.BackUpType == BackUpType.DataBase)
+            {
+                ConfigHelper.WriterAppConfig("DataBaseBackUpJob", ConvertToCron(CurrentPolicy));
+            }
+            else
+            {
+                ConfigHelper.WriterAppConfig("TablesBackUpJob", ConvertToCron(CurrentPolicy));
+            }
+
+            WriteConfig();
         }
 
+        private void WriteConfig()
+        {
+            string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+            string path = BaseDirectoryPath + "plugs\\BackUpTables.json";
+            BackUpConfig.Tables.Clear();
+            Tables.ForEach((x) =>
+            {
+                if (x.IsChecked)
+                { BackUpConfig.Tables.Add(new Table() { TableName = x.TableName }); }
+            });
+
+            File.WriteAllText(path, JsonConvert.SerializeObject(BackUpConfig), Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 全选
+        /// </summary>
+        /// <param name="parameter"></param>
         private void ChooseAll(object parameter)
         {
             Tables.ForEach(x => x.IsChecked = IsSelectedAll);
+            WriteConfig();
         }
 
+        /// <summary>
+        /// 恢复默认
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void RecoverDefault(object parameter)
+        {
+            Tables.ForEach((x) =>
+            {
+                x.IsChecked = BackUpConfig.DefaultTables.FindIndex(t => t.TableName == x.TableName) >= 0;
+            });
 
+            WriteConfig();
+        }
 
+        #region 获取配置
+        public BackUpConfig BackUpConfig { get; set; }
         public void GetTables()
         {
-            Tables = new List<BackUpTable>();
-            string sql = $"select table_name from information_schema.`TABLES` where TABLE_SCHEMA='{EnvironmentInfo.DbConnEntity.DbName}';";
-            DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
-            foreach (DataRow dr in dt.Rows)
+            try
             {
-                Tables.Add(new BackUpTable() { TableName = dr["table_name"].ToString(), IsChecked = false });
+                string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+                string path = BaseDirectoryPath + "plugs\\BackUpTables.json";
+                string jsonData = File.ReadAllText(path);
+                BackUpConfig = JsonConvert.DeserializeObject<BackUpConfig>(jsonData);
+                TaskBackUpPath = BackUpConfig.SavePath;//文件保存路径
+
+                //string cmd = "select @@basedir as mysqlpath from dual";
+                //DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, cmd).Tables[0];
+                //MySqlBinPath = dt.Rows[0][0].ToString() + "\\bin";//获取mysql的bin路径
+
+                MySqlBinPath = BaseDirectoryPath;//如果不是在服务器上，那么可能无法获取到mysqldump文件
+
+                Tables = new List<BackUpTable>();
+                string sql = $"select table_name from information_schema.`TABLES` where TABLE_SCHEMA='{EnvironmentInfo.DbConnEntity.DbName}';";
+                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];//获取所有的表
+                foreach (DataRow dr in dt.Rows)
+                {
+                    BackUpTable backUpTable = new BackUpTable() { TableName = dr["table_name"].ToString(), IsChecked = false };
+
+                    BackUpConfig.Tables.ForEach((x) =>
+                    {
+                        if (x.TableName == dr["table_name"].ToString())
+                        {
+                            backUpTable.IsChecked = true;
+                        }
+                    });
+                    Tables.Add(backUpTable);
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowMessage(ex.ToString());
             }
         }
+        #endregion
 
+        #region 校验数据
         private void Clear()
         {
             CurrentPolicy.Sunday = false;
@@ -170,7 +440,6 @@ namespace PartialViewMySqlBackUp.ViewModels
             CurrentPolicy.IsTaskBackUpDataBase = false;
             CurrentPolicy.IsTaskBackUpTables = false;
         }
-
 
         private bool CheckDayOfWeek()
         {
@@ -252,8 +521,28 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             return false;
         }
+        #endregion
+
+        public void ShowMessage(string message)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                if (Message != null && Message.Length > 5000)
+                {
+                    Message = string.Empty;
+                }
+
+                if (message.Length > 0)
+                {
+                    Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+                }
+            }));
+        }
 
         #region 属性
+
+
+        public string MySqlBinPath { get; set; }
 
         public List<BackUpTable> Tables { get; set; }
 
@@ -304,21 +593,6 @@ namespace PartialViewMySqlBackUp.ViewModels
         // Using a DependencyProperty as the backing store for IsManualBackUpDataBase.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsManualBackUpDataBaseProperty =
             DependencyProperty.Register("IsManualBackUpDataBase", typeof(bool), typeof(MySqlBackUpViewModel));
-
-        /// <summary>
-        /// 文件保存路径-手动
-        /// </summary>
-
-        public string ManualBackUpPath
-        {
-            get { return (string)GetValue(ManualBackUpPathProperty); }
-            set { SetValue(ManualBackUpPathProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for ManualBackUpPath.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ManualBackUpPathProperty =
-            DependencyProperty.Register("ManualBackUpPath", typeof(string), typeof(MySqlBackUpViewModel));
-
 
 
         public string Message

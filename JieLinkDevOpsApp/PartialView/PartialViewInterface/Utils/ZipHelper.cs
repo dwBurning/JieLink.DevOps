@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JieShun.JieLink.DevOps.Updater.Utils
+namespace PartialViewInterface.Utils
 {
     public  class ZipHelper
     {
