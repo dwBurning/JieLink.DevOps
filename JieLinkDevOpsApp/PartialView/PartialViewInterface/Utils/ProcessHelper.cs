@@ -98,7 +98,7 @@ namespace PartialViewInterface.Utils
                 Thread.Sleep(10);
             }
         }
-        
+
         /// <summary>
         /// 执行CMD命令
         /// </summary>
@@ -118,13 +118,14 @@ namespace PartialViewInterface.Utils
                 process.StandardInput.WriteLine(cmd);
             }
             process.BeginOutputReadLine();
+            process.StandardInput.WriteLine("exit");
             process.WaitForExit();
         }
 
         public static event Action<string> ShowOutputMessage;
         private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            if (null != e)
+            if (null != e && e.Data != null)
             {
                 ShowOutputMessage?.Invoke(e.Data);
             }
