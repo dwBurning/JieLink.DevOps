@@ -83,11 +83,17 @@ namespace PartialViewSetting
             viewModel.RemotePassword = EnvironmentInfo.RemotePassword;
             viewModel.ContactName = EnvironmentInfo.ContactName;
             viewModel.ContactPhone = EnvironmentInfo.ContactPhone;
+
+            txtCenterIp.Text = EnvironmentInfo.DbConnEntity.Ip;
+            txtCenterDbPort.Text = EnvironmentInfo.DbConnEntity.Port.ToString();
+            txtCenterDbUser.Text = EnvironmentInfo.DbConnEntity.UserName;
+            txtCenterDbPwd.Password = EnvironmentInfo.DbConnEntity.Password;
+            txtCenterDb.Text = EnvironmentInfo.DbConnEntity.DbName;
         }
 
         private void btnTestConn_Click(object sender, RoutedEventArgs e)
         {
-           string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
+            string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
 
             try
             {

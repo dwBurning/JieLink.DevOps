@@ -18,6 +18,8 @@ using PartialViewInterface.Models;
 using Quartz;
 using Quartz.Impl;
 using System.Windows.Forms;
+using System.Windows.Documents;
+using System.Diagnostics;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -181,6 +183,13 @@ namespace JieShun.JieLink.DevOps.App
                                 .Build();
                 scheduler.ScheduleJob(job, trigger);
             }
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            Hyperlink link = sender as Hyperlink;
+            // 激活的是当前默认的浏览器
+            Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
         }
     }
 }

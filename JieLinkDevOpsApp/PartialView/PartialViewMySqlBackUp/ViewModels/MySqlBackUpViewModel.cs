@@ -81,6 +81,7 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             Policys = new ObservableCollection<BackUpPolicy>();
             CurrentPolicy = new BackUpPolicy();
+            Tables = new List<BackUpTable>();
 
             string cron = ConfigHelper.ReadAppConfig("TablesBackUpJob");
             if (!string.IsNullOrEmpty(cron))
@@ -424,7 +425,7 @@ namespace PartialViewMySqlBackUp.ViewModels
 
                 MySqlBinPath = BaseDirectoryPath;//如果不是在服务器上，那么可能无法获取到mysqldump文件
 
-                Tables = new List<BackUpTable>();
+                
                 string sql = $"select table_name from information_schema.`TABLES` where TABLE_SCHEMA='{EnvironmentInfo.DbConnEntity.DbName}';";
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];//获取所有的表
                 foreach (DataRow dr in dt.Rows)

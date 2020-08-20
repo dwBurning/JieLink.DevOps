@@ -70,8 +70,5 @@
                 <Run Foreground="#20A0FF">plugs</Run>
                 目录下，重启软件即可</TextBlock>
         </StackPanel>
-        <StackPanel VerticalAlignment="Bottom" Grid.Row="3">
-            <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://106.53.255.16:8090/" Click="Hyperlink_Click">由JieLink+V2.*团队提供技术支持</Hyperlink></TextBlock>
-        </StackPanel>
     </Grid>
 </UserControl>

@@ -56,14 +56,21 @@ namespace PartialViewMySqlBackUp
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(EnvironmentInfo.ConnectionString))
+            try
+            {
+                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
+                if (viewModel.Tables.Count == 0)
+                {
+                    viewModel.GetTables();
+                    viewModel.ShowMessage("数据库连接成功");
+                }
+                this.IsEnabled = true;
+
+            }
+            catch (Exception)
             {
                 MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
                 this.IsEnabled = false;
-            }
-            else
-            {
-                this.IsEnabled = true;
             }
         }
 
@@ -73,7 +80,7 @@ namespace PartialViewMySqlBackUp
             System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                viewModel.TaskBackUpPath = folderBrowserDialog.SelectedPath.Trim()+ "\\jielink_bdbackup";
+                viewModel.TaskBackUpPath = folderBrowserDialog.SelectedPath.Trim() + "\\jielink_bdbackup";
             }
         }
 
