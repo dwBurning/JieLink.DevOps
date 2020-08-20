@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackUp\BackUpConfig.cs" />
+    <Compile Include="BackUp\DeleteOverTimePackageJob.cs" />
     <Compile Include="BackUp\ExecuteBackUp.cs" />
     <Compile Include="BackUp\DataBaseBackUpJob.cs" />
     <Compile Include="BackUp\TablesBackUpJob.cs" />

@@ -119,6 +119,14 @@ namespace PartialViewMySqlBackUp.ViewModels
                 return;
             }
 
+            if (TaskBackUpPath.ToLower().StartsWith("c:"))
+            {
+                if (MessageBoxHelper.MessageBoxShowQuestion("请确认是否将备份文件保存的C盘？") == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             foreach (var policy in Policys)
             {
                 string cron = ConvertToCron(policy);
@@ -178,6 +186,15 @@ namespace PartialViewMySqlBackUp.ViewModels
                 MessageBoxHelper.MessageBoxShowWarning("请选择备份类型！");
                 return;
             }
+
+            if (TaskBackUpPath.ToLower().StartsWith("c:"))
+            {
+                if (MessageBoxHelper.MessageBoxShowQuestion("请确认是否将备份文件保存的C盘？") == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
             ExecuteBackUp executeBackUp = new ExecuteBackUp();
             if (CurrentPolicy.BackUpType == BackUpType.DataBase)
             {
@@ -396,6 +413,10 @@ namespace PartialViewMySqlBackUp.ViewModels
                 string jsonData = File.ReadAllText(path);
                 BackUpConfig = JsonConvert.DeserializeObject<BackUpConfig>(jsonData);
                 TaskBackUpPath = BackUpConfig.SavePath;//文件保存路径
+                if (!Directory.Exists(TaskBackUpPath))
+                {
+                    Directory.CreateDirectory(TaskBackUpPath);
+                }
 
                 //string cmd = "select @@basedir as mysqlpath from dual";
                 //DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, cmd).Tables[0];
@@ -515,7 +536,7 @@ namespace PartialViewMySqlBackUp.ViewModels
                && !CurrentPolicy.Friday
                && !CurrentPolicy.Saturday)
             {
-                MessageBoxHelper.MessageBoxShowWarning("已有策略占用所有周期，如果需要添加新的策略，请至少预留一个周期！");
+                MessageBoxHelper.MessageBoxShowWarning("已有策略占用了选定周期，请至少选择一个有效的周期！");
                 return true;
             }
 

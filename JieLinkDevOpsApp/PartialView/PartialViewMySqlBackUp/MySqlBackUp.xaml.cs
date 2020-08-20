@@ -73,7 +73,7 @@ namespace PartialViewMySqlBackUp
             System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
             if (result == System.Windows.Forms.DialogResult.OK)
             {
-                viewModel.TaskBackUpPath = folderBrowserDialog.SelectedPath.Trim();
+                viewModel.TaskBackUpPath = folderBrowserDialog.SelectedPath.Trim()+ "\\jielink_bdbackup";
             }
         }
 

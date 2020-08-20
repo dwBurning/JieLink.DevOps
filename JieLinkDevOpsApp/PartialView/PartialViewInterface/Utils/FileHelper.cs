@@ -20,5 +20,26 @@ namespace PartialViewInterface.Utils
         {
             return Directory.GetFiles(path, extension).ToList();
         }
+
+        public static List<FileInfo> GetAllFileInfo(string path, string extension = "*.dll")
+        {
+            List<string> files = GetAllFiles(path, extension);
+            List<FileInfo> fileInfos = new List<FileInfo>();
+            foreach (var file in files)
+            {
+                if (File.Exists(file))
+                {
+                    FileInfo fileInfo = new FileInfo(file);
+                    fileInfos.Add(fileInfo);
+                }
+            }
+
+            fileInfos.Sort((a, b) =>
+            {
+                return (int)(a.LastWriteTime - b.LastWriteTime).TotalSeconds;
+            });
+
+            return fileInfos;
+        }
     }
 }

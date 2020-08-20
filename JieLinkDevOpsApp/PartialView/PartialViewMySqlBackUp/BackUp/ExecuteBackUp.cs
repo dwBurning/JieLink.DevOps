@@ -33,6 +33,7 @@ namespace PartialViewMySqlBackUp.BackUp
                 cmds.Add(mysqlcmd);
                 ProcessHelper.ExecuteCommand(cmds);
                 ZipHelper.ZipFile(filePath, filePath.Replace(".sql", ".zip"));
+                File.Delete(filePath);
             }
             catch (Exception ex)
             {
@@ -72,6 +73,7 @@ namespace PartialViewMySqlBackUp.BackUp
                 cmds.Add(mysqlcmd);
                 ProcessHelper.ExecuteCommand(cmds);
                 ZipHelper.ZipFile(filePath, filePath.Replace(".sql", ".zip"));
+                File.Delete(filePath);
             }
             catch (Exception ex)
             {
