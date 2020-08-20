@@ -244,6 +244,9 @@ namespace PartialViewMySqlBackUp.ViewModels
                         policy.Thursday = true;
                         break;
                     case "6":
+                        policy.Friday = true;
+                        break;
+                    case "7":
                         policy.Saturday = true;
                         break;
                 }
