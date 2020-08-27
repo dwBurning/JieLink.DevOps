@@ -101,7 +101,7 @@ namespace PartialViewCheckUpdate.ViewModels
             {
                 this.InstallPath = new FileInfo(process.MainModule.FileName).Directory.Parent.FullName;
             }
-                
+
 
         }
 
@@ -202,14 +202,14 @@ namespace PartialViewCheckUpdate.ViewModels
         }
         private void Repair(object parameter)
         {
-            if(string.IsNullOrEmpty(this.SetUpPackagePath) || string.IsNullOrEmpty(this.InstallPath))
+            if (string.IsNullOrEmpty(this.SetUpPackagePath) || string.IsNullOrEmpty(this.InstallPath))
             {
                 MessageBoxHelper.MessageBoxShowWarning("请选择正确的路径！");
                 return;
             }
 
             DirectoryInfo packageDir = new DirectoryInfo(this.SetUpPackagePath);
-            
+
             if (packageDir.Name.Equals("sys") || packageDir.Name.Equals("obj"))
                 packageDir = packageDir.Parent;
             var zipPath = Directory.GetFiles(Path.Combine(packageDir.FullName, "obj"), "*.zip").FirstOrDefault();

@@ -56,7 +56,7 @@ namespace JieShun.JieLink.DevOps.App
 
             try
             {
-                //SetSelfStarting(true, "JieShun.JieLink.DevOps.App.exe");
+                SetSelfStarting(true, "JieShun.JieLink.DevOps.App.exe");
             }
             catch (Exception ex)
             {

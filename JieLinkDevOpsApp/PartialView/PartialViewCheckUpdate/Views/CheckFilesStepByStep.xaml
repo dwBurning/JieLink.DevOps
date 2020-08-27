@@ -39,9 +39,9 @@
             <ColumnDefinition></ColumnDefinition>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="#20A0FF"
+        <TextBlock HorizontalAlignment="Left" Foreground="#20A0FF"
                    FontSize="26" FontWeight="Bold" Grid.Row="0" Grid.Column="0" 
-                   Grid.ColumnSpan="2">请按照操作步骤依次往下执行！全屏查看，效果更佳...</TextBlock>
+                   Grid.ColumnSpan="2">请按照操作步骤依次往下执行！双击可以查看动图演示步骤...</TextBlock>
         <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
@@ -103,7 +103,7 @@
                 <Image Grid.Column="1" Tag="01" Source="..\Pic\1-SmartCenter\2通过中心服务进程跳转中心安装路径.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
-            <Grid>
+            <!--<Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -111,14 +111,14 @@
                 <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.备份SmartCenter目录。进入到中心安装路径后，除log、logs、Xmpplogs、package这四个文件夹外，其它的文件、文件夹都需要备份。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="02" Source="..\Pic\1-SmartCenter\3备份.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
+            </Grid>-->
 
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.找到升级文件目录。在升级包中里面obj目录中，找到JSOCT2016-V*.*.*.zip解压。进入解压的文件夹中的programfiles文件夹，再进入SmartCenter文件夹。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.找到升级文件目录。在安装包中里面obj目录中，找到JSOCT2016-V*.*.*.zip解压。进入解压的文件夹中的programfiles文件夹，再进入SmartCenter文件夹。或者找到安装包sys目录中，进入programfiles文件夹，再进入SmartCenter文件夹
                 </TextBlock>
                 <Image Grid.Column="1" Tag="03" Source="..\Pic\1-SmartCenter\4找SmartCenter升级文件路径.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -128,9 +128,19 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.筛选文件。在SmartCenter中通过类型同时筛选出 应用程序、应用程序拓展 这两个类型的文件。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.筛选文件。在SmartCenter Ctrl+A全选，然后按住Ctrl键，同时鼠标左键单机Config文件夹，以及SmartCenter.Host.exe.config文件。
                 </TextBlock>
-                <Image Grid.Column="1" Tag="04" Source="..\Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+                <Image Grid.Column="1" Tag="04" Source="..\Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件1.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
+            </Grid>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.筛选文件。在SmartCenter Ctrl+A全选，然后按住Ctrl键，同时鼠标左键单机Config文件夹，以及SmartCenter.Host.exe.config文件。
+                </TextBlock>
+                <Image Grid.Column="1" Tag="04" Source="..\Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件2.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -148,7 +158,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">7.复制刚才筛选的文件。回到文件浏览器，把升级包中的SmartCenter目录中筛选出来的应用程序和应用程序拓展文件，全选，复制，然后粘贴到SmartCenter安装目录下进行替换。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">7.替换文件。复制选中的文件，然后粘贴到SmartCenter安装目录下进行替换。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="06" Source="..\Pic\1-SmartCenter\7筛选过后全选复制.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -182,16 +192,6 @@
                 <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.结束守护进程。回到任务管理器，结束守护进程。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="09" Source="..\Pic\2-守护进程\2结束守护进程.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.替换守护进程。找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入守护进程文件夹。选择除Config外的所有文件，复制，粘贴到守护进程安装目录。
-                </TextBlock>
-                <Image Grid.Column="1" Tag="10" Source="..\Pic\2-守护进程\3替换守护进程.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
             <Grid>
@@ -251,7 +251,7 @@
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\3-SmartWeb\3转到SmartWeb安装路径.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
-            <Grid>
+            <!--<Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -259,13 +259,13 @@
                 <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.备份SmartWeb目录。选择SmartWeb目录中除logs外的所有文件进行备份。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\3-SmartWeb\4备份.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
+            </Grid>-->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.替换SmartWeb。注意：请勿替换Config。找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartWeb文件夹。选择除Config外的所有文件，复制，粘贴到SmartWeb安装目录。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">4.替换SmartWeb。注意：请勿替换Config。找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartWeb文件夹。选择除Config外的所有文件，复制，粘贴到SmartWeb安装目录。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\3-SmartWeb\5替换文件.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -274,28 +274,30 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">6.重启站点。替换完成后，回到IIS管理器，先停止SmartWeb，再重启SmartWeb。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">5.重启站点。替换完成后，回到IIS管理器，先停止SmartWeb，再重启SmartWeb。
 <Run Foreground="#20A0FF">批注：其余站点的替换，与替换SmartWeb类似，不替换</Run><Run Foreground="Red">Config</Run><Run Foreground="#20A0FF">文件夹即可。</Run>
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\3-SmartWeb\6重启.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
-            <Grid>
+            <!--<Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">四、替换SmartAPI
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">三、替换SmartAPI
 1.备份SmartApi。进入jieLink安装目录中的SmartApi文件夹，备份除Logs外的所有文件。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\4-SmartAPI\1备份.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
+            </Grid>-->
+            
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.替换SmartApi。找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartApi文件夹。选择除Config外的所有文件，复制，粘贴到SmartApi安装目录。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">四、替换SmartApi。
+1.找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartApi文件夹。选择除Config外的所有文件，复制，粘贴到SmartApi安装目录。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\4-SmartAPI\2替换文件.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -304,12 +306,12 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.重启SmartApi。替换完成后，回到IIS管理器，先停止SmartApi，再重启SmartApi。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.重启SmartApi。替换完成后，回到IIS管理器，先停止SmartApi，再重启SmartApi。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\4-SmartAPI\3重启.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
-            <Grid>
+            <!--<Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -318,13 +320,14 @@
 1.备份SmartSDK。和SmartApi类似，进入jieLink安装目录中的SmartSDK文件夹，备份除Logs外的所有文件。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\5-SmartSDK\1备份.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
+            </Grid>-->
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.替换SmartSDK。找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartSDK文件夹。选择除Config外的所有文件，复制，粘贴到SmartSDK安装目录。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">五、替换SmartSDK。
+1.找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartSDK文件夹。选择除Config外的所有文件，复制，粘贴到SmartSDK安装目录。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\5-SmartSDK\2替换文件.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -333,7 +336,7 @@
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">3.重启SmartSDK。替换完成后，回到IIS管理器，先停止SmartSDK，再重启SmartSDK。
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.重启SmartSDK。替换完成后，回到IIS管理器，先停止SmartSDK，再重启SmartSDK。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\5-SmartSDK\3重启.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
@@ -394,7 +397,7 @@
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\6-SmartFile\6重启.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
 
-            <Grid>
+            <!--<Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
@@ -459,14 +462,14 @@
                 <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">2.替换SmartNetwork。注意：请勿替换Config。找到刚刚解压出来的安装文件夹，进入programfiles文件夹，再进入SmartNetwork文件夹。选择除Config外的所有文件，复制，粘贴到SmartNetwork安装目录。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\8-SmartNetwork\2替换.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
-            </Grid>
+            </Grid>-->
 
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">九、替换门禁服务
+                <TextBlock Grid.Column="0" xml:space="preserve" Style="{StaticResource textBlock}">七、替换门禁服务
 1.在任务管理器的服务中，找到门禁服务和门禁服务守护进程。
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\9-SmartBoxDoor\1门禁服务.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
@@ -534,10 +537,6 @@
                 </TextBlock>
                 <Image Grid.Column="1" Tag="10" Source="..\Pic\9-SmartBoxDoor\8启动.png" Style="{StaticResource image}" MouseLeftButtonDown="Image_MouseLeftButtonDown"/>
             </Grid>
-
-
-
-
         </pu:Carousel>
     </Grid>
 </UserControl>
