@@ -19,6 +19,8 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
         public static IDictionary<string, IPartialView> partialViewDic;
         public MainWindowViewModel()
         {
+            Title = $"JieLink运维工具 {EnvironmentInfo.CurrentVersion}";
+
             partialViewDic = new Dictionary<string, IPartialView>();
             string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
             string path = BaseDirectoryPath + "plugs";
@@ -71,6 +73,16 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                 new TreeViewItemModel("设置","SystemSetting","\uf085"),
             };
         }
+
+        private string _title;
+
+        public string Title
+        {
+            get { return _title; }
+            set { _title = value; NotifyPropertyChanged(); }
+        }
+
+
 
         public string SearchText
         {
