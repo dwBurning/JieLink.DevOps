@@ -45,6 +45,12 @@ public class VersionInfoService {
 			criteria.andWorkOrderNoLike("%" + orderNo + "%");
 		}
 		int total = versionInfoMapper.countByExample(example);
+		if (total == 0 && orderNo != null && orderNo != "") {
+			criteria = example.or();
+			criteria.andIsDeletedEqualTo(0);
+			criteria.andVersionDescribeLike("%" + orderNo + "%");
+		}
+		total = versionInfoMapper.countByExample(example);
 		example.setOrderByClause(limitString);
 		List<VersionInfo> versionInfos = versionInfoMapper.selectByExample(example);
 		PageSet<VersionInfo> pageSet = new PageSet<>();

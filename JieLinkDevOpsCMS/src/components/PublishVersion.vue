@@ -2,7 +2,7 @@
   <el-container>
     <el-header class="report_header">
       <el-input
-        placeholder="请输入工单号..."
+        placeholder="请输入工单号或者版本描述关键字..."
         prefix-icon="el-icon-search"
         v-model="keywords"
         style="width: 400px"
@@ -42,6 +42,7 @@
             <el-select style="width: 100%;" v-model="ruleForm.versionType" placeholder="请选择版本类型">
               <el-option label="工单" value="0"></el-option>
               <el-option label="补丁" value="1"></el-option>
+              <el-option label="文档" value="2"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="操作方式">
@@ -49,6 +50,7 @@
               <el-option label="替换盒子的文件" value="替换盒子的文件"></el-option>
               <el-option label="替换中心的文件" value="替换中心的文件"></el-option>
               <el-option label="替换Web的文件" value="替换Web的文件"></el-option>
+              <el-option label="按文档步骤操作" value="按文档步骤操作"></el-option>
             </el-select>
           </el-form-item>
 
@@ -172,6 +174,8 @@ export default {
         return "工单";
       } else if (row.versionType == 1) {
         return "补丁";
+      }else if(row.versionType == 2) {
+        return "文档";
       }
     },
     //加载会话数据
