@@ -66,7 +66,7 @@ namespace PartialViewCheckUpdate
 
         public string MenuName
         {
-            get { return "检查升级"; }
+            get { return "升级辅助"; }
         }
 
         public string TagName

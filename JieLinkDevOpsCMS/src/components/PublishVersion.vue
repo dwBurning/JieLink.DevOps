@@ -51,6 +51,7 @@
               <el-option label="替换中心的文件" value="替换中心的文件"></el-option>
               <el-option label="替换Web的文件" value="替换Web的文件"></el-option>
               <el-option label="按文档步骤操作" value="按文档步骤操作"></el-option>
+              <el-option label="升级" value="升级"></el-option>
             </el-select>
           </el-form-item>
 
