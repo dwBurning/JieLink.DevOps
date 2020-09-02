@@ -7,9 +7,13 @@ using System.Windows.Input;
 
 namespace PartialViewInterface.Commands
 {
-   public class DelegateCommand : ICommand
+    public class DelegateCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
 
         public bool CanExecute(object parameter)
         {
