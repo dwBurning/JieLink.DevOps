@@ -150,12 +150,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\CheckFiles.gif">
+    <None Include="GIF\CheckFiles.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\CheckScripts.gif">
+    <None Include="GIF\CheckScripts.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -165,13 +165,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\CheckBoxLog.gif">
+    <None Include="GIF\CheckBoxLog.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Gif\CheckBoxVideo.gif">
+    <None Include="GIF\CheckBoxVideo.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Gif\CheckCenterLog.gif">
+    <None Include="GIF\CheckCenterLog.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
