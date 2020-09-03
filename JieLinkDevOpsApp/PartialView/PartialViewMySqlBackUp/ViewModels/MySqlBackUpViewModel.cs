@@ -309,6 +309,8 @@ namespace PartialViewMySqlBackUp.ViewModels
             {
                 MessageBoxHelper.MessageBoxShowWarning("请选择你需要移除的策略");
             }
+
+            WriteConfig();
         }
 
         private void AddPolicy(object parameter)
@@ -368,11 +370,12 @@ namespace PartialViewMySqlBackUp.ViewModels
             WriteConfig();
         }
 
-        private void WriteConfig()
+        public void WriteConfig()
         {
             string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
             string path = BaseDirectoryPath + "plugs\\BackUpTables.json";
             BackUpConfig.Tables.Clear();
+            BackUpConfig.SavePath = TaskBackUpPath;
             Tables.ForEach((x) =>
             {
                 if (x.IsChecked)

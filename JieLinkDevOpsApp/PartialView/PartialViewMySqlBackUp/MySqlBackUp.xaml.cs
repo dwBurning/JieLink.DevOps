@@ -7,6 +7,7 @@ using PartialViewMySqlBackUp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -81,6 +82,13 @@ namespace PartialViewMySqlBackUp
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 viewModel.TaskBackUpPath = folderBrowserDialog.SelectedPath.Trim() + "\\jielink_bdbackup";
+
+                if (!Directory.Exists(viewModel.TaskBackUpPath))
+                {
+                    Directory.CreateDirectory(viewModel.TaskBackUpPath);
+                }
+
+                viewModel.WriteConfig();
             }
         }
 

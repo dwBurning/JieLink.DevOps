@@ -17,12 +17,18 @@ namespace PartialViewMySqlBackUp.BackUp
         {
             try
             {
+
+
                 viewModel.ShowMessage("正在执行全库备份...");
                 string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_db.sql";
                 string filePath = "";
                 viewModel.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
                     filePath = Path.Combine(viewModel.TaskBackUpPath, fileName);
+                    if (!Directory.Exists(viewModel.TaskBackUpPath))
+                    {
+                        Directory.CreateDirectory(viewModel.TaskBackUpPath);
+                    }
                 }));
                 string mysqlcmd = $"mysqldump --default-character-set=utf8 --single-transaction -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port}  -B {EnvironmentInfo.DbConnEntity.DbName} -R > \"{filePath}\"";
 
@@ -34,6 +40,7 @@ namespace PartialViewMySqlBackUp.BackUp
                 ProcessHelper.ExecuteCommand(cmds);
                 ZipHelper.ZipFile(filePath, filePath.Replace(".sql", ".zip"));
                 File.Delete(filePath);
+                viewModel.ShowMessage("备份完成！");
             }
             catch (Exception ex)
             {
@@ -51,6 +58,10 @@ namespace PartialViewMySqlBackUp.BackUp
                 viewModel.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
                     filePath = Path.Combine(viewModel.TaskBackUpPath, fileName);
+                    if (!Directory.Exists(viewModel.TaskBackUpPath))
+                    {
+                        Directory.CreateDirectory(viewModel.TaskBackUpPath);
+                    }
                 }));
                 string tables = "";
                 if (viewModel.Tables.FindIndex(x => x.IsChecked) >= 0)
@@ -74,6 +85,7 @@ namespace PartialViewMySqlBackUp.BackUp
                 ProcessHelper.ExecuteCommand(cmds);
                 ZipHelper.ZipFile(filePath, filePath.Replace(".sql", ".zip"));
                 File.Delete(filePath);
+                viewModel.ShowMessage("备份完成！");
             }
             catch (Exception ex)
             {
