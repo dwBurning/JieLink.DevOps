@@ -59,6 +59,8 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SyncToolViewModel\DataCheckViewModel.cs" />
+    <Compile Include="SyncToolViewModel\DataSyncViewModel.cs" />
     <Page Include="CenterPartialSyncTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

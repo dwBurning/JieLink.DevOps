@@ -17,8 +17,6 @@ namespace PartialViewMySqlBackUp.BackUp
         {
             try
             {
-
-
                 viewModel.ShowMessage("正在执行全库备份...");
                 string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_db.sql";
                 string filePath = "";

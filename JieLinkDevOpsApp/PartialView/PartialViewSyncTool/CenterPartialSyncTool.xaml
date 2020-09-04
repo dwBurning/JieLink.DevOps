@@ -23,102 +23,60 @@
 
     </UserControl.Resources>
 
-    <Grid MaxWidth="{Binding ActualWidth}">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition Width="200"></ColumnDefinition>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
+    <TabControl
+        pu:TabControlHelper.SelectedForeground="#00BCFF" >
+        <TabItem Header="数据同步">
+            <Grid x:Name="gridSyncTool">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
 
-        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
-            <FlowDocument>
-                <Paragraph>
-                    <Run Text=""/>
-                </Paragraph>
-            </FlowDocument>
-        </RichTextBox>
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Message}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" >中心IP地址：</TextBlock>
-        <TextBlock Grid.Row="1" Grid.Column="0" >数据库名称：</TextBlock>
-        <TextBlock Grid.Row="2" Grid.Column="0" >数据库端口：</TextBlock>
-        <TextBlock Grid.Row="3" Grid.Column="0" >数据库用户：</TextBlock>
-        <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
-        <TextBlock Grid.Row="6" Grid.Column="0" >频率:(秒)：</TextBlock>
-        <TextBlock Grid.Row="7" Grid.Column="0" >检测天数：</TextBlock>
-        <TextBlock Grid.Row="8" Grid.Column="0" >检测条数：</TextBlock>
-        <TextBlock Grid.Row="9" Grid.Column="0" >版本：</TextBlock>
-        <TextBlock Grid.Row="10" Grid.Column="0" x:Name="TextBlock10" >命令字：</TextBlock>
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="127.0.0.1" 
-                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" 
-                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="3306" 
-                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="jieLink" 
-                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
-        <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtCenterDbPwd" 
-                     pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
-                     pu:PasswordBoxHelper.Watermark="请输入密码"
-                     pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
-                     pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
-                     pu:PasswordBoxHelper.CornerRadius="4"
-                     pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
-                     />
-        <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
+                <TextBlock Grid.Row="0" Grid.Column="0" >频率:(秒)：</TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="0" >检测天数：</TextBlock>
+                <TextBlock Grid.Row="2" Grid.Column="0" >检测条数：</TextBlock>
+                <TextBlock Grid.Row="3" Grid.Column="0" >版本：</TextBlock>
+                <TextBlock Grid.Row="4" Grid.Column="0" x:Name="TextBlock10" >命令字：</TextBlock>
+
+                <Button Grid.Column="1" Grid.Row="5" Content="获取盒子数据库配置" Name ="btnTestConn" Command="{Binding GetBoxConnStringCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtLoopSecond" Text="5" 
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtLoopSecond" Text="{Binding LoopSecond}" 
                  VerticalAlignment="Center" Height="40"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCheckDay" Text="1" 
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCheckDay" Text="{Binding Day}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入检测天数"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtCheckRow" Text="100" 
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCheckRow" Text="{Binding Limit}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入检测条数"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -126,26 +84,34 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
 
-        <CheckBox Grid.Row="9" Grid.Column="1" x:Name="chbVersion" Height="30" Content="2.0以下版本"
+                <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbVersion" Height="30" Content="2.0以下版本"
                  pu:CheckBoxHelper.CheckBoxStyle="Switch"
                  pu:CheckBoxHelper.BoxHeight="22"
                  pu:CheckBoxHelper.BoxWidth="33" Unchecked="chbVersion_Unchecked"
                  pu:CheckBoxHelper.CheckedBackground="#20A0FF"
                  pu:CheckBoxHelper.CornerRadius="4" Checked="chbVersion_Checked"
                  />
-        
-        <TextBox Grid.Row="10" Grid.Column="1" x:Name="txtCmd" Text="82A" MinLines="20"
-                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="命令字以分号“;”分割"
+
+                <TextBox Grid.Row="4" Grid.Column="1" x:Name="txtCmd" Text="{Binding CMD}" MinLines="20"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="命令字以分号';'分割"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <Button Grid.Column="1" Grid.Row="11" Content="开启检测" Name="btnStartTask" Click="btnStartTask_Click"
+                <Button Grid.Column="1" Grid.Row="6" Content="开启检测" Name="btnStartTask" Command="{Binding StartDataSyncCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 IsEnabled="False"/>
-    </Grid>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="数据比对">
+
+        </TabItem>
+    </TabControl>
+
+
 
 </UserControl>
