@@ -40,6 +40,7 @@
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
@@ -99,19 +100,56 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <Button Grid.Column="1" Grid.Row="6" Content="开启检测" Name="btnStartTask" Command="{Binding StartDataSyncCommand}"
+                <Button Grid.Column="1" Grid.Row="6" Content="开启检测" Command="{Binding StartDataSyncCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
-                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
-                IsEnabled="False"/>
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <Button Grid.Column="1" Grid.Row="7" Content="停止检测" Command="{Binding StopDataSyncCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
         </TabItem>
 
         <TabItem Header="数据比对">
+            <Grid x:Name="gridDataCheck">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
 
+                <RichTextBox BorderBrush="#20A0FF"
+                     Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Message}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+
+                <Button Grid.Column="1" Grid.Row="0" Content="获取盒子数据库配置" Command="{Binding GetBoxConnStringCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <Button Grid.Column="1" Grid.Row="1" Content="开始比对" Command="{Binding StartCheckCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <Button Grid.Column="1" Grid.Row="2" Content="将结果输出到记事本" Command="{Binding OutPutToNotepadCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+            </Grid>
         </TabItem>
     </TabControl>
-
-
-
 </UserControl>

@@ -15,7 +15,6 @@ using System.Windows.Shapes;
 using PartialViewInterface;
 using System.ComponentModel;
 using MySql.Data.MySqlClient;
-using JieLinkSyncTool;
 using System.Data;
 using System.Windows.Forms;
 using System.IO;
@@ -47,11 +46,15 @@ namespace PartialViewSyncTool
         }
 
         DataSyncViewModel dataSyncViewModel;
+        DataCheckViewModel dataCheckViewModel;
         public CenterPartialSyncTool()
         {
             InitializeComponent();
             dataSyncViewModel = new DataSyncViewModel();
             gridSyncTool.DataContext = dataSyncViewModel;
+
+            dataCheckViewModel = new DataCheckViewModel();
+            gridDataCheck.DataContext = dataCheckViewModel;
         }
 
         private void chbVersion_Checked(object sender, RoutedEventArgs e)

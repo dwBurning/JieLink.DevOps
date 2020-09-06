@@ -1,5 +1,4 @@
-﻿using JieLinkSyncTool;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using Panuon.UI.Silver;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
@@ -21,147 +20,94 @@ namespace PartialViewSyncTool.SyncToolViewModel
 
         public DelegateCommand StartDataSyncCommand { get; set; }
 
+        public DelegateCommand StopDataSyncCommand { get; set; }
+
         private bool canExecute = false;
+
+        BoxConnConfig boxConnConfig;
+
+        Dictionary<string, string> dictBoxConnStr;
 
         public DataSyncViewModel()
         {
+            CMD = "82A";
+            LoopSecond = 5;
+            Day = 1;
+            Limit = 100;
+            boxConnConfig = new BoxConnConfig();
+            boxConnConfig.ShowMessage += BoxConnConfig_ShowMessage;
+
+            dictBoxConnStr = new Dictionary<string, string>();
+
             GetBoxConnStringCommand = new DelegateCommand();
             GetBoxConnStringCommand.ExecuteAction = GetBoxConnString;
 
             StartDataSyncCommand = new DelegateCommand();
             StartDataSyncCommand.ExecuteAction = Start;
             StartDataSyncCommand.CanExecuteFunc = new Func<object, bool>((object obj) => { return canExecute; });
+
+            StopDataSyncCommand = new DelegateCommand();
+            StopDataSyncCommand.ExecuteAction = Stop;
+            StopDataSyncCommand.CanExecuteFunc = new Func<object, bool>((object obj) => { return canExecute; });
         }
 
-        /// <summary>
-        /// 获取所有盒子的连接信息
-        /// </summary>
-        Dictionary<string, string> dictBoxConnStr = new Dictionary<string, string>();
-
-        /// <summary>
-        /// 连接字符串配置
-        /// </summary>
-        public DbConfigEntity DbConfig = new DbConfigEntity();
+        private void BoxConnConfig_ShowMessage(string message)
+        {
+            ShowMessage(message);
+        }
 
         private void GetBoxConnString(object parameter)
         {
-            ShowMessage("正在检测盒子的数据库连接，请等待！");
-            string sql = "SELECT IP from control_devices where DeviceType = 25";
-            DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
-            if (dt != null)
+            dictBoxConnStr= boxConnConfig.GetBoxConnString();
+            if (dictBoxConnStr.Count > 0)
             {
-                foreach (DataRow dr in dt.Rows)
-                {
-                    string ip = dr["IP"].ToString();
-                    if (dictBoxConnStr.ContainsKey(ip))
-                    {
-                        continue;
-                    }
-
-                    string boxConn = $"Data Source={ip};port=10080;User ID=test;Password=123456;Initial Catalog=smartbox;";
-
-                    //读取到盒子配置文件，加载参数
-                    ReadBoxConfig(ref boxConn, ip);
-
-                    try
-                    {
-                        string cmd = "select * from sys_boxinformation";
-                        MySqlHelper.ExecuteDataset(boxConn, cmd);
-                        ShowMessage($"盒子{ip}连接成功");
-                        //存储盒子连接字符串
-                        SaveBoxDbConfig(DbConfig, boxConn);
-                        dictBoxConnStr.Add(ip, boxConn);
-                    }
-                    catch (Exception)
-                    {
-                        (Application.Current.MainWindow as WindowX).IsMaskVisible = true;
-                        DbConfig dbConfig = new DbConfig(ip);
-                        if (dbConfig.ShowDialog() == true)
-                        {
-                            ShowMessage($"盒子{ip}连接成功");
-                            //存储盒子连接字符串
-                            SaveBoxDbConfig(DbConfig, dbConfig.DbConnString);
-                            dictBoxConnStr.Add(ip, dbConfig.DbConnString);
-                        }
-                        (Application.Current.MainWindow as WindowX).IsMaskVisible = false;
-                    }
-                }
-                //全部保存盒子字符串后保存到文件
-                SaveBoxDbConfigFile(DbConfig);
-
                 canExecute = true;
-
             }
-        }
-
-        private void SaveBoxDbConfigFile(DbConfigEntity dbconfig)
-        {
-            System.IO.File.WriteAllText("DbBoxConfig.ini", Newtonsoft.Json.JsonConvert.SerializeObject(dbconfig.BoxDbConnStrs), Encoding.UTF8);
-        }
-
-        private void SaveBoxDbConfig(DbConfigEntity dbconfig, string conbox)
-        {
-            //string boxConn = $"Data Source={ip};port=10080;User ID=test;Password=123456;Initial Catalog=smartbox;";
-
-            string[] strsplit = conbox.Split(new char[2] { '=', ';' });
-            DbConnEntity boxcon = new DbConnEntity();
-            boxcon.Ip = strsplit[1];
-            boxcon.Port = Convert.ToInt32(strsplit[3]);
-            boxcon.UserName = strsplit[5];
-            boxcon.Password = strsplit[7];
-            boxcon.DbName = strsplit[9];
-            dbconfig.BoxDbConnStrs.Add(boxcon);
-
-        }
-
-        private void ReadBoxConfig(ref string str, string ip)
-        {
-            if (File.Exists(@"DbBoxConfig.ini"))
-            {
-                string ReadStr = File.ReadAllText(@"DbBoxConfig.ini");
-                DbConfig.BoxDbConnStrs = Newtonsoft.Json.JsonConvert.DeserializeObject<List<DbConnEntity>>(ReadStr);
-                DbConnEntity find = DbConfig.BoxDbConnStrs.Find(a => a.Ip == ip);
-                if (find != null)
-                    str = $"Data Source={find.Ip};port={find.Port};User ID={find.UserName};Password={find.Password};Initial Catalog={find.DbName};";
-                else
-                    return;
-            }
-            return;
         }
 
         private void Start(object parameter)
         {
+            cmds = new List<string>();
+            if (!string.IsNullOrEmpty(CMD))
+            {
+                cmds = CMD.Split(';').ToList();
+            }
+
+            day = Day;
+            limit = Limit;
+            loopTime = LoopSecond;
+            running = true;
+
             Task.Factory.StartNew(() =>
             {
-                while (true)
+                while (running)
                 {
                     StartCompareData();
-                    System.Threading.Thread.Sleep(1000);
+                    System.Threading.Thread.Sleep(loopTime * 1000);
                 }
             });
         }
 
-        public List<string> Cmds
+        private void Stop(object parameter)
         {
-            get
-            {
-                if (!string.IsNullOrEmpty(CMD))
-                {
-                    return CMD.Split(';').ToList();
-                }
-                return new List<string>();
-            }
+            running = false;
+            ShowMessage("已停止检测");
         }
 
+        private List<string> cmds;
+        private int day;
+        private int limit;
+        private int loopTime;
+        private bool running = true;
 
         /// <summary>
         /// 比对数据
         /// </summary>
         private void StartCompareData()
         {
-            foreach (var cmd in Cmds)
+            foreach (var cmd in cmds)
             {
-                List<SyncBoxEntity> centerDatas = GetCenterData(cmd, Day, Limit);
+                List<SyncBoxEntity> centerDatas = GetCenterData(cmd, day, limit);
                 if (centerDatas.Count <= 0)
                 {
                     ShowMessage("未获取到满足条件的数据");

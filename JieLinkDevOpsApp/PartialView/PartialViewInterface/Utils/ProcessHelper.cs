@@ -84,6 +84,19 @@ namespace PartialViewInterface.Utils
             }
         }
 
+        public static void StartProcessV2(string exe,string args)
+        {
+            Process process = new Process();
+            process.StartInfo.FileName = exe;
+            process.StartInfo.Arguments = args;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.Start();
+        }
+
 
         public static void StopProcess(string name)
         {

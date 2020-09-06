@@ -59,6 +59,8 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoxConnConfig.cs" />
+    <Compile Include="Models\ControlVoucher.cs" />
     <Compile Include="SyncToolViewModel\DataCheckViewModel.cs" />
     <Compile Include="SyncToolViewModel\DataSyncViewModel.cs" />
     <Page Include="CenterPartialSyncTool.xaml">
@@ -75,8 +77,8 @@
     <Compile Include="DbConfig.xaml.cs">
       <DependentUpon>DbConfig.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DbConfigEntity.cs" />
-    <Compile Include="SyncBoxEntity.cs" />
+    <Compile Include="Models\DbConfigEntity.cs" />
+    <Compile Include="Models\SyncBoxEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

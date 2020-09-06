@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 using Panuon.UI.Silver;
+using PartialViewInterface.Utils;
 
 namespace PartialViewSyncTool
 {
@@ -47,7 +48,7 @@ namespace PartialViewSyncTool
             }
             catch (Exception)
             {
-                MessageBox.Show("连接错误，请重新输入");
+                MessageBoxHelper.MessageBoxShowWarning("连接错误，请重新输入");
             }
         }
     }
