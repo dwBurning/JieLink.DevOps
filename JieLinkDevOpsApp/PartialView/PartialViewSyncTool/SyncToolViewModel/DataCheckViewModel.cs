@@ -111,12 +111,20 @@ namespace PartialViewSyncTool.SyncToolViewModel
 
         private void GetBoxData(string connStr, ControlVoucher voucher)
         {
-            string sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} and personNo='{voucher.PersonNo}'";
+            string sql = "";
+            if (!isChecked)
+            {
+                sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} and personNo='{voucher.PersonNo}'";
+            }
+            else
+            {
+                sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status}";
+            }
+            
             using (MySqlDataReader reader = MySqlHelper.ExecuteReader(connStr, sql))
             {
                 if (!reader.Read())
                 {
-
                     ShowMessage($"凭证[{voucher.VoucherNo}]与中心不一致");
                     if (!isChecked)
                     {
