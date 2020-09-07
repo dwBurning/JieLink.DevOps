@@ -44,7 +44,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                <RichTextBox BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
                     <FlowDocument>
                         <Paragraph>
@@ -127,7 +127,7 @@
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <RichTextBox BorderBrush="#20A0FF"
+                <RichTextBox BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
                     <FlowDocument>
                         <Paragraph>

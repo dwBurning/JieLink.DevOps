@@ -157,9 +157,9 @@ namespace PartialViewSyncTool.SyncToolViewModel
                     string personNo = reader["personNo"].ToString();
                     if (personNo != voucher.PersonNo)
                     {
-                        string cmd = $"update crd_credential set personNo='{personNo}',deviceidList='{deviceList.TrimEnd(';')}' where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} ";
+                        string cmd = $"update crd_credential set personNo='{voucher.PersonNo}',deviceidList='{deviceList.TrimEnd(';')}' where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} ";
                         int result = MySqlHelper.ExecuteNonQuery(connStr, cmd);
-                        ShowMessage($"更新凭证[{voucher.VoucherNo}]的人事No为[{personNo}]，权限列表为[{deviceList}]");
+                        ShowMessage($"更新凭证[{voucher.VoucherNo}]的人事No为[{voucher.PersonNo}]，权限列表为[{deviceList}]");
                     }
                 }
                 else
@@ -177,7 +177,7 @@ namespace PartialViewSyncTool.SyncToolViewModel
             }
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("一下凭证信息需要在中心凭证管理中执行挂失解挂操作：");
+            stringBuilder.AppendLine("以下凭证信息需要在中心凭证管理中执行挂失解挂操作：");
             foreach (var voucher in controlVouchers)
             {
                 stringBuilder.AppendLine(voucher.VoucherNo);
