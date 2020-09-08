@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29926.136
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.App", "JieShun.JieLink.DevOps.App.csproj", "{E535340A-0421-4939-94B8-06C112CABA29}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewMySqlBackUp", "PartialView\PartialViewMySqlBackUp\PartialViewMySqlBackUp.csproj", "{2D1D4C7E-6D3D-44E2-BB18-EEA6FB825D8F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewImportPlate", "PartialView\PartialViewImportPlate\PartialViewImportPlate.csproj", "{844EB0D1-7217-402D-82EB-D0FDFD84694A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewLogAnalyse", "PartialView\PartialViewLogAnalyse\PartialViewLogAnalyse.csproj", "{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{844EB0D1-7217-402D-82EB-D0FDFD84694A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{844EB0D1-7217-402D-82EB-D0FDFD84694A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{844EB0D1-7217-402D-82EB-D0FDFD84694A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
