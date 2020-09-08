@@ -71,6 +71,8 @@ namespace PartialViewLogAnalyse.Utils
                 return;
             if (ParseCloudSeatBegin(context, line, lastLines))
                 return;
+            if (ParseCloudRemoteOpenGate(context, line, lastLines))
+                return;
             if (ParseReceiveFacePay(context, line, lastLines))
                 return;
             if (ParseFacePayBegin(context, line, lastLines))
@@ -80,6 +82,8 @@ namespace PartialViewLogAnalyse.Utils
             if (ParseFacePayReturn(context, line, lastLines))
                 return;
             if (ParseFacePayEnd(context, line, lastLines))
+                return;
+            if (ParseFacePayEnd2(context, line, lastLines))
                 return;
             if (ParseNoPlateScanCode(context, line, lastLines))
                 return;
@@ -214,13 +218,18 @@ namespace PartialViewLogAnalyse.Utils
                 parkRecord.Online = parkOutRecord.recordFlags.offlineFlag == 0 && parkOutRecord.recordFlags.extendFlag != 0;
                 parkRecord.LogNodes = new List<LogNode>();
 
-                if (!context.DeviceCache.Any(x => x.DeviceId == parkRecord.RecordId))
+                if (!context.DeviceCache.Any(x => x.DeviceId == parkRecord.DeviceId))
                 {
                     DeviceInfo deviceInfo = new DeviceInfo();
                     deviceInfo.DeviceId = parkRecord.DeviceId;
                     deviceInfo.DeviceName = parkRecord.DeviceName;
                     deviceInfo.IoType = parkOutRecord.ioType;
                     context.DeviceCache.Add(deviceInfo);
+                }
+                else
+                {
+                    var deviceInfo = context.DeviceCache.FirstOrDefault(x => x.DeviceId == parkRecord.DeviceId);
+                    parkRecord.DeviceName = deviceInfo.DeviceName;
                 }
                 //看前面还有没有未处理的车
                 ParkRecord lastParkRecord = context.ParkRecords.LastOrDefault(x => x.DeviceId == parkOutRecord.deviceId.ToString());
@@ -241,7 +250,7 @@ namespace PartialViewLogAnalyse.Utils
                 logNode.LogTime = logTime;
                 if (parkRecord.Online)
                 {
-                    logNode.Message = string.Format("{0}请求中心鉴权，识别时间{1}", parkRecord.CredentialNo, parkRecord.EventTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    logNode.Message = string.Format("{0},{1},下位机识别请求中心鉴权，识别时间{2}", parkRecord.DeviceName, parkRecord.CredentialNo, parkRecord.EventTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
                 else
                 {
@@ -287,7 +296,7 @@ namespace PartialViewLogAnalyse.Utils
                 parkRecord.Online = parkInRecord.recordFlags.offlineFlag == 0 && parkInRecord.recordFlags.extendFlag != 0;
                 parkRecord.LogNodes = new List<LogNode>();
 
-                if (!context.DeviceCache.Any(x => x.DeviceId == parkRecord.RecordId))
+                if (!context.DeviceCache.Any(x => x.DeviceId == parkRecord.DeviceId))
                 {
                     DeviceInfo deviceInfo = new DeviceInfo();
                     deviceInfo.DeviceId = parkRecord.DeviceId;
@@ -295,7 +304,11 @@ namespace PartialViewLogAnalyse.Utils
                     deviceInfo.IoType = parkInRecord.ioType;
                     context.DeviceCache.Add(deviceInfo);
                 }
-
+                else
+                {
+                    var deviceInfo = context.DeviceCache.FirstOrDefault(x => x.DeviceId == parkRecord.DeviceId);
+                    parkRecord.DeviceName = deviceInfo.DeviceName;
+                }
                 //看前面还有没有未处理的车
                 ParkRecord lastParkRecord = context.ParkRecords.LastOrDefault(x => x.DeviceId == parkInRecord.deviceId.ToString());
                 if (parkRecord.Online && lastParkRecord != null && !lastParkRecord.IsEnd)
@@ -315,7 +328,7 @@ namespace PartialViewLogAnalyse.Utils
                 logNode.LogTime = logTime;
                 if (parkRecord.Online)
                 {
-                    logNode.Message = string.Format("{0}请求中心鉴权，识别时间{1}", parkRecord.CredentialNo, parkRecord.EventTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                    logNode.Message = string.Format("{0},{1},下位机识别请求中心鉴权，识别时间{2}", parkRecord.DeviceName, parkRecord.CredentialNo, parkRecord.EventTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 }
                 else
                 {
@@ -405,6 +418,7 @@ namespace PartialViewLogAnalyse.Utils
                             //如果是关联场内记录，解析场内记录guid
                             if (adjustLog.Contains("云坐席2.0下发记录关联指令"))
                             {
+                                adjustLogNode.LogNodeType = LogNodeType.CloudSeatAdjustIn;
                                 string strAdjustInData = adjustLog.Substring(adjustLog.IndexOf('{'));
                                 CloudSeatDownCommandParam param = JsonHelper.DeserializeObject<CloudSeatDownCommandParam>(strAdjustInData);
 
@@ -426,6 +440,7 @@ namespace PartialViewLogAnalyse.Utils
                             else if (adjustLog.Contains("智能平台下发数据【md.equip.action.equipoperate】"))
                             {
                                 adjustLogNode.Message = string.Format("{0},{1}云坐席远程开闸", parkRecord.DeviceName, parkRecord.CredentialNo);
+                                adjustLogNode.LogNodeType = LogNodeType.CloudRemoteOpenGate;
 
                             }
                             else if (adjustLog.Contains("盒子中心鉴权请求开始，Cmd=ManualEnterOut"))
@@ -434,6 +449,7 @@ namespace PartialViewLogAnalyse.Utils
                                 ManualEnterOutArgs args = JsonHelper.DeserializeObject<ManualEnterOutArgs>(strManualEnterOutData);
                                 parkRecord.DeviceId = args.DeviceID;
                                 adjustLogNode.Message = string.Format("{0},{1}盒子人工输车牌放行", parkRecord.DeviceName, parkRecord.CredentialNo);
+                                adjustLogNode.LogNodeType = LogNodeType.ManualEnterOut;
 
                             }
                             parkRecord.LogNodes.Add(adjustLogNode);
@@ -723,8 +739,7 @@ namespace PartialViewLogAnalyse.Utils
         }
         static bool ParseRemoteEvent(RecordContext context, string line, List<string> lastLines)
         {
-            //2020-08-26 14:54:49,158 [出口鉴权线程] INFO  CenterAuthLogger - 【出口】在线鉴权:暂停线程SuspendFlow开始，凭证=粤B3N61U,原因=AuthFaildWait
-            //2020-08-26 14:57:41,897 [入口鉴权线程] INFO  CenterAuthLogger - 【入口】在线鉴权:暂停线程SuspendFlow开始，凭证=未识别,原因=WaitScanCode
+
             int flagIndex = line.IndexOf("盒子中心鉴权请求开始，Cmd=RemoteEvent");
             if (flagIndex > 0)
             {
@@ -1108,11 +1123,49 @@ namespace PartialViewLogAnalyse.Utils
             }
             return false;
         }
+        static bool ParseCloudRemoteOpenGate(RecordContext context, string line, List<string> lastLines)
+        {
+            //2020-09-02 15:58:44,325 [163] INFO  CenterAuthLogger - 云坐席2.0开闸指令RemoteOpenGate：{"command":1,"deviceId":167388928,"from":7,"operateMode":0,"operatorNo":"","operatorName":null,"personNo":"","trascationId":"69025c0a-b49c-4d20-813c-3e9e1621b85d","isWebboxMode":false,"credentialNo":null,"extend":null,"seqId":null}
+            //2020-09-02 15:58:44,328 [163] INFO  CenterAuthLogger - 【出口】中心鉴权：CustomClientEvent,事件类型=收费框放行操作 ret.code=0,ret.msg=,args={"TransactionId":"703c2a20-f938-464d-8673-314ce310f521","EventType":0,"Data":{"Action":4,"PayTypeId":0,"Remark":null,"CancelReason":0,"OperatorNo":null,"OperatorID":null,"OperatorName":null,"Discount":null,"CapturePath":null,"EventType":5,"Extensions":{}},"DataJson":null}
+            int flagIndex = line.IndexOf("事件类型=收费框放行操作");
+            if (flagIndex > 0)
+            {
+                //string strLogTime = line.Substring(0, 23);
+                //DateTime logTime = DateTime.ParseExact(strLogTime, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.CurrentCulture);
+                string threadName = line.Substring(line.IndexOf('[') + 1, line.IndexOf(']') - line.IndexOf('[') - 1);
+                string deviceName = line.Substring(line.IndexOf('【') + 1, line.IndexOf('】') - line.IndexOf('【') - 1);
 
+                for (int i = lastLines.Count - 1, j = 0; i >= 0 && j < 10; --i, ++j)
+                {
+                    var lastLine = lastLines[i];
+                    if (lastLine.Contains("[" + threadName + "] INFO  CenterAuthLogger - 云坐席2.0开闸指令RemoteOpenGate"))
+                    {
+                        string strLogTime = lastLine.Substring(0, 23);
+                        DateTime logTime = DateTime.ParseExact(strLogTime, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.CurrentCulture);
+                        ParkRecord parkRecord = context.ParkRecords.LastOrDefault(x => x.DeviceName == deviceName);
+                        if (parkRecord != null)
+                        {
+                            parkRecord.IsEnd = true;
+                            parkRecord.EndTime = logTime;
+                            LogNode logNode = new LogNode();
+                            logNode.LogNodeType = LogNodeType.CloudRemoteOpenGate;
+                            logNode.ThreadName = threadName;
+                            logNode.LogTime = logTime;
+                            logNode.Message = string.Format("{0},{1},云坐席远程开闸", deviceName, parkRecord.CredentialNo);
+                            parkRecord.LogNodes.Add(logNode);
+                            parkRecord.LogNodes.Sort((a, b) => (int)(a.LogTime - b.LogTime).TotalMilliseconds);
+                            return true;
+                        }
+
+                    }
+                }
+            }
+            return false;
+        }
         static bool ParseReceiveFacePay(RecordContext context, string line, List<string> lastLines)
         {
             //2020-08-27 16:59:24,842 [193] INFO  CommonLogger - 下位机当面付记录进入盒子，data={"chargeType":1,"payCode":"134956884176121062","signature":null,"transactionId":"0B0A1200200827165920000063B7","cashInfo":null,"deviceId":0}
-            int flagIndex = line.IndexOf("下位机当面付记录进入盒子");
+            int flagIndex = line.IndexOf("下位机当面付记录进入盒子，data=");
             if (flagIndex > 0)
             {
                 string strLogTime = line.Substring(0, 23);
@@ -1158,7 +1211,7 @@ namespace PartialViewLogAnalyse.Utils
         {
             //2020-08-27 08:52:27,195 [217] INFO  CenterAuthLogger - 【广场出口】中心鉴权:凭证=粤SN22M7,云平台当面付请求
             int flagIndex = line.IndexOf("当面付请求");
-            if (flagIndex > 0)
+            if (line.EndsWith("当面付请求"))
             {
                 string strLogTime = line.Substring(0, 23);
                 DateTime logTime = DateTime.ParseExact(strLogTime, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.CurrentCulture);
@@ -1254,9 +1307,37 @@ namespace PartialViewLogAnalyse.Utils
                 if (parkRecord != null)
                 {
                     LogNode logNode = new LogNode();
-                    logNode.LogNodeType = LogNodeType.FacePayBegin;
+                    logNode.LogNodeType = LogNodeType.FacePayEnd;
                     logNode.ThreadName = threadName;
                     logNode.Message = string.Format("{0},{1},{2}", parkRecord.DeviceName, credentialNo, line.Substring(flagIndex));
+                    logNode.LogTime = logTime;
+                    parkRecord.LogNodes.Add(logNode);
+                    return true;
+                }
+            }
+            return false;
+        }
+        static bool ParseFacePayEnd2(RecordContext context, string line, List<string> lastLines)
+        {
+            //2020-09-02 19:34:13,016 [71] ERROR CenterAuthLogger - 【左出口】中心鉴权:当面付请求失败,已检测车辆已离开,凭证=川A495M8
+            int flagIndex = line.IndexOf("当面付请求失败,已检测车辆已离开");
+            if (flagIndex > 0)
+            {
+                string strLogTime = line.Substring(0, 23);
+                DateTime logTime = DateTime.ParseExact(strLogTime, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.CurrentCulture);
+                string threadName = line.Substring(line.IndexOf('[') + 1, line.IndexOf(']') - line.IndexOf('[') - 1);
+                string deviceName = line.Substring(line.IndexOf('【') + 1, line.IndexOf('】') - line.IndexOf('【') - 1);
+
+                int credentialNoStartIndex = line.IndexOf("凭证=") + "凭证=".Length;
+
+
+                ParkRecord parkRecord = context.ParkRecords.LastOrDefault(x => x.DeviceName == deviceName);
+                if (parkRecord != null)
+                {
+                    LogNode logNode = new LogNode();
+                    logNode.LogNodeType = LogNodeType.FacePayEnd;
+                    logNode.ThreadName = threadName;
+                    logNode.Message = string.Format("{0},{1},{2}", parkRecord.DeviceName, parkRecord.CredentialNo, "当面付失败，超过15分钟认为车辆已离开");
                     logNode.LogTime = logTime;
                     parkRecord.LogNodes.Add(logNode);
                     return true;

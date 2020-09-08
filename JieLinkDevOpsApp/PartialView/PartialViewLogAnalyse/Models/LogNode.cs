@@ -7,6 +7,7 @@ namespace PartialViewLogAnalyse.Models
     public enum LogNodeType
     {
         Begin,
+        ManualEnterOut,
         RequestPass,
         MatchEnterRecord,
         AddToDeviceQueue,
@@ -32,6 +33,8 @@ namespace PartialViewLogAnalyse.Models
         EndDeviceFlowProcess,
         CloudSeatBegin,
         CloudSeatAdjust,
+        CloudSeatAdjustIn,
+        CloudRemoteOpenGate,
         NoPlateScanCode,
         GetOrder,
         NotifyPay
