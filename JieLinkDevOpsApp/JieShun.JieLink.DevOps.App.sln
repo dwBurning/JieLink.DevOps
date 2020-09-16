@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JieShun.JieLink.DevOps.App", "JieShun.JieLink.DevOps.App.csproj", "{E535340A-0421-4939-94B8-06C112CABA29}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewImportPlate", "PartialView\PartialViewImportPlate\PartialViewImportPlate.csproj", "{844EB0D1-7217-402D-82EB-D0FDFD84694A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewLogAnalyse", "PartialView\PartialViewLogAnalyse\PartialViewLogAnalyse.csproj", "{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewImportEnterRecord", "PartialView\PartialViewImportEnterRecord\PartialViewImportEnterRecord.csproj", "{A0BF9565-0F07-4C33-B787-E5B022AB0021}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
