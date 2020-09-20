@@ -33,5 +33,7 @@ namespace PartialViewSyncTool
         public string Remark { get; set; }
 
         public int StatusFromPerson { get; set; }
+
+        public List<string> DeviceList { get; set; }
     }
 }

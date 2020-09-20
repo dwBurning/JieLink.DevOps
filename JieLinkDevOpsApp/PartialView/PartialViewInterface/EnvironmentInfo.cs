@@ -50,7 +50,7 @@ namespace PartialViewInterface
             get
             {
                 if (DbConnEntity == null) return "";
-                return $"Data Source={DbConnEntity.Ip};port={DbConnEntity.Port};User ID={DbConnEntity.UserName};Password={DbConnEntity.Password};Initial Catalog={DbConnEntity.DbName};";
+                return $"Data Source={DbConnEntity.Ip};port={DbConnEntity.Port};User ID={DbConnEntity.UserName};Password={DbConnEntity.Password};Initial Catalog={DbConnEntity.DbName};Pooling=true;";
             }
         }
 

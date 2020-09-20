@@ -41,10 +41,10 @@ namespace PartialViewSyncTool
                         continue;
                     }
 
-                    string boxConn = $"Data Source={ip};port=10080;User ID=jieLink;Password=js*168;Initial Catalog=smartbox;";
+                    string boxConn = ReadBoxConfig(ip);
 
                     //读取到盒子配置文件，加载参数
-                    if (string.IsNullOrEmpty(ReadBoxConfig(ip)))
+                    if (string.IsNullOrEmpty(boxConn))
                     {
                         ShowBoxConfigWindow(ip);
                         continue;

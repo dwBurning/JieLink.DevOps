@@ -4,6 +4,7 @@ using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,8 @@ namespace PartialViewSyncTool.SyncToolViewModel
 
         Dictionary<string, string> dictBoxConnStr;
 
+        bool isChecked = false;
+
         public DataCheckViewModel()
         {
             boxConnConfig = new BoxConnConfig();
@@ -48,6 +51,7 @@ namespace PartialViewSyncTool.SyncToolViewModel
         private void Start(object parameter)
         {
             canExecute = false;
+            isChecked = IsChecked;
             controlVouchers = new List<ControlVoucher>();
             Task.Factory.StartNew(() =>
             {
@@ -57,19 +61,42 @@ namespace PartialViewSyncTool.SyncToolViewModel
 
         private void CheckVoucher()
         {
-            string cmd = "select * from control_voucher";
-            using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, cmd))
+            try
             {
-                while (reader.Read())
+                string cmd = "select * from control_voucher";
+                DataTable dataTable = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, cmd).Tables[0];
+
+                foreach (DataRow dr in dataTable.Rows)
                 {
                     ControlVoucher voucher = new ControlVoucher();
-                    voucher.PersonNo = reader["personno"].ToString();
-                    voucher.VoucherNo = reader["voucherno"].ToString();
-                    voucher.Status = int.Parse(reader["Status"].ToString());
+                    voucher.VGUID = dr["guid"].ToString();
+                    voucher.PGUID = dr["pguid"].ToString();
+                    voucher.LGUID = dr["lguid"].ToString();
+                    voucher.PersonNo = dr["personno"].ToString();
+                    voucher.VoucherType = int.Parse(dr["vouchertype"].ToString());
+                    voucher.VoucherNo = dr["voucherno"].ToString();
+                    voucher.CardNum = dr["cardnum"].ToString();
+                    voucher.Status = int.Parse(dr["Status"].ToString());
+                    voucher.DeviceList = new List<string>();
+                    if (!isChecked)
+                    {
+                        string sql = $"select * from control_voucher_device where VGuid='{voucher.VGUID}'";
+                        DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
+                        foreach (DataRow row in table.Rows)
+                        {
+                            voucher.DeviceList.Add(row["DeviceId"].ToString());
+                        }
+                    }
                     Compare(voucher);
                 }
+
+                OutPut(null);
+                canExecute = true;
             }
-            canExecute = true;
+            catch (Exception ex)
+            {
+                ShowMessage(ex.ToString());
+            }
         }
 
         private void Compare(ControlVoucher voucher)
@@ -83,19 +110,87 @@ namespace PartialViewSyncTool.SyncToolViewModel
 
         private void GetBoxData(string connStr, ControlVoucher voucher)
         {
-            string sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} and personNo='{voucher.PersonNo}'";
+            string sql = "";
+            if (!isChecked)
+            {
+                sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} and personNo='{voucher.PersonNo}'";
+            }
+            else
+            {
+                sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status}";
+            }
+
             using (MySqlDataReader reader = MySqlHelper.ExecuteReader(connStr, sql))
             {
                 if (!reader.Read())
                 {
-                    controlVouchers.Add(voucher);
                     ShowMessage($"凭证[{voucher.VoucherNo}]与中心不一致");
+                    if (!isChecked)
+                    {
+                        RepairData(connStr, voucher);
+                    }
+                    else
+                    {
+                        //如果集合中已经存在 就不添加了
+                        if (controlVouchers.FindIndex(x => x.VoucherNo == voucher.VoucherNo) < 0)
+                        {
+                            controlVouchers.Add(voucher);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RepairData(string connStr, ControlVoucher voucher)
+        {
+            List<string> devices = new List<string>();
+            string sql = "select deviceid from crd_device where parentdeviceid=0";
+            DataTable dt = MySqlHelper.ExecuteDataset(connStr, sql).Tables[0];
+            foreach (DataRow dr in dt.Rows)
+            {
+                devices.Add(dr["deviceid"].ToString());
+            }
+            string deviceList = "";
+            devices.ForEach((x) =>
+            {
+                int index = voucher.DeviceList.FindIndex(m => m == x);
+                if (index >= 0)
+                {
+                    deviceList += x + ";";
+                }
+            });
+
+            sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status}";
+            using (MySqlDataReader reader = MySqlHelper.ExecuteReader(connStr, sql))
+            {
+                if (reader.Read())
+                {
+                    string personNo = reader["personNo"].ToString();
+                    if (personNo != voucher.PersonNo)
+                    {
+                        string cmd = $"update crd_credential set personNo='{voucher.PersonNo}',deviceidList='{deviceList.TrimEnd(';')}' where `no`='{voucher.VoucherNo}' and `state`={voucher.Status} ";
+                        int result = MySqlHelper.ExecuteNonQuery(connStr, cmd);
+                        ShowMessage($"更新凭证[{voucher.VoucherNo}]的人事No为[{voucher.PersonNo}]，权限列表为[{deviceList}]");
+                    }
+                }
+                else
+                {
+                    //如果集合中已经存在 就不添加了
+                    if (controlVouchers.FindIndex(x => x.VoucherNo == voucher.VoucherNo) < 0)
+                    {
+                        controlVouchers.Add(voucher);
+                    }
                 }
             }
         }
 
         private void OutPut(object parameter)
         {
+            if (controlVouchers.Count <= 0)
+            {
+                return;
+            }
+
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine("以下凭证信息需要在中心凭证管理中执行挂失解挂操作：");
             foreach (var voucher in controlVouchers)
@@ -104,7 +199,6 @@ namespace PartialViewSyncTool.SyncToolViewModel
             }
 
             File.WriteAllText("差异凭证信息.txt", stringBuilder.ToString());
-
             ProcessHelper.StartProcessV2("notepad.exe", "差异凭证信息.txt");
         }
 
@@ -149,6 +243,22 @@ namespace PartialViewSyncTool.SyncToolViewModel
         // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register("Message", typeof(string), typeof(DataCheckViewModel));
+
+
+
+
+
+        public bool IsChecked
+        {
+            get { return (bool)GetValue(IsCheckedProperty); }
+            set { SetValue(IsCheckedProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsChecked.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsCheckedProperty =
+            DependencyProperty.Register("IsChecked", typeof(bool), typeof(DataCheckViewModel));
+
+
 
 
 
