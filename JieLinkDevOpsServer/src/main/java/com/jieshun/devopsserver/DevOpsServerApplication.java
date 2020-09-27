@@ -8,10 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling // 开启定时任务支持
+@EnableAsync //开启异步事件的支持
 @MapperScan(basePackages = "com.jieshun.devopsserver.mapper")
 public class DevOpsServerApplication extends SpringBootServletInitializer implements CommandLineRunner {
 
