@@ -29,7 +29,7 @@ namespace PartialViewImportEnterRecord.ViewModels
             ClearEnterRecordCommand = new DelegateCommand();
             ClearEnterRecordCommand.ExecuteAction = Clear;
 
-            Message = "【禁止外传】：1)该工具是给其他车场切换到jielink车场，导入场内记录使用的。";
+            Message = "说明：本工具是给其他车场切换到jielink车场，导入场内记录使用的。\r\n欢迎加入jielink阵营!!!\r\n1).导入的记录会有标记，且存在场内记录时，会自动跳过，规避风险。\r\n2).清理功能，只会清理用工具导入的场内记录，其余记录不受影响。\r\n3).请善用此工具！";
         }
 
         private void Clear(object paramater)

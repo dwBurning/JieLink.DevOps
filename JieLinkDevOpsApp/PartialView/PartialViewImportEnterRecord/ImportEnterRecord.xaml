@@ -7,24 +7,24 @@
              xmlns:local="clr-namespace:PartialViewImportEnterRecord"
              mc:Ignorable="d" 
              d:DesignHeight="500" d:DesignWidth="800" Loaded="UserControl_Loaded">
-             <UserControl.Resources>
-    <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-            <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
-        </ResourceDictionary.MergedDictionaries>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
 
-        <Style TargetType="TextBlock">
-            <Setter Property="TextAlignment" Value="Right"></Setter>
-            <Setter Property="VerticalAlignment" Value="Center"></Setter>
-            <Setter Property="Margin" Value="5"></Setter>
-        </Style>
-    </ResourceDictionary>
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
 
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -37,27 +37,23 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Grid.Column="0" >文件路径：</TextBlock>
-        <Grid Grid.Row="0" Grid.Column="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <TextBox IsReadOnly="True" Text="{Binding FilePath}" Margin="0,0,5,0"
+
+        <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding FilePath}" Margin="5"
                      VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定文件路径"
                      pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                      pu:TextBoxHelper.CornerRadius="4"
                      pu:TextBoxHelper.IsClearButtonVisible="True"/>
 
-            <Button Grid.Row="0" Grid.Column="1" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
+        <Button Grid.Row="0" Grid.Column="2" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
                     BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
-                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-            
-        </Grid>
 
-        <CheckBox Grid.Column="1" Grid.Row="1" x:Name="chbVersion" Height="30" Content="生成脚本文件"
-                 pu:CheckBoxHelper.CheckBoxStyle="Switch"
+
+
+        <CheckBox Grid.Column="2" Grid.Row="1" x:Name="chbVersion" Height="30" Content="生成脚本文件"
+                 pu:CheckBoxHelper.CheckBoxStyle="Switch" Margin="5"
                  pu:CheckBoxHelper.BoxHeight="22" IsChecked="{Binding IsInsertData}"
                  pu:CheckBoxHelper.CheckedContent="直接录入数据库"
                  pu:CheckBoxHelper.BoxWidth="33"
@@ -65,23 +61,24 @@
                  pu:CheckBoxHelper.CornerRadius="4"
                  />
 
-        <Button Grid.Column="1" Grid.Row="2" Content="执行" Name ="btnImport" Command="{Binding ImportEnterRecordCommand}"
+        <Button Grid.Column="2" Grid.Row="2" Content="执行" Name ="btnImport" Command="{Binding ImportEnterRecordCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
-                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <Button Grid.Column="1" Grid.Row="3" Content="清理[只清理通过工具导入的场内记录]" Command="{Binding ClearEnterRecordCommand}"
+        <Button Grid.Column="2" Grid.Row="3" Content="清理" Command="{Binding ClearEnterRecordCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
-                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <Button Grid.Column="1" Grid.Row="4" Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
+        <Button Grid.Column="2" Grid.Row="4" Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
-                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
-                     Grid.Column="2" Grid.RowSpan="6" IsReadOnly="True" Margin="10,5,0,10">
+        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage" Margin="5"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Column="1" Grid.RowSpan="5" Grid.Row="1" IsReadOnly="True">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>

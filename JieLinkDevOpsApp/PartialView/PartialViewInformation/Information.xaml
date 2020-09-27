@@ -79,6 +79,13 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-09-27 V1.0.2">
+                <ContentControl>
+                    <TextBlock>
+                        新增日志分析工具，场内记录导入工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-09-07 V1.0.1">
                 <ContentControl>
                     <TextBlock>

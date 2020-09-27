@@ -46,6 +46,8 @@ namespace PartialViewSyncTool.SyncToolViewModel
             OutPutToNotepadCommand = new DelegateCommand();
             OutPutToNotepadCommand.ExecuteAction = OutPut;
             OutPutToNotepadCommand.CanExecuteFunc = new Func<object, bool>((object obj) => { return canExecute; });
+
+            Message = "说明：本工具是为了检索出中心与盒子凭证状态不一致的数据而制作，适用于低于2.5版本的非标项目";
         }
 
         private void Start(object parameter)
