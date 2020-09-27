@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,6 +28,8 @@ namespace PartialViewImportEnterRecord.ViewModels
 
             ClearEnterRecordCommand = new DelegateCommand();
             ClearEnterRecordCommand.ExecuteAction = Clear;
+
+            Message = "【禁止外传】：1)该工具是给其他车场切换到jielink车场，导入场内记录使用的。";
         }
 
         private void Clear(object paramater)
@@ -44,6 +45,7 @@ namespace PartialViewImportEnterRecord.ViewModels
         private void ImportEnterRecord(object paramater)
         {
             string filePath = this.FilePath;
+            bool isInsert = this.IsInsertData;
             if (!(filePath.EndsWith(".xlsx") || filePath.EndsWith(".xls")))
             {
                 MessageBoxHelper.MessageBoxShowWarning("请选择Excel文件！");
@@ -57,6 +59,8 @@ namespace PartialViewImportEnterRecord.ViewModels
 
                     DataTable dt = NPOIExcelHelper.ExcelToDataTable(filePath, true);
                     int count = 0;
+
+                    List<string> sqls = new List<string>();
 
                     foreach (DataRow dr in dt.Rows)
                     {
@@ -89,15 +93,29 @@ namespace PartialViewImportEnterRecord.ViewModels
 
                         string sql = $"insert into box_enter_record (CredentialType,CredentialNO,Plate,CarNumOrig,EnterTime,SetmealType,SealName,EGuid,EnterRecordID,EnterDeviceID,EnterDeviceName,WasGone,EventType,EventTypeName,ParkNo,OperatorNo,OperatorName,PersonName,Remark) VALUES(163,'{plate}','{plate}','{plate}','{intime}',{sealId},'{sealName}',UUID(),REPLACE(UUID(),'-',''),'{enterDeviceId}','{enterDeviceName}',0,1,'一般正常记录','00000000-0000-0000-0000-000000000000','9999','超级管理员','临时车主','运维工具导入记录');";
 
-                        int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
-                        if (result > 0)
+                        if (isInsert)
                         {
-                            count++;
-                            ShowMessage($"车牌：{plate} 补录入场记录成功！");
+                            int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                            if (result > 0)
+                            {
+                                count++;
+                                ShowMessage($"车牌：{plate} 补录入场记录成功！");
+                            }
+                        }
+                        else
+                        {
+                            sqls.Add(sql);
                         }
                     }
+                    if (isInsert)
+                    {
+                        ShowMessage($"共插入场内记录{count}条");
+                    }
+                    else
+                    {
+                        OutPut(sqls);
+                    }
 
-                    ShowMessage($"共清理场内记录{count}条");
                 }
                 catch (Exception ex)
                 {
@@ -105,6 +123,24 @@ namespace PartialViewImportEnterRecord.ViewModels
                     ShowMessage(ex.ToString());
                 }
             });
+        }
+
+        private void OutPut(List<string> cmds)
+        {
+            if (cmds.Count <= 0)
+            {
+                return;
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+            
+            foreach (var cmd in cmds)
+            {
+                stringBuilder.AppendLine(cmd);
+            }
+
+            File.WriteAllText("Box_EnterRecord.sql", stringBuilder.ToString());
+            ProcessHelper.StartProcessV2("notepad.exe", "Box_EnterRecord.sql");
         }
 
         private bool IsExists(string plate)
@@ -137,6 +173,16 @@ namespace PartialViewImportEnterRecord.ViewModels
         // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register("Message", typeof(string), typeof(ImportEnterRecordViewModel));
+
+        public bool IsInsertData
+        {
+            get { return (bool)GetValue(IsInsertDataProperty); }
+            set { SetValue(IsInsertDataProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsInsertData.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsInsertDataProperty =
+            DependencyProperty.Register("IsInsertData", typeof(bool), typeof(ImportEnterRecordViewModel));
 
 
         public void ShowMessage(string message)

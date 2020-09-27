@@ -32,6 +32,7 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
@@ -54,23 +55,33 @@
                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             
         </Grid>
-        <Button Grid.Column="1" Grid.Row="1" Content="导入" Name ="btnImport" Command="{Binding ImportEnterRecordCommand}"
+
+        <CheckBox Grid.Column="1" Grid.Row="1" x:Name="chbVersion" Height="30" Content="生成脚本文件"
+                 pu:CheckBoxHelper.CheckBoxStyle="Switch"
+                 pu:CheckBoxHelper.BoxHeight="22" IsChecked="{Binding IsInsertData}"
+                 pu:CheckBoxHelper.CheckedContent="直接录入数据库"
+                 pu:CheckBoxHelper.BoxWidth="33"
+                 pu:CheckBoxHelper.CheckedBackground="#20A0FF"
+                 pu:CheckBoxHelper.CornerRadius="4"
+                 />
+
+        <Button Grid.Column="1" Grid.Row="2" Content="执行" Name ="btnImport" Command="{Binding ImportEnterRecordCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <Button Grid.Column="1" Grid.Row="2" Content="清理[只清理通过工具导入的场内记录]" Command="{Binding ClearEnterRecordCommand}"
+        <Button Grid.Column="1" Grid.Row="3" Content="清理[只清理通过工具导入的场内记录]" Command="{Binding ClearEnterRecordCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <Button Grid.Column="1" Grid.Row="3" Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
+        <Button Grid.Column="1" Grid.Row="4" Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
         <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
-                     Grid.Column="2" Grid.RowSpan="5" IsReadOnly="True" Margin="10,5,0,10">
+                     Grid.Column="2" Grid.RowSpan="6" IsReadOnly="True" Margin="10,5,0,10">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>

@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewLogAnalyse", "Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewImportEnterRecord", "PartialView\PartialViewImportEnterRecord\PartialViewImportEnterRecord.csproj", "{A0BF9565-0F07-4C33-B787-E5B022AB0021}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewTmTools", "PartialView\PartialViewTmTools\PartialViewTmTools.csproj", "{381E64A3-DB91-4E4E-A2E8-8F5104EBCC4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0BF9565-0F07-4C33-B787-E5B022AB0021}.Release|Any CPU.Build.0 = Release|Any CPU
+		{381E64A3-DB91-4E4E-A2E8-8F5104EBCC4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{381E64A3-DB91-4E4E-A2E8-8F5104EBCC4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{381E64A3-DB91-4E4E-A2E8-8F5104EBCC4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{381E64A3-DB91-4E4E-A2E8-8F5104EBCC4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
