@@ -2,6 +2,7 @@ package com.jieshun.devopsserver.controller;
 
 import java.util.Date;
 
+import com.jieshun.devopsserver.bean.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jieshun.devopsserver.bean.PageSet;
-import com.jieshun.devopsserver.bean.ReturnData;
-import com.jieshun.devopsserver.bean.ReturnStateEnum;
-import com.jieshun.devopsserver.bean.VersionInfo;
 import com.jieshun.devopsserver.service.VersionInfoService;
 
 /**
@@ -84,4 +81,30 @@ public class VersionInfoController {
 		}
 	}
 
+	/**
+	 * 根据分页查询版本下载情况
+	 *
+	 * @param standVersion 工单号
+	 * @param startIndex   起始索引
+	 * @param endIndex     结束索引
+	 * @return 分页对象
+	 */
+	@RequestMapping(value = "/getVersionDownloadInfoWithPages", method = RequestMethod.GET)
+	public PageSet<VersionInfo> getVersionDownloadInfoWithPages(String standVersion, int startIndex, int endIndex) {
+		return versionInfoService.getVersionDownloadInfoWithPages(standVersion, startIndex, endIndex);
+	}
+
+	/**
+	 * 根据分页查询版本下载情况
+	 *
+	 * @param versionInfoKeyId VersionInfo的主键ID
+	 * @param startIndex   起始索引
+	 * @param endIndex     结束索引
+	 * @param enableAll	   是否查询出所有数据 0所有（不看start、end），1分页
+	 * @return 分页对象
+	 */
+	@RequestMapping(value = "/getApplyInfoByWorkOrderNoWithPages", method = RequestMethod.GET)
+	public PageSet<ApplyInfo> getApplyInfoByWorkOrderNoWithPages(int versionInfoKeyId, int startIndex, int endIndex, int enableAll) {
+		return versionInfoService.getApplyInfoByWorkOrderNoWithPages(versionInfoKeyId, startIndex, endIndex, enableAll);
+	}
 }
