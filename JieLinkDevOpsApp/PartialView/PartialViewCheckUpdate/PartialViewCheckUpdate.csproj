@@ -159,7 +159,6 @@
     <Resource Include="Pic\1-SmartCenter\2通过中心服务进程跳转中心安装路径.png" />
     <Resource Include="Pic\1-SmartCenter\3备份.png" />
     <Resource Include="Pic\1-SmartCenter\4找SmartCenter升级文件路径.png" />
-    <Resource Include="Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件.png" />
     <Resource Include="Pic\1-SmartCenter\6结束守护进程、中心服务进程.png" />
     <Resource Include="Pic\1-SmartCenter\7筛选过后全选复制.png" />
     <Resource Include="Pic\1-SmartCenter\8启动中心.png" />
@@ -227,6 +226,10 @@
     <Resource Include="Pic\10-DB\6.png" />
     <Resource Include="Pic\10-DB\7.png" />
     <Resource Include="Pic\10-DB\8.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件1.png" />
+    <Resource Include="Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

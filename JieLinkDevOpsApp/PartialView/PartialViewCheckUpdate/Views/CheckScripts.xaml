@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:PartialViewCheckUpdate.Views"
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
-             d:DesignHeight="550" d:DesignWidth="800">
+             d:DesignHeight="550" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -22,7 +22,7 @@
 
     </UserControl.Resources>
 
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
@@ -95,26 +95,26 @@
                      pu:PasswordBoxHelper.CornerRadius="4"
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
-        <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" 
+        <Button Grid.Column="1" Grid.Row="7" Content="测试连接" Name ="btnTestConn" 
                 Command="{Binding TestConnCommand}" CommandParameter="{Binding ElementName=txtCenterDbPwd}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-        <Button Grid.Column="1" Grid.Row="6" Content="检查" Name ="btnCheck" 
+        <Button Grid.Column="1" Grid.Row="8" Content="检查" Name ="btnCheck" 
                 Command="{Binding CheckDBUpdateCommand}" CommandParameter="{Binding ElementName=txtCenterDbPwd}"
                 IsEnabled="{Binding EnableCheckUpdateResult}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <TextBox Grid.Row="7" Grid.Column="1" x:Name="txtCurrentVersion" Text="{Binding CurrentVersion}"
+        <TextBox Grid.Row="5" Grid.Column="1" x:Name="txtCurrentVersion" Text="{Binding CurrentVersion}"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="1.0.0"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="8" Grid.Column="1" x:Name="txtUpdateVersion" Text="{Binding UpdateVersion}"
+        <TextBox Grid.Row="6" Grid.Column="1" x:Name="txtUpdateVersion" Text="{Binding UpdateVersion}"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="2.7.0"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"

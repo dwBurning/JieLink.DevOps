@@ -19,6 +19,8 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
         public static IDictionary<string, IPartialView> partialViewDic;
         public MainWindowViewModel()
         {
+            Title = $"JieLink运维工具 {EnvironmentInfo.CurrentVersion}";
+
             partialViewDic = new Dictionary<string, IPartialView>();
             string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
             string path = BaseDirectoryPath + "plugs";
@@ -54,6 +56,10 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
             partialViewDic.Values.Where(x => x.MenuType == MenuType.Box).ToList()
             .ForEach(x => boxMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
 
+            var doorServerMenus = new ObservableCollection<TreeViewItemModel>();
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.DoorServer).ToList()
+            .ForEach(x => doorServerMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
+
             MenuItems = new ObservableCollection<TreeViewItemModel>()
             {
                 new TreeViewItemModel("设计","Information","\uf05a"){ IsSelected = true},
@@ -67,10 +73,26 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                      MenuItems = boxMenus,
                      IsExpanded = false
                 },
+
+                new TreeViewItemModel("门禁服务","DoorServer", "\uf109")
+                {
+                     MenuItems = doorServerMenus,
+                     IsExpanded = false
+                },
                 new TreeViewItemModel("百科","KnowledgeWiki","\uf266"),
                 new TreeViewItemModel("设置","SystemSetting","\uf085"),
             };
         }
+
+        private string _title;
+
+        public string Title
+        {
+            get { return _title; }
+            set { _title = value; NotifyPropertyChanged(); }
+        }
+
+
 
         public string SearchText
         {

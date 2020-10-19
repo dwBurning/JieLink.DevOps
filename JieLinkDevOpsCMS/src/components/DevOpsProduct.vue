@@ -244,7 +244,7 @@ export default {
       this.$refs[formName].resetFields();
     },
     handleSuccess(response, file, fileList) {
-      this.ruleForm.downloadUrl = process.env.BASE_URL + response;
+      this.ruleForm.downloadUrl = response;
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);

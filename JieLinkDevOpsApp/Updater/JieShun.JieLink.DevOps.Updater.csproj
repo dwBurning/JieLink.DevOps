@@ -65,7 +65,6 @@
     <Compile Include="Utils\UpdateUtils.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Utils\Win32API.cs" />
-    <Compile Include="Utils\ZipHelper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -130,6 +129,12 @@
     <PackageReference Include="SharpZipLib">
       <Version>1.2.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PartialView\PartialViewInterface\PartialViewInterface.csproj">
+      <Project>{3FACC984-5886-4C2B-BFA3-C722125EE56D}</Project>
+      <Name>PartialViewInterface</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

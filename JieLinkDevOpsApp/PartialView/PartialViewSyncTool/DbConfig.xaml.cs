@@ -12,13 +12,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
+using Panuon.UI.Silver;
+using PartialViewInterface.Utils;
 
 namespace PartialViewSyncTool
 {
     /// <summary>
     /// DbConfig.xaml 的交互逻辑
     /// </summary>
-    public partial class DbConfig : Window
+    public partial class DbConfig : WindowX
     {
         public DbConfig(string Ip)
         {
@@ -46,7 +48,7 @@ namespace PartialViewSyncTool
             }
             catch (Exception)
             {
-                MessageBox.Show("连接错误，请重新输入");
+                MessageBoxHelper.MessageBoxShowWarning("连接错误，请重新输入");
             }
         }
     }

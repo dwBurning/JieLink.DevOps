@@ -6,13 +6,12 @@
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              xmlns:local="clr-namespace:PartialViewInformation"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
             <Style TargetType="TextBlock">
                 <Setter Property="TextAlignment" Value="Left"></Setter>
                 <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -20,18 +19,23 @@
                 <Setter Property="Margin" Value="5"></Setter>
             </Style>
             <Style TargetType="Run">
-               
             </Style>
         </ResourceDictionary>
-
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="600"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="180"></RowDefinition>
+            <RowDefinition Height="200"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel>
-            <TextBlock HorizontalAlignment="Center" FontSize="20">JieLink运维工具------插件式集成运维工具</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" FontSize="20">JieLink运维工具------插件式集成运维工具</TextBlock>
+        <StackPanel Grid.Row="1">
+            
             <TextBlock>开发插件的步骤：</TextBlock>
             <TextBlock>1.新建
                 <Run Foreground="#20A0FF">WPF</Run>
@@ -50,27 +54,47 @@
                 实现
                 <Run Foreground="#20A0FF">IPartialView</Run>
                 接口</TextBlock>
-            <StackPanel HorizontalAlignment="Left">
-                <GroupBox Width="600" Header="IPartialView" VerticalAlignment="Center" HorizontalAlignment="Center"
+
+        </StackPanel>
+
+
+        <GroupBox Grid.Row="2" Header="IPartialView" Margin="5"
                           pu:GroupBoxHelper.CornerRadius="4"
                           pu:GroupBoxHelper.HeaderForeground="#20A0FF"
                           pu:GroupBoxHelper.HeaderPadding="5,10,0,10"
                           pu:GroupBoxHelper.IsSplitLineVisible="True"
                           pu:GroupBoxHelper.ShadowColor="LightGray" >
-                    <StackPanel>
-                        <TextBlock><Run Foreground="#569CD6">string</Run> MenuName { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单名称</Run></TextBlock>
-                        <TextBlock><Run Foreground="#569CD6">string</Run> TagName { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单的标记，必须保证唯一</Run></TextBlock>
-                        <TextBlock><Run Foreground="#ADD084">MenuType</Run> MenuType { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单类型 枚举值 Center表示中心菜单 Box表示盒子菜单</Run></TextBlock>
-                    </StackPanel>
-                </GroupBox>
+            <StackPanel>
+                <TextBlock><Run Foreground="#569CD6">string</Run> MenuName { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单名称</Run></TextBlock>
+                <TextBlock><Run Foreground="#569CD6">string</Run> TagName { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单的标记，必须保证唯一</Run></TextBlock>
+                <TextBlock><Run Foreground="#ADD084">MenuType</Run> MenuType { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单类型 枚举值 Center表示中心菜单 Box表示盒子菜单</Run></TextBlock>
             </StackPanel>
+        </GroupBox>
+        <StackPanel Grid.Row="3">
             <TextBlock>6.将编译之后的dll文件放在本集成工具的
                 <Run Foreground="#20A0FF">plugs</Run>
                 目录下，重启软件即可</TextBlock>
-            
         </StackPanel>
-        <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
-            <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://106.53.255.16:8090/" Click="Hyperlink_Click">由JieLink+V2.*团队提供技术支持</Hyperlink></TextBlock>
-        </StackPanel>
+
+        <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
+                     ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
+                     ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-09-27 V1.0.2">
+                <ContentControl>
+                    <TextBlock>
+                        新增日志分析工具，场内记录导入工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-09-07 V1.0.1">
+                <ContentControl>
+                    <TextBlock>
+                        新增共享车牌导入，数据比对工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-08-31 V1.0.0"
+    			 Content="全新发布" />
+        </pu:Timeline>
     </Grid>
 </UserControl>

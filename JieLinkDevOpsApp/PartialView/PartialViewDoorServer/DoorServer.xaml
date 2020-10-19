@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="PartialViewDoorServer.DoorServer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:local="clr-namespace:PartialViewDoorServer"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid MaxWidth="{Binding ActualWidth}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">1、门禁服务重装后，没有保存门禁服务安装目录中的para文件夹</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3">2、请在门禁服务所在电脑执行此功能,前提门禁服务重装前后没有更换门禁服务IP</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="3" >3、设置完成，重启门禁服务，备注：<Run Foreground="Red">直接结束门禁服务进程！直接结束门禁服务进程！直接结束门禁服务进程！</Run></TextBlock>
+        <Button Grid.Column="0" Grid.Row="5" Content="获取中心设备" Grid.ColumnSpan="3"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Command="{Binding GetDoorDeviceCommand}" 
+                />
+        <TextBlock VerticalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="门禁服务" />
+        <TextBlock VerticalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="门禁服务安装目录(para文件夹)" />
+        <TextBox x:Name="txtSavePath" Margin="5"
+                            VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择Smartdoor安装目录的para文件夹"
+                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath}"
+                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="3"/>
+       
+        <Button Grid.Row="3" Margin="5" Grid.Column="2" Content="选择路径" Name ="btnChoosePath"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+        <ComboBox x:Name="txtDoorServerIP" Margin="5" VerticalAlignment="Center" Height="40" 
+                            ItemsSource="{Binding DoorServerInfoList}" DataContext="{Binding}" SelectedIndex="0"
+                            DisplayMemberPath="{Binding deviceName}" SelectedValuePath="deviceID" SelectionChanged="Cmb_SelectionChanged"
+                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                            pu:TextBoxHelper.CornerRadius="4"
+                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="4" /> 
+        <Button Grid.Column="0" Grid.Row="6" Content="固定门禁服务Mac(修复两个门禁服务问题)" Grid.ColumnSpan="3" Visibility="Hidden"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+    </Grid>
+</UserControl>

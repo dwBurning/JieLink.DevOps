@@ -1,17 +1,16 @@
-﻿<Window x:Class="PartialViewSyncTool.DbConfig"
+﻿<pu:WindowX x:Class="PartialViewSyncTool.DbConfig"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         xmlns:local="clr-namespace:PartialViewSyncTool"
-        mc:Ignorable="d"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Title="盒子数据库连接" Height="350" Width="350">
 
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid Margin="10,0,10,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition Width="200"></ColumnDefinition>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -31,28 +30,28 @@
         <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库密码：</TextBlock>
         
         
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtBoxIp" Text="" 
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtBoxIp" Text="" IsReadOnly="True"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入盒子IP地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtBoxDb" Text="" 
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtBoxDb" Text="smartbox" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入盒子数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtBoxDbPort" Text="" 
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtBoxDbPort" Text="10080" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入盒子端口"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbUser" Text="" 
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbUser" Text="jieLink" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入盒子用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -71,7 +70,7 @@
                      pu:PasswordBoxHelper.Watermark="请输入密码"
                      pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
-                     pu:PasswordBoxHelper.CornerRadius="4"
+                     pu:PasswordBoxHelper.CornerRadius="4" Password="js*168"
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
         <Button Grid.Column="1" Grid.Row="5" Content="确定" Name ="btnTest" Click="btnTest_Click"
@@ -96,4 +95,4 @@
         <Label x:Name="label5" Content="数据库密码" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top"/>
 
     </Grid>-->
-</Window>
+</pu:WindowX>

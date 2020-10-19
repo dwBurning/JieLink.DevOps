@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using JieShun.JieLink.DevOps.Updater.Models;
 using Newtonsoft.Json;
+using PartialViewInterface.Utils;
+
 namespace JieShun.JieLink.DevOps.Updater.Utils
 {
     public class UpdateUtils

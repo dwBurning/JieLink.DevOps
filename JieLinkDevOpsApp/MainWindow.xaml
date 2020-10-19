@@ -5,7 +5,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
             mc:Ignorable="d"
-            Title="JieLink运维工具"
+            Title="{Binding Title}"
             Icon="favicon.ico"
             Height="700"
             Width="1000"
@@ -64,7 +64,17 @@
         </Grid>
         <GridSplitter Width="2"
                       VerticalAlignment="Stretch" />
-        <ContentControl Grid.Column="1" x:Name="ContentControl"
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
+            <ContentControl  x:Name="ContentControl"
                         Margin="5,0" />
+            <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
+                <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://106.53.255.16:8090/" Click="Hyperlink_Click">由JieLink+V2.*团队提供技术支持</Hyperlink></TextBlock>
+            </StackPanel>
+        </Grid>
+        
     </Grid>
 </pu:WindowX>

@@ -54,7 +54,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
         // Using a DependencyProperty as the backing store for CenterDbPort.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CenterDbPortProperty =
-            DependencyProperty.Register("CenterDbPort", typeof(string), typeof(CheckFilesViewModel));
+            DependencyProperty.Register("CenterDbPort", typeof(string), typeof(CheckScriptViewModel));
 
 
         public string CenterDbUser

@@ -67,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/index.html", "/static/**","/upload/**","/download/**");
+		web.ignoring().antMatchers("/index.html", "/static/**","/upload/**","/download/**","/devops/getTheLastVersion");
 	}
 
 	@Bean

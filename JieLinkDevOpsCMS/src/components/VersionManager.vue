@@ -2,7 +2,7 @@
   <el-container>
     <el-header class="report_header">
       <el-input
-        placeholder="请输入工单号..."
+        placeholder="请输入工单号或者版本描述关键字..."
         prefix-icon="el-icon-search"
         v-model="keywords"
         style="width: 400px"
@@ -97,6 +97,8 @@ export default {
         return "工单";
       } else if (row.versionType == 1) {
         return "补丁";
+      }else if(row.versionType == 2) {
+        return "文档";
       }
     },
     //加载会话数据
@@ -228,4 +230,4 @@ export default {
 </script>
 <style>
 @import "../assets/common.css";
-</style>>
+</style>

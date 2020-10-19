@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
 using Panuon.UI.Silver;
+using PartialViewInterface.Utils;
 
 namespace PartialViewDelRegeist
 {
@@ -25,11 +26,11 @@ namespace PartialViewDelRegeist
 
         public static SetAutoRunProject Instance()
         {
-        //    bool flag = SetAutoRunProject._instance == null;
-        //    if (flag)
-        //    {
-                SetAutoRunProject._instance = new SetAutoRunProject();
-        //    }
+            //    bool flag = SetAutoRunProject._instance == null;
+            //    if (flag)
+            //    {
+            SetAutoRunProject._instance = new SetAutoRunProject();
+            //    }
             return SetAutoRunProject._instance;
         }
         public void DoWork(int action)
@@ -43,7 +44,7 @@ namespace PartialViewDelRegeist
         {
             try
             {
-                if (MessageBoxResult.Cancel == MessageBoxX.Show("该操作会直接删除盒子注册表，只有在安装盒子时提示已安装相同或更高版本时，进行该操作。是否继续？", "警告", null, MessageBoxButton.OKCancel))
+                if (MessageBoxResult.No == MessageBoxHelper.MessageBoxShowQuestion("该操作会直接删除盒子注册表，只有在安装盒子时提示已安装相同或更高版本时，进行该操作。是否继续？"))
                     return "";
 
                 //32位和64位配置
@@ -54,26 +55,27 @@ namespace PartialViewDelRegeist
                 if (localMachine.OpenSubKey("SOFTWARE\\Wow6432Node\\SmartBox", true) != null)
                 {
                     localMachine.DeleteSubKeyTree("SOFTWARE\\Wow6432Node\\SmartBox", false);
-                    MessageBoxX.Show("删除盒子注册表完成HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SmartBox", "提示");
+                    Notice.Show("删除盒子注册表完成HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SmartBox", "提示", 3, MessageBoxIcon.Info);
                 }
                 else
                 {
-                    MessageBoxX.Show("未找到盒子注册表路径HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SmartBox", "提示");
+                    Notice.Show("未找到盒子注册表路径HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\SmartBox", "提示", 3, MessageBoxIcon.Info);
                 }
 
                 if (localMachine.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Smartbox", true) != null)
                 {
                     localMachine.DeleteSubKeyTree("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Smartbox", false);
-                    MessageBoxX.Show("删除盒子注册表完成HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Smartbox", "提示");
+                    Notice.Show("删除盒子注册表完成HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Smartbox", "提示", 3, MessageBoxIcon.Info);
                 }
                 else
                 {
-                    MessageBoxX.Show("未找到盒子注册表路径HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Smartbox", "提示");
+                    Notice.Show("未找到盒子注册表路径HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Smartbox", "提示", 3, MessageBoxIcon.Info);
+
                 }
 
                 localMachine.Close();
 
-                
+
                 return "";
             }
             catch (Exception ex)

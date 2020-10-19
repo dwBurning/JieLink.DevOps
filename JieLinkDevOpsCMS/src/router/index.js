@@ -6,6 +6,7 @@ import Home from '@/components/Home'
 import DemandManager from '@/components/DemandManager'
 import DevOpsManager from '@/components/DevOpsManager'
 import VersionManager from '@/components/VersionManager'
+import VersionDownloadManager from '@/components/VersionDownloadManager'
 import PublishVersion from '@/components/PublishVersion'
 import DevOpsProduct from '@/components/DevOpsProduct'
 import Lonin from '@/components/Login'
@@ -41,6 +42,10 @@ export default new Router({
             keepAlive: true
           }*/
         }, {
+          path: '/versiondownloadmanager',
+          name: '工单下载详情',
+          component: VersionDownloadManager,
+        },{
           path: '/publishversion',
           name: '发布工单',
           component: PublishVersion,

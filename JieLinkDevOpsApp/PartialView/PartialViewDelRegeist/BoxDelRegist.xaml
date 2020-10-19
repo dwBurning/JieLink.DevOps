@@ -21,8 +21,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
         </Grid.RowDefinitions>
         <TextBlock VerticalAlignment="Center">当安装盒子提示已安装相同版本或更高版本时，使用此工具删除盒子注册表，之后继续安装</TextBlock>
         <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Grid.Row="1" Grid.Column="0"> </TextBlock>

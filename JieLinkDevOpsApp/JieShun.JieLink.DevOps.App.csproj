@@ -136,6 +136,9 @@
     <None Include="version.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Template\导入场内记录模板.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -150,27 +153,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\629112ac-ce58-11ea-a731-00ff2d2f18d8.gif">
+    <None Include="GIF\CheckFiles.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\660d08ce-ce59-11ea-a731-00ff2d2f18d8.gif">
+    <None Include="GIF\CheckScripts.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\CheckFiles.gif">
+    <None Include="mysqldump.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Gif\CheckScripts.gif">
+    <None Include="GIF\CheckBoxLog.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Gif\dad00da5-ce53-11ea-a731-00ff2d2f18d8.gif">
+    <None Include="GIF\CheckBoxVideo.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="GIF\CheckCenterLog.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
