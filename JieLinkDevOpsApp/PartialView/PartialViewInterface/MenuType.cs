@@ -19,6 +19,11 @@ namespace PartialViewInterface
         Box,
 
         /// <summary>
+        /// 门禁服务
+        /// </summary>
+        DoorServer,
+
+        /// <summary>
         /// 独立菜单
         /// </summary>
         None
