@@ -230,4 +230,4 @@ export default {
 </script>
 <style>
 @import "../assets/common.css";
-</style>>
+</style>
