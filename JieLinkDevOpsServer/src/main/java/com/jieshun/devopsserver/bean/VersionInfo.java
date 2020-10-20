@@ -1,6 +1,7 @@
 package com.jieshun.devopsserver.bean;
 
 import java.util.Date;
+import java.util.List;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -96,4 +97,41 @@ public class VersionInfo {
     public void setIsDeleted(Integer isDeleted) {
         this.isDeleted = isDeleted;
     }
+
+    /**
+     * 下载次数
+     */
+    private Integer downloadCount;
+
+    public Integer getDownloadCount() {
+        return downloadCount;
+    }
+
+    public void setDownloadCount(Integer downloadCount) {
+        this.downloadCount = downloadCount;
+    }
+
+    /**
+     * 补丁下载情况
+     */
+    private List<ApplyInfo> children;
+
+    public List<ApplyInfo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ApplyInfo> applyInfoList) {
+        this.children = applyInfoList;
+    }
+
+    private boolean hasChildren;
+
+    public boolean getHasChildren() {
+        return hasChildren;
+    }
+
+    public void setHasChildren(boolean hasChildren) {
+        this.hasChildren = hasChildren;
+    }
+
 }
