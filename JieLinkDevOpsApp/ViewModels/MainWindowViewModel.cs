@@ -74,7 +74,7 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                      IsExpanded = false
                 },
 
-                new TreeViewItemModel("门禁服务","DoorServer", "\uf109")
+                new TreeViewItemModel("门禁","DoorServer", "\uf015")
                 {
                      MenuItems = doorServerMenus,
                      IsExpanded = false
