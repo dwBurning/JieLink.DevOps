@@ -46,8 +46,16 @@ namespace PartialViewAutoCorrectionParkNumber
 		/// <param name="action"></param>
 		public void DoWork(int action)
         {
-			//bgw.WorkerReportsProgress = true;
-			bgw.RunWorkerAsync();
+			try
+			{
+				//bgw.WorkerReportsProgress = true;
+				bgw.RunWorkerAsync();
+			}
+			catch (Exception ex)
+			{
+				//Thread.Sleep(60000 * LoopTime);
+				//bgw.RunWorkerAsync();
+			}
 		}
 
 		/// <summary>
@@ -116,7 +124,7 @@ namespace PartialViewAutoCorrectionParkNumber
 					}));
 					//测试使用
 					Thread.Sleep(60000 * LoopTime);
-					//Thread.Sleep(1000*LoopTime);
+					//Thread.Sleep(100*LoopTime);
 					if ((bgw.CancellationPending == true))
 					{
 						break;
