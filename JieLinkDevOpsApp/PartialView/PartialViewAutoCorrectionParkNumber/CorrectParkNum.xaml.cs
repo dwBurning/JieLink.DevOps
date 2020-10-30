@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Reflection;
 
 namespace PartialViewAutoCorrectionParkNumber
 {
@@ -29,6 +30,13 @@ namespace PartialViewAutoCorrectionParkNumber
             InitializeComponent();
             acp = new AutoCorrectParkNum();
             AutoCorrectParkNum.DeleEvent += AddLogs;
+            //启动软件时自动启动线程
+            if (EnvironmentInfo.AutoStartCorectEntity.AutoStartFlag == true)
+            {
+                TextBox_Minute.Text = Convert.ToString( EnvironmentInfo.AutoStartCorectEntity.LoopTime);
+                //AutoCorrectParkNum.LoopTime = EnvironmentInfo.AutoStartCorectEntity.LoopTime;
+                button_Start_Click(null,null);
+            }
         }
 
         public string MenuName
@@ -58,6 +66,7 @@ namespace PartialViewAutoCorrectionParkNumber
         /// <param name="e"></param>
         public void button_Start_Click(object sender, RoutedEventArgs e)
         {
+            //Button_Start.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             try
             {
                 //检查循环时间输入有效性
@@ -74,14 +83,19 @@ namespace PartialViewAutoCorrectionParkNumber
                 return;
             }
 
+            AddLogs("开始同步");
+            acp.DoWork(1);
 
+            //保存环境参数
+            EnvironmentInfo.AutoStartCorectEntity.AutoStartFlag = true;
+            EnvironmentInfo.AutoStartCorectEntity.LoopTime = Convert.ToInt32(TextBox_Minute.Text);
+            ConfigHelper.WriterAppConfig("AutoStartCorectString", JsonHelper.SerializeObject(EnvironmentInfo.AutoStartCorectEntity));
+            
             //调整界面
             Button_Start.IsEnabled = false;
             Button_Stop.IsEnabled = true;
             TextBox_Minute.IsEnabled = false;
-            AddLogs("开始同步");
-
-            acp.DoWork(1);
+            chbAutoStart.IsEnabled = false;
         }
 
         /// <summary>
@@ -91,14 +105,20 @@ namespace PartialViewAutoCorrectionParkNumber
         /// <param name="e"></param>
         public void button_Stop_Click(object sender, RoutedEventArgs e)
         {
+            AddLogs("停止同步");
             //停止同步
             acp.StopWork();
+
+            //保存环境参数
+            EnvironmentInfo.AutoStartCorectEntity.AutoStartFlag = false;
+            EnvironmentInfo.AutoStartCorectEntity.LoopTime = Convert.ToInt32(TextBox_Minute.Text);
+            ConfigHelper.WriterAppConfig("AutoStartCorectString", JsonHelper.SerializeObject(EnvironmentInfo.AutoStartCorectEntity));
 
             //调整界面
             TextBox_Minute.IsEnabled = true;
             Button_Start.IsEnabled = true;
             Button_Stop.IsEnabled = false;
-            AddLogs("停止同步");
+            chbAutoStart.IsEnabled = true;
         }
 
 
@@ -131,6 +151,5 @@ namespace PartialViewAutoCorrectionParkNumber
                 this.IsEnabled = false;
             }
         }
-
     }
 }

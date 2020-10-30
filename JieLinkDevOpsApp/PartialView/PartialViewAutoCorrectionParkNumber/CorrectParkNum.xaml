@@ -52,15 +52,23 @@
                 />
 
         <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Grid.Row="0" Grid.Column="3" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,10,10">
+                     Grid.Row="0" Grid.Column="3" Grid.RowSpan="13" IsReadOnly="True" Margin="10,0,10,10">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        
-        
+
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbAutoStart" Height="30" Margin="10,5,10,10" Content="开机后自动同步"
+                 pu:CheckBoxHelper.CheckBoxStyle="Switch"
+                 pu:CheckBoxHelper.BoxHeight="22"
+                 pu:CheckBoxHelper.CheckedContent="开机后自动同步"
+                 pu:CheckBoxHelper.BoxWidth="33" 
+                 pu:CheckBoxHelper.CheckedBackground="#20A0FF"
+                 pu:CheckBoxHelper.CornerRadius="4" IsChecked="True"
+                 
+                 />
     </Grid>
     
 </UserControl>

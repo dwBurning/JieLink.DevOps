@@ -54,6 +54,17 @@ namespace PartialViewInterface
             }
         }
 
+        /// <summary>
+        /// 启动软件时是否启动矫正车位数线程对象
+        /// </summary>
+        public static AutoStartCorectEntity AutoStartCorectEntity = JsonHelper.DeserializeObject<AutoStartCorectEntity>(GetValue("AutoStartCorectString", ""));
+
+        /// <summary>
+        /// 启动软件时是否启动同步线程对象
+        /// </summary>
+        public static AutoStartSyncEntity AutoStartSyncEntity = JsonHelper.DeserializeObject<AutoStartSyncEntity>(GetValue("AutoStartSyncString", ""));
+
+
         public static string GetValue(string key, string value = "")
         {
             return ConfigurationManager.AppSettings[key] ?? value;
