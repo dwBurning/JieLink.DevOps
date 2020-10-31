@@ -13,7 +13,7 @@ using System.Threading;
 using System.ComponentModel;
 using System.Windows;
 
-namespace PartialViewAutoCorrectionParkNumber
+namespace PartialViewCorrectParkNum
 {
     partial class AutoCorrectParkNum : Window
 	{

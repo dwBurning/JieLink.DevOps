@@ -79,6 +79,14 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-10-31 V1.0.3">
+                <ContentControl>
+                    <TextBlock>
+                        新增解决门禁服务重装后设备无法通讯的工具，车位数按照场内记录数自动校正的工具，
+                        <Run Foreground="#20A0FF">JSDS一键升级JieLink的工具</Run>
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-09-27 V1.0.2">
                 <ContentControl>
                     <TextBlock>

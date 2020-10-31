@@ -31,7 +31,7 @@ namespace PartialViewImportPlate.ViewModels
             ImportPlateCommand.ExecuteAction = ImportPlate;
             ImportPlateCommand.CanExecuteFunc = new Func<object, bool>((object parameter) => { return canExecute; });
 
-           Message = "说明：本工具是为共享汽车导入凭证而制作，在用工具导入之前，至少要通过界面发行一个凭证信息。\r\n1)将需要导入的车牌粘贴到txt文件中，比如plates.txt\r\n2)将记事本文件另存为UTF8编码，必须为UTF8，否则汉字会乱码\r\n";
+           Message = "说明：本工具是为共享汽车导入凭证而制作，在用工具导入之前，至少要通过界面发行一个凭证信息。\r\n1)将需要导入的车牌粘贴到txt文件中,一个车牌一行，比如plates.txt\r\n2)将记事本文件另存为UTF8编码，必须为UTF8，否则汉字会乱码\r\n";
 
         }
 

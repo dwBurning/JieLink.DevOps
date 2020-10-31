@@ -17,7 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Reflection;
 
-namespace PartialViewAutoCorrectionParkNumber
+namespace PartialViewCorrectParkNum
 {
     /// <summary>
     /// UserControl1.xaml 的交互逻辑
@@ -31,22 +31,23 @@ namespace PartialViewAutoCorrectionParkNumber
             acp = new AutoCorrectParkNum();
             AutoCorrectParkNum.DeleEvent += AddLogs;
             //启动软件时自动启动线程
-            if (EnvironmentInfo.AutoStartCorectEntity.AutoStartFlag == true)
+            if (EnvironmentInfo.AutoStartCorectEntity != null
+                && EnvironmentInfo.AutoStartCorectEntity.AutoStartFlag == true)
             {
-                TextBox_Minute.Text = Convert.ToString( EnvironmentInfo.AutoStartCorectEntity.LoopTime);
+                TextBox_Minute.Text = Convert.ToString(EnvironmentInfo.AutoStartCorectEntity.LoopTime);
                 //AutoCorrectParkNum.LoopTime = EnvironmentInfo.AutoStartCorectEntity.LoopTime;
-                button_Start_Click(null,null);
+                button_Start_Click(null, null);
             }
         }
 
         public string MenuName
         {
-            get { return "自动校正车位数"; }
+            get { return "校正车位"; }
         }
 
         public string TagName
         {
-            get { return "AutoCorrectionParkNumber"; }
+            get { return "CorrectParkNum"; }
         }
 
         public MenuType MenuType
@@ -90,7 +91,7 @@ namespace PartialViewAutoCorrectionParkNumber
             EnvironmentInfo.AutoStartCorectEntity.AutoStartFlag = true;
             EnvironmentInfo.AutoStartCorectEntity.LoopTime = Convert.ToInt32(TextBox_Minute.Text);
             ConfigHelper.WriterAppConfig("AutoStartCorectString", JsonHelper.SerializeObject(EnvironmentInfo.AutoStartCorectEntity));
-            
+
             //调整界面
             Button_Start.IsEnabled = false;
             Button_Stop.IsEnabled = true;
