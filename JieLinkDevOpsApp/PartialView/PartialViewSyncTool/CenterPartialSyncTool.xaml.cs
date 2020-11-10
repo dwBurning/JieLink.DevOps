@@ -55,6 +55,14 @@ namespace PartialViewSyncTool
 
             dataCheckViewModel = new DataCheckViewModel();
             gridDataCheck.DataContext = dataCheckViewModel;
+
+            //加载环境参数
+            if (EnvironmentInfo.AutoStartSyncEntity.AutoStartFlag == true)
+            {
+                chbVersion.IsChecked = EnvironmentInfo.AutoStartSyncEntity.VersionCheck;
+                dataSyncViewModel.GetBoxConnStringCommand.ExecuteAction(null);
+                dataSyncViewModel.StartDataSyncCommand.ExecuteAction(null);
+            }
         }
 
         private void chbVersion_Checked(object sender, RoutedEventArgs e)
