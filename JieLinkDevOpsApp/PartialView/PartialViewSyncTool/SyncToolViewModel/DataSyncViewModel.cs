@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PartialViewInterface.Utils;
 
 namespace PartialViewSyncTool.SyncToolViewModel
 {
@@ -34,6 +35,18 @@ namespace PartialViewSyncTool.SyncToolViewModel
             LoopSecond = 5;
             Day = 1;
             Limit = 100;
+
+            if (EnvironmentInfo.AutoStartSyncEntity.AutoStartFlag == true)
+            {
+                LoopSecond = EnvironmentInfo.AutoStartSyncEntity.LoopTime;
+                Day = EnvironmentInfo.AutoStartSyncEntity.Day;
+                Limit = EnvironmentInfo.AutoStartSyncEntity.Limit;
+                if (EnvironmentInfo.AutoStartSyncEntity.VersionCheck == true)
+                    CMD = "742;743;820;821;74A;811";
+                else
+                    CMD = "82A";
+            }
+
             boxConnConfig = new BoxConnConfig();
             boxConnConfig.ShowMessage += BoxConnConfig_ShowMessage;
 
@@ -78,6 +91,18 @@ namespace PartialViewSyncTool.SyncToolViewModel
             loopTime = LoopSecond;
             running = true;
 
+            //保存环境参数
+            EnvironmentInfo.AutoStartSyncEntity.Day = day;
+            EnvironmentInfo.AutoStartSyncEntity.Limit = limit;
+            EnvironmentInfo.AutoStartSyncEntity.LoopTime = loopTime;
+            EnvironmentInfo.AutoStartSyncEntity.AutoStartFlag = true;
+            if(CMD == "82A")
+                EnvironmentInfo.AutoStartSyncEntity.VersionCheck = false;
+            else
+                EnvironmentInfo.AutoStartSyncEntity.VersionCheck = true;
+            ConfigHelper.WriterAppConfig("AutoStartSyncString", JsonHelper.SerializeObject(EnvironmentInfo.AutoStartSyncEntity));
+
+
             Task.Factory.StartNew(() =>
             {
                 while (running)
@@ -90,6 +115,11 @@ namespace PartialViewSyncTool.SyncToolViewModel
 
         private void Stop(object parameter)
         {
+
+            //保存环境参数
+            EnvironmentInfo.AutoStartSyncEntity.AutoStartFlag = false;
+            ConfigHelper.WriterAppConfig("AutoStartSyncString", JsonHelper.SerializeObject(EnvironmentInfo.AutoStartSyncEntity));
+
             running = false;
             ShowMessage("已停止检测");
         }
