@@ -117,6 +117,11 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
+            if (MessageBoxHelper.MessageBoxShowQuestion($"请确认当前版本为{StartVersion}？") == MessageBoxResult.No)
+            {
+                return;
+            }
+
             DirectoryInfo installDir = new DirectoryInfo(this.InstallPath);
             if (installDir.Name.Equals("SmartCenter", StringComparison.OrdinalIgnoreCase))
             {
