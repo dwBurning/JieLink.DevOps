@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PartialViewInterface.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -84,7 +85,7 @@ namespace PartialViewInterface.Utils
             }
         }
 
-        public static void StartProcessV2(string exe,string args)
+        public static void StartProcessV2(string exe, string args)
         {
             Process process = new Process();
             process.StartInfo.FileName = exe;
@@ -115,7 +116,7 @@ namespace PartialViewInterface.Utils
         /// <summary>
         /// 执行CMD命令
         /// </summary>
-        public static void ExecuteCommand(List<string> cmds)
+        public static void ExecuteCommand(List<string> cmds, enumToolType toolType = enumToolType.MySqlBackUp)
         {
             Process process = new Process();
             process.StartInfo.FileName = "cmd.exe";
@@ -124,7 +125,16 @@ namespace PartialViewInterface.Utils
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.CreateNoWindow = true;
-            process.OutputDataReceived += Process_OutputDataReceived;
+
+            if (toolType == enumToolType.MySqlBackUp)
+            {
+                process.OutputDataReceived += Process_OutputDataReceived1;
+            }
+            else if (toolType == enumToolType.OneKeyUpdate)
+            {
+                process.OutputDataReceived += Process_OutputDataReceived2;
+            }
+
             process.Start();
             foreach (var cmd in cmds)
             {
@@ -135,12 +145,26 @@ namespace PartialViewInterface.Utils
             process.WaitForExit();
         }
 
+        //数据库备份
         public static event Action<string> ShowOutputMessage;
-        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+
+        //一键升级
+        public static event Action<string> ShowOutputMessageEx;
+
+
+        private static void Process_OutputDataReceived1(object sender, DataReceivedEventArgs e)
         {
             if (null != e && e.Data != null)
             {
                 ShowOutputMessage?.Invoke(e.Data);
+            }
+        }
+
+        private static void Process_OutputDataReceived2(object sender, DataReceivedEventArgs e)
+        {
+            if (null != e && e.Data != null)
+            {
+                ShowOutputMessageEx?.Invoke(e.Data);
             }
         }
 

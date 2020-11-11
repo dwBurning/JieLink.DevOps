@@ -1,19 +1,8 @@
-﻿using PartialViewCheckUpdate.Views;
+﻿using PartialViewCheckUpdate.ViewModels;
 using PartialViewInterface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 
 namespace PartialViewCheckUpdate
 {
@@ -22,46 +11,13 @@ namespace PartialViewCheckUpdate
     /// </summary>
     public partial class CheckUpdate : UserControl, IPartialView
     {
-        CheckFiles checkFiles;
-        CheckScripts checkScripts;
-        CheckFilesStepByStep checkFilesStepByStep;
-        CheckScriptStepByStep checkScriptStepByStep;
+        CheckUpdateViewModel viewModel;
+
         public CheckUpdate()
         {
             InitializeComponent();
-            checkFiles = new CheckFiles();
-            checkFiles.UpdateFaildNotify += CheckFiles_UpdateFaildNotify;
-            checkScripts = new CheckScripts();
-            checkScripts.UpdateFaildNotify += CheckFiles_UpdateFaildNotify;
-            checkFilesStepByStep = new CheckFilesStepByStep();
-            checkFilesStepByStep.BackToCheckFile += CheckFilesStepByStep_BackToCheckFile;
-            checkScriptStepByStep = new CheckScriptStepByStep();
-            checkScriptStepByStep.BackToCheckScript += CheckScriptStepByStep_BackToCheckScript;
-            ContentControl.Content = checkFiles;
-        }
-
-        private void CheckScriptStepByStep_BackToCheckScript()
-        {
-            ContentControl.Content = checkScripts;
-        }
-
-        private void CheckFilesStepByStep_BackToCheckFile()
-        {
-            ContentControl.Content = checkFiles;
-        }
-
-        private void CheckFiles_UpdateFaildNotify(string action)
-        {
-            if (action == "CheckFiles")
-            {
-                ContentControl.Content = checkFilesStepByStep;
-            }
-            else
-            {
-                ContentControl.Content = checkScriptStepByStep;
-            }
-            
-            Application.Current.MainWindow.WindowState = WindowState.Maximized;
+            viewModel = new CheckUpdateViewModel();
+            DataContext = viewModel;
         }
 
         public string MenuName
@@ -79,20 +35,23 @@ namespace PartialViewCheckUpdate
             get { return MenuType.Center; }
         }
 
-        private void TvMenu_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void btnChooseInstallPath_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsLoaded)
-                return;
-
-            var selectedItem = TvMenu.SelectedItem as TreeViewItem;
-            var tag = selectedItem.Tag.ToString();
-            if (tag == "CheckFiles")
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
-                ContentControl.Content = checkFiles;
+                viewModel.InstallPath = folderBrowserDialog.SelectedPath.Trim();
             }
-            else
+        }
+
+        private void btnChooseSetUpPackagePath_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
-                ContentControl.Content = checkScripts;
+                viewModel.PackagePath = folderBrowserDialog.SelectedPath.Trim();
             }
         }
     }
