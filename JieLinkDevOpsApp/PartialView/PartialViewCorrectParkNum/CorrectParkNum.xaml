@@ -29,7 +29,7 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"  Margin="10,5,10,10" Grid.Row="0" Grid.Column="0" Text="车位数自动校正工具，将车位数强制与场内车数量校正" />
+        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"  Margin="10,5,10,10" Grid.Row="0" Grid.Column="0" Text="车位数按照场内记录数自动校正" />
         <TextBlock VerticalAlignment="Center" Margin="10,5,10,10" TextWrapping="Wrap" Grid.Row="2" Grid.Column="0">设置每隔多少分钟校正一次</TextBlock>
 
 

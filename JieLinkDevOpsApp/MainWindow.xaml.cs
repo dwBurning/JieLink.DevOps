@@ -168,7 +168,7 @@ namespace JieShun.JieLink.DevOps.App
                 startup.Start();
             }
             //运行后台任务
-            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            IScheduler scheduler = EnvironmentInfo.scheduler;
             scheduler.Start();
             foreach (var jobType in viewModel.jobs)
             {
@@ -176,11 +176,12 @@ namespace JieShun.JieLink.DevOps.App
                 if (string.IsNullOrEmpty(cron))
                     continue;
                 var job = JobBuilder.Create(jobType)
-                                .Build();
+                    .WithIdentity(jobType.Name, "scheduler").Build();
                 var trigger = TriggerBuilder.Create()
-                                .StartNow()
-                                .WithCronSchedule(cron)
-                                .Build();
+                    .WithIdentity(jobType.Name, "scheduler")
+                    .StartNow()
+                    .WithCronSchedule(cron)
+                    .Build();
                 scheduler.ScheduleJob(job, trigger);
             }
         }

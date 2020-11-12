@@ -1,5 +1,7 @@
 ﻿using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
+using Quartz;
+using Quartz.Impl;
 using System.Configuration;
 
 namespace PartialViewInterface
@@ -59,6 +61,10 @@ namespace PartialViewInterface
         /// </summary>
         public static AutoStartSyncEntity AutoStartSyncEntity = JsonHelper.DeserializeObject<AutoStartSyncEntity>(GetValue("AutoStartSyncString", ""));
 
+        /// <summary>
+        /// 定时任务全局实例
+        /// </summary>
+        public static IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
 
         public static string GetValue(string key, string value = "")
         {
