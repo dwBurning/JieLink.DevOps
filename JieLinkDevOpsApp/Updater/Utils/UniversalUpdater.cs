@@ -107,6 +107,15 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             //替换文件
             foreach (var subPackage in packageInfo.SubPackages)
             {
+                if (subPackage.ZipList != null)
+                {
+                    foreach(var zipFile in subPackage.ZipList)
+                    {
+                        string zipFileFullPath = Path.Combine(packageDir, zipFile);
+                        string zipFileDir = new FileInfo(zipFileFullPath).DirectoryName;
+                        UpdateUtils.ExtractZip(zipFileFullPath, zipFileDir);
+                    }
+                }
                 progress = Math.Min(progress + 10, 80);
                 callback?.Invoke(progress, "替换" + subPackage.TargetPath);
 

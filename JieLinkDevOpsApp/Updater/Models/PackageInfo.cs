@@ -31,6 +31,7 @@ namespace JieShun.JieLink.DevOps.Updater.Models
         /// </summary>
         public List<string> ExcludeList { get; set; }
 
+        public List<string> ZipList { get; set; }
     }
     public class ProgramInfo
     {

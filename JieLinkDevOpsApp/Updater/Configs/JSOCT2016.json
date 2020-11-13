@@ -17,6 +17,18 @@
       "ServiceName": "JsstJieLinkSmartCenter",
       "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
       "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "ServiceName": "JSSTDoorServerDaemonHost",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "ServiceName": "JSSTDoorServer",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "Args": null
     }
   ],
   "SubPackages": [
@@ -29,7 +41,8 @@
         "Agent.dat",
         "Logs",
         "*.config"
-      ]
+      ],
+      "ZipList": null
     },
     {
       "SubPath": "programfiles\\SmartWeb",
@@ -37,7 +50,8 @@
       "ExcludeList": [
         "Config",
         "Web.config"
-      ]
+      ],
+      "ZipList": null
     },
     {
       "SubPath": "programfiles\\SmartApi",
@@ -45,7 +59,8 @@
       "ExcludeList": [
         "Config",
         "Web.config"
-      ]
+      ],
+      "ZipList": null
     },
     {
       "SubPath": "programfiles\\SmartFile\\down",
@@ -53,7 +68,8 @@
       "ExcludeList": [
         "Config",
         "Web.config"
-      ]
+      ],
+      "ZipList": null
     },
     {
       "SubPath": "programfiles\\SmartFile\\upload",
@@ -61,6 +77,18 @@
       "ExcludeList": [
         "Config",
         "Web.config"
+      ],
+      "ZipList": null
+    },
+    {
+      "SubPath": "programfiles\\SmartBoxDoorImage\\programfiles\\SmartBoxDoor",
+      "TargetPath": "SmartBoxDoor",
+      "ExcludeList": [
+        "Config",
+        "*.config"
+      ],
+      "ZipList": [
+        "programfiles\\SmartBoxDoorImage.zip"
       ]
     }
   ],
@@ -81,6 +109,18 @@
       "ProcessName": "JSST.JieLink.Daemon.exe",
       "ServiceName": "JSST.JieLink.Daemon",
       "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "ServiceName": "JSSTDoorServer",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "ServiceName": "JSSTDoorServerDaemonHost",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
       "Args": null
     }
   ]
