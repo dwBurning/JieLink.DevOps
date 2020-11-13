@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -192,10 +193,16 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                 }
                 else
                 {
-                    if (!ProcessHelper.IsServiceRunning(info.ServiceName))
+
+                    ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName == info.ServiceName);
+                    if (serviceController != null)
                     {
-                        Console.WriteLine("启动服务:{0}", info.ServiceName);
-                        ProcessHelper.StartService(info.ServiceName);
+                        if (!ProcessHelper.IsServiceRunning(info.ServiceName))
+                        {
+                            Console.WriteLine("启动服务:{0}", info.ServiceName);
+                            ProcessHelper.StartService(info.ServiceName);
+                        }
+
                     }
                 }
 
@@ -215,9 +222,13 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                 }
                 else
                 {
-                    if (!ProcessHelper.IsServiceRunning(info.ServiceName))
+                    ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName == info.ServiceName);
+                    if (serviceController != null)
                     {
-                        throw new Exception(info.ServiceName + "启动失败！");
+                        if (!ProcessHelper.IsServiceRunning(info.ServiceName))
+                        {
+                            throw new Exception(info.ServiceName + "启动失败！");
+                        }
                     }
                 }
 
