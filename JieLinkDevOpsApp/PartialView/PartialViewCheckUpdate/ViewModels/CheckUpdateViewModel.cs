@@ -10,434 +10,210 @@ using PartialViewCheckUpdate;
 using System.Windows;
 using PartialViewCheckUpdate.Models.Enum;
 using PartialViewInterface.Commands;
+using PartialViewInterface.Utils;
+using PartialViewInterface.Models;
+using PartialViewInterface;
 
 namespace PartialViewCheckUpdate.ViewModels
 {
-    class CheckUpdateViewModel : NotificationObject  //PropertyChangedBase
+    class CheckUpdateViewModel : DependencyObject
     {
+        public DelegateCommand RepairCommand { get; set; }
+
         public CheckUpdateViewModel()
         {
-            this.ChoseSourceCommand = new DelegateCommand();
-            this.ChoseSourceCommand.ExecuteAction = new Action<object>(this.GetSourceFile);
-            this.ChosePackageCommand = new DelegateCommand();
-            this.ChosePackageCommand.ExecuteAction = new Action<object>(this.GetPackageFile);
-            this.CheckUpdateCommand = new DelegateCommand();
-            this.CheckUpdateCommand.ExecuteAction = new Action<object>(this.CheckUpdate);
-            this.TestConnCommand = new DelegateCommand();
-            this.TestConnCommand.ExecuteAction = new Action<object>(this.TestMySqlConn);
-            //this.TestConnCommand.CanExecuteFunc = new Func<object, bool>(this.TestMySqlConn);
-            this.CheckDBUpdateCommand = new DelegateCommand();
-            this.CheckDBUpdateCommand.ExecuteAction = new Action<object>(this.CheckDBUpdate);
-
-
-            this.BtnUpdateEnabled = "False";
-            this.BtnCheckDBUpdateEnabled = "True";
+            this.RepairCommand = new DelegateCommand();
+            this.RepairCommand.ExecuteAction = this.Repair;
+            ProcessHelper.ShowOutputMessageEx += ProcessHelper_ShowOutputMessageEx;
         }
 
-        private string sourceFilePath;
-
-        public string SourceFilePath
+        private void ProcessHelper_ShowOutputMessageEx(string message)
         {
-            get { return sourceFilePath; }
-            set
-            {
-                sourceFilePath = value;
-                this.RaisePropertyChanged("SourceFilePath");
-            }
+            ShowMessage(message);
         }
 
-        private string packageFilePath;
-
-        public string PackageFilePath
+        public string StartVersion
         {
-            get { return packageFilePath; }
-            set
-            {
-                packageFilePath = value;
-                this.RaisePropertyChanged("PackageFilePath");
-            }
+            get { return (string)GetValue(StartVersionProperty); }
+            set { SetValue(StartVersionProperty, value); }
         }
 
-        private string result;
+        // Using a DependencyProperty as the backing store for StartVersion.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty StartVersionProperty =
+            DependencyProperty.Register("StartVersion", typeof(string), typeof(CheckUpdateViewModel));
 
-        public string Result
+
+
+
+        public string EndVersion
         {
-            get { return result; }
-            set
-            {
-                result = value;
-                this.RaisePropertyChanged("Result");
-            }
+            get { return (string)GetValue(EndVersionProperty); }
+            set { SetValue(EndVersionProperty, value); }
         }
 
-        private string btnUpdateEnabled;
+        // Using a DependencyProperty as the backing store for EndVersion.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty EndVersionProperty =
+            DependencyProperty.Register("EndVersion", typeof(string), typeof(CheckUpdateViewModel));
 
-        public string BtnUpdateEnabled
+
+
+
+        public string InstallPath
         {
-            get { return btnUpdateEnabled; }
-            set
-            {
-                btnUpdateEnabled = value;
-                this.RaisePropertyChanged("BtnUpdateEnabled");
-            }
+            get { return (string)GetValue(InstallPathProperty); }
+            set { SetValue(InstallPathProperty, value); }
         }
 
-        private string btnCheckDBUpdateEnabled;
+        // Using a DependencyProperty as the backing store for InstallPath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty InstallPathProperty =
+            DependencyProperty.Register("InstallPath", typeof(string), typeof(CheckUpdateViewModel));
 
-        public string BtnCheckDBUpdateEnabled
+
+
+
+        public string PackagePath
         {
-            get { return btnCheckDBUpdateEnabled; }
-            set
-            {
-                btnCheckDBUpdateEnabled = value;
-                this.RaisePropertyChanged("BtnCheckDBUpdateEnabled");
-            }
+            get { return (string)GetValue(PackagePathProperty); }
+            set { SetValue(PackagePathProperty, value); }
         }
 
+        // Using a DependencyProperty as the backing store for PackagePath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PackagePathProperty =
+            DependencyProperty.Register("PackagePath", typeof(string), typeof(CheckUpdateViewModel));
 
-        private string mySqlConnStr;
 
-        public string MySqlConnStr
+
+
+        public string Message
         {
-            get { return mySqlConnStr; }
-            set
-            {
-                mySqlConnStr = value;
-                this.RaisePropertyChanged("MySqlConnStr");
-            }
+            get { return (string)GetValue(MessageProperty); }
+            set { SetValue(MessageProperty, value); }
         }
 
-        private string dbIP;
+        // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register("Message", typeof(string), typeof(CheckUpdateViewModel));
 
-        public string DBIP
+
+
+
+
+        private void Repair(object parameter)
         {
-            get { return dbIP; }
-            set
+            if (string.IsNullOrEmpty(this.PackagePath) || string.IsNullOrEmpty(this.InstallPath))
             {
-                dbIP = value;
-                this.RaisePropertyChanged("DBIP");
-            }
-        }
-
-        private string dbName;
-
-        public string DBName
-        {
-            get { return dbName; }
-            set
-            {
-                dbName = value;
-                this.RaisePropertyChanged("DBName");
-            }
-        }
-
-        private string dbPort;
-
-        public string DBPort
-        {
-            get { return dbPort; }
-            set
-            {
-                dbPort = value;
-                this.RaisePropertyChanged("DBPort");
-            }
-        }
-
-        private string dbUser;
-
-        public string DBUser
-        {
-            get { return dbUser; }
-            set
-            {
-                dbUser = value;
-                this.RaisePropertyChanged("DBUser");
-            }
-        }
-
-        private string dbPassword;
-
-        public string DBPassword
-        {
-            get { return dbPassword; }
-            set
-            {
-                dbPassword = value;
-                this.RaisePropertyChanged("DBPassword");
-            }
-        }
-
-
-
-
-
-        public DelegateCommand ChoseSourceCommand { get; set; }
-        private void GetSourceFile(object parameter)
-        {
-
-            System.Windows.Forms.FolderBrowserDialog m_Dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = m_Dialog.ShowDialog();
-
-            if (result == System.Windows.Forms.DialogResult.Cancel)
-            {
-                return;
-            }
-            this.SourceFilePath = m_Dialog.SelectedPath.Trim();
-        }
-
-        public DelegateCommand ChosePackageCommand { get; set; }
-        private void GetPackageFile(object parameter)
-        {
-
-            System.Windows.Forms.FolderBrowserDialog m_Dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = m_Dialog.ShowDialog();
-
-            if (result == System.Windows.Forms.DialogResult.Cancel)
-            {
-                return;
-            }
-            this.PackageFilePath = m_Dialog.SelectedPath.Trim();
-        }
-
-        public DelegateCommand TestConnCommand { get; set; }
-        private void TestMySqlConn(object parameter)
-        {
-            string mySqlConnStr = GetConnStr();
-            if (string.IsNullOrEmpty(mySqlConnStr))
-            {
-                MessageBoxX.Show("请输入完整的数据库连接信息", "错误");
-                return;
-            }
-            TestMySql(mySqlConnStr);
-        }
-
-        public DelegateCommand CheckDBUpdateCommand { get; set; }
-        private void CheckDBUpdate(object parameter)
-        {
-            try
-            {
-                string mySqlConnStr = GetConnStr();
-                if (string.IsNullOrEmpty(mySqlConnStr))
-                {
-                    MessageBoxX.Show("请输入完整的数据库连接信息", "错误");
-                    return;
-                }
-                if (string.IsNullOrEmpty(this.PackageFilePath))
-                {
-                    MessageBoxX.Show("安装包路径不能为空", "失败");
-                    return;
-                }
-                string packagePath = this.PackageFilePath.Trim();
-
-                packagePath = Path.Combine(packagePath, "sys\\DbInitScript");
-                var files = from file in Directory.EnumerateFiles(packagePath, "*.json*", SearchOption.TopDirectoryOnly)
-                            select file;
-
-                if (files == null || files.Count() == 0)
-                {
-                    MessageBoxX.Show($"未找到数据库对比文件{packagePath}\\xxxxx.json", "失败");
-                    return;
-                }
-                string packageDbJsonFile = files.First();
-                if (TestMySql(mySqlConnStr))
-                {
-                    if (CheckDBUpdateTool.CheckDBUpdate(packageDbJsonFile, mySqlConnStr))
-                    {
-                        MessageBoxX.Show($"数据库升级成功！", "成功", null, MessageBoxButton.OK);
-                    }
-                    else
-                    {
-                        MessageBoxX.Show($"数据库升级失败！\n请按照下方步骤升级。", "失败", null, MessageBoxButton.OK);
-                    }
-                }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                string msg = "检查升级出错，文件没有访问权限，请设置文件夹读写权限\n";
-                MessageBoxX.Show(msg, "异常");
-                return;
-            }
-            catch (PathTooLongException)
-            {
-                string msg = "检查升级出错，软件安装目录或安装包目录 指定的路径或文件名超过了系统定义的最大长度\n";
-                MessageBoxX.Show(msg, "异常");
-                return;
-            }
-            catch (DirectoryNotFoundException)
-            {
-                string msg = "检查升级出错，所检查的目录不存在\n";
-                MessageBoxX.Show(msg, "异常");
-                return;
-            }
-            catch (Exception)
-            {
-                string msg = "程序异常";
-                MessageBoxX.Show(msg, "异常");
+                MessageBoxHelper.MessageBoxShowWarning("请选择正确的路径！");
                 return;
             }
 
-        }
+            DirectoryInfo packageDir = new DirectoryInfo(this.PackagePath);
 
-        public DelegateCommand CheckUpdateCommand { get; set; }
-
-        private void CheckUpdate(object parameter)
-        {
-            string msg = string.Empty;
-            EnumCheckFileResult r = EnumCheckFileResult.Ok;
-            if (string.IsNullOrEmpty(this.SourceFilePath) || string.IsNullOrEmpty(this.PackageFilePath))
+            if (packageDir.Name.Equals("sys") || packageDir.Name.Equals("obj"))
+                packageDir = packageDir.Parent;
+            var zipPath = Directory.GetFiles(Path.Combine(packageDir.FullName, "obj"), "*.zip").FirstOrDefault();
+            if (string.IsNullOrEmpty(zipPath) || !zipPath.Contains("JSOCT"))//加上这个判断，防止选成盒子的包
             {
-                MessageBoxX.Show("软件安装目录和安装包路径不能为空", "失败");
+                MessageBoxHelper.MessageBoxShowWarning("升级包不存在！");
                 return;
             }
-            string sourcePath = this.SourceFilePath.Trim();
-            string packagePath = this.PackageFilePath.Trim();
-            this.Result = string.Empty;
-            //foreach (var dir in dirs)
-            //{
-            //    msg = $"开始检查目录{dir}……\n";
-            //    this.Result += msg;
-            //    sourcePath = Path.Combine(this.SourceFilePath.Trim(), dir);
-            //    r = CheckFileUpdate(sourcePath, packagePath);
-            //    msg = $"完成检查目录{dir}……\n";
-            //    this.Result += msg;
-            //    if (r == EnumCheckFileResult.FILE_ERROR1 || r == EnumCheckFileResult.OTHER_ERROR)
-            //    {
-            //        break;
-            //    }
-            //}
-            r = CheckFileUpdate(sourcePath, packagePath);
-            if (r == EnumCheckFileResult.Error)
+
+            if (MessageBoxHelper.MessageBoxShowQuestion($"请确认当前版本为{StartVersion}？") == MessageBoxResult.No)
             {
-                MessageBoxX.Show("JieLink软件升级失败！\n请按照下方步骤升级。", "失败", null, MessageBoxButton.OK);
-            }
-            else if (r == EnumCheckFileResult.Ok)
-            {
-                MessageBoxX.Show("JieLink软件升级成功！", "成功", null, MessageBoxButton.OK);
+                return;
             }
 
+            DirectoryInfo installDir = new DirectoryInfo(this.InstallPath);
+            if (installDir.Name.Equals("SmartCenter", StringComparison.OrdinalIgnoreCase))
+            {
+                installDir = installDir.Parent;
+            }
+            string rootPath = installDir.FullName;
+            //检测是否是一个有效的中心按照目录
+            if (!File.Exists(Path.Combine(rootPath, "NewG3Uninstall.exe")))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择正确的中心安装目录！");
+                return;
+            }
+
+            UpdateRequest updateRequest = new UpdateRequest();
+            updateRequest.Guid = Guid.NewGuid().ToString();
+            updateRequest.Product = "JSOCT2016";
+            updateRequest.RootPath = rootPath;
+            updateRequest.PackagePath = zipPath;
+            ExecuteUpdate(updateRequest);
+            ExecuteScript();
+
+        }
+        private void ExecuteUpdate(UpdateRequest request)
+        {
+            //1.升级请求写到update文件夹下
+            WriteRequestFile(request);
+            //2.启动升级程序
+            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Updater.exe");
+            ProcessHelper.StartProcessDotNet(executePath, "-file=UpdateRequest_2016.json");
+        }
+
+        private void WriteRequestFile(UpdateRequest request)
+        {
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\UpdateRequest_2016.json");
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath).Close();
+            }
+            string json = JsonHelper.SerializeObject(request);
+            using (FileStream fs = new FileStream(filePath, FileMode.Truncate, FileAccess.ReadWrite))
+            {
+                StreamWriter sw = new StreamWriter(fs);
+                sw.Write(json);
+                sw.Close();
+            }
         }
 
 
-
-        public List<string> dirs = new List<string>()
+        private void ExecuteScript()
         {
-            "SmartCenter",
-            "SmartApi",
-            "SmartFile",
-            "SmartWeb",
+            string scriptPath = Path.Combine(this.PackagePath, "dbscript");
+            List<FileInfo> scripts = FileHelper.GetAllFileInfo(scriptPath, "*.sql").OrderBy(x => x.Name).ToList();
+            int index = scripts.FindIndex(x => x.Name.Contains(this.StartVersion));
 
-        };
-
-        /// <summary>
-        /// 检测当前目录是否升级成功
-        /// </summary>
-        /// <param name="sourcePath"></param>
-        /// <param name="packagePath"></param>
-        /// <returns></returns>
-        public EnumCheckFileResult CheckFileUpdate(string sourcePath, string packagePath)
-        {
-            string msg = string.Empty;
-            try
+            List<FileInfo> fileInfos = new List<FileInfo>();
+            for (int i = index; i < scripts.Count; i++)
             {
-                int failCount = 0;
+                fileInfos.Add(scripts[i]);
+            }
 
-                //只根据安装包SmartCenter.Host.exe的修改时间来确定安装包的时间
-                DateTime packageTime = File.GetLastWriteTime(packagePath + "\\sys\\programfiles\\SmartCenter\\SmartCenter.Host.exe");
-
-                var files = from file in Directory.EnumerateFiles(sourcePath, "*.*", SearchOption.AllDirectories)
-                            where (file.EndsWith(".dll") || file.EndsWith(".exe"))
-                            select file;
-                if (files.Count() <= 0)
+            Task.Factory.StartNew(() =>
+            {
+                foreach (var file in fileInfos)
                 {
-                    msg = $"未检测到文件，请检查软件安装目录和安装包路径是否正确！\n";
-                    this.Result += msg;
-                    MessageBoxX.Show(msg, "异常");
-                    return EnumCheckFileResult.Error;
+                    string mysqlcmd = $"mysql --default-character-set=utf8 -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port} {EnvironmentInfo.DbConnEntity.DbName} < \"{file.FullName}\"";
+
+                    ShowMessage(mysqlcmd);
+                    List<string> cmds = new List<string>();
+                    string mysqlBin = AppDomain.CurrentDomain.BaseDirectory;
+                    cmds.Add(mysqlBin.Substring(0, 2));
+                    cmds.Add("cd " + mysqlBin);
+                    cmds.Add(mysqlcmd);
+                    ProcessHelper.ExecuteCommand(cmds, enumToolType.OneKeyUpdate);
                 }
-                foreach (var f in files)
-                {
-                    if (packageTime.CompareTo(File.GetLastWriteTime(f)) > 0)
-                    {
-                        failCount++;
-                    }
-                    //else if (packageTime.CompareTo(File.GetLastWriteTime(f)) < 0)
-                    //{
-                    //    failCount++;
-                    //}
-                }
-                msg = $"[WARN] 检测到文件升级失败文件数量{failCount}个\n";
-                this.Result += msg;
-                if (failCount > 5)
-                {
-                    msg = $"[WARN] JieLink软件升级失败\n";
-                    this.Result += msg;
-                    return EnumCheckFileResult.Error;
-                }
-                msg = $"升级成功！\n";
-                this.Result += msg;
-                return EnumCheckFileResult.Ok;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                msg = "检查升级出错，文件没有访问权限，请设置文件夹读写权限\n";
-                this.Result += msg;
-                return EnumCheckFileResult.Error;
-            }
-            catch (PathTooLongException)
-            {
-                msg = "检查升级出错，软件安装目录或安装包目录 指定的路径或文件名超过了系统定义的最大长度\n";
-                this.Result += msg;
-                return EnumCheckFileResult.Error;
-            }
-            catch (DirectoryNotFoundException)
-            {
-                msg = "检查升级出错，所检查的目录不存在\n";
-                this.Result += msg;
-                return EnumCheckFileResult.Error;
-            }
-            catch (Exception)
-            {
-                msg = "程序异常";
-                this.Result += msg;
-                return EnumCheckFileResult.Error;
-            }
+            });
         }
 
-        /// <summary>
-        /// 获取Mysql连接字符串
-        /// </summary>
-        /// <returns></returns>
-        public string GetConnStr()
+        public void ShowMessage(string message)
         {
-            if (string.IsNullOrEmpty(this.DBIP) || string.IsNullOrEmpty(this.DBName) || string.IsNullOrEmpty(this.DBPort) || string.IsNullOrEmpty(this.DBName) || string.IsNullOrEmpty(this.DBPassword))
+            this.Dispatcher.Invoke(new Action(() =>
             {
-                return string.Empty;
-            }
-            return $"Data Source={this.DBIP};port={this.DBPort};Initial Catalog={this.DBName};Persist Security Info=True;User ID={this.DBUser};Password={this.DBPassword};MAX Pool Size=2000;Min Pool Size=3;Connection Timeout=300;Pooling=true;charset=utf8";
-        }
-
-        public bool TestMySql(string connStr)
-        {
-            try
-            {
-                connStr = connStr.Trim();
-                if (CheckDBUpdateTool.TestMySqlConn(connStr))
+                if (Message != null && Message.Length > 5000)
                 {
-                    MessageBoxX.Show("数据库连接成功！", "成功");
-                    this.BtnCheckDBUpdateEnabled = "True";
-                    return true;
+                    Message = string.Empty;
                 }
-                MessageBoxX.Show("数据库连接失败！", "失败");
-                return false;
-            }
-            catch (Exception)
-            {
-                MessageBoxX.Show("数据库连接失败！", "失败");
-                return false;
-            }
 
+                if (message.Length > 0)
+                {
+                    Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+                }
+            }));
         }
-
 
     }
 }

@@ -46,6 +46,8 @@ namespace PartialViewSyncTool.SyncToolViewModel
             OutPutToNotepadCommand = new DelegateCommand();
             OutPutToNotepadCommand.ExecuteAction = OutPut;
             OutPutToNotepadCommand.CanExecuteFunc = new Func<object, bool>((object obj) => { return canExecute; });
+
+            Message = "说明：本工具是为了检索出中心与盒子凭证状态不一致的数据而制作，适用于低于2.5版本的非标项目";
         }
 
         private void Start(object parameter)
@@ -64,31 +66,30 @@ namespace PartialViewSyncTool.SyncToolViewModel
             try
             {
                 string cmd = "select * from control_voucher";
-                using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, cmd))
+                DataTable dataTable = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, cmd).Tables[0];
+
+                foreach (DataRow dr in dataTable.Rows)
                 {
-                    while (reader.Read())
+                    ControlVoucher voucher = new ControlVoucher();
+                    voucher.VGUID = dr["guid"].ToString();
+                    voucher.PGUID = dr["pguid"].ToString();
+                    voucher.LGUID = dr["lguid"].ToString();
+                    voucher.PersonNo = dr["personno"].ToString();
+                    voucher.VoucherType = int.Parse(dr["vouchertype"].ToString());
+                    voucher.VoucherNo = dr["voucherno"].ToString();
+                    voucher.CardNum = dr["cardnum"].ToString();
+                    voucher.Status = int.Parse(dr["Status"].ToString());
+                    voucher.DeviceList = new List<string>();
+                    if (!isChecked)
                     {
-                        ControlVoucher voucher = new ControlVoucher();
-                        voucher.VGUID = reader["guid"].ToString();
-                        voucher.PGUID = reader["pguid"].ToString();
-                        voucher.LGUID = reader["lguid"].ToString();
-                        voucher.PersonNo = reader["personno"].ToString();
-                        voucher.VoucherType = int.Parse(reader["vouchertype"].ToString());
-                        voucher.VoucherNo = reader["voucherno"].ToString();
-                        voucher.CardNum = reader["cardnum"].ToString();
-                        voucher.Status = int.Parse(reader["Status"].ToString());
-                        voucher.DeviceList = new List<string>();
-                        if (!isChecked)
+                        string sql = $"select * from control_voucher_device where VGuid='{voucher.VGUID}'";
+                        DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
+                        foreach (DataRow row in table.Rows)
                         {
-                            string sql = $"select * from control_voucher_device where VGuid='{voucher.VGUID}'";
-                            DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
-                            foreach (DataRow dr in table.Rows)
-                            {
-                                voucher.DeviceList.Add(dr["DeviceId"].ToString());
-                            }
+                            voucher.DeviceList.Add(row["DeviceId"].ToString());
                         }
-                        Compare(voucher);
                     }
+                    Compare(voucher);
                 }
 
                 OutPut(null);
@@ -120,7 +121,7 @@ namespace PartialViewSyncTool.SyncToolViewModel
             {
                 sql = $"select * from crd_credential where `no`='{voucher.VoucherNo}' and `state`={voucher.Status}";
             }
-            
+
             using (MySqlDataReader reader = MySqlHelper.ExecuteReader(connStr, sql))
             {
                 if (!reader.Read())
@@ -132,7 +133,11 @@ namespace PartialViewSyncTool.SyncToolViewModel
                     }
                     else
                     {
-                        controlVouchers.Add(voucher);
+                        //如果集合中已经存在 就不添加了
+                        if (controlVouchers.FindIndex(x => x.VoucherNo == voucher.VoucherNo) < 0)
+                        {
+                            controlVouchers.Add(voucher);
+                        }
                     }
                 }
             }
@@ -172,7 +177,11 @@ namespace PartialViewSyncTool.SyncToolViewModel
                 }
                 else
                 {
-                    controlVouchers.Add(voucher);
+                    //如果集合中已经存在 就不添加了
+                    if (controlVouchers.FindIndex(x => x.VoucherNo == voucher.VoucherNo) < 0)
+                    {
+                        controlVouchers.Add(voucher);
+                    }
                 }
             }
         }

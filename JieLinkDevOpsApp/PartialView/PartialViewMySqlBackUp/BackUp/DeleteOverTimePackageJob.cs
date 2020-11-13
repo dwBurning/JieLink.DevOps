@@ -26,8 +26,8 @@ namespace PartialViewMySqlBackUp.BackUp
             }));
 
             List<FileInfo> files = FileHelper.GetAllFileInfo(filePath, "*.zip");
-            if (files.Count < 7) return;//文件小于5个 不删除
-            for (int i = 0; i < files.Count - 5; i++)//永远保留7个最新的备份文件
+            if (files.Count < 7) return;//文件小于7个 不删除
+            for (int i = 0; i < files.Count - 7; i++)//永远保留7个最新的备份文件
             {
                 var file = files[i];
                 DateTime lastWriteTime = file.LastWriteTime;

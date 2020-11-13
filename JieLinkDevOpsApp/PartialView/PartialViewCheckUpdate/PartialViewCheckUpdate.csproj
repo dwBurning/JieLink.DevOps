@@ -69,50 +69,10 @@
     <Compile Include="CheckUpdate.xaml.cs">
       <DependentUpon>CheckUpdate.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CheckUpdateContext.cs" />
     <Compile Include="Models\Enum\EnumCheckFileResult.cs" />
     <Compile Include="Models\ParameterModel.cs" />
-    <Compile Include="ViewModels\CheckDBUpdate.cs" />
-    <Compile Include="ViewModels\CheckFilesViewModel.cs" />
-    <Compile Include="ViewModels\CheckScriptViewModel.cs" />
     <Compile Include="ViewModels\CheckUpdateViewModel.cs" />
-    <Compile Include="ViewModels\NotificationObject.cs" />
-    <Compile Include="Views\CheckFiles.xaml.cs">
-      <DependentUpon>CheckFiles.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CheckScripts.xaml.cs">
-      <DependentUpon>CheckScripts.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CheckScriptStepByStep.xaml.cs">
-      <DependentUpon>CheckScriptStepByStep.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\DemonstrateWindow.xaml.cs">
-      <DependentUpon>DemonstrateWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\CheckFilesStepByStep.xaml.cs">
-      <DependentUpon>CheckFilesStepByStep.xaml</DependentUpon>
-    </Compile>
     <Page Include="CheckUpdate.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CheckFiles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CheckScripts.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CheckScriptStepByStep.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\DemonstrateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\CheckFilesStepByStep.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -150,86 +110,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="favicon.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\test.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\1-SmartCenter\1找中心服务进程.png" />
-    <Resource Include="Pic\1-SmartCenter\2通过中心服务进程跳转中心安装路径.png" />
-    <Resource Include="Pic\1-SmartCenter\3备份.png" />
-    <Resource Include="Pic\1-SmartCenter\4找SmartCenter升级文件路径.png" />
-    <Resource Include="Pic\1-SmartCenter\6结束守护进程、中心服务进程.png" />
-    <Resource Include="Pic\1-SmartCenter\7筛选过后全选复制.png" />
-    <Resource Include="Pic\1-SmartCenter\8启动中心.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\2-守护进程\1任务管理器跳转守护进程安装目录.png" />
-    <Resource Include="Pic\2-守护进程\2结束守护进程.png" />
-    <Resource Include="Pic\2-守护进程\3替换守护进程.png" />
-    <Resource Include="Pic\2-守护进程\4启动守护进程.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\3-SmartWeb\1找IIS.png" />
-    <Resource Include="Pic\3-SmartWeb\2win7跳转到IIS.png" />
-    <Resource Include="Pic\3-SmartWeb\2跳转到IIS.png" />
-    <Resource Include="Pic\3-SmartWeb\3转到SmartWeb安装路径.png" />
-    <Resource Include="Pic\3-SmartWeb\4备份.png" />
-    <Resource Include="Pic\3-SmartWeb\5替换文件.png" />
-    <Resource Include="Pic\3-SmartWeb\6重启.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\4-SmartAPI\1备份.png" />
-    <Resource Include="Pic\4-SmartAPI\2替换文件.png" />
-    <Resource Include="Pic\4-SmartAPI\3重启.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\5-SmartSDK\1备份.png" />
-    <Resource Include="Pic\5-SmartSDK\2替换文件.png" />
-    <Resource Include="Pic\5-SmartSDK\3重启.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\6-SmartFile\1跳转SmartFileDown.png" />
-    <Resource Include="Pic\6-SmartFile\2替换.png" />
-    <Resource Include="Pic\6-SmartFile\3重启.png" />
-    <Resource Include="Pic\6-SmartFile\4跳转SmartFileUpload.png" />
-    <Resource Include="Pic\6-SmartFile\5替换.png" />
-    <Resource Include="Pic\6-SmartFile\6重启.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\7-SmartWebMaster\1找网管服务进程跳转安装路径.png" />
-    <Resource Include="Pic\7-SmartWebMaster\2备份.png" />
-    <Resource Include="Pic\7-SmartWebMaster\3结束进程.png" />
-    <Resource Include="Pic\7-SmartWebMaster\4替换文件.png" />
-    <Resource Include="Pic\7-SmartWebMaster\5启动.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\8-SmartNetwork\1备份.png" />
-    <Resource Include="Pic\8-SmartNetwork\2替换.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\9-SmartBoxDoor\1门禁服务.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\2转进程.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\3转安装路径.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\4备份.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\5升级包解压.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\6结束进程.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\7替换文件.png" />
-    <Resource Include="Pic\9-SmartBoxDoor\8启动.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\10-DB\1.png" />
-    <Resource Include="Pic\10-DB\2.png" />
-    <Resource Include="Pic\10-DB\3.png" />
-    <Resource Include="Pic\10-DB\4.png" />
-    <Resource Include="Pic\10-DB\5.png" />
-    <Resource Include="Pic\10-DB\6.png" />
-    <Resource Include="Pic\10-DB\7.png" />
-    <Resource Include="Pic\10-DB\8.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件1.png" />
-    <Resource Include="Pic\1-SmartCenter\5类型筛选应用程序和应用程序扩展文件2.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

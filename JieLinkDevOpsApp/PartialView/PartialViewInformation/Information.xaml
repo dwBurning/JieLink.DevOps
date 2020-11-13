@@ -24,13 +24,18 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="200"></RowDefinition>
-            <RowDefinition Height="200"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="180"></RowDefinition>
+            <RowDefinition Height="200"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
-            <TextBlock HorizontalAlignment="Center" FontSize="20">JieLink运维工具------插件式集成运维工具</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" FontSize="20">JieLink运维工具------插件式集成运维工具</TextBlock>
+        <StackPanel Grid.Row="1">
+            
             <TextBlock>开发插件的步骤：</TextBlock>
             <TextBlock>1.新建
                 <Run Foreground="#20A0FF">WPF</Run>
@@ -53,7 +58,7 @@
         </StackPanel>
 
 
-        <GroupBox Grid.Row="1" Header="IPartialView" Margin="5"
+        <GroupBox Grid.Row="2" Header="IPartialView" Margin="5"
                           pu:GroupBoxHelper.CornerRadius="4"
                           pu:GroupBoxHelper.HeaderForeground="#20A0FF"
                           pu:GroupBoxHelper.HeaderPadding="5,10,0,10"
@@ -65,10 +70,39 @@
                 <TextBlock><Run Foreground="#ADD084">MenuType</Run> MenuType { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单类型 枚举值 Center表示中心菜单 Box表示盒子菜单</Run></TextBlock>
             </StackPanel>
         </GroupBox>
-        <StackPanel Grid.Row="2">
+        <StackPanel Grid.Row="3">
             <TextBlock>6.将编译之后的dll文件放在本集成工具的
                 <Run Foreground="#20A0FF">plugs</Run>
                 目录下，重启软件即可</TextBlock>
         </StackPanel>
+
+        <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
+                     ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
+                     ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-10-31 V1.0.3">
+                <ContentControl>
+                    <TextBlock>
+                        新增解决门禁服务重装后设备无法通讯的工具，车位数按照场内记录数自动校正的工具，
+                        <Run Foreground="#20A0FF">JSDS一键升级JieLink的工具</Run>
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-09-27 V1.0.2">
+                <ContentControl>
+                    <TextBlock>
+                        新增日志分析工具，场内记录导入工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-09-07 V1.0.1">
+                <ContentControl>
+                    <TextBlock>
+                        新增共享车牌导入，数据比对工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-08-31 V1.0.0"
+    			 Content="全新发布" />
+        </pu:Timeline>
     </Grid>
 </UserControl>

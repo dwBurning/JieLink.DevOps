@@ -85,9 +85,10 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
 
-                <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbVersion" Height="30" Content="2.0以下版本"
+                <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbVersion" Height="30" Content="2.0以上版本"
                  pu:CheckBoxHelper.CheckBoxStyle="Switch"
                  pu:CheckBoxHelper.BoxHeight="22"
+                 pu:CheckBoxHelper.CheckedContent="2.0以下版本"
                  pu:CheckBoxHelper.BoxWidth="33" Unchecked="chbVersion_Unchecked"
                  pu:CheckBoxHelper.CheckedBackground="#20A0FF"
                  pu:CheckBoxHelper.CornerRadius="4" Checked="chbVersion_Checked"
@@ -136,8 +137,9 @@
                     </FlowDocument>
                 </RichTextBox>
                 <TextBlock Grid.Row="0" Grid.Column="0" >版本：</TextBlock>
-                <CheckBox Grid.Row="0" Grid.Column="1" Height="30" Content="2.0以下版本"
+                <CheckBox Grid.Row="0" Grid.Column="1" Height="30" Content="2.0以上版本"
                  pu:CheckBoxHelper.CheckBoxStyle="Switch"
+                 pu:CheckBoxHelper.CheckedContent="2.0以下版本"
                  pu:CheckBoxHelper.BoxHeight="22"
                  pu:CheckBoxHelper.BoxWidth="33"
                  pu:CheckBoxHelper.CheckedBackground="#20A0FF"

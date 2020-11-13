@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="PartialViewTmTools.TmTools"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:local="clr-namespace:PartialViewTmTools"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800">
+    <Grid>
+        <TabControl HorizontalAlignment="Left" Height="351" Margin="10,10,0,0" VerticalAlignment="Top" Width="780">
+            <TabItem Header="TMJK" >
+                <Grid Background="#FFE6ECF4">
+                    <Label Content="文件位置：" HorizontalAlignment="Left" Margin="10,28,0,0" VerticalAlignment="Top"/>
+                    <TextBox IsReadOnly="True" Text="{Binding FilePath}" Margin="80,20,430.4,264"
+                     VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定文件路径"
+                     pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:TextBoxHelper.CornerRadius="4"
+                     pu:TextBoxHelper.IsClearButtonVisible="True"/>
+                    <Button Grid.Row="0" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
+                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}"
+                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Margin="353,24,343.4,266"/>
+                    <Button Content="校验" Name ="btnCheck" Command="{Binding CheckDataCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Margin="440,24,264.4,266"/>
+                    <Button Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Margin="519,24,154.4,266"/>
+                    <Button Content="导入" Name ="btnImport" Command="{Binding ImportJKCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Margin="629,24,57.4,266"/>
+                    <DataGrid HorizontalAlignment="Left" Height="212" Margin="10,84,0,0" VerticalAlignment="Top" Width="713" x:Name="dtgShow" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                            <DataGridTextColumn Header="车牌" Width="100" Binding="{Binding Plate}"/>
+                            <DataGridTextColumn Header="订单号" Width="200" Binding="{Binding OrderId}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="TMTQ" >
+                <Grid Background="#FFE6ECF4">
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                      IsReadOnly="True" Margin="10,360,0,10">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="{Binding Message}"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+    </Grid>
+
+</UserControl>
