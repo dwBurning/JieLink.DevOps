@@ -78,7 +78,7 @@ namespace PartialViewLogAnalyse.ViewModels
             SelectPathCommand.ExecuteAction = SelectPath;
             AnalyseCommand = new DelegateCommand();
             AnalyseCommand.ExecuteAction = Analyse;
-            AnalyseCommand.CanExecuteFunc = o => filePathList.Count>0;
+            AnalyseCommand.CanExecuteFunc = o => filePathList.Count > 0;
             backgroundWorker.WorkerSupportsCancellation = true;
             backgroundWorker.WorkerReportsProgress = true;
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
@@ -86,7 +86,7 @@ namespace PartialViewLogAnalyse.ViewModels
             backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
         }
 
-        
+
 
         private void SelectPath(object parameter)
         {
@@ -102,7 +102,7 @@ namespace PartialViewLogAnalyse.ViewModels
             {
                 FilePath = string.Join(";", fileDialog.FileNames);
                 filePathList = fileDialog.FileNames.ToList();
-                filePathList = filePathList.FindAll(x => x.Contains("JieLink_Center_Comm"));
+                filePathList = filePathList.FindAll(x => x.Contains("JieLink_Center_Comm") || x.Contains("JieLink_CENTER_2"));
                 //按时间排序
                 filePathList.Sort((a, b) =>
                 {
@@ -123,7 +123,7 @@ namespace PartialViewLogAnalyse.ViewModels
             backgroundWorker.RunWorkerAsync();
             PendingBoxConfigurations configurations = new PendingBoxConfigurations();
             configurations.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            pendingHandler = PendingBox.Show(string.Format("正在分析日志文件...({0}%)", 0), "请等待",false,Application.Current.MainWindow, configurations);
+            pendingHandler = PendingBox.Show(string.Format("正在分析日志文件...({0}%)", 0), "请等待", false, Application.Current.MainWindow, configurations);
         }
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -196,7 +196,7 @@ namespace PartialViewLogAnalyse.ViewModels
             }
             catch (Exception ex)
             {
-                e.Result = ex.Message;
+                e.Result = "日志分析异常：" + ex.ToString();
             }
 
         }

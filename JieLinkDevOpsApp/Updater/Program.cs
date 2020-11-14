@@ -201,6 +201,14 @@ namespace JieShun.JieLink.DevOps.Updater
             smartCenterDaemon.ExecutablePath = "守护进程\\JSST.JieLink.Daemon.exe";
             smartCenterDaemon.ProcessName = "JSST.JieLink.Daemon.exe";
             smartCenterDaemon.ServiceName = "JSST.JieLink.Daemon";
+            ProgramInfo smartBoxDoor = new ProgramInfo();
+            smartBoxDoor.ExecutablePath = "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServer.exe";
+            smartBoxDoor.ProcessName = "SmartBoxDoor.Infrastructures.Server.DoorServer.exe";
+            smartBoxDoor.ServiceName = "JSSTDoorServer";
+            ProgramInfo smartBoxDoorDaemon = new ProgramInfo();
+            smartBoxDoorDaemon.ExecutablePath = "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe";
+            smartBoxDoorDaemon.ProcessName = "SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe";
+            smartBoxDoorDaemon.ServiceName = "JSSTDoorServerDaemonHost";
 
             SubPackage smartCenterPackage = new SubPackage();
             smartCenterPackage.SubPath = "programfiles\\SmartCenter";
@@ -240,10 +248,21 @@ namespace JieShun.JieLink.DevOps.Updater
                 "Config",
                 "Web.config",
             };
+            SubPackage smartBoxDoorPackage = new SubPackage();
+            smartBoxDoorPackage.SubPath = "programfiles\\SmartBoxDoorImage\\programfiles\\SmartBoxDoor";
+            smartBoxDoorPackage.TargetPath = "SmartBoxDoor";
+            smartBoxDoorPackage.ExcludeList = new List<string>() {
+                "Config",
+                "*.config",
+            };
+            smartBoxDoorPackage.ZipList = new List<string>()
+            {
+                "programfiles\\SmartBoxDoorImage.zip"
+            };
             PackageInfo packageInfo = new PackageInfo();
-            packageInfo.KillProcessList = new List<ProgramInfo>() { iis, smartCenterDaemon, smartCenter };
-            packageInfo.RunProcessList = new List<ProgramInfo>() { iis, smartCenter, smartCenterDaemon };
-            packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage, smartWebPackage, smartApiPackage, smartFileDownPackage, smartFileUploadPackage };
+            packageInfo.KillProcessList = new List<ProgramInfo>() { iis, smartCenterDaemon, smartCenter, smartBoxDoorDaemon, smartBoxDoor };
+            packageInfo.RunProcessList = new List<ProgramInfo>() { iis, smartCenter, smartCenterDaemon, smartBoxDoor, smartBoxDoorDaemon };
+            packageInfo.SubPackages = new List<SubPackage>() { smartCenterPackage, smartWebPackage, smartApiPackage, smartFileDownPackage, smartFileUploadPackage, smartBoxDoorPackage };
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JSOCT2016.json");
             if (!File.Exists(path))
             {
@@ -273,7 +292,7 @@ namespace JieShun.JieLink.DevOps.Updater
                 "Config",
                 "*.config",
             };
-            
+
             PackageInfo packageInfo = new PackageInfo();
             packageInfo.KillProcessList = new List<ProgramInfo>() { devOpsCenter };
             packageInfo.RunProcessList = new List<ProgramInfo>() { devOpsCenter };
