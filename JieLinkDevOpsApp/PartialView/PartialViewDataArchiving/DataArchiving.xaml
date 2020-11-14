@@ -3,10 +3,76 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              xmlns:local="clr-namespace:PartialViewDataArchiving"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="700" d:DesignWidth="800" Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
     <Grid>
-            
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ProgressBar Grid.Row="0" Grid.Column="0"  Height="300" Width="300" 
+                     Foreground="#20A0FF" FontSize="40"  BorderBrush="#CDDEEF"
+                          pu:ProgressBarHelper.ProgressBarStyle="Ring"
+                          pu:ProgressBarHelper.AnimateTo="{Binding Progress}"
+                          pu:ProgressBarHelper.CornerRadius="4"
+                          pu:ProgressBarHelper.IsPercentVisible="True" />
+        <StackPanel Grid.Row="1">
+            <TextBlock FontSize="20" Foreground="#20A0FF" Text="{Binding Message}"></TextBlock>
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <RadioButton Grid.Column="0" Height="40" Margin="5" Content="自动归档"
+                                     Background="LightGray" IsChecked="{Binding AutoArchive}"
+                                     pu:RadioButtonHelper.RadioButtonStyle="Button"
+                                     pu:RadioButtonHelper.CheckedBackground="#00BCFF"/>
+                <RadioButton Grid.Column="1" Height="40" Margin="5" Content="手动归档"
+                                     Background="LightGray" IsChecked="{Binding ManulArchive}"
+                                     pu:RadioButtonHelper.RadioButtonStyle="Button"
+                                     pu:RadioButtonHelper.CheckedBackground="#00BCFF"/>
+            </Grid>
+            <ComboBox Margin="5" VerticalAlignment="Center" Height="40" 
+                            SelectedIndex="{Binding SelectIndex}"
+                            SelectedValue="{Binding SelectMonth}" 
+                            ItemsSource="{Binding DataSource}"
+                            DisplayMemberPath="Value"
+                            SelectedValuePath="Key"
+                            pu:ComboBoxHelper.Watermark="请选择归档月份"
+                            pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                            pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                            pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                            pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                            pu:ComboBoxHelper.CornerRadius="4"
+                            pu:TextBoxHelper.IsClearButtonVisible="True" >
+
+            </ComboBox>
+
+            <Button Margin="5" Content="执行" Name ="btnRemovePolicy" Command="{Binding ExecuteDataArchiveCommand}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+        </StackPanel>
+
+
+
+
     </Grid>
 </UserControl>

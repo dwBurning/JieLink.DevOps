@@ -106,7 +106,7 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             ProcessHelper.ShowOutputMessage += ProcessHelper_ShowOutputMessage;
 
-            Message = "说明：1)全库备份，是完整备份，基础业务备份，是只备份核心业务数据。\r\n2)哪些表数据属于核心业务，系统已经默认配置了，也可以自行勾选，但是建议只多不少。\r\n3)如果要全部勾选，建议就不要配置为基础业务备份，直接使用全库备份即可。\r\n4)基础业务的备份频率一定要高于全库备份，因为全库备份包含了一些历史表，会很大。\r\n5)配置策略之后，重新启动不需要再去点执行任务，系统会自动执行。";
+            Message = "说明：1)全库备份，是完整备份，基础业务备份，是只备份核心业务数据。\r\n2)哪些表数据属于核心业务，系统已经默认配置了，也可以自行勾选，但是建议只多不少。\r\n3)如果要全部勾选，建议就不要配置为基础业务备份，直接使用全库备份即可。\r\n4)基础业务的备份频率一定要高于全库备份，因为全库备份包含了一些历史表，会很大。\r\n5)配置策略之后，重新启动不需要再去点执行任务，系统会自动执行。\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessage(string message)

@@ -25,6 +25,7 @@ namespace PartialViewCheckUpdate.ViewModels
             this.RepairCommand = new DelegateCommand();
             this.RepairCommand.ExecuteAction = this.Repair;
             ProcessHelper.ShowOutputMessageEx += ProcessHelper_ShowOutputMessageEx;
+            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessageEx(string message)
@@ -140,9 +141,21 @@ namespace PartialViewCheckUpdate.ViewModels
             updateRequest.Product = "JSOCT2016";
             updateRequest.RootPath = rootPath;
             updateRequest.PackagePath = zipPath;
-            ExecuteUpdate(updateRequest);
-            ExecuteScript();
 
+            int cmd = int.Parse(parameter.ToString());
+            switch (cmd)
+            {
+                case 0:
+                    ExecuteUpdate(updateRequest);
+                    ExecuteScript();
+                    break;
+                case 1:
+                    ExecuteUpdate(updateRequest);
+                    break;
+                case 2:
+                    ExecuteScript();
+                    break;
+            }
         }
         private void ExecuteUpdate(UpdateRequest request)
         {

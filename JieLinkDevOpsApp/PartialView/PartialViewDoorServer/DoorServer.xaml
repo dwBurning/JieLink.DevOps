@@ -47,7 +47,7 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
         <ComboBox x:Name="txtDoorServerIP" Margin="5" VerticalAlignment="Center" Height="40" 
-                            ItemsSource="{Binding DoorServerInfoList}" DataContext="{Binding}" SelectedIndex="0"
+                            ItemsSource="{Binding DoorServerInfoList}" SelectedIndex="0"
                             DisplayMemberPath="{Binding deviceName}" SelectedValuePath="deviceID" SelectionChanged="Cmb_SelectionChanged"
                              pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
                             pu:ComboBoxHelper.SelectedForeground="#20A0FF"

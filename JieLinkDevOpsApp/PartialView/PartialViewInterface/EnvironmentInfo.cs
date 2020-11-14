@@ -62,6 +62,16 @@ namespace PartialViewInterface
         public static AutoStartSyncEntity AutoStartSyncEntity = JsonHelper.DeserializeObject<AutoStartSyncEntity>(GetValue("AutoStartSyncString", ""));
 
         /// <summary>
+        /// 启用自动归档
+        /// </summary>
+        public static bool IsAutoArchive = GetValue("AutoArchive", "0") == "1";
+
+        /// <summary>
+        /// 自动归档的月份
+        /// </summary>
+        public static int AutoArchiveMonth = int.Parse(GetValue("AutoArchiveMonth", "3"));
+
+        /// <summary>
         /// 定时任务全局实例
         /// </summary>
         public static IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
