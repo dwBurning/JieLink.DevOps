@@ -70,7 +70,7 @@ namespace PartialViewDataArchiving
                 {
                     viewModel.DataSource.Add(month.Key, month.Value);
                 }
-                viewModel.SelectIndex = EnvironmentInfo.AutoArchiveMonth;
+                viewModel.SelectIndex = EnvironmentInfo.AutoArchiveMonth - 3;
                 string sql = "select ValueText from sys_key_value_setting where KeyID='AutoArchiveDaysBefore'";
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
                 if (dt.Rows.Count > 0)

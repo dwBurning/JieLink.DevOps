@@ -79,6 +79,13 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-11-14 V1.0.4">
+                <ContentControl>
+                    <TextBlock>
+                        重构升级辅助工具，支持一键升级JieLink，新增数据归档工具，完成自动归档
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-10-31 V1.0.3">
                 <ContentControl>
                     <TextBlock>

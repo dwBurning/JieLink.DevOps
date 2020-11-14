@@ -14,6 +14,13 @@ namespace PartialViewInterface
             {
                 DbConnEntity = new DbConnEntity();
             }
+
+            ConfigHelper.AddAppConfig("DataArchiveJob", "0 0 0 * * ?");
+            ConfigHelper.AddAppConfig("AutoArchive", "0");
+            ConfigHelper.AddAppConfig("AutoArchiveMonth", "3");
+            ConfigHelper.AddAppConfig("AutoStartCorectString", "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}");
+            ConfigHelper.AddAppConfig("AutoStartSyncString", "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}");
+
         }
 
         public static string ProjectNo { get; set; }
@@ -54,12 +61,12 @@ namespace PartialViewInterface
         /// <summary>
         /// 启动软件时是否启动矫正车位数线程对象
         /// </summary>
-        public static AutoStartCorectEntity AutoStartCorectEntity = JsonHelper.DeserializeObject<AutoStartCorectEntity>(GetValue("AutoStartCorectString", ""));
+        public static AutoStartCorectEntity AutoStartCorectEntity = JsonHelper.DeserializeObject<AutoStartCorectEntity>(GetValue("AutoStartCorectString", "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}"));
 
         /// <summary>
         /// 启动软件时是否启动同步线程对象
         /// </summary>
-        public static AutoStartSyncEntity AutoStartSyncEntity = JsonHelper.DeserializeObject<AutoStartSyncEntity>(GetValue("AutoStartSyncString", ""));
+        public static AutoStartSyncEntity AutoStartSyncEntity = JsonHelper.DeserializeObject<AutoStartSyncEntity>(GetValue("AutoStartSyncString", "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}"));
 
         /// <summary>
         /// 启用自动归档

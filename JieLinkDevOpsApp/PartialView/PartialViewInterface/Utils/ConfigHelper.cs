@@ -28,9 +28,25 @@ namespace PartialViewInterface.Utils
         public static void WriterAppConfig(string key, string value)
         {
             string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JieShun.JieLink.DevOps.App.exe");
-            Configuration cfa = ConfigurationManager.OpenExeConfiguration(exePath);
-            cfa.AppSettings.Settings[key].Value = value;
-            cfa.Save();
+            Configuration config = ConfigurationManager.OpenExeConfiguration(exePath);
+            if (config.AppSettings.Settings[key] != null)
+                config.AppSettings.Settings[key].Value = value;
+            else
+                config.AppSettings.Settings.Add(key, value);
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
+        }
+
+        public static void AddAppConfig(string key, string value)
+        {
+            string exePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JieShun.JieLink.DevOps.App.exe");
+            Configuration config = ConfigurationManager.OpenExeConfiguration(exePath);
+            if (config.AppSettings.Settings[key] == null)
+            {
+                config.AppSettings.Settings.Add(key, value);
+                config.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection("appSettings");
+            }
         }
 
         public static string ReadAppConfig(string key, string value = "")

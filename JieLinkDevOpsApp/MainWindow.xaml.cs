@@ -172,7 +172,7 @@ namespace JieShun.JieLink.DevOps.App
             scheduler.Start();
             foreach (var jobType in viewModel.jobs)
             {
-                string cron = ConfigHelper.GetValue<string>(jobType.Name, "");
+                string cron = ConfigHelper.GetValue<string>(jobType.Name, "0 0 0 * * ?");
                 if (string.IsNullOrEmpty(cron))
                     continue;
                 var job = JobBuilder.Create(jobType)
