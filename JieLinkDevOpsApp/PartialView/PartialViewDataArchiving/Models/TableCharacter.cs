@@ -8,17 +8,16 @@ namespace PartialViewDataArchiving.Models
 {
     public class TableCharacter
     {
-        string field = "";
-        string type = "";
-        public string Field
-        {
-            get { return field; }
-            set { field = value; }
-        }
-        public string Type
-        {
-            get { return type; }
-            set { type = value; }
-        }
+        public string Field { get; set; }
+
+        public string Type { get; set; }
+
+        public bool IsNull { get; set; }
+
+        public bool IsKey { get; set; }
+
+        public string Default { get; set; }
+
+        public string Extra { get; set; }
     }
 }

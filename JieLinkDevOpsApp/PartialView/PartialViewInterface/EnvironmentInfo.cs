@@ -44,6 +44,11 @@ namespace PartialViewInterface
         public static string CurrentVersion { get; set; }
 
         /// <summary>
+        /// 数据库备份路径
+        /// </summary>
+        public static string TaskBackUpPath { get; set; }
+
+        /// <summary>
         /// 中心数据库连接对象
         /// </summary>
         public static DbConnEntity DbConnEntity = JsonHelper.DeserializeObject<DbConnEntity>(GetValue("ConnectionString", ""));

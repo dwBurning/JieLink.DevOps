@@ -70,8 +70,8 @@
       <DependentUpon>CheckUpdate.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\Enum\EnumCheckFileResult.cs" />
-    <Compile Include="Models\ParameterModel.cs" />
     <Compile Include="ViewModels\CheckUpdateViewModel.cs" />
+    <Compile Include="Models\DBVersionScript.cs" />
     <Page Include="CheckUpdate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

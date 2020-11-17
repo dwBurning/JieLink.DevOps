@@ -2,16 +2,18 @@
 using PartialViewDataArchiving.Models;
 using PartialViewDataArchiving.ViewModels;
 using PartialViewInterface;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace PartialViewDataArchiving.DataArchive
 {
-    class ExecuteDataArchive
+    public class ExecuteDataArchive
     {
         /// <summary>
         /// 判断对应年份的归档表 是否存在
@@ -31,7 +33,7 @@ namespace PartialViewDataArchiving.DataArchive
         /// <param name="tableName"></param>
         private void CreateTable(string bllTableName, string archiveTableName)
         {
-            string sql = $"create table {archiveTableName} like {bllTableName}";
+            string sql = $"create table `{archiveTableName}` like `{bllTableName}`";
             MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
         }
 
@@ -47,8 +49,21 @@ namespace PartialViewDataArchiving.DataArchive
 
             foreach (TableCharacter tableCharacter in tableCharacters)
             {
-                string sql = $"ALTER TABLE `{archiveTableName}` Add COLUMN `{tableCharacter.Field}` {tableCharacter.Type} COLLATE utf8_unicode_ci";
-                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                StringBuilder builder = new StringBuilder();
+                builder.Append($"ALTER TABLE `{archiveTableName}` Add COLUMN `{tableCharacter.Field}` {tableCharacter.Type}");
+                if (!tableCharacter.IsNull)
+                {
+                    builder.Append(" NOT NULL");
+                }
+
+                builder.Append(" COLLATE utf8_unicode_ci");
+
+                if (!string.IsNullOrEmpty(tableCharacter.Default))
+                {
+                    builder.Append($" DEFAULT '{tableCharacter.Default}'");
+                }
+
+                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, builder.ToString());
             }
         }
 
@@ -59,7 +74,7 @@ namespace PartialViewDataArchiving.DataArchive
         /// <returns></returns>
         private List<TableCharacter> GetTableCharacters(string tableName)
         {
-            string sql = $"desc {tableName}";
+            string sql = $"desc `{tableName}`";
             DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
             List<TableCharacter> tableCharacters = new List<TableCharacter>();
             foreach (DataRow dr in dt.Rows)
@@ -67,6 +82,10 @@ namespace PartialViewDataArchiving.DataArchive
                 TableCharacter tableCharacter = new TableCharacter();
                 tableCharacter.Field = dr["Field"].ToString();
                 tableCharacter.Type = dr["Type"].ToString();
+                tableCharacter.IsNull = dr["Null"].ToString().ToUpper().Equals("YES");
+                tableCharacter.IsKey = string.IsNullOrEmpty(dr["Key"].ToString());
+                tableCharacter.Default = dr["Default"].ToString();
+                tableCharacter.Extra = dr["Extra"].ToString();
                 tableCharacters.Add(tableCharacter);
             }
 
@@ -88,7 +107,7 @@ namespace PartialViewDataArchiving.DataArchive
                     cmd.Transaction = transaction;
                     try
                     {
-                        string sql = $"insert into {archiveTableName} select * from {bllTableName} where DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
+                        string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
                         if (bllTableName == "box_enter_record")
                         {
                             sql += " and wasgone=1";
@@ -96,7 +115,7 @@ namespace PartialViewDataArchiving.DataArchive
                         cmd.CommandText = sql;
                         int x = cmd.ExecuteNonQuery();
 
-                        string script = $"delete from {bllTableName} where  DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
+                        string script = $"delete from `{bllTableName}` where  DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
                         if (bllTableName == "box_enter_record")
                         {
                             script += " and wasgone=1";
@@ -138,8 +157,32 @@ namespace PartialViewDataArchiving.DataArchive
             return "";
         }
 
+        private void BackUpTables()
+        {
+            DataArchivingViewModel.Instance().ShowMessage($"正在执行备份...请等待...");
+
+            string BaseDirectoryPath = AppDomain.CurrentDomain.BaseDirectory;
+            string tables = "box_enter_record box_out_record box_bill boxdoor_door_record business_discount";
+            string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_archive.sql";
+            string filePath = Path.Combine(EnvironmentInfo.TaskBackUpPath, fileName);
+            if (!Directory.Exists(EnvironmentInfo.TaskBackUpPath))
+            {
+                Directory.CreateDirectory(EnvironmentInfo.TaskBackUpPath);
+            }
+            string mysqlcmd = $"mysqldump --default-character-set=utf8 --single-transaction -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port}  -B {EnvironmentInfo.DbConnEntity.DbName} --tables {tables} > \"{filePath}\"";
+            List<string> cmds = new List<string>();
+            cmds.Add(BaseDirectoryPath.Substring(0, 2));
+            cmds.Add("cd " + BaseDirectoryPath);
+            cmds.Add(mysqlcmd);
+            ProcessHelper.ExecuteCommand(cmds);
+            ZipHelper.ZipFile(filePath, filePath.Replace(".sql", ".zip"));
+            File.Delete(filePath);
+        }
+
         public void Execute()
         {
+            //BackUpTables();
+
             int step = 100 / DataArchivingViewModel.Instance().Tables.Count;
             int progress = 0;
             foreach (var table in DataArchivingViewModel.Instance().Tables)

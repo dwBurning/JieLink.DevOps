@@ -427,6 +427,7 @@ namespace PartialViewMySqlBackUp.ViewModels
                 string jsonData = File.ReadAllText(path);
                 BackUpConfig = JsonConvert.DeserializeObject<BackUpConfig>(jsonData);
                 TaskBackUpPath = BackUpConfig.SavePath;//文件保存路径
+                EnvironmentInfo.TaskBackUpPath = BackUpConfig.SavePath;
                 if (!Directory.Exists(TaskBackUpPath))
                 {
                     Directory.CreateDirectory(TaskBackUpPath);
