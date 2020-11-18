@@ -12,6 +12,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -29,23 +35,23 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"  Margin="10,5,10,10" Grid.Row="0" Grid.Column="0" Text="车位数按照场内记录数自动校正" />
-        <TextBlock VerticalAlignment="Center" Margin="10,5,10,10" TextWrapping="Wrap" Grid.Row="2" Grid.Column="0">设置每隔多少分钟校正一次</TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="0">根据场内记录校正车位：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0">每隔多少分钟校正一次：</TextBlock>
 
 
-        <TextBox x:Name="TextBox_Minute" Grid.Column="1" Grid.Row="2" Text="30" Margin="10,0,10,10"
+        <TextBox x:Name="TextBox_Minute" Grid.Column="1" Grid.Row="2" Text="30" Margin="5"
                      VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定执行间隔（分钟）"
                      pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                      pu:TextBoxHelper.CornerRadius="4"
                      pu:TextBoxHelper.IsClearButtonVisible="True"/>
 
-        <Button x:Name="Button_Start"  Margin="10,0,10,10" Grid.Column="1" Grid.Row="0" Content="开始校正" Click="button_Start_Click" 
+        <Button x:Name="Button_Start"  Margin="5" Grid.Column="1" Grid.Row="0" Content="开始校正" Click="button_Start_Click" 
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" 
                 />
-        <Button x:Name="Button_Stop"  Margin="10,0,10,10" Grid.Column="1" Grid.Row="1" Content="停止校正" Click="button_Stop_Click" 
+        <Button x:Name="Button_Stop"  Margin="5" Grid.Column="1" Grid.Row="1" Content="停止校正" Click="button_Stop_Click" 
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" IsEnabled="False" 
@@ -60,7 +66,7 @@
             </FlowDocument>
         </RichTextBox>
 
-        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbAutoStart" Height="30" Margin="10,5,10,10" Content="开机后自动校正"
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbAutoStart" Height="30" Margin="5" Content="开机后自动校正"
                  pu:CheckBoxHelper.CheckBoxStyle="Switch"
                  pu:CheckBoxHelper.BoxHeight="22"
                  pu:CheckBoxHelper.CheckedContent="开机后自动校正"
