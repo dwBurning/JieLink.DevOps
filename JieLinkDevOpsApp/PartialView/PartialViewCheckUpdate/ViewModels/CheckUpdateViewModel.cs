@@ -27,7 +27,43 @@ namespace PartialViewCheckUpdate.ViewModels
             this.RepairCommand = new DelegateCommand();
             this.RepairCommand.ExecuteAction = this.Repair;
             ProcessHelper.ShowOutputMessageEx += ProcessHelper_ShowOutputMessageEx;
-            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.版本号输入的格式请按照V1.0.0格式输入，紧急版本按照V2.7.1#E1格式输入";
+
+
+            Versions = new List<string>()
+            {
+                "V1.0.0",
+                "V1.0.3",
+                "V1.1.0",
+                "V1.2.0",
+                "V1.2.1",
+                "V1.2.2",
+                "V1.2.3",
+                "V1.3.0",
+                "V1.3.1",
+                "V2.0.0",
+                "V2.2.0",
+                "V2.3.0",
+                "V2.4.0",
+                "V2.4.1",
+                "V2.5.0",
+                "V2.5.2",
+                "V2.6.0",
+                "V2.6.1",
+                "V2.6.2",
+                "V2.7.0",
+                "V2.7.1",
+                "V2.7.1#E1.0",
+                "V2.7.1#E2.0",
+                "V2.8.0",
+                "V2.8.0#E1.0",
+                "V2.8.1",
+                "V2.8.1#E1.0",
+                "V2.9.0",
+            };
+
+
+
+            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessageEx(string message)
@@ -44,6 +80,21 @@ namespace PartialViewCheckUpdate.ViewModels
         // Using a DependencyProperty as the backing store for StartVersion.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StartVersionProperty =
             DependencyProperty.Register("StartVersion", typeof(string), typeof(CheckUpdateViewModel));
+
+
+
+
+        public List<string> Versions
+        {
+            get { return (List<string>)GetValue(VersionsProperty); }
+            set { SetValue(VersionsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Versions.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty VersionsProperty =
+            DependencyProperty.Register("Versions", typeof(List<string>), typeof(CheckUpdateViewModel));
+
+
 
 
 
@@ -106,6 +157,12 @@ namespace PartialViewCheckUpdate.ViewModels
             if (string.IsNullOrEmpty(this.PackagePath) || string.IsNullOrEmpty(this.InstallPath))
             {
                 MessageBoxHelper.MessageBoxShowWarning("请选择正确的路径！");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(this.StartVersion) || string.IsNullOrEmpty(this.EndVersion))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请输入正确的版本号！");
                 return;
             }
 
@@ -188,14 +245,22 @@ namespace PartialViewCheckUpdate.ViewModels
         private void ExecuteScript()
         {
             string scriptPath = Path.Combine(this.PackagePath, "dbscript");
+            List<FileInfo> scripts = FileHelper.GetAllFileInfo(scriptPath, "*.sql").OrderBy(x => x.Name).ToList();
 
-            if (!File.Exists(scriptPath))
+            string sVersion = "";
+
+            int index = this.StartVersion.IndexOf("#");
+            if (index > 0)
             {
-                ShowMessage($"版本{this.EndVersion}的初始化json文件不存在，不执行数据库校验...");
+                sVersion = this.StartVersion.Substring(0, index);
             }
 
-            List<FileInfo> scripts = FileHelper.GetAllFileInfo(scriptPath, "*.sql").OrderBy(x => x.Name).ToList();
-            int index = scripts.FindIndex(x => x.Name.Contains(this.StartVersion));
+            index = scripts.FindIndex(x => x.Name.Contains(sVersion));
+            if (index < 0)//没有找到对应版本的脚本文件
+            {
+                MessageBoxHelper.MessageBoxShowWarning("当前版本对应的脚本文件不存在，请确认当前版本号是否正确！");
+                return;
+            }
 
             List<FileInfo> fileInfos = new List<FileInfo>();
             for (int i = index; i < scripts.Count; i++)
@@ -205,7 +270,12 @@ namespace PartialViewCheckUpdate.ViewModels
 
             string scriptName = $"dbDic_{EndVersion}.json";
             string scriptFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DbInitScript", scriptName);
-            string jsonText = File.ReadAllText(scriptFile, Encoding.UTF8);
+
+            string jsonText = "";
+            if (File.Exists(scriptFile))
+            {
+                jsonText = File.ReadAllText(scriptFile, Encoding.UTF8);
+            }
 
             Task.Factory.StartNew(() =>
             {
@@ -222,15 +292,23 @@ namespace PartialViewCheckUpdate.ViewModels
                     ProcessHelper.ExecuteCommand(cmds, enumToolType.OneKeyUpdate);
                 }
 
+                ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
             });
         }
 
         private void CheckTables(string jsonText)
         {
+            if (string.IsNullOrEmpty(jsonText))
+            {
+                ShowMessage($"版本{this.EndVersion}的初始化json文件不存在，不执行数据库校验...");
+                ShowMessage("升级已经完成，请留意观察JieLink中心使用是否正常...");
+                return;
+            }
+
             StringBuilder exceptMessage = new StringBuilder();
 
-            ShowMessage("脚本执行完成，正在校验数据库...");
+
             DBVersionScript script = JsonHelper.DeserializeObject<DBVersionScript>(jsonText);
 
             foreach (var table in script.TableList)
@@ -285,7 +363,15 @@ namespace PartialViewCheckUpdate.ViewModels
             }
 
             ShowMessage("数据库校验完成...");
-            ShowMessage(exceptMessage.ToString());
+            if (string.IsNullOrEmpty(exceptMessage.ToString()))
+            {
+                ShowMessage("升级已经完成，请留意观察JieLink中心使用是否正常...");
+            }
+            else
+            {
+                ShowMessage("升级已经完成，以下脚本执行异常，需要人工处理：");
+                ShowMessage(exceptMessage.ToString());
+            }
         }
 
 

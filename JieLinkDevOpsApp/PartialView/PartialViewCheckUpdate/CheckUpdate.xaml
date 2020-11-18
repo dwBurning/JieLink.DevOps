@@ -58,20 +58,32 @@
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <TextBox  x:Name="txtStartVersion" pu:TextBoxHelper.Watermark="当前版本（V1.0.0）"
-                 VerticalAlignment="Center" Height="40" Margin="5"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding StartVersion,Mode=TwoWay}"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
-            <TextBox Grid.Column="1" x:Name="txtEndVersion" pu:TextBoxHelper.Watermark="升级版本（V2.5.0）"
-                 VerticalAlignment="Center" Height="40" Margin="5"
-                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding EndVersion,Mode=TwoWay}"
-                 pu:TextBoxHelper.IsClearButtonVisible="True"
-                 />
+            <ComboBox Margin="5" VerticalAlignment="Center" Height="40"
+                      SelectedValue="{Binding StartVersion}" 
+                      ItemsSource="{Binding Versions}"
+                      IsEditable="True"
+                      pu:ComboBoxHelper.Watermark="请选择当前版本（V1.0.0）"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:ComboBoxHelper.IsSearchTextBoxVisible="True"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" />
+
+
+            <ComboBox Grid.Column="1" Margin="5" VerticalAlignment="Center" Height="40"
+                      SelectedValue="{Binding EndVersion}" 
+                      ItemsSource="{Binding Versions}"
+                      IsEditable="True"
+                      pu:ComboBoxHelper.Watermark="请选择升级版本（V2.8.0）"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:ComboBoxHelper.IsSearchTextBoxVisible="True"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" />
         </Grid>
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtInstall" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\JieLink"
                  VerticalAlignment="Center" Height="40" Margin="5" IsReadOnly="True"

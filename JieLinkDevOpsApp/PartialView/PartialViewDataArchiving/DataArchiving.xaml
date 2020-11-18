@@ -50,19 +50,18 @@
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF"/>
             </Grid>
             <ComboBox Margin="5" VerticalAlignment="Center" Height="40" 
-                            SelectedIndex="{Binding SelectIndex}"
-                            SelectedValue="{Binding SelectMonth}" 
-                            ItemsSource="{Binding DataSource}"
-                            DisplayMemberPath="Value"
-                            SelectedValuePath="Key"
-                            pu:ComboBoxHelper.Watermark="请选择归档月份"
-                            pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
-                            pu:ComboBoxHelper.SelectedForeground="#20A0FF"
-                            pu:ComboBoxHelper.HoverBackground="#20A0FF"
-                            pu:ComboBoxHelper.HoverForeground="#FFFFFF"
-                            pu:ComboBoxHelper.CornerRadius="4"
-                            pu:TextBoxHelper.IsClearButtonVisible="True" >
-
+                      SelectedIndex="{Binding SelectIndex}"
+                      SelectedValue="{Binding SelectMonth}" 
+                      ItemsSource="{Binding DataSource}"
+                      DisplayMemberPath="Value"
+                      SelectedValuePath="Key"
+                      pu:ComboBoxHelper.Watermark="请选择归档月份"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" >
             </ComboBox>
 
             <Button Margin="5" Content="执行" Name ="btnRemovePolicy" Command="{Binding ExecuteDataArchiveCommand}"
