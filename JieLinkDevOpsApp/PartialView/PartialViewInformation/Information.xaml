@@ -79,6 +79,14 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-11-19 V1.0.5">
+                <ContentControl>
+                    <TextBlock>
+                        补充与门禁服务升级相关的配置信息
+                        本运维工具的<Run Foreground="#20A0FF">升级辅助</Run>功能，集成了<Run Foreground="#20A0FF">一键升级</Run>，<Run Foreground="#20A0FF">字段比对</Run>功能，让JieLink版本升级更平滑，推荐使用
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-11-18 V1.0.4">
                 <ContentControl>
                     <TextBlock>
