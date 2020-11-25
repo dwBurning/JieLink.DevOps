@@ -79,6 +79,14 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-11-25 V1.0.6">
+                <ContentControl>
+                    <TextBlock>
+                        修订运维事件上报远程账号为项目编号的问题
+                        本工具会对中心进程的运行环境做健康检查（<Run Foreground="#20A0FF">CPU使用率，内存使用率</Run>），建议认真填写项目信息
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-11-19 V1.0.5">
                 <ContentControl>
                     <TextBlock>
