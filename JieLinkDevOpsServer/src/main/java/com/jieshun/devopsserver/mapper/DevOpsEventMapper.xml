@@ -4,7 +4,9 @@
   <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.DevOpsEvent" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="event_type" property="eventType" jdbcType="INTEGER" />
+    <result column="project_no" property="projectNo" jdbcType="VARCHAR" />
     <result column="remote_account" property="remoteAccount" jdbcType="VARCHAR" />
+    <result column="remote_password" property="remotePassword" jdbcType="VARCHAR" />
     <result column="contact_name" property="contactName" jdbcType="VARCHAR" />
     <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR" />
     <result column="operator_date" property="operatorDate" jdbcType="TIMESTAMP" />
@@ -69,7 +71,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, event_type, remote_account, contact_name, contact_phone, operator_date, is_processed
+    id, event_type, project_no, remote_account, remote_password, contact_name, contact_phone, 
+    operator_date, is_processed
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.DevOpsEventExample" >
     select
@@ -102,12 +105,14 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.jieshun.devopsserver.bean.DevOpsEvent" >
-    insert into devops_event (id, event_type, remote_account, 
-      contact_name, contact_phone, operator_date, 
-      is_processed)
-    values (#{id,jdbcType=INTEGER}, #{eventType,jdbcType=INTEGER}, #{remoteAccount,jdbcType=VARCHAR}, 
-      #{contactName,jdbcType=VARCHAR}, #{contactPhone,jdbcType=VARCHAR}, #{operatorDate,jdbcType=TIMESTAMP}, 
-      #{isProcessed,jdbcType=INTEGER})
+    insert into devops_event (id, event_type, project_no, 
+      remote_account, remote_password, contact_name, 
+      contact_phone, operator_date, is_processed
+      )
+    values (#{id,jdbcType=INTEGER}, #{eventType,jdbcType=INTEGER}, #{projectNo,jdbcType=VARCHAR}, 
+      #{remoteAccount,jdbcType=VARCHAR}, #{remotePassword,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR}, 
+      #{contactPhone,jdbcType=VARCHAR}, #{operatorDate,jdbcType=TIMESTAMP}, #{isProcessed,jdbcType=INTEGER}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.DevOpsEvent" >
     insert into devops_event
@@ -118,8 +123,14 @@
       <if test="eventType != null" >
         event_type,
       </if>
+      <if test="projectNo != null" >
+        project_no,
+      </if>
       <if test="remoteAccount != null" >
         remote_account,
+      </if>
+      <if test="remotePassword != null" >
+        remote_password,
       </if>
       <if test="contactName != null" >
         contact_name,
@@ -141,8 +152,14 @@
       <if test="eventType != null" >
         #{eventType,jdbcType=INTEGER},
       </if>
+      <if test="projectNo != null" >
+        #{projectNo,jdbcType=VARCHAR},
+      </if>
       <if test="remoteAccount != null" >
         #{remoteAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="remotePassword != null" >
+        #{remotePassword,jdbcType=VARCHAR},
       </if>
       <if test="contactName != null" >
         #{contactName,jdbcType=VARCHAR},
@@ -173,8 +190,14 @@
       <if test="record.eventType != null" >
         event_type = #{record.eventType,jdbcType=INTEGER},
       </if>
+      <if test="record.projectNo != null" >
+        project_no = #{record.projectNo,jdbcType=VARCHAR},
+      </if>
       <if test="record.remoteAccount != null" >
         remote_account = #{record.remoteAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remotePassword != null" >
+        remote_password = #{record.remotePassword,jdbcType=VARCHAR},
       </if>
       <if test="record.contactName != null" >
         contact_name = #{record.contactName,jdbcType=VARCHAR},
@@ -197,7 +220,9 @@
     update devops_event
     set id = #{record.id,jdbcType=INTEGER},
       event_type = #{record.eventType,jdbcType=INTEGER},
+      project_no = #{record.projectNo,jdbcType=VARCHAR},
       remote_account = #{record.remoteAccount,jdbcType=VARCHAR},
+      remote_password = #{record.remotePassword,jdbcType=VARCHAR},
       contact_name = #{record.contactName,jdbcType=VARCHAR},
       contact_phone = #{record.contactPhone,jdbcType=VARCHAR},
       operator_date = #{record.operatorDate,jdbcType=TIMESTAMP},
@@ -212,8 +237,14 @@
       <if test="eventType != null" >
         event_type = #{eventType,jdbcType=INTEGER},
       </if>
+      <if test="projectNo != null" >
+        project_no = #{projectNo,jdbcType=VARCHAR},
+      </if>
       <if test="remoteAccount != null" >
         remote_account = #{remoteAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="remotePassword != null" >
+        remote_password = #{remotePassword,jdbcType=VARCHAR},
       </if>
       <if test="contactName != null" >
         contact_name = #{contactName,jdbcType=VARCHAR},
@@ -233,7 +264,9 @@
   <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.DevOpsEvent" >
     update devops_event
     set event_type = #{eventType,jdbcType=INTEGER},
+      project_no = #{projectNo,jdbcType=VARCHAR},
       remote_account = #{remoteAccount,jdbcType=VARCHAR},
+      remote_password = #{remotePassword,jdbcType=VARCHAR},
       contact_name = #{contactName,jdbcType=VARCHAR},
       contact_phone = #{contactPhone,jdbcType=VARCHAR},
       operator_date = #{operatorDate,jdbcType=TIMESTAMP},

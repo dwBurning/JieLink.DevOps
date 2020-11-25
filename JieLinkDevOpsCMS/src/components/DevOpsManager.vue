@@ -28,7 +28,9 @@
           :formatter="eventTypeFormat"
           width="120"
         ></el-table-column>
-        <el-table-column prop="remoteAccount" label="远程账号" width="300"></el-table-column>
+        <el-table-column prop="projectNo" label="项目编号" width="120"></el-table-column>
+        <el-table-column prop="remoteAccount" label="远程账号" width="150"></el-table-column>
+        <el-table-column prop="remotePassword" label="远程密码" width="100"></el-table-column>
         <el-table-column prop="contactName" label="联系人姓名" width="100"></el-table-column>
         <el-table-column prop="contactPhone" label="联系人电话" width="120"></el-table-column>
         <el-table-column prop="operatorDate" label="入库时间" width="200"></el-table-column>

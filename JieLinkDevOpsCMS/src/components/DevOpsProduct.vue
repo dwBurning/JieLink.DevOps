@@ -23,6 +23,7 @@
         style="margin-left: 3px"
         @click="addVersionInfo"
       >发布</el-button>
+
     </el-header>
     <el-main class="report_main">
       <el-dialog title="版本信息" :visible.sync="dialogVisible">
@@ -270,6 +271,12 @@ export default {
       this.isAdmin = true;
     }
     this.loadVsersionInfo();
+    this.$notify({
+          title: '提示',
+          message: '运维工具采用增量升级的方式发布，全新下载，请直接下载1.0.0，运行的时候会自动完成升级！',
+          duration: 0,
+          type: 'warning'
+        });
   },
   data() {
     return {

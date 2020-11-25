@@ -30,16 +30,21 @@ public class DevOpsEventService {
 		if (result > 0) {
 			List<SysUser> sysUsers = sysUserService.getSysUsers(null);
 			sysUsers.forEach((user) -> {
-				SimpleMailMessage message = new SimpleMailMessage();
-				StringBuilder emailTextString = new StringBuilder();
-				String eventMessage = DevOpsEventEnum.getDevOpsEventEnumByCode(devOpsEvent.getEventType()).getMessage();
-				emailTextString.append("事件类型：").append(eventMessage).append("\r\n");
-				emailTextString.append("远程账号：").append(devOpsEvent.getRemoteAccount()).append("\r\n");
-				emailTextString.append("联系人姓名：").append(devOpsEvent.getContactName()).append("\r\n");
-				emailTextString.append("联系人电话：").append(devOpsEvent.getContactPhone()).append("\r\n");
-				message.setText(emailTextString.toString());
-				message.setTo(user.getEmail());
-				SendEmailTask.Enqueue(message);
+				if (user.getEmail() != null && user.getEmail() != "") {
+					SimpleMailMessage message = new SimpleMailMessage();
+					StringBuilder emailTextString = new StringBuilder();
+					String eventMessage = DevOpsEventEnum.getDevOpsEventEnumByCode(devOpsEvent.getEventType())
+							.getMessage();
+					emailTextString.append("事件类型：").append(eventMessage).append("\r\n");
+					emailTextString.append("项目编号：").append(devOpsEvent.getProjectNo()).append("\r\n");
+					emailTextString.append("远程账号：").append(devOpsEvent.getRemoteAccount()).append("\r\n");
+					emailTextString.append("远程密码：").append(devOpsEvent.getRemotePassword()).append("\r\n");
+					emailTextString.append("联系人姓名：").append(devOpsEvent.getContactName()).append("\r\n");
+					emailTextString.append("联系人电话：").append(devOpsEvent.getContactPhone()).append("\r\n");
+					message.setText(emailTextString.toString());
+					message.setTo(user.getEmail());
+					SendEmailTask.Enqueue(message);
+				}
 			});
 		}
 		return result;
