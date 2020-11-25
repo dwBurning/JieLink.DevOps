@@ -99,7 +99,7 @@ namespace PartialViewHealthMonitor
             opsEvent.EventType = (int)warning.WarningType;
             opsEvent.OperatorDate = DateTime.Now;
             opsEvent.ProjectNo = EnvironmentInfo.ProjectNo ?? string.Empty;
-            opsEvent.RemoteAccount = EnvironmentInfo.ProjectNo ?? string.Empty;
+            opsEvent.RemoteAccount = EnvironmentInfo.RemoteAccount ?? string.Empty;
             opsEvent.RemotePassword = EnvironmentInfo.RemotePassword ?? string.Empty;
             opsEvent.ContactPhone = EnvironmentInfo.ContactPhone ?? string.Empty;
             opsEvent.ContactName = EnvironmentInfo.ContactName ?? string.Empty;
