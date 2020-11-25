@@ -12,7 +12,7 @@ namespace PartialViewSyncTool
 
         public string PGUID { get; set; }
 
-        public string LGUID { get; set; }
+        //public string LGUID { get; set; }
 
         public string PersonNo { get; set; }
 

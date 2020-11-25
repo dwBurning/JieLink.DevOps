@@ -73,7 +73,7 @@ namespace PartialViewSyncTool.SyncToolViewModel
                     ControlVoucher voucher = new ControlVoucher();
                     voucher.VGUID = dr["guid"].ToString();
                     voucher.PGUID = dr["pguid"].ToString();
-                    voucher.LGUID = dr["lguid"].ToString();
+                    //voucher.LGUID = dr["lguid"].ToString();
                     voucher.PersonNo = dr["personno"].ToString();
                     voucher.VoucherType = int.Parse(dr["vouchertype"].ToString());
                     voucher.VoucherNo = dr["voucherno"].ToString();
