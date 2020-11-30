@@ -694,6 +694,66 @@ public class DevOpsEventExample {
             addCriterion("is_processed not between", value1, value2, "isProcessed");
             return (Criteria) this;
         }
+
+        public Criteria andIsFilterIsNull() {
+            addCriterion("is_filter is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterIsNotNull() {
+            addCriterion("is_filter is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterEqualTo(Integer value) {
+            addCriterion("is_filter =", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterNotEqualTo(Integer value) {
+            addCriterion("is_filter <>", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterGreaterThan(Integer value) {
+            addCriterion("is_filter >", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_filter >=", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterLessThan(Integer value) {
+            addCriterion("is_filter <", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterLessThanOrEqualTo(Integer value) {
+            addCriterion("is_filter <=", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterIn(List<Integer> values) {
+            addCriterion("is_filter in", values, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterNotIn(List<Integer> values) {
+            addCriterion("is_filter not in", values, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterBetween(Integer value1, Integer value2) {
+            addCriterion("is_filter between", value1, value2, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_filter not between", value1, value2, "isFilter");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

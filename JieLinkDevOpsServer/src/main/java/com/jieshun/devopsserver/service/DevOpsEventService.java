@@ -11,6 +11,7 @@ import com.jieshun.devopsserver.bean.DevOpsEventEnum;
 import com.jieshun.devopsserver.bean.DevOpsEventExample;
 import com.jieshun.devopsserver.bean.DevOpsEventExample.Criteria;
 import com.jieshun.devopsserver.bean.PageSet;
+import com.jieshun.devopsserver.bean.ProjectInfo;
 import com.jieshun.devopsserver.bean.SysUser;
 
 import com.jieshun.devopsserver.mapper.DevOpsEventMapper;
@@ -25,9 +26,18 @@ public class DevOpsEventService {
 	@Autowired
 	SysUserService sysUserService;
 
+	@Autowired
+	ProjectInfoService projectInfoService;
+
 	public int reportDevOpsEvent(DevOpsEvent devOpsEvent) {
+		ProjectInfo projectInfo = projectInfoService.getProjectInfoByProjectNo(devOpsEvent.getProjectNo());
+
+		if (projectInfo != null) {
+			devOpsEvent.setIsFilter(projectInfo.getIsFilter());
+		}
+
 		int result = devOpsEventMapper.insertSelective(devOpsEvent);
-		if (result > 0) {
+		if (((projectInfo != null && projectInfo.getIsFilter() == 0) || projectInfo == null) && result > 0) {
 			List<SysUser> sysUsers = sysUserService.getSysUsers(null);
 			sysUsers.forEach((user) -> {
 				if (user.getEmail() != null && user.getEmail() != "") {
@@ -79,5 +89,15 @@ public class DevOpsEventService {
 		devOpsEvent.setId(id);
 		devOpsEvent.setIsProcessed(1);
 		return devOpsEventMapper.updateByPrimaryKeySelective(devOpsEvent);
+	}
+
+	public int filterByProjectNo(String projectNo) {
+		DevOpsEventExample example = new DevOpsEventExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andProjectNoEqualTo(projectNo);
+		DevOpsEvent devOpsEvent = new DevOpsEvent();
+		devOpsEvent.setIsFilter(1);
+
+		return devOpsEventMapper.updateByExampleSelective(devOpsEvent, example);
 	}
 }

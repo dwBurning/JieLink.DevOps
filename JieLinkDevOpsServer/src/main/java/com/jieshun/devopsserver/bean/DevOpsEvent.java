@@ -24,6 +24,8 @@ public class DevOpsEvent {
 
     private Integer isProcessed;
 
+    private Integer isFilter;
+
     public Integer getId() {
         return id;
     }
@@ -94,5 +96,13 @@ public class DevOpsEvent {
 
     public void setIsProcessed(Integer isProcessed) {
         this.isProcessed = isProcessed;
+    }
+
+    public Integer getIsFilter() {
+        return isFilter;
+    }
+
+    public void setIsFilter(Integer isFilter) {
+        this.isFilter = isFilter;
     }
 }

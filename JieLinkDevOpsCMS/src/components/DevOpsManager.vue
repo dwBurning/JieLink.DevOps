@@ -40,7 +40,7 @@
           :formatter="processStatusFormat"
           width="100"
         ></el-table-column>
-        <el-table-column label="操作" width="150">
+        <el-table-column fixed="right" label="操作" width="150">
           <template slot-scope="scope">
             <el-button
               :disabled="scope.row.isProcessed==1"
@@ -49,6 +49,19 @@
               type="primary"
               size="small"
             >标记为已处理</el-button>
+            
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="标记" width="150">
+          <template slot-scope="scope">
+            <el-button
+              :disabled="scope.row.isFilter==1"
+              @click="filterClick(scope.row)"
+              icon="el-icon-finished"
+              type="primary"
+              size="small"
+            >标记为过滤清单</el-button>
+            
           </template>
         </el-table-column>
       </el-table>
@@ -75,6 +88,32 @@ export default {
       this.selItems = row;
       putRequest("/devops/processed", {
         id: this.selItems.id
+      }).then(
+        resp => {
+          this.$notify({
+            title: "成功",
+            message: "标记成功",
+            type: "success"
+          });
+          this.loadVsersionInfo();
+        },
+        resp => {
+          if (resp.status == 403) {
+            _this.$notify({
+              title: "错误",
+              type: "error",
+              message: resp.data.msg
+            });
+          }
+          _this.loading = false;
+        }
+      );
+    },
+
+    filterClick(row) {
+      this.selItems = row;
+      putRequest("/devops/filter", {
+        projectNo: this.selItems.projectNo
       }).then(
         resp => {
           this.$notify({

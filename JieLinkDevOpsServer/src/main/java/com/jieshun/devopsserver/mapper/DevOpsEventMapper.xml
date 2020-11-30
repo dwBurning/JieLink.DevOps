@@ -11,6 +11,7 @@
     <result column="contact_phone" property="contactPhone" jdbcType="VARCHAR" />
     <result column="operator_date" property="operatorDate" jdbcType="TIMESTAMP" />
     <result column="is_processed" property="isProcessed" jdbcType="INTEGER" />
+    <result column="is_filter" property="isFilter" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <where >
@@ -72,7 +73,7 @@
   </sql>
   <sql id="Base_Column_List" >
     id, event_type, project_no, remote_account, remote_password, contact_name, contact_phone, 
-    operator_date, is_processed
+    operator_date, is_processed, is_filter
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.DevOpsEventExample" >
     select
@@ -107,12 +108,12 @@
   <insert id="insert" parameterType="com.jieshun.devopsserver.bean.DevOpsEvent" >
     insert into devops_event (id, event_type, project_no, 
       remote_account, remote_password, contact_name, 
-      contact_phone, operator_date, is_processed
-      )
+      contact_phone, operator_date, is_processed, 
+      is_filter)
     values (#{id,jdbcType=INTEGER}, #{eventType,jdbcType=INTEGER}, #{projectNo,jdbcType=VARCHAR}, 
       #{remoteAccount,jdbcType=VARCHAR}, #{remotePassword,jdbcType=VARCHAR}, #{contactName,jdbcType=VARCHAR}, 
-      #{contactPhone,jdbcType=VARCHAR}, #{operatorDate,jdbcType=TIMESTAMP}, #{isProcessed,jdbcType=INTEGER}
-      )
+      #{contactPhone,jdbcType=VARCHAR}, #{operatorDate,jdbcType=TIMESTAMP}, #{isProcessed,jdbcType=INTEGER}, 
+      #{isFilter,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.DevOpsEvent" >
     insert into devops_event
@@ -144,6 +145,9 @@
       <if test="isProcessed != null" >
         is_processed,
       </if>
+      <if test="isFilter != null" >
+        is_filter,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -172,6 +176,9 @@
       </if>
       <if test="isProcessed != null" >
         #{isProcessed,jdbcType=INTEGER},
+      </if>
+      <if test="isFilter != null" >
+        #{isFilter,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -211,6 +218,9 @@
       <if test="record.isProcessed != null" >
         is_processed = #{record.isProcessed,jdbcType=INTEGER},
       </if>
+      <if test="record.isFilter != null" >
+        is_filter = #{record.isFilter,jdbcType=INTEGER},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -226,7 +236,8 @@
       contact_name = #{record.contactName,jdbcType=VARCHAR},
       contact_phone = #{record.contactPhone,jdbcType=VARCHAR},
       operator_date = #{record.operatorDate,jdbcType=TIMESTAMP},
-      is_processed = #{record.isProcessed,jdbcType=INTEGER}
+      is_processed = #{record.isProcessed,jdbcType=INTEGER},
+      is_filter = #{record.isFilter,jdbcType=INTEGER}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -258,6 +269,9 @@
       <if test="isProcessed != null" >
         is_processed = #{isProcessed,jdbcType=INTEGER},
       </if>
+      <if test="isFilter != null" >
+        is_filter = #{isFilter,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -270,7 +284,8 @@
       contact_name = #{contactName,jdbcType=VARCHAR},
       contact_phone = #{contactPhone,jdbcType=VARCHAR},
       operator_date = #{operatorDate,jdbcType=TIMESTAMP},
-      is_processed = #{isProcessed,jdbcType=INTEGER}
+      is_processed = #{isProcessed,jdbcType=INTEGER},
+      is_filter = #{isFilter,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
