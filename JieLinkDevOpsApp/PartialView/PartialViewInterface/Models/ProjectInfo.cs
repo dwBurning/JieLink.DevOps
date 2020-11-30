@@ -17,5 +17,9 @@ namespace PartialViewInterface.Models
         public string ContactName { get; set; }
 
         public string ContactPhone { get; set; }
+
+        public string DevopsVersion { get; set; }
+
+        public enumProductType ProductType { get; set; }
     }
 }

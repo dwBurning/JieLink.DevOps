@@ -31,10 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,6 +48,7 @@
   <ItemGroup>
     <Compile Include="CheckUpdate\CheckUpdateHelper.cs" />
     <Compile Include="CheckUpdate\CheckUpdateOnStartupJob.cs" />
+    <Compile Include="CheckUpdate\ReportProjectInfoJob.cs" />
     <Compile Include="Models\DevOpsEvent.cs" />
     <Compile Include="CheckMemory\HealthMonitor.cs" />
     <Compile Include="CheckUpdate\CheckUpdateJob.cs" />
@@ -58,6 +61,10 @@
     <Compile Include="Models\SystemStatus.cs" />
     <Compile Include="CheckMemory\SystemStatusMonitor.cs" />
     <Compile Include="Models\WarningMessage.cs" />
+    <Compile Include="VersionUpdate.xaml.cs">
+      <DependentUpon>VersionUpdate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\VersionUpdateViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PartialViewInterface\PartialViewInterface.csproj">
@@ -70,9 +77,18 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Panuon.UI.Silver">
+      <Version>1.1.3</Version>
+    </PackageReference>
     <PackageReference Include="Quartz">
       <Version>2.6.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="VersionUpdate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
