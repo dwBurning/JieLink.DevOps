@@ -148,10 +148,10 @@ namespace PartialViewDataArchiving.DataArchive
                     return "OutTime";
                 case "box_bill":
                     return "PayTime";
-                case "boxdoor_door_record":
-                    return "ActionTime";
                 case "business_discount":
                     return "CreateTime";
+                case "boxdoor_door_record":
+                    return "ActionTime";
             }
 
             return "";

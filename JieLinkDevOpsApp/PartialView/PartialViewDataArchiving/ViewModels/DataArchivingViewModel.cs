@@ -45,9 +45,8 @@ namespace PartialViewDataArchiving.ViewModels
             Tables.Add("box_enter_record");
             Tables.Add("box_out_record");
             Tables.Add("box_bill");
-            Tables.Add("boxdoor_door_record");
             Tables.Add("business_discount");
-
+            Tables.Add("boxdoor_door_record");
             ExecuteDataArchiveCommand = new DelegateCommand();
             ExecuteDataArchiveCommand.ExecuteAction = DataArchive;
 

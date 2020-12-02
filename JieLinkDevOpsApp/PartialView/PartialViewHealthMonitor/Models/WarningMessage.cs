@@ -11,7 +11,7 @@ namespace PartialViewHealthMonitor
         None = 0,
         Memory = 1,
         CPU = 2,
-
+        Thread = 3,
 
     }
     public class WarningMessage

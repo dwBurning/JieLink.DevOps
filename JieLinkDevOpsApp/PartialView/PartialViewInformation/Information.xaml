@@ -74,6 +74,11 @@
             <TextBlock>6.将编译之后的dll文件放在本集成工具的
                 <Run Foreground="#20A0FF">plugs</Run>
                 目录下，重启软件即可</TextBlock>
+            <DockPanel>
+                <TextBlock Margin="5,5,0,5">7.</TextBlock>
+                <TextBlock Margin="0"><Hyperlink Foreground="#20A0FF" NavigateUri="https://docs.qq.com/doc/DU09jR2JqTHRxWWhH" Click="Hyperlink_Click">JieLink运维工具使用说明书</Hyperlink></TextBlock>
+            </DockPanel>
+            
         </StackPanel>
 
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
