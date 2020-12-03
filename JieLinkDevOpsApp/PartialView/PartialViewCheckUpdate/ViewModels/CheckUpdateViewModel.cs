@@ -15,6 +15,8 @@ using PartialViewInterface.Models;
 using PartialViewInterface;
 using MySql.Data.MySqlClient;
 using System.Data;
+using Microsoft.Win32;
+using System.Threading;
 
 namespace PartialViewCheckUpdate.ViewModels
 {
@@ -63,7 +65,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
 
 
-            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n";
+            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n6.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n7.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessageEx(string message)
@@ -242,8 +244,47 @@ namespace PartialViewCheckUpdate.ViewModels
         }
 
 
+        private bool IsInstallVCRunTime()
+        {
+            string rootPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+            RegistryKey rootKey = Registry.LocalMachine.OpenSubKey(rootPath, true);
+            string[] subkeyNames = rootKey.GetSubKeyNames();
+            foreach (string keyName in subkeyNames)
+            {
+                RegistryKey subKey = Registry.LocalMachine.OpenSubKey(rootPath + "\\" + keyName, true);
+                object displayName = subKey.GetValue("DisplayName");
+                if (displayName != null && displayName.ToString().Contains("Microsoft Visual C++ 2013"))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void RunVCRunTime()
+        {
+            string zipFile = Path.Combine(this.PackagePath, "Tools", "vs2013运行库.zip");
+            string dstDir = Path.Combine(this.PackagePath, "Tools", "vs2013运行库");
+            ZipHelper.UnzipFile(zipFile, dstDir);
+            ProcessHelper.StartProcessDotNet(Path.Combine(dstDir, "vcredist_x64.exe"));
+        }
+
+
         private void ExecuteScript()
         {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            if (!IsInstallVCRunTime())
+            {
+                RunVCRunTime();
+                Thread.Sleep(1000);
+                MessageBoxHelper.MessageBoxShowWarning("需要先安装VC++的运行环境！");
+                return;
+            }
+
             string scriptPath = Path.Combine(this.PackagePath, "dbscript");
             List<FileInfo> scripts = FileHelper.GetAllFileInfo(scriptPath, "*.sql").OrderBy(x => x.Name).ToList();
 
@@ -516,9 +557,11 @@ namespace PartialViewCheckUpdate.ViewModels
                             }
                             else
                             {
-                                script.Append($"`{field.Field}` {field.Type} DEFAULT '{field.Default}',").Append(Environment.NewLine);
+                                if (field.Default.Equals("CURRENT_TIMESTAMP"))
+                                { script.Append($"`{field.Field}` {field.Type} DEFAULT {field.Default},").Append(Environment.NewLine); }
+                                else
+                                { script.Append($"`{field.Field}` {field.Type} DEFAULT '{field.Default}',").Append(Environment.NewLine); }
                             }
-
                         }
                         else
                         {
@@ -535,28 +578,59 @@ namespace PartialViewCheckUpdate.ViewModels
                     #endregion
                 }
 
-
-                //索引
-                foreach (var index in table.IndexList)
+                int primaryKeyCount = table.IndexList.Count(x => x.KeyName == "PRIMARY");
+                if (primaryKeyCount > 1)//存在联合主键
                 {
-                    #region 创建索引
-                    if (index.NonUnique == 0)
+                    var primaryKey = table.IndexList.Where(x => x.KeyName == "PRIMARY");
+                    script.Append($"PRIMARY KEY (");
+                    string pky = "";
+                    foreach (var index in primaryKey)
                     {
-                        if (index.KeyName == "PRIMARY")
-                        {
-                            script.Append($"PRIMARY KEY (`{index.ColumnName}`),").Append(Environment.NewLine);
-                        }
-                        else
+                        pky += "`"+index.ColumnName + "`,";
+                    }
+                    script.Append(pky.Trim(','));
+                    script.Append($"),").Append(Environment.NewLine);
+
+                    var otherKey = table.IndexList.Where(x => x.KeyName != "PRIMARY");
+                    //索引
+                    foreach (var index in otherKey)
+                    {
+                        #region 创建索引
+                        if (index.NonUnique == 0)
                         {
                             script.Append($"UNIQUE KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
                         }
+                        else if (index.NonUnique == 1)
+                        {
+                            script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                        }
+                        #endregion
                     }
-
-                    if (index.NonUnique == 1)
+                }
+                else
+                {
+                    //索引
+                    foreach (var index in table.IndexList)
                     {
-                        script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                        #region 创建索引
+                        if (index.NonUnique == 0)
+                        {
+                            if (index.KeyName == "PRIMARY")
+                            {
+                                script.Append($"PRIMARY KEY (`{index.ColumnName}`),").Append(Environment.NewLine);
+                            }
+                            else
+                            {
+                                script.Append($"UNIQUE KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                            }
+                        }
+
+                        if (index.NonUnique == 1)
+                        {
+                            script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                        }
+                        #endregion
                     }
-                    #endregion
                 }
 
                 string ddlScript = script.ToString().TrimEnd(Environment.NewLine.ToCharArray()).TrimEnd(',') + Environment.NewLine;
@@ -565,6 +639,11 @@ namespace PartialViewCheckUpdate.ViewModels
 
                 try
                 {
+                    using (StreamWriter sw = new StreamWriter(filePath, true))
+                    {
+                        sw.WriteLine(ddlScript);
+                    }
+
                     MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, ddlScript);
                 }
                 catch (Exception)
@@ -630,9 +709,14 @@ namespace PartialViewCheckUpdate.ViewModels
             return dt.Rows.Count > 0;
         }
 
-
+        string filePath = "OneKeyUpdateLog.txt";
         public void ShowMessage(string message)
         {
+            using (StreamWriter sw = new StreamWriter(filePath, true))
+            {
+                sw.WriteLine(message);
+            }
+
             this.Dispatcher.Invoke(new Action(() =>
             {
                 if (Message != null && Message.Length > 5000)
