@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -261,6 +262,16 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
 
             }
 
+        }
+        public static void WriterAppConfig(string exePath, string key, string value)
+        {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(exePath);
+            if (config.AppSettings.Settings[key] != null)
+                config.AppSettings.Settings[key].Value = value;
+            else
+                config.AppSettings.Settings.Add(key, value);
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("appSettings");
         }
     }
 }

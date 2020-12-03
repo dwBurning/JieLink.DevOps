@@ -4,7 +4,10 @@
       "ProcessName": "JieShun.JieLink.DevOps.App.exe",
       "ServiceName": null,
       "ExecutablePath": "JieShun.JieLink.DevOps.App.exe",
-      "Args": null
+      "Args": null,
+      "ConfigToUpdate": {
+        "CheckDiskSpaceJob": "0 0 4 * * ?"
+      }
     }
   ],
   "SubPackages": [
@@ -14,7 +17,8 @@
       "ExcludeList": [
         "Config",
         "*.config"
-      ]
+      ],
+      "ZipList": null
     }
   ],
   "RunProcessList": [
@@ -22,7 +26,16 @@
       "ProcessName": "JieShun.JieLink.DevOps.App.exe",
       "ServiceName": null,
       "ExecutablePath": "JieShun.JieLink.DevOps.App.exe",
-      "Args": null
+      "Args": null,
+      "ConfigToUpdate": {
+        "CheckDiskSpaceJob": "0 0 4 * * ?",
+        "DataArchiveJob": "0 0 0 * * ?",
+        "ReportProjectInfoJob": "0 0 1 * * ?",
+        "AutoArchive": "0",
+        "AutoArchiveMonth": "3",
+        "AutoStartCorectString": "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}",
+        "AutoStartSyncString": "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}"
+      }
     }
   ]
 }

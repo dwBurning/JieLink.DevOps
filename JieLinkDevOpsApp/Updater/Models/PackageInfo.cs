@@ -51,5 +51,9 @@ namespace JieShun.JieLink.DevOps.Updater.Models
         /// 命令行参数
         /// </summary>
         public string Args { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public Dictionary<string, string> ConfigToUpdate { get; set; }
     }
 }

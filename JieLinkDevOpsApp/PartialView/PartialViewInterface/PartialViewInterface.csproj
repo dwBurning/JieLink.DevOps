@@ -97,10 +97,14 @@
     <Compile Include="Models\AutoStartCorectEntity.cs" />
     <Compile Include="Models\AutoStartSyncEntity.cs" />
     <Compile Include="Models\DbConnEntity.cs" />
+    <Compile Include="Models\DevOpsEvent.cs" />
+    <Compile Include="Models\DevOpsProduct.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ProjectInfo.cs" />
     <Compile Include="Models\UpdateRequest.cs" />
     <Compile Include="Models\VersionInfo.cs" />
+    <Compile Include="Models\WarningMessage.cs" />
+    <Compile Include="Utils\DevOpsAPI.cs" />
     <Compile Include="Utils\FileHelper.cs" />
     <Compile Include="IPartialView.cs" />
     <Compile Include="IStartup.cs" />

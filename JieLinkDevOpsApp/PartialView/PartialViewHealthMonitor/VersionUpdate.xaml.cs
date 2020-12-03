@@ -44,7 +44,7 @@ namespace PartialViewHealthMonitor
         {
             try
             {
-                DevOpsProduct product = CheckUpdateHelper.ReportVersion();
+                DevOpsProduct product = DevOpsAPI.ReportVersion();
                 if (product != null)
                 {
                     viewModel.LastVersion = product.ProductVersion;

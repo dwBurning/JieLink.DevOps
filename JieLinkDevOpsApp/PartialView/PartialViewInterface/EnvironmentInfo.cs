@@ -21,7 +21,7 @@ namespace PartialViewInterface
             ConfigHelper.AddAppConfig("AutoArchiveMonth", "3");
             ConfigHelper.AddAppConfig("AutoStartCorectString", "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}");
             ConfigHelper.AddAppConfig("AutoStartSyncString", "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}");
-
+            ConfigHelper.AddAppConfig("CheckDiskSpaceJob", "0 0 4 * * ?");
         }
 
         public static string ProjectNo { get; set; }

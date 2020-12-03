@@ -43,6 +43,8 @@ namespace PartialViewInterface.Utils
         static extern bool AdjustTokenPrivileges(SafeObjectHandle handle, bool disableAllPrivileges, ref TOKEN_PRIVILEGES newState, int bufferLength, IntPtr previousState, IntPtr teturnLength);
         [DllImport("advapi32", CallingConvention = CallingConvention.Winapi, SetLastError = true, EntryPoint = "CreateProcessAsUser")]
         static extern bool CreateProcessAsUser(IntPtr hToken, string lpApplicationName, string lpCommandLine, IntPtr lpProcessAttributes, IntPtr lpThreadAttributes, bool bInheritHandles, CreateProcessFlags dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFOA lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+        [DllImport("Kernel32.dll", CallingConvention = CallingConvention.Winapi, SetLastError = true, EntryPoint = "GetDiskFreeSpaceExA")]
+        static extern bool GetDiskFreeSpaceExA(string lpDirectoryName, ref ulong lpFreeBytesAvailableToCaller, ref ulong lpTotalNumberOfBytes, ref ulong lpTotalNumberOfFreeBytes);
 
         #endregion
 
@@ -390,6 +392,12 @@ namespace PartialViewInterface.Utils
             }
             hSnapshot.Close();
             return pid;
+        }
+        public static ulong GetDiskFreeSpaceEx(string diskName)
+        {
+            ulong qwFreeBytes = 0, qwFreeBytesToCaller = 0, qwTotalBytes = 0;
+            GetDiskFreeSpaceExA(diskName, ref qwFreeBytesToCaller, ref qwTotalBytes, ref qwFreeBytes);
+            return qwFreeBytes / 1024 / 1024;
         }
     }
 }

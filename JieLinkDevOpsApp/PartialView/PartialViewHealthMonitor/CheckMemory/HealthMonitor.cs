@@ -54,7 +54,7 @@ namespace PartialViewHealthMonitor
             {
                 SystemStatusMonitor systemMonitor = new SystemStatusMonitor();
                 ProcessStatusMonitor processMonitor = new ProcessStatusMonitor(processName);
-                int warningInterval = 6;//6小时
+                int warningInterval = 12;//12小时
                 while (isRunning)
                 {
                     Thread.Sleep(1000);
@@ -73,7 +73,7 @@ namespace PartialViewHealthMonitor
                             {
                                 nextWarningTime = DateTime.Now.AddHours(warningInterval);
                                 //需要报警
-                                SendEvent(warning);
+                                DevOpsAPI.SendEvent(warning);
                             }
                         }
 
@@ -92,27 +92,6 @@ namespace PartialViewHealthMonitor
             }
 
         }
-        private void SendEvent(WarningMessage warning)
-        {
-            Console.WriteLine("发送报警事件，{0}", warning.Message);
-            DevOpsEvent opsEvent = new DevOpsEvent();
-            opsEvent.EventType = (int)warning.WarningType;
-            opsEvent.OperatorDate = DateTime.Now;
-            opsEvent.ProjectNo = EnvironmentInfo.ProjectNo ?? string.Empty;
-            opsEvent.RemoteAccount = EnvironmentInfo.RemoteAccount ?? string.Empty;
-            opsEvent.RemotePassword = EnvironmentInfo.RemotePassword ?? string.Empty;
-            opsEvent.ContactPhone = EnvironmentInfo.ContactPhone ?? string.Empty;
-            opsEvent.ContactName = EnvironmentInfo.ContactName ?? string.Empty;
-
-            try
-            {
-                string url = string.Format("{0}/devops/reportDevOpsEvent", EnvironmentInfo.ServerUrl);
-                var returnData = HttpHelper.Post<ReturnData>(url, opsEvent, 3000);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-        }
+        
     }
 }

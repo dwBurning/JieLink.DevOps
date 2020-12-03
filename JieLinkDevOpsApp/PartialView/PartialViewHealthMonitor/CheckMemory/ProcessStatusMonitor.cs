@@ -1,4 +1,6 @@
-﻿using PartialViewInterface.Utils;
+﻿using PartialViewHealthMonitor.Models;
+using PartialViewInterface.Models;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
