@@ -24,7 +24,7 @@ namespace PartialViewHealthMonitor.CheckDisk
                 string fileName = process.MainModule.FileName;
                 string diskName = fileName.Substring(0, fileName.IndexOf(":")+1);
                 ulong space = Win32API.GetDiskFreeSpaceEx(diskName);
-                if(space<1024)
+                if(space<5*1024)
                 {
                     WarningMessage warningMessage = new WarningMessage();
                     warningMessage.Message = "磁盘空间不足";
