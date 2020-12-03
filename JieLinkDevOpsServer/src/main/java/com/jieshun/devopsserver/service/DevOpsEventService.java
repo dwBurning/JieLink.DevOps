@@ -10,6 +10,7 @@ import com.jieshun.devopsserver.bean.DevOpsEvent;
 import com.jieshun.devopsserver.bean.DevOpsEventEnum;
 import com.jieshun.devopsserver.bean.DevOpsEventExample;
 import com.jieshun.devopsserver.bean.DevOpsEventExample.Criteria;
+import com.jieshun.devopsserver.bean.DevOpsEventFilter;
 import com.jieshun.devopsserver.bean.PageSet;
 import com.jieshun.devopsserver.bean.ProjectInfo;
 import com.jieshun.devopsserver.bean.SysUser;
@@ -29,7 +30,16 @@ public class DevOpsEventService {
 	@Autowired
 	ProjectInfoService projectInfoService;
 
+	@Autowired
+	DevOpsEventFilterService devOpsEventFilterService;
+
 	public int reportDevOpsEvent(DevOpsEvent devOpsEvent) {
+
+		//过滤事件类型
+		DevOpsEventFilter devOpsEventFilter = devOpsEventFilterService
+				.getDevOpsEventFilterByCode(devOpsEvent.getEventType());
+
+		//过滤项目编号
 		ProjectInfo projectInfo = projectInfoService.getProjectInfoByProjectNo(devOpsEvent.getProjectNo());
 
 		if (projectInfo != null) {
@@ -37,7 +47,11 @@ public class DevOpsEventService {
 		}
 
 		int result = devOpsEventMapper.insertSelective(devOpsEvent);
-		if (((projectInfo != null && projectInfo.getIsFilter() == 0) || projectInfo == null) && result > 0) {
+
+		boolean isSendMail = ((projectInfo != null && projectInfo.getIsFilter() == 0) || projectInfo == null)
+				&& ((devOpsEventFilter != null && devOpsEventFilter.getIsFilter() == 0) || devOpsEventFilter == null)
+				&& result > 0;
+		if (isSendMail) {
 			List<SysUser> sysUsers = sysUserService.getSysUsers(null);
 			sysUsers.forEach((user) -> {
 				if (user.getEmail() != null && user.getEmail() != "") {
