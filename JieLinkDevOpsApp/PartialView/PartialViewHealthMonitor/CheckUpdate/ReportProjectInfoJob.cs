@@ -1,5 +1,4 @@
-﻿using PartialViewHealthMonitor.Models;
-using PartialViewInterface;
+﻿using PartialViewInterface;
 using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using Quartz;
@@ -15,7 +14,7 @@ namespace PartialViewHealthMonitor.CheckUpdate
     {
         public void Execute(IJobExecutionContext context)
         {
-            CheckUpdateHelper.ReportVersion();
+            DevOpsAPI.ReportVersion();
         }
     }
 }

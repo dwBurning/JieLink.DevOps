@@ -24,23 +24,7 @@ namespace PartialViewHealthMonitor.CheckUpdate
             ProcessHelper.StartProcessDotNet(executePath, null);
         }
 
-        public static DevOpsProduct ReportVersion()
-        {
-            try
-            {
-                string url = string.Format("{0}/devops/reportProjectInfo", EnvironmentInfo.ServerUrl);
-                ProjectInfo projectInfo = new ProjectInfo();
-                projectInfo.ProjectNo = EnvironmentInfo.ProjectNo ?? "";
-                projectInfo.DevopsVersion = EnvironmentInfo.CurrentVersion;
-                projectInfo.ProductType = enumProductType.DevOps;
-                return HttpHelper.Post<DevOpsProduct>(url, projectInfo, 3000);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return null;
-            }
-        }
+
 
         public static UpdateRequest GetUploadRequest()
         {

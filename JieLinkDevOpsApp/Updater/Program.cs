@@ -283,7 +283,8 @@ namespace JieShun.JieLink.DevOps.Updater
             ProgramInfo devOpsCenter = new ProgramInfo();
             devOpsCenter.ExecutablePath = "JieShun.JieLink.DevOps.App.exe";
             devOpsCenter.ProcessName = "JieShun.JieLink.DevOps.App.exe";
-
+            devOpsCenter.ConfigToUpdate = new Dictionary<string, string>();
+            devOpsCenter.ConfigToUpdate.Add("CheckDiskSpaceJob", "0 0 4 * * ?");
 
             SubPackage devOpsPackage = new SubPackage();
             devOpsPackage.SubPath = "";

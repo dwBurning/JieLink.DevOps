@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewHealthMonitor
+namespace PartialViewInterface.Models
 {
     public enum enumWarningType
     {
@@ -12,6 +12,7 @@ namespace PartialViewHealthMonitor
         Memory = 1,
         CPU = 2,
         Thread = 3,
+        Disk = 4,
 
     }
     public class WarningMessage
