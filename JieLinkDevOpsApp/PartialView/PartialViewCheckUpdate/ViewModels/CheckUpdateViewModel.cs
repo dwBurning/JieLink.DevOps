@@ -17,6 +17,7 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using Microsoft.Win32;
 using System.Threading;
+using System.Diagnostics;
 
 namespace PartialViewCheckUpdate.ViewModels
 {
@@ -246,27 +247,51 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private bool IsInstallVCRunTime()
         {
-            string rootPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
-            RegistryKey rootKey = Registry.LocalMachine.OpenSubKey(rootPath, true);
-            string[] subkeyNames = rootKey.GetSubKeyNames();
-            foreach (string keyName in subkeyNames)
+            try
             {
-                RegistryKey subKey = Registry.LocalMachine.OpenSubKey(rootPath + "\\" + keyName, true);
-                object displayName = subKey.GetValue("DisplayName");
-                if (displayName != null && displayName.ToString().Contains("Microsoft Visual C++ 2013"))
+                string rootPath = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                RegistryKey rootKey = Registry.LocalMachine.OpenSubKey(rootPath, true);
+                string[] subkeyNames = rootKey.GetSubKeyNames();
+                foreach (string keyName in subkeyNames)
                 {
-                    return true;
+                    RegistryKey subKey = Registry.LocalMachine.OpenSubKey(rootPath + "\\" + keyName, true);
+                    object displayName = subKey.GetValue("DisplayName");
+                    if (displayName != null && displayName.ToString().Contains("Microsoft Visual C++ 2013"))
+                    {
+                        return true;
+                    }
                 }
             }
+            catch (Exception)
+            {
+                return true;//如果无法读取注册表 直接当作已经安装继续往下执行
+            }
+
             return false;
         }
 
         private void RunVCRunTime()
         {
-            string zipFile = Path.Combine(this.PackagePath, "Tools", "vs2013运行库.zip");
-            string dstDir = Path.Combine(this.PackagePath, "Tools", "vs2013运行库");
-            ZipHelper.UnzipFile(zipFile, dstDir);
-            ProcessHelper.StartProcessDotNet(Path.Combine(dstDir, "vcredist_x64.exe"));
+            try
+            {
+                string zipFile = Path.Combine(this.PackagePath, "Tools", "vs2013运行库.zip");
+                if (!File.Exists(zipFile))
+                {
+                    string message = @"本地VC++运行库文件不存在，需要下载后安装：https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe";
+                    ShowMessage(message);
+                    Process.Start(new ProcessStartInfo(@"https://download.microsoft.com/download/2/E/6/2E61CFA4-993B-4DD4-91DA-3737CD5CD6E3/vcredist_x64.exe"));
+                    MessageBoxHelper.MessageBoxShowWarning("本地VC++运行库文件不存在，需要下载后安装！");
+                    return;
+                }
+
+                string dstDir = Path.Combine(this.PackagePath, "Tools", "vs2013运行库");
+                ZipHelper.UnzipFile(zipFile, dstDir);
+                ProcessHelper.StartProcessDotNet(Path.Combine(dstDir, "vcredist_x64.exe"));
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
 
