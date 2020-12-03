@@ -87,6 +87,15 @@
             <pu:TimelineItem Header="2020-11-26 V1.0.7">
                 <ContentControl>
                     <TextBlock>
+                        1.增加主动版本升级功能
+                        2.增加运行中心进程线程数的检测，增加磁盘空间的检测
+                        3.一键升级JieLink功能，增加检测VC++运行环境并直接启动VC++的安装程序
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-26 V1.0.7">
+                <ContentControl>
+                    <TextBlock>
                         修订一键升级的问题
                     </TextBlock>
                 </ContentControl>

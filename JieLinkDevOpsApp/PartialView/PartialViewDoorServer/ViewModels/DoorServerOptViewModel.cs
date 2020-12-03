@@ -102,14 +102,14 @@ namespace PartialViewDoorServer.ViewModels
         {
             if (string.IsNullOrEmpty(FilePath))
             {
-                Notice.Show("请选择Smartdoor安装目录的para文件夹！.", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("请选择Smartdoor安装目录的para文件夹！.", "通知", 3, MessageBoxIcon.Warning);
                 return;
             }
 
             UInt32 deviceID = curDoorServer.deviceID;
             if (deviceID == 0)
             {
-                Notice.Show("请选择门禁服务！.", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("请选择门禁服务！.", "通知", 3, MessageBoxIcon.Warning);
                 return;
             }
 

@@ -280,8 +280,8 @@ namespace PartialViewCheckUpdate.ViewModels
             if (!IsInstallVCRunTime())
             {
                 RunVCRunTime();
-                Thread.Sleep(1000);
-                MessageBoxHelper.MessageBoxShowWarning("需要先安装VC++的运行环境！");
+                ShowMessage("需要先安装VC++的运行环境！");
+                Notice.Show("需要先安装VC++的运行环境！", "提示", 3, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -586,7 +586,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     string pky = "";
                     foreach (var index in primaryKey)
                     {
-                        pky += "`"+index.ColumnName + "`,";
+                        pky += "`" + index.ColumnName + "`,";
                     }
                     script.Append(pky.Trim(','));
                     script.Append($"),").Append(Environment.NewLine);

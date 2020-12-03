@@ -111,7 +111,7 @@ namespace PartialViewSetting
             }
             catch (Exception)
             {
-                Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Warning);
             }
         }
     }
