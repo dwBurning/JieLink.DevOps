@@ -35,11 +35,11 @@ public class DevOpsEventService {
 
 	public int reportDevOpsEvent(DevOpsEvent devOpsEvent) {
 
-		//过滤事件类型
+		// 过滤事件类型
 		DevOpsEventFilter devOpsEventFilter = devOpsEventFilterService
 				.getDevOpsEventFilterByCode(devOpsEvent.getEventType());
 
-		//过滤项目编号
+		// 过滤项目编号
 		ProjectInfo projectInfo = projectInfoService.getProjectInfoByProjectNo(devOpsEvent.getProjectNo());
 
 		if (projectInfo != null) {
@@ -65,6 +65,9 @@ public class DevOpsEventService {
 					emailTextString.append("远程密码：").append(devOpsEvent.getRemotePassword()).append("\r\n");
 					emailTextString.append("联系人姓名：").append(devOpsEvent.getContactName()).append("\r\n");
 					emailTextString.append("联系人电话：").append(devOpsEvent.getContactPhone()).append("\r\n");
+					if (projectInfo != null && projectInfo.getRemark() != null) {
+						emailTextString.append("备注信息：").append(projectInfo.getRemark()).append("\r\n");
+					}
 					message.setText(emailTextString.toString());
 					message.setTo(user.getEmail());
 					SendEmailTask.Enqueue(message);

@@ -30,13 +30,25 @@ public class ProjectInfoService {
 		if (info != null) {
 			projectInfo.setIsFilter(info.getIsFilter());
 			projectInfo.setId(info.getId());
-			return projectInfoMapper.updateByPrimaryKey(projectInfo);
+			return projectInfoMapper.updateByPrimaryKeySelective(projectInfo);
 		} else {
 			projectInfo.setIsFilter(0);
-			return projectInfoMapper.insert(projectInfo);
+			return projectInfoMapper.insertSelective(projectInfo);
 		}
 	}
 
+	
+	public int updateProjectInfo(ProjectInfo projectInfo) {
+		ProjectInfo info = getProjectInfoByProjectNo(projectInfo.getProjectNo());
+		if (info != null) {
+			projectInfo.setId(info.getId());
+			return projectInfoMapper.updateByPrimaryKeySelective(projectInfo);
+		} else {
+			return projectInfoMapper.insertSelective(projectInfo);
+		}
+	}
+	
+	
 	public ProjectInfo getProjectInfoByProjectNo(String projectNo) {
 		ProjectInfoExample example = new ProjectInfoExample();
 		Criteria criteria = example.createCriteria();

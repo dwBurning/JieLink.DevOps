@@ -1,49 +1,80 @@
 package com.jieshun.devopsserver.bean;
 
+import java.util.Date;
+
+import com.alibaba.fastjson.annotation.JSONField;
+
 public class ProjectInfo {
-    private Integer id;
+	private Integer id;
 
-    private String projectNo;
+	private String projectNo;
 
-    private String devopsVersion;
+	private String devopsVersion;
 
-    private Integer isFilter;
-    
-    private Integer productType;
+	private Integer isFilter;
 
-    public Integer getId() {
-        return id;
-    }
+	private boolean boolenIsFilter;
+	
+	private Integer productType;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
+	private Date operatorDate;
 
-    public String getProjectNo() {
-        return projectNo;
-    }
+	private String remark;
 
-    public void setProjectNo(String projectNo) {
-        this.projectNo = projectNo == null ? null : projectNo.trim();
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public String getDevopsVersion() {
-        return devopsVersion;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setDevopsVersion(String devopsVersion) {
-        this.devopsVersion = devopsVersion == null ? null : devopsVersion.trim();
-    }
+	public String getProjectNo() {
+		return projectNo;
+	}
 
-    public Integer getIsFilter() {
-        return isFilter;
-    }
+	public void setProjectNo(String projectNo) {
+		this.projectNo = projectNo == null ? null : projectNo.trim();
+	}
 
-    public void setIsFilter(Integer isFilter) {
-        this.isFilter = isFilter;
-    }
-    
-    public Integer getProductType() {
+	public String getDevopsVersion() {
+		return devopsVersion;
+	}
+
+	public void setDevopsVersion(String devopsVersion) {
+		this.devopsVersion = devopsVersion == null ? null : devopsVersion.trim();
+	}
+
+	public Integer getIsFilter() {
+		return isFilter;
+	}
+
+	public void setIsFilter(Integer isFilter) {
+		this.isFilter = isFilter;
+	}
+
+	public boolean getBoolenIsFilter() {
+		return this.isFilter == 1;
+	}
+
+	public Date getOperatorDate() {
+		return operatorDate;
+	}
+
+	public void setOperatorDate(Date operatorDate) {
+		this.operatorDate = operatorDate;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark == null ? null : remark.trim();
+	}
+	
+	public Integer getProductType() {
         return productType;
     }
 
