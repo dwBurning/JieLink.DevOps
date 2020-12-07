@@ -6,6 +6,7 @@ using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using PartialViewInterface.ViewModels;
 using System;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -93,11 +94,18 @@ namespace PartialViewSetting
 
         private void btnTestConn_Click(object sender, RoutedEventArgs e)
         {
+            //发现127开头的IP可以随便填写，都能连接成功，但是最终命令行执行脚本的时候会连接失败
+            if (txtCenterIp.Text.StartsWith("127") && !txtCenterIp.Text.Equals("127.0.0.1"))
+            {
+                txtCenterIp.Text = "127.0.0.1";
+            }
+
             string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
 
             try
             {
                 MySqlHelper.ExecuteDataset(connStr, "select * from sys_user limit 1");
+
                 Notice.Show("中心数据库连接成功,已自动保存!", "通知", 3, MessageBoxIcon.Success);
                 //存储中心连接字符串
 
