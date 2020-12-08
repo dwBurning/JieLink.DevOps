@@ -103,7 +103,10 @@
       "ProcessName": "SmartCenter.Host.exe",
       "ServiceName": "JsstJieLinkSmartCenter",
       "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
-      "Args": null
+      "Args": null,
+      "ConfigToUpdate": {
+        "SendThreadNum": "1024"
+      }
     },
     {
       "ProcessName": "JSST.JieLink.Daemon.exe",
