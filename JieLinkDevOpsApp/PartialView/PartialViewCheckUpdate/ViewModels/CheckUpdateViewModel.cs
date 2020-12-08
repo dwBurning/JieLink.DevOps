@@ -412,6 +412,7 @@ namespace PartialViewCheckUpdate.ViewModels
                             catch (Exception)
                             {
                                 exceptMessage.Append($"{table.TableName}表添加{column.Field}字段失败...").Append(Environment.NewLine);
+                                exceptMessage.Append(builder.ToString()).Append(Environment.NewLine);
                             }
 
                         }
@@ -673,7 +674,10 @@ namespace PartialViewCheckUpdate.ViewModels
                 }
                 catch (Exception)
                 {
-                    return $"表{table.TableName}创建失败！";
+                    StringBuilder ddlStringBuilder = new StringBuilder();
+                    ddlStringBuilder.Append($"表{table.TableName}创建失败！").Append(Environment.NewLine);
+                    ddlStringBuilder.Append(ddlScript);
+                    return ddlStringBuilder.ToString();
                 }
             }
             return "";
