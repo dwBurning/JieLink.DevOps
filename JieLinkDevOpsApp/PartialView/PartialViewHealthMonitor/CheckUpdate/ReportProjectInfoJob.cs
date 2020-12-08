@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PartialViewHealthMonitor.CheckUpdate
 {
-    class ReportProjectInfoJob : IJob
+    public class ReportProjectInfoJob : IJob
     {
         public void Execute(IJobExecutionContext context)
         {
