@@ -18,19 +18,26 @@ namespace PartialViewHealthMonitor.CheckDisk
         public void Execute(IJobExecutionContext context)
         {
             //获取SmartCenter所在的目录
-            var process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
-            if (process != null)
+            try
             {
-                string fileName = process.MainModule.FileName;
-                string diskName = fileName.Substring(0, fileName.IndexOf(":")+1);
-                ulong space = Win32API.GetDiskFreeSpaceEx(diskName);
-                if(space<5*1024)
+                var process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                if (process != null)
                 {
-                    WarningMessage warningMessage = new WarningMessage();
-                    warningMessage.Message = "磁盘空间不足";
-                    warningMessage.WarningType = enumWarningType.Disk;
-                    DevOpsAPI.SendEvent(warningMessage);
+                    string fileName = process.MainModule.FileName;
+                    string diskName = fileName.Substring(0, fileName.IndexOf(":") + 1);
+                    ulong space = Win32API.GetDiskFreeSpaceEx(diskName);
+                    if (space < 5 * 1024)
+                    {
+                        WarningMessage warningMessage = new WarningMessage();
+                        warningMessage.Message = "磁盘空间不足";
+                        warningMessage.WarningType = enumWarningType.Disk;
+                        DevOpsAPI.SendEvent(warningMessage);
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+
             }
             
             
