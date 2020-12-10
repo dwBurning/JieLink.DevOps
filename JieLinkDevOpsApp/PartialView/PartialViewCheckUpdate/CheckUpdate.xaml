@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:PartialViewCheckUpdate"
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -21,28 +21,110 @@
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
+
+    <Grid MaxWidth="{Binding ActualWidth}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="80"></ColumnDefinition>
+            <ColumnDefinition Width="100"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
-        <TreeView x:Name="TvMenu"
-                      pu:TreeViewHelper.TreeViewStyle="Classic"
-                      pu:TreeViewHelper.ItemHeight="40"
-                      pu:TreeViewHelper.SelectedForeground="#20A0FF"
-                      pu:TreeViewHelper.SelectedBackground="#220082FF"
-                      pu:TreeViewHelper.ExpandMode="SingleClick"
-                      pu:TreeViewHelper.SelectMode="ChildOnly"
-                      SelectedItemChanged="TvMenu_SelectedItemChanged"
-                      
-                      BorderBrush="#20A0FF">
-            <TreeViewItem Tag="CheckFiles" IsSelected="True" Header="检查文件"/>
-            <TreeViewItem Tag="CheckScript"  Header="检查脚本"/>
-        </TreeView>
-        <ContentControl Grid.Column="1" x:Name="ContentControl"/>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Column="1" Grid.Row="3" Grid.RowSpan="4" IsReadOnly="True" Margin="5">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="{Binding Message}"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+        <TextBlock Grid.Row="0" Grid.Column="0">版本区间：</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0">安装目录：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0">安装包目录：</TextBlock>
+
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition>
+                </ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Margin="5" VerticalAlignment="Center" Height="40"
+                      SelectedValue="{Binding StartVersion}" 
+                      ItemsSource="{Binding Versions}"
+                      IsEditable="True"
+                      pu:ComboBoxHelper.Watermark="请选择当前版本（V1.0.0）"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:ComboBoxHelper.IsSearchTextBoxVisible="True"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" />
+
+
+            <ComboBox Grid.Column="1" Margin="5" VerticalAlignment="Center" Height="40"
+                      SelectedValue="{Binding EndVersion}" 
+                      ItemsSource="{Binding Versions}"
+                      IsEditable="True"
+                      pu:ComboBoxHelper.Watermark="请选择升级版本（V2.8.0）"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:ComboBoxHelper.IsSearchTextBoxVisible="True"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" />
+        </Grid>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtInstall" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\JieLink"
+                 VerticalAlignment="Center" Height="40" Margin="5" IsReadOnly="True"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding InstallPath,Mode=TwoWay}"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtPackage" pu:TextBoxHelper.Watermark="E:\Jielink+智能终端操作平台安装包\sys"
+                 VerticalAlignment="Center" Height="40" Margin="5" IsReadOnly="True"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding PackagePath,Mode=TwoWay}"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <Button Grid.Column="2" Grid.Row="1" Content="浏览" Name="btnChooseInstallPath" Click="btnChooseInstallPath_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        <Button Grid.Column="2" Grid.Row="2" Content="浏览" Name="btnChooseSetUpPackagePath" Click="btnChooseSetUpPackagePath_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+
+        <Button Grid.Column="2" Grid.Row="3" Content="一键升级" Command="{Binding RepairCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="0"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        <Button Grid.Column="2" Grid.Row="4" Content="只替换文件" Command="{Binding RepairCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="1"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        <Button Grid.Column="2" Grid.Row="5" Content="只执行脚本" Command="{Binding RepairCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="2"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
     </Grid>
 </UserControl>

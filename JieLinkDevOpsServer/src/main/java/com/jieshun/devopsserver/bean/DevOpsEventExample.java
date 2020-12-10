@@ -225,6 +225,76 @@ public class DevOpsEventExample {
             return (Criteria) this;
         }
 
+        public Criteria andProjectNoIsNull() {
+            addCriterion("project_no is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoIsNotNull() {
+            addCriterion("project_no is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoEqualTo(String value) {
+            addCriterion("project_no =", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoNotEqualTo(String value) {
+            addCriterion("project_no <>", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoGreaterThan(String value) {
+            addCriterion("project_no >", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoGreaterThanOrEqualTo(String value) {
+            addCriterion("project_no >=", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoLessThan(String value) {
+            addCriterion("project_no <", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoLessThanOrEqualTo(String value) {
+            addCriterion("project_no <=", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoLike(String value) {
+            addCriterion("project_no like", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoNotLike(String value) {
+            addCriterion("project_no not like", value, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoIn(List<String> values) {
+            addCriterion("project_no in", values, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoNotIn(List<String> values) {
+            addCriterion("project_no not in", values, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoBetween(String value1, String value2) {
+            addCriterion("project_no between", value1, value2, "projectNo");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNoNotBetween(String value1, String value2) {
+            addCriterion("project_no not between", value1, value2, "projectNo");
+            return (Criteria) this;
+        }
+
         public Criteria andRemoteAccountIsNull() {
             addCriterion("remote_account is null");
             return (Criteria) this;
@@ -292,6 +362,76 @@ public class DevOpsEventExample {
 
         public Criteria andRemoteAccountNotBetween(String value1, String value2) {
             addCriterion("remote_account not between", value1, value2, "remoteAccount");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordIsNull() {
+            addCriterion("remote_password is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordIsNotNull() {
+            addCriterion("remote_password is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordEqualTo(String value) {
+            addCriterion("remote_password =", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordNotEqualTo(String value) {
+            addCriterion("remote_password <>", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordGreaterThan(String value) {
+            addCriterion("remote_password >", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordGreaterThanOrEqualTo(String value) {
+            addCriterion("remote_password >=", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordLessThan(String value) {
+            addCriterion("remote_password <", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordLessThanOrEqualTo(String value) {
+            addCriterion("remote_password <=", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordLike(String value) {
+            addCriterion("remote_password like", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordNotLike(String value) {
+            addCriterion("remote_password not like", value, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordIn(List<String> values) {
+            addCriterion("remote_password in", values, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordNotIn(List<String> values) {
+            addCriterion("remote_password not in", values, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordBetween(String value1, String value2) {
+            addCriterion("remote_password between", value1, value2, "remotePassword");
+            return (Criteria) this;
+        }
+
+        public Criteria andRemotePasswordNotBetween(String value1, String value2) {
+            addCriterion("remote_password not between", value1, value2, "remotePassword");
             return (Criteria) this;
         }
 
@@ -552,6 +692,66 @@ public class DevOpsEventExample {
 
         public Criteria andIsProcessedNotBetween(Integer value1, Integer value2) {
             addCriterion("is_processed not between", value1, value2, "isProcessed");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterIsNull() {
+            addCriterion("is_filter is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterIsNotNull() {
+            addCriterion("is_filter is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterEqualTo(Integer value) {
+            addCriterion("is_filter =", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterNotEqualTo(Integer value) {
+            addCriterion("is_filter <>", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterGreaterThan(Integer value) {
+            addCriterion("is_filter >", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterGreaterThanOrEqualTo(Integer value) {
+            addCriterion("is_filter >=", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterLessThan(Integer value) {
+            addCriterion("is_filter <", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterLessThanOrEqualTo(Integer value) {
+            addCriterion("is_filter <=", value, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterIn(List<Integer> values) {
+            addCriterion("is_filter in", values, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterNotIn(List<Integer> values) {
+            addCriterion("is_filter not in", values, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterBetween(Integer value1, Integer value2) {
+            addCriterion("is_filter between", value1, value2, "isFilter");
+            return (Criteria) this;
+        }
+
+        public Criteria andIsFilterNotBetween(Integer value1, Integer value2) {
+            addCriterion("is_filter not between", value1, value2, "isFilter");
             return (Criteria) this;
         }
     }

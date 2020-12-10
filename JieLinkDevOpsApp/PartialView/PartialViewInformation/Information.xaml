@@ -74,11 +74,63 @@
             <TextBlock>6.将编译之后的dll文件放在本集成工具的
                 <Run Foreground="#20A0FF">plugs</Run>
                 目录下，重启软件即可</TextBlock>
+            <DockPanel>
+                <TextBlock Margin="5,5,0,5">7.</TextBlock>
+                <TextBlock Margin="0"><Hyperlink Foreground="#20A0FF" NavigateUri="https://docs.qq.com/doc/DU09jR2JqTHRxWWhH" Click="Hyperlink_Click">JieLink运维工具使用说明书</Hyperlink></TextBlock>
+            </DockPanel>
+            
         </StackPanel>
 
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-12-03 V1.0.8">
+                <ContentControl>
+                    <TextBlock>
+                        1.增加主动版本升级功能
+                        2.增加运行中心进程线程数的检测，增加磁盘空间的检测
+                        3.一键升级JieLink功能，增加检测VC++运行环境并直接启动VC++的安装程序
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-26 V1.0.7">
+                <ContentControl>
+                    <TextBlock>
+                        修订一键升级的问题
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-25 V1.0.6">
+                <ContentControl>
+                    <TextBlock>
+                        修订运维事件上报远程账号为项目编号的问题
+                        本工具会对中心进程的运行环境做健康检查（<Run Foreground="#20A0FF">CPU使用率，内存使用率</Run>），建议认真填写项目信息
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-19 V1.0.5">
+                <ContentControl>
+                    <TextBlock>
+                        补充与门禁服务升级相关的配置信息
+                        本运维工具的<Run Foreground="#20A0FF">升级辅助</Run>功能，集成了<Run Foreground="#20A0FF">一键升级</Run>，<Run Foreground="#20A0FF">字段比对</Run>功能，让JieLink版本升级更平滑，推荐使用
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-18 V1.0.4">
+                <ContentControl>
+                    <TextBlock>
+                        重构升级辅助工具，支持一键升级JieLink，新增数据归档工具，完成自动归档
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-10-31 V1.0.3">
+                <ContentControl>
+                    <TextBlock>
+                        新增解决门禁服务重装后设备无法通讯的工具，车位数按照场内记录数自动校正的工具，
+                        <Run Foreground="#20A0FF">JSDS一键升级JieLink的工具</Run>
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-09-27 V1.0.2">
                 <ContentControl>
                     <TextBlock>

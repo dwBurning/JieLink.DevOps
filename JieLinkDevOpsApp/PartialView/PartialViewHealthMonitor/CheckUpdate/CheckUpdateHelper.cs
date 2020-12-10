@@ -23,6 +23,9 @@ namespace PartialViewHealthMonitor.CheckUpdate
             string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Updater.exe");
             ProcessHelper.StartProcessDotNet(executePath, null);
         }
+
+
+
         public static UpdateRequest GetUploadRequest()
         {
             try
@@ -106,7 +109,7 @@ namespace PartialViewHealthMonitor.CheckUpdate
                 throw new Exception("下载文件失败！");
             }
         }
-        private static int CompareVersion(string v1, string v2)
+        public static int CompareVersion(string v1, string v2)
         {
             if (string.IsNullOrEmpty(v1) || string.IsNullOrEmpty(v2))
             {

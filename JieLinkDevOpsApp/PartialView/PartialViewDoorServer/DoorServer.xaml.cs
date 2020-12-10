@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using PartialViewDoorServer.ViewModels;
 using PartialViewInterface;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,10 +25,12 @@ namespace PartialViewDoorServer
     /// </summary>
     public partial class DoorServer : UserControl, IPartialView
     {
+        DoorServerOptViewModel viewModel = new DoorServerOptViewModel();
+
         public DoorServer()
         {
             InitializeComponent();
-            DataContext = new DoorServerOptViewModel();
+            DataContext = viewModel;
         }
 
         public string MenuName
@@ -50,6 +53,20 @@ namespace PartialViewDoorServer
             if (e.AddedItems.Count == 0) return;
             var selectItem = (DoorServerInfo)e.AddedItems[0];
             DoorServerOptViewModel.curDoorServer = selectItem;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                viewModel.GetDoorServerInfo();
+                this.IsEnabled = true;
+            }
+            catch (Exception)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
+                this.IsEnabled = false;
+            }
         }
     }
 }

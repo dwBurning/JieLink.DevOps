@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewHealthMonitor
+namespace PartialViewHealthMonitor.Models
 {
     public class ProcessStatus
     {
         private string processName;
         private int memoryUsed;
         private int cpuUsage;
+        private int threadCount;
         private DateTime createTime = DateTime.Now;
         public string ProcessName
         {
@@ -26,6 +27,12 @@ namespace PartialViewHealthMonitor
         {
             get { return cpuUsage; }
             set { cpuUsage = value; }
+        }
+
+        public int ThreadCount
+        {
+            get { return threadCount; }
+            set { threadCount = value; }
         }
         public DateTime CreateTime
         {

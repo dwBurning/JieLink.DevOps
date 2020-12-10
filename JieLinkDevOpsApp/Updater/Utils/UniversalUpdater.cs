@@ -107,6 +107,15 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             //替换文件
             foreach (var subPackage in packageInfo.SubPackages)
             {
+                if (subPackage.ZipList != null)
+                {
+                    foreach(var zipFile in subPackage.ZipList)
+                    {
+                        string zipFileFullPath = Path.Combine(packageDir, zipFile);
+                        string zipFileDir = new FileInfo(zipFileFullPath).DirectoryName;
+                        UpdateUtils.ExtractZip(zipFileFullPath, zipFileDir);
+                    }
+                }
                 progress = Math.Min(progress + 10, 80);
                 callback?.Invoke(progress, "替换" + subPackage.TargetPath);
 
@@ -115,7 +124,27 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                 List<string> excludeList = subPackage.ExcludeList.Select(x => Path.Combine(sourceDir, x)).ToList();
                 UpdateUtils.ReplaceFile(sourceDir, targetDir, excludeList);
             }
+            //更新配置文件
+            foreach(var programInfo in packageInfo.RunProcessList)
+            {
+                if(!string.IsNullOrEmpty(programInfo.ExecutablePath)&& programInfo.ConfigToUpdate!=null)
+                {
+                    string filePath = programInfo.ExecutablePath;
+                    if (File.Exists(programInfo.ExecutablePath))
+                    {
+                        filePath = programInfo.ExecutablePath;
+                    }
+                    else
+                    {
+                        filePath = Path.Combine(rootDir, programInfo.ExecutablePath);
+                    }
+                    foreach(var kvp in programInfo.ConfigToUpdate)
+                    {
+                        UpdateUtils.WriterAppConfig(filePath, kvp.Key, kvp.Value);
+                    }
+                }
 
+            }
             //启动进程
             progress = 90;
             callback?.Invoke(progress, "启动进程");

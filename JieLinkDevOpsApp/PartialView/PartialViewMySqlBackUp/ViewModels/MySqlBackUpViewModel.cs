@@ -9,6 +9,7 @@ using PartialViewMySqlBackUp.BackUp;
 using PartialViewMySqlBackUp.Models;
 using Quartz;
 using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -105,7 +106,7 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             ProcessHelper.ShowOutputMessage += ProcessHelper_ShowOutputMessage;
 
-            Message = "说明：1)全库备份，是完整备份，基础业务备份，是只备份核心业务数据。\r\n2)哪些表数据属于核心业务，系统已经默认配置了，也可以自行勾选，但是建议只多不少。\r\n3)如果要全部勾选，建议就不要配置为基础业务备份，直接使用全库备份即可。\r\n4)基础业务的备份频率一定要高于全库备份，因为全库备份包含了一些历史表，会很大。\r\n5)配置策略之后，重新启动不需要再去点执行任务，系统会自动执行。";
+            Message = "说明：1)全库备份，是完整备份，基础业务备份，是只备份核心业务数据。\r\n2)哪些表数据属于核心业务，系统已经默认配置了，也可以自行勾选，但是建议只多不少。\r\n3)如果要全部勾选，建议就不要配置为基础业务备份，直接使用全库备份即可。\r\n4)基础业务的备份频率一定要高于全库备份，因为全库备份包含了一些历史表，会很大。\r\n5)配置策略之后，重新启动不需要再去点执行任务，系统会自动执行。\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessage(string message)
@@ -113,7 +114,7 @@ namespace PartialViewMySqlBackUp.ViewModels
             ShowMessage(message);
         }
 
-        IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+        IScheduler scheduler = EnvironmentInfo.scheduler;
         private void Start(object parameter)
         {
             if (string.IsNullOrEmpty(TaskBackUpPath))
@@ -136,15 +137,17 @@ namespace PartialViewMySqlBackUp.ViewModels
                 if (policy.BackUpType == BackUpType.DataBase)
                 {
                     ConfigHelper.WriterAppConfig("DataBaseBackUpJob", cron);
-                    if (scheduler.CheckExists(new JobKey("DataBaseBackUpJob")))
+
+                    var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("scheduler")).Where(x => x.Name == "DataBaseBackUpJob").FirstOrDefault();
+                    if (triggerKey != null)
                     {
-                        scheduler.UnscheduleJob(new TriggerKey("DataBaseBackUpTrigger"));
+                        scheduler.UnscheduleJob(triggerKey);
                     }
                     var job = JobBuilder.Create(typeof(DataBaseBackUpJob))
-                        .WithIdentity("DataBaseBackUpJob", "BackUp").Build();
+                        .WithIdentity("DataBaseBackUpJob", "scheduler").Build();
                     var trigger = TriggerBuilder.Create()
                                     .StartNow()
-                                    .WithIdentity("DataBaseBackUpTrigger", "BackUp")
+                                    .WithIdentity("DataBaseBackUpJob", "scheduler")
                                     .WithCronSchedule(cron)
                                     .Build();
                     scheduler.ScheduleJob(job, trigger);
@@ -152,15 +155,17 @@ namespace PartialViewMySqlBackUp.ViewModels
                 else
                 {
                     ConfigHelper.WriterAppConfig("TablesBackUpJob", cron);
-                    if (scheduler.CheckExists(new JobKey("TablesBackUpJob")))
+                    var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("scheduler")).Where(x => x.Name == "TablesBackUpJob").FirstOrDefault();
+                    if (triggerKey != null)
                     {
-                        scheduler.UnscheduleJob(new TriggerKey("TablesBackUpTrigger", "BackUp"));
+                        scheduler.UnscheduleJob(triggerKey);
                     }
+
                     var job = JobBuilder.Create(typeof(TablesBackUpJob))
                         .WithIdentity("TablesBackUpJob").Build();
                     var trigger = TriggerBuilder.Create()
                                     .StartNow()
-                                    .WithIdentity("TablesBackUpTrigger", "BackUp")
+                                    .WithIdentity("TablesBackUpJob", "scheduler")
                                     .WithCronSchedule(cron)
                                     .Build();
                     scheduler.ScheduleJob(job, trigger);
@@ -422,6 +427,7 @@ namespace PartialViewMySqlBackUp.ViewModels
                 string jsonData = File.ReadAllText(path);
                 BackUpConfig = JsonConvert.DeserializeObject<BackUpConfig>(jsonData);
                 TaskBackUpPath = BackUpConfig.SavePath;//文件保存路径
+                EnvironmentInfo.TaskBackUpPath = BackUpConfig.SavePath;
                 if (!Directory.Exists(TaskBackUpPath))
                 {
                     Directory.CreateDirectory(TaskBackUpPath);
@@ -433,7 +439,7 @@ namespace PartialViewMySqlBackUp.ViewModels
 
                 MySqlBinPath = BaseDirectoryPath;//如果不是在服务器上，那么可能无法获取到mysqldump文件
 
-                
+
                 string sql = $"select table_name from information_schema.`TABLES` where TABLE_SCHEMA='{EnvironmentInfo.DbConnEntity.DbName}';";
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];//获取所有的表
                 foreach (DataRow dr in dt.Rows)

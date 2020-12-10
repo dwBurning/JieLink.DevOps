@@ -27,7 +27,7 @@ public class DevOpsToolService {
 	 * @return 分页对象
 	 */
 	public PageSet<DevOpsProduct> getDevOpsProductWithPages(String version, int start, int end) {
-		String limitString = String.format("operator_date desc limit %d,%d", start, end - start);
+		String limitString = String.format("operator_date limit %d,%d", start, end - start);
 		DevOpsProductExample example = new DevOpsProductExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andIsDeletedEqualTo(0);

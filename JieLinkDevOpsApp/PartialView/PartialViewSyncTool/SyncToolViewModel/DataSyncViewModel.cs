@@ -170,7 +170,7 @@ namespace PartialViewSyncTool.SyncToolViewModel
         {
             ShowMessage("查询sync_box_http表");
             List<SyncBoxEntity> syncBoxEntities = new List<SyncBoxEntity>();
-            string sql = $"select id,protocoldata,datatype from sync_box_http where ObjId like '%{cmd}' and DATE_ADD(AddTime, INTERVAL {day} DAY)> NOW() limit {limit}";
+            string sql = $"select id,protocoldata,datatype from sync_box_http where ObjId like '%{cmd}' and onlyboxid = '' and DATE_ADD(AddTime, INTERVAL {day} DAY)> NOW() limit {limit}";
 
             DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
             if (dt != null)

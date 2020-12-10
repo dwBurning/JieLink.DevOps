@@ -6,10 +6,13 @@ using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using PartialViewInterface.ViewModels;
 using System;
+using System.Data;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-
-
+using System.Linq;
+using System.IO;
+using MySql.Data;
 namespace PartialViewSetting
 {
     /// <summary>
@@ -78,6 +81,34 @@ namespace PartialViewSetting
             string url = ConfigHelper.ReadAppConfig("ServerUrl");
             txtServerUrl.Text = url;
             EnvironmentInfo.ServerUrl = url;
+            if (string.IsNullOrEmpty(EnvironmentInfo.ProjectNo))
+            {
+                #region 未配置的时候，尝试自动获取
+                try
+                {
+                    var process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                    if (process != null)
+                    {
+                        string settingPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, "Config", "Settings.ini");
+                        string connectionString = DESEncrypt.Decrypt(IniSetting.Read(settingPath, "Release", "DataConnectionString", ""));
+                        MySqlConnectionStringBuilder mysqlsb = new MySqlConnectionStringBuilder(connectionString);
+                        EnvironmentInfo.DbConnEntity = new DbConnEntity();
+                        EnvironmentInfo.DbConnEntity.Ip = mysqlsb.Server;
+                        EnvironmentInfo.DbConnEntity.Port = (int)mysqlsb.Port;
+                        EnvironmentInfo.DbConnEntity.UserName = mysqlsb.UserID;
+                        EnvironmentInfo.DbConnEntity.Password = mysqlsb.Password;
+                        EnvironmentInfo.DbConnEntity.DbName = mysqlsb.Database;
+
+                        EnvironmentInfo.ProjectNo = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectCode'").ToString();
+                        //EnvironmentInfo.ContactName = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectName'").ToString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                #endregion
+            }
             viewModel.ProjectNo = EnvironmentInfo.ProjectNo;
             viewModel.RemoteAccount = EnvironmentInfo.RemoteAccount;
             viewModel.RemotePassword = EnvironmentInfo.RemotePassword;
@@ -93,11 +124,18 @@ namespace PartialViewSetting
 
         private void btnTestConn_Click(object sender, RoutedEventArgs e)
         {
+            //发现127开头的IP可以随便填写，都能连接成功，但是最终命令行执行脚本的时候会连接失败
+            if (txtCenterIp.Text.StartsWith("127") && !txtCenterIp.Text.Equals("127.0.0.1"))
+            {
+                txtCenterIp.Text = "127.0.0.1";
+            }
+
             string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
 
             try
             {
                 MySqlHelper.ExecuteDataset(connStr, "select * from sys_user limit 1");
+
                 Notice.Show("中心数据库连接成功,已自动保存!", "通知", 3, MessageBoxIcon.Success);
                 //存储中心连接字符串
 
@@ -111,7 +149,7 @@ namespace PartialViewSetting
             }
             catch (Exception)
             {
-                Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Warning);
             }
         }
     }

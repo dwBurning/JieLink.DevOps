@@ -6,7 +6,7 @@
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              xmlns:local="clr-namespace:PartialViewDoorServer"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <Grid MaxWidth="{Binding ActualWidth}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150"></ColumnDefinition>
@@ -33,7 +33,7 @@
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Command="{Binding GetDoorDeviceCommand}" 
                 />
         <TextBlock VerticalAlignment="Center" Grid.Row="4" TextWrapping="Wrap" Text="门禁服务" />
-        <TextBlock VerticalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="门禁服务安装目录(para文件夹)" />
+        <TextBlock VerticalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="安装目录(para文件夹)" />
         <TextBox x:Name="txtSavePath" Margin="5"
                             VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择Smartdoor安装目录的para文件夹"
                             pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
@@ -47,11 +47,13 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
         <ComboBox x:Name="txtDoorServerIP" Margin="5" VerticalAlignment="Center" Height="40" 
-                            ItemsSource="{Binding DoorServerInfoList}" DataContext="{Binding}" SelectedIndex="0"
+                            ItemsSource="{Binding DoorServerInfoList}" SelectedIndex="0"
                             DisplayMemberPath="{Binding deviceName}" SelectedValuePath="deviceID" SelectionChanged="Cmb_SelectionChanged"
-                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                            pu:TextBoxHelper.CornerRadius="4"
+                             pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                            pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                            pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                            pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                            pu:ComboBoxHelper.CornerRadius="4"
                             pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="4" /> 
         <Button Grid.Column="0" Grid.Row="6" Content="固定门禁服务Mac(修复两个门禁服务问题)" Grid.ColumnSpan="3" Visibility="Hidden"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"

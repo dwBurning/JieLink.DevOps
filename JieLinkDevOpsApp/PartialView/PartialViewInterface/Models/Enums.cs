@@ -11,10 +11,24 @@ namespace PartialViewInterface.Models
         /// <summary>
         /// 运维工具
         /// </summary>
-        DevOps=0,
+        DevOps = 0,
         /// <summary>
         /// Jielink中心
         /// </summary>
-        JSOCT2016=1,
+        JSOCT2016 = 1,
+    }
+
+    public enum enumToolType
+    {
+        /// <summary>
+        /// 数据库备份
+        /// </summary>
+        MySqlBackUp = 0,
+
+        /// <summary>
+        /// 一键升级
+        /// </summary>
+        OneKeyUpdate = 1,
+
     }
 }

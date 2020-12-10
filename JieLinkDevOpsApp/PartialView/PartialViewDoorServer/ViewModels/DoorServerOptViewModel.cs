@@ -28,14 +28,14 @@ namespace PartialViewDoorServer.ViewModels
             GetDoorDeviceCommand = new DelegateCommand();
             GetDoorDeviceCommand.ExecuteAction = SelectDoorDevice;
 
-            GetDoorServerInfo();
+            //GetDoorServerInfo();
         }
 
         /// <summary>
         /// 路径
         /// </summary>
         public DelegateCommand SelectPathCommand { get; set; }
-        
+
         public string FilePath
         {
             get { return (string)GetValue(FilePathProperty); }
@@ -48,7 +48,7 @@ namespace PartialViewDoorServer.ViewModels
         public List<DoorServerInfo> DoorServerInfoList
         {
             get { return _doorServerInfoList; }
-            set { _doorServerInfoList = value;}
+            set { _doorServerInfoList = value; }
         }
         private List<DoorServerInfo> _doorServerInfoList = new List<DoorServerInfo>();
 
@@ -102,21 +102,21 @@ namespace PartialViewDoorServer.ViewModels
         {
             if (string.IsNullOrEmpty(FilePath))
             {
-                Notice.Show("请选择Smartdoor安装目录的para文件夹！.", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("请选择Smartdoor安装目录的para文件夹！.", "通知", 3, MessageBoxIcon.Warning);
                 return;
             }
 
             UInt32 deviceID = curDoorServer.deviceID;
             if (deviceID == 0)
             {
-                Notice.Show("请选择门禁服务！.", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("请选择门禁服务！.", "通知", 3, MessageBoxIcon.Warning);
                 return;
             }
 
             bool result = false;
             string cmd = "select * from control_devices where deviceID = " + deviceID + " or parentID = " + deviceID;
             List<DeviceInfo> jsipDevList = new List<DeviceInfo>();
-            List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>  k02DevList = new List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>();
+            List<PartialViewDoorServer.ViewModels.K02.DeviceInfo> k02DevList = new List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>();
             using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, string.Format(cmd)))
             {
                 while (reader.Read())
@@ -135,7 +135,7 @@ namespace PartialViewDoorServer.ViewModels
                         k02Dev.statusUpdateTime = DateTime.Now;
                         k02Dev.DeviceAddTime = DateTime.Now;
 
-                        k02DevList.Add(k02Dev); 
+                        k02DevList.Add(k02Dev);
                         #endregion
                     }
                     else if (deviceType == 100 || deviceType == 116)
@@ -151,7 +151,7 @@ namespace PartialViewDoorServer.ViewModels
                         k02Dev.statusUpdateTime = DateTime.Now;
                         k02Dev.DeviceAddTime = DateTime.Now;
 
-                        k02DevList.Add(k02Dev); 
+                        k02DevList.Add(k02Dev);
                         #endregion
                     }
                     else
@@ -187,7 +187,7 @@ namespace PartialViewDoorServer.ViewModels
                         dev.IsHttpSended = false;
                         dev.AuthorizeFlag = 1;
 
-                        jsipDevList.Add(dev); 
+                        jsipDevList.Add(dev);
                         #endregion
                     }
                     result = true;
@@ -252,7 +252,7 @@ namespace PartialViewDoorServer.ViewModels
         /// <summary>
         /// 获取门禁服务IP
         /// </summary>
-        private void GetDoorServerInfo()
+        public void GetDoorServerInfo()
         {
             try
             {
@@ -280,7 +280,8 @@ namespace PartialViewDoorServer.ViewModels
             }
             catch (Exception ex)
             {
-                Notice.Show("请先设置数据库连接！", "通知", 3, MessageBoxIcon.Success);
+                //Notice.Show("请先设置数据库连接！", "通知", 3, MessageBoxIcon.Success);
+                throw ex;
             }
         }
     }

@@ -43,8 +43,9 @@ export default new Router({
           }*/
         }, {
           path: '/versiondownloadmanager',
-          name: '工单下载详情',
+          name: '下载详情',
           component: VersionDownloadManager,
+          hidden: true,
         },{
           path: '/publishversion',
           name: '发布工单',
@@ -60,7 +61,7 @@ export default new Router({
         {
           path: '/devopsmanager',
           iconCls: 'el-icon-first-aid-kit',
-          name: '运维管理',
+          name: '运维事件',
           component: DevOpsManager,
           hidden: true,
         }

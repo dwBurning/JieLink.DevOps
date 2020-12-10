@@ -9,7 +9,11 @@ public class DevOpsEvent {
 
     private Integer eventType;
 
+    private String projectNo;
+
     private String remoteAccount;
+
+    private String remotePassword;
 
     private String contactName;
 
@@ -19,6 +23,8 @@ public class DevOpsEvent {
     private Date operatorDate;
 
     private Integer isProcessed;
+
+    private Integer isFilter;
 
     public Integer getId() {
         return id;
@@ -36,12 +42,28 @@ public class DevOpsEvent {
         this.eventType = eventType;
     }
 
+    public String getProjectNo() {
+        return projectNo;
+    }
+
+    public void setProjectNo(String projectNo) {
+        this.projectNo = projectNo == null ? null : projectNo.trim();
+    }
+
     public String getRemoteAccount() {
         return remoteAccount;
     }
 
     public void setRemoteAccount(String remoteAccount) {
         this.remoteAccount = remoteAccount == null ? null : remoteAccount.trim();
+    }
+
+    public String getRemotePassword() {
+        return remotePassword;
+    }
+
+    public void setRemotePassword(String remotePassword) {
+        this.remotePassword = remotePassword == null ? null : remotePassword.trim();
     }
 
     public String getContactName() {
@@ -74,5 +96,13 @@ public class DevOpsEvent {
 
     public void setIsProcessed(Integer isProcessed) {
         this.isProcessed = isProcessed;
+    }
+
+    public Integer getIsFilter() {
+        return isFilter;
+    }
+
+    public void setIsFilter(Integer isFilter) {
+        this.isFilter = isFilter;
     }
 }
