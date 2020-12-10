@@ -284,5 +284,45 @@ namespace PartialViewDoorServer.ViewModels
                 throw ex;
             }
         }
+
+
+        /// <summary>
+        /// 检测自动下载问题
+        /// </summary>
+        /// <returns> true:发现问题已修改 </returns>
+        public bool CheckSyncDoorNum()
+        {
+            try
+            {
+                if (_doorServerInfoList.Count == 0)
+                    return false;
+                string sqlstr = "select MAX(ID) from sync_door";
+                MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                reader.Read();
+                int maxid = Convert.ToInt32(reader["MAX(ID)"].ToString());
+
+                sqlstr = "select GetNum from sync_doornum";
+                MySqlDataReader readerGetNum = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                readerGetNum.Read();
+                while (readerGetNum.Read())
+                {
+                    int GetNum = Convert.ToInt32(readerGetNum["GetNum"].ToString());
+                    //getnum远大于maxid时，对所有getnum执行更新
+                    if (GetNum > maxid + 200 || GetNum > maxid * 2)
+                    {
+                        sqlstr = "update sync_doornum set GetNum = (select max(id) from sync_door)";
+                        MySqlDataReader updater = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                string str = ex.ToString();
+                return false;
+            }
+        }
     }
 }
