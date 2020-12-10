@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jieshun.devopsserver.mapper.ApplyInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.ApplyInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="work_order_no" property="workOrderNo" jdbcType="VARCHAR" />
+    <result column="job_number" property="jobNumber" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="cell_phone" property="cellPhone" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="apply_date" property="applyDate" jdbcType="TIMESTAMP" />
+    <result column="is_send_email" property="isSendEmail" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, work_order_no, job_number, name, cell_phone, email, apply_date, is_send_email
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from order_apply_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from order_apply_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from order_apply_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" >
+    delete from order_apply_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    insert into order_apply_info (id, work_order_no, job_number, 
+      name, cell_phone, email, 
+      apply_date, is_send_email)
+    values (#{id,jdbcType=INTEGER}, #{workOrderNo,jdbcType=VARCHAR}, #{jobNumber,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{cellPhone,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{applyDate,jdbcType=TIMESTAMP}, #{isSendEmail,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    insert into order_apply_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="workOrderNo != null" >
+        work_order_no,
+      </if>
+      <if test="jobNumber != null" >
+        job_number,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="cellPhone != null" >
+        cell_phone,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="applyDate != null" >
+        apply_date,
+      </if>
+      <if test="isSendEmail != null" >
+        is_send_email,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="workOrderNo != null" >
+        #{workOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="jobNumber != null" >
+        #{jobNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="cellPhone != null" >
+        #{cellPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSendEmail != null" >
+        #{isSendEmail,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jieshun.devopsserver.bean.ApplyInfoExample" resultType="java.lang.Integer" >
+    select count(*) from order_apply_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update order_apply_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.workOrderNo != null" >
+        work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jobNumber != null" >
+        job_number = #{record.jobNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null" >
+        name = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cellPhone != null" >
+        cell_phone = #{record.cellPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.applyDate != null" >
+        apply_date = #{record.applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isSendEmail != null" >
+        is_send_email = #{record.isSendEmail,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update order_apply_info
+    set id = #{record.id,jdbcType=INTEGER},
+      work_order_no = #{record.workOrderNo,jdbcType=VARCHAR},
+      job_number = #{record.jobNumber,jdbcType=VARCHAR},
+      name = #{record.name,jdbcType=VARCHAR},
+      cell_phone = #{record.cellPhone,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      apply_date = #{record.applyDate,jdbcType=TIMESTAMP},
+      is_send_email = #{record.isSendEmail,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    update order_apply_info
+    <set >
+      <if test="workOrderNo != null" >
+        work_order_no = #{workOrderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="jobNumber != null" >
+        job_number = #{jobNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="cellPhone != null" >
+        cell_phone = #{cellPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="applyDate != null" >
+        apply_date = #{applyDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isSendEmail != null" >
+        is_send_email = #{isSendEmail,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.ApplyInfo" >
+    update order_apply_info
+    set work_order_no = #{workOrderNo,jdbcType=VARCHAR},
+      job_number = #{jobNumber,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      cell_phone = #{cellPhone,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      apply_date = #{applyDate,jdbcType=TIMESTAMP},
+      is_send_email = #{isSendEmail,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,35 @@
+﻿<pu:WindowX x:Class="JieShun.JieLink.DevOps.Updater.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JieShun.JieLink.DevOps.Updater"
+        xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="JieLink运维升级工具" MinHeight="320" MinWidth="480" Height="320" Width="480"  Topmost="True" ShowInTaskbar="False"
+        Closing="Window_Closing"
+        Loaded="WindowX_Loaded">
+    <Grid Margin="20 20 20 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <ProgressBar Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200" Height="200"
+                     Value="{Binding UpdateProgress}" BorderBrush="#CDDEEF"
+                     pu:ProgressBarHelper.ProgressBarStyle="Ring"
+                     pu:ProgressBarHelper.IsPercentVisible="True" FontSize="45"  Foreground="#20A0FF"/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="13"
+                   Text="{Binding UpdateMessage}" />
+        <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"
+                   Text="{Binding Message}" />
+    </Grid>
+</pu:WindowX>

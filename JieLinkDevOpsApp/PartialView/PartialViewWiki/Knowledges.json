@@ -1,0 +1,18 @@
+[
+  {
+    "Id": "CheckBoxLog",
+    "Knowledge": "怎么查看盒子日志？",
+    "KeyWords": "怎么|查看|盒子|日志",
+  },
+  {
+    "Id": "CheckCenterLog",
+    "Knowledge": "怎么查看中心日志？",
+    "KeyWords": "怎么|查看|中心|日志",
+  },
+  {
+    "Id": "CheckBoxVideo",
+    "Knowledge": "怎么查看盒子录屏？",
+    "KeyWords": "怎么|查看|盒子|录屏",
+  }
+
+]

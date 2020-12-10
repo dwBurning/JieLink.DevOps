@@ -4,18 +4,19 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
-            xmlns:localized="clr-namespace:JieShun.JieLink.DevOps.App.Properties"
-            xmlns:local="clr-namespace:JieShun.JieLink.DevOps.App"
             mc:Ignorable="d"
-            Title="UIBrowser"
+            Title="{Binding Title}"
+            Icon="favicon.ico"
             Height="700"
-            Width="1200"
+            Width="1000"
+            MinWidth="1000"
             WindowStartupLocation="CenterScreen"
+            Loaded="WindowX_Loaded"
             Closing="WindowX_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.3*"
-                              MinWidth="250" />
+            <ColumnDefinition Width="200"
+                              MinWidth="250" MaxWidth="350" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid>
@@ -24,17 +25,22 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBox pu:TextBoxHelper.Icon="&#xf002;"
-                     pu:TextBoxHelper.Watermark="Search ..."
+                     pu:TextBoxHelper.Watermark="搜索 ..."
                      pu:TextBoxHelper.IsClearButtonVisible="True"
                      Margin="5,2,8,2"
                      Text="{Binding SearchText,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=300}" />
             <TreeView x:Name="TvMenu"
                       Grid.Row="1"
-                      pu:TreeViewHelper.SelectedForeground="#49A9C0"
+                      pu:TreeViewHelper.TreeViewStyle="Modern"
+                      pu:TreeViewHelper.ItemHeight="40"
+                      pu:TreeViewHelper.SelectedForeground="#20A0FF"
+                      pu:TreeViewHelper.SelectedBackground="#220082FF"
                       pu:TreeViewHelper.ExpandMode="SingleClick"
                       pu:TreeViewHelper.SelectMode="ChildOnly"
                       SelectedItemChanged="TvMenu_SelectionChanged"
                       Margin="5,0,0,0"
+                      Background="#ECECEC"
+                      BorderBrush="#20A0FF"
                       ItemsSource="{Binding MenuItems}">
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}"
@@ -45,6 +51,8 @@
                                 Value="{Binding Icon}" />
                         <Setter Property="IsExpanded"
                                 Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        <Setter Property="IsSelected"
+                                Value="{Binding IsSelected}"></Setter>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 <TreeView.ItemTemplate>
@@ -56,15 +64,17 @@
         </Grid>
         <GridSplitter Width="2"
                       VerticalAlignment="Stretch" />
-        <ContentControl x:Name="ContentControl"
-                        Grid.Column="1"
-                        Margin="20,0" />
-        <Button Grid.Column="1"
-                Height="30"
-                Width="200"
-                Visibility="Collapsed"
-                Click="Button_Click"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"/>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
+            <ContentControl  x:Name="ContentControl"
+                        Margin="5,0" />
+            <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
+                <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://106.53.255.16:8090/" Click="Hyperlink_Click">由JieLink+V2.*团队提供技术支持</Hyperlink></TextBlock>
+            </StackPanel>
+        </Grid>
+        
     </Grid>
 </pu:WindowX>

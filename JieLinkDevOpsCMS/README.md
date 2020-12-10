@@ -1,6 +1,6 @@
-# jielinkdevopscms
+# JieLinkDevOpsCMS
 
-> JieLink运维平台CMS
+> jielink运维平台
 
 ## Build Setup
 

@@ -1,0 +1,35 @@
+﻿<UserControl
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver" x:Class="PartialViewDelRegeist.BoxDelRegist"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="750">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid MaxWidth="{Binding ActualWidth}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center">当安装盒子提示已安装相同版本或更高版本时，使用此工具删除盒子注册表，之后继续安装</TextBlock>
+        <TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Grid.Row="1" Grid.Column="0"> </TextBlock>
+
+
+        <Button Grid.Column="0" Grid.Row="3" Content="删除盒子注册表" Click="button_DelRegist_Click" 
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" 
+                />
+    </Grid>
+</UserControl>

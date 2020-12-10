@@ -22,21 +22,28 @@ namespace JieShun.JieLink.DevOps.App.Models
 
         public Visibility Visibility
         {
-            get => _visibility;
+            get { return _visibility; }
             set { _visibility = value; NotifyPropertyChanged(); }
         }
         private Visibility _visibility = Visibility.Visible;
 
         public bool IsExpanded
         {
-            get => _isExpanded;
+            get { return _isExpanded; }
             set { _isExpanded = value; NotifyPropertyChanged(); }
         }
         private bool _isExpanded = true;
 
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set { _isSelected = value; NotifyPropertyChanged(); }
+        }
+        private bool _isSelected = false;
+
         public ObservableCollection<TreeViewItemModel> MenuItems
         {
-            get => _menuItems;
+            get { return _menuItems; }
             set { _menuItems = value; NotifyPropertyChanged(); }
         }
         private ObservableCollection<TreeViewItemModel> _menuItems;

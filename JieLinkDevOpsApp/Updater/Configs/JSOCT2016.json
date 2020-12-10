@@ -1,0 +1,130 @@
+{
+  "KillProcessList": [
+    {
+      "ProcessName": null,
+      "ServiceName": "W3SVC",
+      "ExecutablePath": null,
+      "Args": null
+    },
+    {
+      "ProcessName": "JSST.JieLink.Daemon.exe",
+      "ServiceName": "JSST.JieLink.Daemon",
+      "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartCenter.Host.exe",
+      "ServiceName": "JsstJieLinkSmartCenter",
+      "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "ServiceName": "JSSTDoorServerDaemonHost",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "ServiceName": "JSSTDoorServer",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "Args": null
+    }
+  ],
+  "SubPackages": [
+    {
+      "SubPath": "programfiles\\SmartCenter",
+      "TargetPath": "SmartCenter",
+      "ExcludeList": [
+        "Config",
+        "update",
+        "Agent.dat",
+        "Logs",
+        "*.config"
+      ],
+      "ZipList": null
+    },
+    {
+      "SubPath": "programfiles\\SmartWeb",
+      "TargetPath": "SmartWeb",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ],
+      "ZipList": null
+    },
+    {
+      "SubPath": "programfiles\\SmartApi",
+      "TargetPath": "SmartApi",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ],
+      "ZipList": null
+    },
+    {
+      "SubPath": "programfiles\\SmartFile\\down",
+      "TargetPath": "SmartFile\\down",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ],
+      "ZipList": null
+    },
+    {
+      "SubPath": "programfiles\\SmartFile\\upload",
+      "TargetPath": "SmartFile\\upload",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ],
+      "ZipList": null
+    },
+    {
+      "SubPath": "programfiles\\SmartBoxDoorImage\\programfiles\\SmartBoxDoor",
+      "TargetPath": "SmartBoxDoor",
+      "ExcludeList": [
+        "Config",
+        "*.config"
+      ],
+      "ZipList": [
+        "programfiles\\SmartBoxDoorImage.zip"
+      ]
+    }
+  ],
+  "RunProcessList": [
+    {
+      "ProcessName": null,
+      "ServiceName": "W3SVC",
+      "ExecutablePath": null,
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartCenter.Host.exe",
+      "ServiceName": "JsstJieLinkSmartCenter",
+      "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
+      "Args": null,
+      "ConfigToUpdate": {
+        "SendThreadNum": "1024"
+      }
+    },
+    {
+      "ProcessName": "JSST.JieLink.Daemon.exe",
+      "ServiceName": "JSST.JieLink.Daemon",
+      "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "ServiceName": "JSSTDoorServer",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServer.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "ServiceName": "JSSTDoorServerDaemonHost",
+      "ExecutablePath": "SmartBoxDoor\\SmartBoxDoor.Infrastructures.Server.DoorServerDaemonHost.exe",
+      "Args": null
+    }
+  ]
+}

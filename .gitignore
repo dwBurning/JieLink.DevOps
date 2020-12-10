@@ -60,3 +60,6 @@ bld/
 .vs/
 
 packages/
+
+build/
+node_modules

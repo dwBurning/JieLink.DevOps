@@ -1,0 +1,152 @@
+﻿<UserControl x:Class="PartialViewInformation.Information"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:local="clr-namespace:PartialViewInformation"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Left"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="TextWrapping" Value="Wrap"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+            <Style TargetType="Run">
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="180"></RowDefinition>
+            <RowDefinition Height="200"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="7*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" FontSize="20">JieLink运维工具------插件式集成运维工具</TextBlock>
+        <StackPanel Grid.Row="1">
+            
+            <TextBlock>开发插件的步骤：</TextBlock>
+            <TextBlock>1.新建
+                <Run Foreground="#20A0FF">WPF</Run>
+                类库项目
+                命名必须以
+                <Run Foreground="#20A0FF">PartialView</Run>
+                开头
+            </TextBlock>
+            <TextBlock>2.本地引用
+                <Run Foreground="#20A0FF">PartialViewInterface.dll</Run></TextBlock>
+            <TextBlock>3.从Nuget引用
+                <Run Foreground="#20A0FF">Panuon.UI.Silver.dll</Run></TextBlock>
+            <TextBlock>4.新建
+                <Run Foreground="#20A0FF">UserControl</Run></TextBlock>
+            <TextBlock>5.<Run Foreground="#20A0FF">UserControl</Run>
+                实现
+                <Run Foreground="#20A0FF">IPartialView</Run>
+                接口</TextBlock>
+
+        </StackPanel>
+
+
+        <GroupBox Grid.Row="2" Header="IPartialView" Margin="5"
+                          pu:GroupBoxHelper.CornerRadius="4"
+                          pu:GroupBoxHelper.HeaderForeground="#20A0FF"
+                          pu:GroupBoxHelper.HeaderPadding="5,10,0,10"
+                          pu:GroupBoxHelper.IsSplitLineVisible="True"
+                          pu:GroupBoxHelper.ShadowColor="LightGray" >
+            <StackPanel>
+                <TextBlock><Run Foreground="#569CD6">string</Run> MenuName { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单名称</Run></TextBlock>
+                <TextBlock><Run Foreground="#569CD6">string</Run> TagName { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单的标记，必须保证唯一</Run></TextBlock>
+                <TextBlock><Run Foreground="#ADD084">MenuType</Run> MenuType { <Run Foreground="#569CD6">get</Run>; }<Run Foreground="#608B4E">//菜单类型 枚举值 Center表示中心菜单 Box表示盒子菜单</Run></TextBlock>
+            </StackPanel>
+        </GroupBox>
+        <StackPanel Grid.Row="3">
+            <TextBlock>6.将编译之后的dll文件放在本集成工具的
+                <Run Foreground="#20A0FF">plugs</Run>
+                目录下，重启软件即可</TextBlock>
+            <DockPanel>
+                <TextBlock Margin="5,5,0,5">7.</TextBlock>
+                <TextBlock Margin="0"><Hyperlink Foreground="#20A0FF" NavigateUri="https://docs.qq.com/doc/DU09jR2JqTHRxWWhH" Click="Hyperlink_Click">JieLink运维工具使用说明书</Hyperlink></TextBlock>
+            </DockPanel>
+            
+        </StackPanel>
+
+        <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
+                     ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
+                     ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-12-03 V1.0.8">
+                <ContentControl>
+                    <TextBlock>
+                        1.增加主动版本升级功能
+                        2.增加运行中心进程线程数的检测，增加磁盘空间的检测
+                        3.一键升级JieLink功能，增加检测VC++运行环境并直接启动VC++的安装程序
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-26 V1.0.7">
+                <ContentControl>
+                    <TextBlock>
+                        修订一键升级的问题
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-25 V1.0.6">
+                <ContentControl>
+                    <TextBlock>
+                        修订运维事件上报远程账号为项目编号的问题
+                        本工具会对中心进程的运行环境做健康检查（<Run Foreground="#20A0FF">CPU使用率，内存使用率</Run>），建议认真填写项目信息
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-19 V1.0.5">
+                <ContentControl>
+                    <TextBlock>
+                        补充与门禁服务升级相关的配置信息
+                        本运维工具的<Run Foreground="#20A0FF">升级辅助</Run>功能，集成了<Run Foreground="#20A0FF">一键升级</Run>，<Run Foreground="#20A0FF">字段比对</Run>功能，让JieLink版本升级更平滑，推荐使用
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-11-18 V1.0.4">
+                <ContentControl>
+                    <TextBlock>
+                        重构升级辅助工具，支持一键升级JieLink，新增数据归档工具，完成自动归档
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-10-31 V1.0.3">
+                <ContentControl>
+                    <TextBlock>
+                        新增解决门禁服务重装后设备无法通讯的工具，车位数按照场内记录数自动校正的工具，
+                        <Run Foreground="#20A0FF">JSDS一键升级JieLink的工具</Run>
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-09-27 V1.0.2">
+                <ContentControl>
+                    <TextBlock>
+                        新增日志分析工具，场内记录导入工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-09-07 V1.0.1">
+                <ContentControl>
+                    <TextBlock>
+                        新增共享车牌导入，数据比对工具
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-08-31 V1.0.0"
+    			 Content="全新发布" />
+        </pu:Timeline>
+    </Grid>
+</UserControl>

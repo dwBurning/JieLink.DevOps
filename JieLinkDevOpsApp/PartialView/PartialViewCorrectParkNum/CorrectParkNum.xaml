@@ -1,0 +1,80 @@
+﻿<UserControl
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver" x:Class="PartialViewCorrectParkNum.CorrectParkNum"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="750" Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+    <Grid MaxWidth="{Binding ActualWidth}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="200"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0">根据场内记录校正车位：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0">每隔多少分钟校正一次：</TextBlock>
+
+
+        <TextBox x:Name="TextBox_Minute" Grid.Column="1" Grid.Row="2" Text="30" Margin="5"
+                     VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定执行间隔（分钟）"
+                     pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:TextBoxHelper.CornerRadius="4"
+                     pu:TextBoxHelper.IsClearButtonVisible="True"/>
+
+        <Button x:Name="Button_Start"  Margin="5" Grid.Column="1" Grid.Row="0" Content="开始校正" Click="button_Start_Click" 
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" 
+                />
+        <Button x:Name="Button_Stop"  Margin="5" Grid.Column="1" Grid.Row="1" Content="停止校正" Click="button_Stop_Click" 
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" IsEnabled="False" 
+                />
+
+        <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Row="0" Grid.Column="3" Grid.RowSpan="13" IsReadOnly="True" Margin="10,0,10,10">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="{Binding Message}"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+        <CheckBox Grid.Row="3" Grid.Column="1" x:Name="chbAutoStart" Height="30" Margin="5" Content="开机后自动校正"
+                 pu:CheckBoxHelper.CheckBoxStyle="Switch"
+                 pu:CheckBoxHelper.BoxHeight="22"
+                 pu:CheckBoxHelper.CheckedContent="开机后自动校正"
+                 pu:CheckBoxHelper.BoxWidth="33" 
+                 pu:CheckBoxHelper.CheckedBackground="#20A0FF"
+                 pu:CheckBoxHelper.CornerRadius="4" IsChecked="True"
+                 
+                 />
+    </Grid>
+    
+</UserControl>

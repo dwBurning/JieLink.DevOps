@@ -1,7 +1,7 @@
 {
-  "name": "jielinkdevopscms",
+  "name": "JieLinkDevOpsCMS",
   "version": "1.0.0",
-  "description": "JieLink运维平台CMS",
+  "description": "JieLink运维平台",
   "author": "jieshun",
   "private": true,
   "scripts": {
@@ -10,6 +10,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "^0.19.2",
+    "element-ui": "^2.13.2",
+    "mime": "^2.4.6",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },
