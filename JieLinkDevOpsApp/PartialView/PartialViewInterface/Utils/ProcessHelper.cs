@@ -15,36 +15,50 @@ namespace PartialViewInterface.Utils
     {
         public static bool IsServiceRunning(string serviceName)
         {
-            ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName == serviceName);
+            ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName.ToLower() == serviceName.ToLower());
             return serviceController != null && (serviceController.Status == ServiceControllerStatus.Running || serviceController.Status == ServiceControllerStatus.StartPending);
         }
 
 
         public static bool StartService(string serviceName)
         {
-            ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName == serviceName);
+            ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName.ToLower() == serviceName.ToLower());
             if (serviceController == null)
             {
                 return false;
             }
-            serviceController.Start();
-            serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(20000.0));
-            Thread.Sleep(100);
+
+            try
+            {
+                serviceController.Start();
+                serviceController.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromMilliseconds(20000.0));
+                Thread.Sleep(100);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
             return serviceController.Status == ServiceControllerStatus.Running;
         }
 
 
         public static void StopService(string serviceName)
         {
-            ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName == serviceName);
-            if (serviceController == null)
+            try
             {
-                return;
+                ServiceController serviceController = ServiceController.GetServices().FirstOrDefault((ServiceController x) => x.ServiceName.ToLower() == serviceName.ToLower());
+                if (serviceController == null)
+                {
+                    return;
+                }
+                if (serviceController.Status == ServiceControllerStatus.Running || serviceController.Status == ServiceControllerStatus.StartPending)
+                {
+                    serviceController.Stop();
+                    serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMilliseconds(10000.0));
+                }
             }
-            if (serviceController.Status == ServiceControllerStatus.Running || serviceController.Status == ServiceControllerStatus.StartPending)
+            catch (Exception)
             {
-                serviceController.Stop();
-                serviceController.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromMilliseconds(10000.0));
             }
         }
 
