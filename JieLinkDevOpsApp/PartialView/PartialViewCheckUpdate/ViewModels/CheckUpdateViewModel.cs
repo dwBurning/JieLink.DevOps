@@ -280,7 +280,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     RegistryKey subKey = Registry.LocalMachine.OpenSubKey(rootPath + "\\" + keyName, true);
                     object displayName = subKey.GetValue("DisplayName");
-                    if (displayName != null && displayName.ToString().Contains("Microsoft Visual C++ 2013"))
+                    if (displayName != null
+                        && displayName.ToString().Contains("Microsoft Visual C++ 2013 Redistributable (x64)"))
                     {
                         return true;
                     }
