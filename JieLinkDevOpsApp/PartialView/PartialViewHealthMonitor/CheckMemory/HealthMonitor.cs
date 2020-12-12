@@ -65,10 +65,10 @@ namespace PartialViewHealthMonitor
                             processMonitor.Refresh();
                             systemMonitor.Refresh();
 
-                            var warning = systemMonitor.HasWarning();
-                            var processWarning = processMonitor.HasWarning();
+                            var warning = processMonitor.HasWarning(); 
+                            var systemWarning = systemMonitor.HasWarning();
                             if (warning.WarningType == enumWarningType.None)
-                                warning = processWarning;
+                                warning = systemWarning;
                             if (warning.WarningType != enumWarningType.None && DateTime.Now > nextWarningTime)
                             {
                                 nextWarningTime = DateTime.Now.AddHours(warningInterval);
