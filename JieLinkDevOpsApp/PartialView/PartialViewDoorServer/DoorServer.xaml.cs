@@ -61,6 +61,14 @@ namespace PartialViewDoorServer
             {
                 viewModel.GetDoorServerInfo();
                 this.IsEnabled = true;
+
+
+                #region 检测sync_doornum卡不能自动下载问题
+                if (viewModel.CheckSyncDoorNum())
+                {
+                    MessageBoxHelper.MessageBoxShowSuccess("检测到sync_doornum数值错误，会导致卡数据无法自动下载！已自动修复！");
+                }
+                #endregion
             }
             catch (Exception)
             {
