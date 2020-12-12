@@ -104,7 +104,7 @@ namespace PartialViewDataArchiving.DataArchive
                     conn.Open();
                     MySqlTransaction transaction = conn.BeginTransaction();
                     MySqlCommand cmd = conn.CreateCommand();
-                    cmd.CommandTimeout = 30 * 60;//超时时间设置10分钟
+                    cmd.CommandTimeout = 30 * 60;//超时时间设置30分钟
                     cmd.Transaction = transaction;
                     try
                     {
