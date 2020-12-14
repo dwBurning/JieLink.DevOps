@@ -12,6 +12,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Configuration;
+using System.Net;
+using System.Net.Sockets;
 
 namespace PartialViewDoorServer.ViewModels
 {
@@ -75,7 +78,7 @@ namespace PartialViewDoorServer.ViewModels
         {
             System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
 
-            var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer.exe").FirstOrDefault();
+            var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
             if (process != null)
             {
                 fileDialog.SelectedPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, "para");
@@ -285,7 +288,6 @@ namespace PartialViewDoorServer.ViewModels
             }
         }
 
-
         /// <summary>
         /// 检测自动下载问题
         /// </summary>
@@ -294,33 +296,140 @@ namespace PartialViewDoorServer.ViewModels
         {
             try
             {
-                if (_doorServerInfoList.Count == 0)
-                    return false;
+                if(_doorServerInfoList.Count == 0)
+                        return false;
                 string sqlstr = "select MAX(ID) from sync_door";
                 MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
-                reader.Read();
+                if (reader.HasRows)
+                    reader.Read();
+                else
+                    return false;
                 int maxid = Convert.ToInt32(reader["MAX(ID)"].ToString());
 
                 sqlstr = "select GetNum from sync_doornum";
                 MySqlDataReader readerGetNum = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
-                readerGetNum.Read();
                 while (readerGetNum.Read())
                 {
                     int GetNum = Convert.ToInt32(readerGetNum["GetNum"].ToString());
-                    //getnum远大于maxid时，对所有getnum执行更新
+                    //getnum远大于maxid时，对所有有问题的getnum执行更新
                     if (GetNum > maxid + 200 || GetNum > maxid * 2)
                     {
-                        sqlstr = "update sync_doornum set GetNum = (select max(id) from sync_door)";
-                        MySqlDataReader updater = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                        sqlstr = string.Format("update sync_doornum set GetNum = {0} where GetNum > {0}",maxid);
+                        MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sqlstr);
                         return true;
                     }
                 }
+                
+                return false;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+        }
 
+        public string IsConfigMac = string.Empty;
+        public string ConfigMAC = string.Empty;
+        public string sqlMac = string.Empty;
+        public string configpath = string.Empty;
+        /// <summary>
+        /// 检测门禁服务MAC地址配置
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckDoorServerMac()
+        {
+            try
+            {
+                if (_doorServerInfoList.Count == 0)
+                    return false;
+
+                //根据门禁服务进程获取config文件路径
+                System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                if (process != null)
+                {
+                    configpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, "SmartBoxDoor.Infrastructures.Server.DoorServer.exe");
+                }
+                else
+                {
+                    return false;
+                }
+
+                Configuration config = ConfigurationManager.OpenExeConfiguration(configpath);
+                IsConfigMac = config.AppSettings.Settings["IsConfigMac"].Value;
+                ConfigMAC = config.AppSettings.Settings["MAC"].Value;
+
+                //有可能有多个IP
+                string sql = string.Format("select MAC from control_devices where IP in ({0}) and devicetype = 42", GetIP());
+                MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sql);
+                if (reader.HasRows)
+                    reader.Read();
+                else
+                    return false;
+                sqlMac =  reader["MAC"].ToString();
+
+                //未配置MAC地址或者MAC地址配置错误
+                if (sqlMac != ConfigMAC || IsConfigMac == "false")
+                {
+                    return true;
+                }
                 return false;
             }
             catch (Exception ex)
             {
-                string str = ex.ToString();
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取本机IP
+        /// </summary>
+        /// <returns></returns>
+        public static string GetIP()
+        {
+            try
+            {
+                IPHostEntry IpEntry = Dns.GetHostEntry(Dns.GetHostName());
+                string ret = "";
+                foreach (IPAddress item in IpEntry.AddressList)
+                {
+                    //AddressFamily.InterNetwork  ipv4
+                    //AddressFamily.InterNetworkV6 ipv6
+                    if (item.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        if(ret == "")
+                            ret += "'" + item.ToString() + "'";
+                        else
+                            ret += ",'" + item.ToString() + "'";
+                    }
+                }
+                return ret;
+            }
+            catch { return "''"; }
+        }
+
+        /// <summary>
+        /// 修复门禁服务MAC地址配置
+        /// </summary>
+        /// <returns></returns>
+        public bool FixDoorServerMac()
+        {
+            try
+            {
+                Configuration config = ConfigurationManager.OpenExeConfiguration(configpath);
+
+                config.AppSettings.Settings["IsConfigMac"].Value = "true";
+                if (sqlMac.IsNullOrEmpty())
+                    return false;
+                config.AppSettings.Settings["MAC"].Value = sqlMac;
+                config.Save();
+
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                process.Kill();
+                return true;
+            }
+            catch (Exception ex)
+            {
                 return false;
             }
         }
