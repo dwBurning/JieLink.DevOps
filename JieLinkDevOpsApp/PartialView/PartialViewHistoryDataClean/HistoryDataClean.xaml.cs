@@ -1,5 +1,7 @@
-﻿using PartialViewHistoryDataClean.ViewModels;
+﻿using MySql.Data.MySqlClient;
+using PartialViewHistoryDataClean.ViewModels;
 using PartialViewInterface;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +50,17 @@ namespace PartialViewHistoryDataClean
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            viewModel.Load();
+            try
+            {
+                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
+                this.IsEnabled = true;
+                viewModel.Load();
+            }
+            catch (Exception)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
+                this.IsEnabled = false;
+            }
         }
     }
 }

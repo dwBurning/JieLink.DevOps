@@ -58,8 +58,10 @@
     <Compile Include="ViewModels\ControlLeaseStall.cs" />
     <Compile Include="ViewModels\ControlPerson.cs" />
     <Compile Include="ViewModels\ControlRoleGroup.cs" />
+    <Compile Include="ViewModels\ControlVoucher.cs" />
     <Compile Include="ViewModels\JsdsOneClickUpgradeViewModel.cs" />
     <Compile Include="ViewModels\SysParameter.cs" />
+    <Compile Include="ViewModels\SystemSetDoorServiceToPerson.cs" />
     <Compile Include="ViewModels\TBaseOrganizeModel.cs" />
     <Compile Include="ViewModels\TBasePersonKeyModel.cs" />
     <Compile Include="ViewModels\TBasePersonModel.cs" />
