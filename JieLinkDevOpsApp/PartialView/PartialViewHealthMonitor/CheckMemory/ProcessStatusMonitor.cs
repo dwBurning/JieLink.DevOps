@@ -60,12 +60,12 @@ namespace PartialViewHealthMonitor
             int warningCount = (int)(lastStatusList.Count * 0.8);//80%的时间内，cpu的使用率都超过了cpuThreshold
             if (lastStatusList.Where(x => x.CpuUsage > cpuThreshold).Count() > warningCount)
             {
-                return new WarningMessage(enumWarningType.CPU, processName + " cpu使用率超过" + cpuThreshold);
+                return new WarningMessage(enumWarningType.ProcessCPU, processName + " cpu使用率超过" + cpuThreshold);
             }
             //内存使用
             if (lastStatusList.Where(x => x.MemoryUsed > memoryThreshold).Count() > warningCount)
             {
-                return new WarningMessage(enumWarningType.Memory, processName + " 内存超过" + memoryThreshold);
+                return new WarningMessage(enumWarningType.ProcessMemory, processName + " 内存超过" + memoryThreshold);
             }
 
             if (lastStatusList.Where(x => x.ThreadCount > threadCounterThreshold).Count() > warningCount)

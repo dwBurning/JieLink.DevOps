@@ -184,13 +184,17 @@ export default {
 
     eventTypeFormat(row, colume) {
       if (row.eventType == 1) {
-        return "内存溢出";
+        return "系统内存预警";
       } else if (row.eventType == 2) {
-        return "CPU高";
+        return "系统CPU预警";
       } else if (row.eventType == 3) {
-        return "线程预警";
+        return "进程线程预警";
       } else if (row.eventType == 4) {
-        return "磁盘预警";
+        return "系统磁盘预警";
+      } else if (row.eventType == 5) {
+        return "进程内存溢出";
+      } else if (row.eventType == 6) {
+        return "进程CPU预警";
       } else {
         return "其他";
       }

@@ -5,7 +5,12 @@ import java.util.Map;
 
 public enum DevOpsEventEnum {
 
-	OUTOFMEMORY(1, "内存溢出"),CPU(2, "CPU高"),THREAD(3,"线程预警"),DISKSPACE(4,"磁盘预警");
+	OUTOFMEMORY(1, "系统内存预警"), 
+	CPU(2, "系统CPU预警"), 
+	THREAD(3, "进程线程预警"), 
+	DISKSPACE(4, "系统磁盘预警"), 
+	PROCESSOUTOFMEMORY(5, "进程内存溢出"),
+	PROCESSCPU(6, "进程CPU预警");
 
 	private int code;
 

@@ -13,7 +13,8 @@ namespace PartialViewInterface.Models
         CPU = 2,
         Thread = 3,
         Disk = 4,
-
+        ProcessMemory=5,
+        ProcessCPU = 6,
     }
     public class WarningMessage
     {

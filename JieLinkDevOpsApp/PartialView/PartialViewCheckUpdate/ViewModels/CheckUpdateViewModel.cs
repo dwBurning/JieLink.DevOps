@@ -35,8 +35,13 @@ namespace PartialViewCheckUpdate.ViewModels
             Versions = new List<string>()
             {
                 "V1.0.0",
+                "V1.0.1",
+                "V1.0.2",
                 "V1.0.3",
+                "V1.0.4",
+                "V1.0.5",
                 "V1.1.0",
+                "V1.1.1",
                 "V1.2.0",
                 "V1.2.1",
                 "V1.2.2",
@@ -44,11 +49,19 @@ namespace PartialViewCheckUpdate.ViewModels
                 "V1.3.0",
                 "V1.3.1",
                 "V2.0.0",
+                "V2.0.1",
+                "V2.0.2",
+                "V2.1.0",
+                "V2.1.1",
                 "V2.2.0",
+                "V2.2.1",
+                "V2.2.2",
                 "V2.3.0",
                 "V2.4.0",
                 "V2.4.1",
+                "V2.4.2",
                 "V2.5.0",
+                "V2.5.1",
                 "V2.5.2",
                 "V2.6.0",
                 "V2.6.1",
@@ -267,7 +280,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 {
                     RegistryKey subKey = Registry.LocalMachine.OpenSubKey(rootPath + "\\" + keyName, true);
                     object displayName = subKey.GetValue("DisplayName");
-                    if (displayName != null && displayName.ToString().Contains("Microsoft Visual C++ 2013"))
+                    if (displayName != null
+                        && displayName.ToString().Contains("Microsoft Visual C++ 2013 Redistributable (x64)"))
                     {
                         return true;
                     }
