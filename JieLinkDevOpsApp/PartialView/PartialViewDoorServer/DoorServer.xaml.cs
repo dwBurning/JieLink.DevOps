@@ -79,15 +79,15 @@ namespace PartialViewDoorServer
                     }
                     else
                     {
-                        str = string.Format("检测到门禁服务配置文件未启用配置MAC地址，可根据数据库中配置MAC地址为{0}，是否自动修复？", viewModel.sqlMac);
+                        str = string.Format("检测到门禁服务配置文件未启用MAC地址配置，可自动配置MAC地址为{0}，是否自动配置？", viewModel.sqlMac);
                     }
 
                     if (MessageBoxHelper.MessageBoxShowQuestion(str) == MessageBoxResult.Yes)
                     {
                         if(viewModel.FixDoorServerMac())
-                            MessageBoxHelper.MessageBoxShowSuccess("修复门禁服务MAC完成！已结束门禁进程等待重启！");
+                            MessageBoxHelper.MessageBoxShowSuccess("配置门禁服务MAC地址完成！已结束门禁进程等待进程自动重启！");
                         else
-                            MessageBoxHelper.MessageBoxShowError("修复门禁服务MAC失败！");
+                            MessageBoxHelper.MessageBoxShowError("配置门禁服务MAC地址失败！");
                     }
 
                 }
