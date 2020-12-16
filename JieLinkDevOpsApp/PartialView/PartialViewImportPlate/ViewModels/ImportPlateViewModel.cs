@@ -31,7 +31,7 @@ namespace PartialViewImportPlate.ViewModels
             ImportPlateCommand.ExecuteAction = ImportPlate;
             ImportPlateCommand.CanExecuteFunc = new Func<object, bool>((object parameter) => { return canExecute; });
 
-           Message = "说明：本工具是为共享汽车导入凭证而制作，在用工具导入之前，至少要通过界面发行一个凭证信息。\r\n1)将需要导入的车牌粘贴到txt文件中,一个车牌一行，比如plates.txt\r\n2)将记事本文件另存为UTF8编码，必须为UTF8，否则汉字会乱码\r\n";
+            Message = "说明：本工具是为共享汽车导入凭证而制作，在用工具导入之前，至少要通过界面发行一个凭证信息。\r\n1)将需要导入的车牌粘贴到txt文件中,一个车牌一行，比如plates.txt\r\n2)将记事本文件另存为UTF8编码，必须为UTF8，否则汉字会乱码\r\n";
 
         }
 
@@ -109,6 +109,12 @@ namespace PartialViewImportPlate.ViewModels
         private void ImportPlate(object parameter)
         {
             string[] arryPlate = File.ReadAllLines(FilePath);
+            arryPlate = arryPlate.Distinct().ToArray();
+            if (arryPlate.Length == 0)
+            {
+                ShowMessage("没有可导入的车牌");
+                return;
+            }
             Task.Factory.StartNew(() =>
             {
                 //先查詢出已有的一個憑證的設備權限
@@ -117,8 +123,13 @@ namespace PartialViewImportPlate.ViewModels
 
                 for (int i = 0; i < arryPlate.Length; i++)
                 {
-                    voucher.VoucherNo = arryPlate[i].Trim();
-                    voucher.CardNum = arryPlate[i].Trim();
+                    string[] voucherNos = arryPlate[i].Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    voucher.VoucherNo = string.Join("", voucherNos);
+                    if (string.IsNullOrWhiteSpace(voucher.VoucherNo))
+                    {
+                        continue;
+                    }
+                    voucher.CardNum = voucher.VoucherNo;
                     voucher.AddTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     voucher.LastTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     string vguid = Guid.NewGuid().ToString();
