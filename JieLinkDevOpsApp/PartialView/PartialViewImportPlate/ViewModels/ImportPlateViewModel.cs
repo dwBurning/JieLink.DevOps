@@ -111,6 +111,10 @@ namespace PartialViewImportPlate.ViewModels
             string[] arryPlate = File.ReadAllLines(FilePath);
             Task.Factory.StartNew(() =>
             {
+                //先查詢出已有的一個憑證的設備權限
+                string sql = string.Format("select * from control_voucher_device where VGuid='{0}'", voucher.VGUID);
+                DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
+
                 for (int i = 0; i < arryPlate.Length; i++)
                 {
                     voucher.VoucherNo = arryPlate[i].Trim();
@@ -127,8 +131,6 @@ namespace PartialViewImportPlate.ViewModels
                     {
                         ShowMessage(string.Format("凭证 {0} 添加成功！", voucher.VoucherNo));
                         //开始插入权限
-                        string sql = string.Format("select * from control_voucher_device where VGuid='{0}'", voucher.VGUID);
-                        DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
                         foreach (DataRow dr in table.Rows)
                         {
                             string rights = string.Format("insert into control_voucher_device values(UUID(),'{0}','{1}','{2}',0)", vguid, dr["DGuid"].ToString(), dr["DeviceId"].ToString());
