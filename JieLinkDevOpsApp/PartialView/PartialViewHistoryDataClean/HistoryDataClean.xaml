@@ -42,7 +42,7 @@
             <TextBox x:Name="txtInstall" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\mysql-5.6.24-winx64\data\db_newg3_main"
                  VerticalAlignment="Center" Height="40" Margin="5"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF" IsReadOnly="True"
                  pu:TextBoxHelper.CornerRadius="4" Text="{Binding DBJKDataPath,Mode=TwoWay}"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />

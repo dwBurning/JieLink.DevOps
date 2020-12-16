@@ -42,28 +42,35 @@ namespace PartialViewDataArchiving.DataArchive
         /// </summary>
         private void CompareColumns(string bllTableName, string archiveTableName)
         {
-            List<TableCharacter> bllCharacter = GetTableCharacters(bllTableName);
-            List<TableCharacter> archiveCharacter = GetTableCharacters(archiveTableName);
-
-            List<TableCharacter> tableCharacters = bllCharacter.Where(x => !archiveCharacter.Exists(y => x.Field.Equals(y.Field))).ToList();
-
-            foreach (TableCharacter tableCharacter in tableCharacters)
+            try
             {
-                StringBuilder builder = new StringBuilder();
-                builder.Append($"ALTER TABLE `{archiveTableName}` Add COLUMN `{tableCharacter.Field}` {tableCharacter.Type}");
-                if (!tableCharacter.IsNull)
+                List<TableCharacter> bllCharacter = GetTableCharacters(bllTableName);
+                List<TableCharacter> archiveCharacter = GetTableCharacters(archiveTableName);
+
+                List<TableCharacter> tableCharacters = bllCharacter.Where(x => !archiveCharacter.Exists(y => x.Field.Equals(y.Field))).ToList();
+
+                foreach (TableCharacter tableCharacter in tableCharacters)
                 {
-                    builder.Append(" NOT NULL");
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append($"ALTER TABLE `{archiveTableName}` Add COLUMN `{tableCharacter.Field}` {tableCharacter.Type}");
+                    if (!tableCharacter.IsNull)
+                    {
+                        builder.Append(" NOT NULL");
+                    }
+
+                    builder.Append(" COLLATE utf8_unicode_ci");
+
+                    if (!string.IsNullOrEmpty(tableCharacter.Default))
+                    {
+                        builder.Append($" DEFAULT '{tableCharacter.Default}'");
+                    }
+
+                    MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
                 }
+            }
+            catch (Exception)
+            {
 
-                builder.Append(" COLLATE utf8_unicode_ci");
-
-                if (!string.IsNullOrEmpty(tableCharacter.Default))
-                {
-                    builder.Append($" DEFAULT '{tableCharacter.Default}'");
-                }
-
-                MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
             }
         }
 
