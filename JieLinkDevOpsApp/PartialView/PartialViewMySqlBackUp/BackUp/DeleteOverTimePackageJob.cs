@@ -26,6 +26,9 @@ namespace PartialViewMySqlBackUp.BackUp
             }));
 
             List<FileInfo> files = FileHelper.GetAllFileInfo(filePath, "*.zip");
+            //有存在压缩失败 的情况
+            List<FileInfo> fileInfos = FileHelper.GetAllFileInfo(filePath, "*.sql");
+            files.AddRange(fileInfos);
             if (files.Count < 7) return;//文件小于7个 不删除
             for (int i = 0; i < files.Count - 7; i++)//永远保留7个最新的备份文件
             {
