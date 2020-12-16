@@ -148,7 +148,7 @@ namespace PartialViewOtherToJieLink
             }
             catch (Exception ex)
             {
-                viewModel.ShowMessage("一键升级错误，详情请分析日志：" + ex);
+                viewModel.ShowMessage("一键升级错误，详情请分析日志");
                 MessageBoxHelper.MessageBoxShowWarning("一键升级错误，详情请分析日志");
             }
             finally
@@ -213,8 +213,8 @@ namespace PartialViewOtherToJieLink
                                     }
                                     catch (Exception o)
                                     {
-                                        viewModel.ShowMessage("组织根节点插入失败：" + o.Message);
-                                        MessageBoxHelper.MessageBoxShowWarning("组织根节点插入失败");
+                                        viewModel.ShowMessage("组织根节点插入异常：详情请分析日志");
+                                        LogHelper.CommLogger.Error(o, "组织根节点插入异常：");
                                         return;
                                     }
                                     groupSuccessImportList.Add(rgguid);
@@ -228,14 +228,13 @@ namespace PartialViewOtherToJieLink
                                         if (flag <= 0)
                                         {
                                             viewModel.ShowMessage("组织根节点更新失败");
-                                            MessageBoxHelper.MessageBoxShowWarning("组织根节点更新失败");
                                             return;
                                         }
                                     }
                                     catch (Exception o)
                                     {
-                                        viewModel.ShowMessage("组织根节点更新失败：" + o.Message);
-                                        MessageBoxHelper.MessageBoxShowWarning("组织根节点更新失败");
+                                        viewModel.ShowMessage("组织根节点更新异常：详情请分析日志");
+                                        LogHelper.CommLogger.Error(o, "组织根节点更新异常：");
                                         return;
                                     }
                                     groupSuccessImportList.Add(groupRoot.RGGUID);
@@ -289,7 +288,9 @@ namespace PartialViewOtherToJieLink
                                 }
                                 catch (Exception o)
                                 {
-                                    viewModel.ShowMessage("组织" + group.ORG_NAME + "插入失败：" + o.Message);
+                                    viewModel.ShowMessage("组织" + group.ORG_NAME + "插入异常：详情请分析日志");
+                                    LogHelper.CommLogger.Error(o, "组织" + group.ORG_NAME + "插入异常：");
+
                                     continue;
                                 }
                                 groupSuccessImportList.Add(currentGuid);
@@ -474,13 +475,15 @@ namespace PartialViewOtherToJieLink
                                     }
                                     catch (Exception o)
                                     {
-                                        viewModel.ShowMessage(string.Format("02.迁移用户，用户与组织关系{0}【{1}】新增异常：{2}", currentGroup.RGGUID, personModel.CODE, o.ToString()));
+                                        viewModel.ShowMessage(string.Format("02.迁移用户，用户与组织关系{0}【{1}】新增异常：详情请分析日志", currentGroup.RGGUID, personModel.CODE));
+                                        LogHelper.CommLogger.Error(o, string.Format("02.迁移用户，用户与组织关系{0}【{1}】新增异常：", currentGroup.RGGUID, personModel.CODE));
                                     }
                                 }
                             }
                             catch (Exception o)
                             {
-                                viewModel.ShowMessage(string.Format("02.迁移用户，用户{0}【{1}】新增异常：{2}", personModel.NAME, personModel.CODE, o.ToString()));
+                                viewModel.ShowMessage(string.Format("02.迁移用户，用户{0}【{1}】新增异常：详情请分析日志", personModel.NAME, personModel.CODE));
+                                LogHelper.CommLogger.Error(o, string.Format("02.迁移用户，用户{0}【{1}】新增异常：", personModel.NAME, personModel.CODE));
                             }
 
                             if (completeFlag)
@@ -687,7 +690,8 @@ namespace PartialViewOtherToJieLink
                                 catch (Exception o)
                                 {
                                     completeFlag = false;
-                                    viewModel.ShowMessage(string.Format("03.迁移凭证服务，处理用户={0}的凭证服务信息异常：{1}", jieLinkPerson.PersonNo, o.ToString()));
+                                    viewModel.ShowMessage(string.Format("03.迁移凭证服务，处理用户={0}的凭证服务信息异常：详情请分析日志", jieLinkPerson.PersonNo));
+                                    LogHelper.CommLogger.Error(o, string.Format("03.迁移凭证服务，处理用户={0}的凭证服务信息异常：", jieLinkPerson.PersonNo));
                                 }
                                 if (completeFlag)
                                 {
@@ -794,6 +798,7 @@ namespace PartialViewOtherToJieLink
                         catch (Exception o)
                         {
                             viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：");
                         }
                     }
                     foreach (TParkPayModel recordBill in recordBillList)
@@ -872,6 +877,7 @@ namespace PartialViewOtherToJieLink
                         catch (Exception o)
                         {
                             viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：");
                         }
                     }
                     foreach (TParkRecordOutModel recordOut in recordOutList)
@@ -939,6 +945,7 @@ namespace PartialViewOtherToJieLink
                         catch (Exception o)
                         {
                             viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：");
                         }
                     }
                     viewModel.ShowMessage(string.Format("04.迁移入出场收费记录，合计将解析入场记录{0}条，出场记录{1}条，收费记录{2}条；实际迁移入场记录{0}条，出场记录{1}条，收费记录{2}条",
@@ -951,7 +958,8 @@ namespace PartialViewOtherToJieLink
             }
             catch (Exception ex)
             {
-                viewModel.ShowMessage("JISDS一键升级到JieLink异常：" + ex.ToString());
+                viewModel.ShowMessage("JISDS一键升级到JieLink异常：详情请分析日志");
+                LogHelper.CommLogger.Error(ex, "JISDS一键升级到JieLink异常：");
             }
             finally
             {
