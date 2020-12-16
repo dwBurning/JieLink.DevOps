@@ -53,7 +53,7 @@ namespace PartialViewImportPlate.ViewModels
 
 
             bool result = false;
-            string cmd = "select * from control_voucher where personno='{0}' limit 1";
+            string cmd = "select * from control_voucher where status!=4 and personno='{0}' limit 1";
             using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, string.Format(cmd, PersonNo)))
             {
                 if (reader.Read())
