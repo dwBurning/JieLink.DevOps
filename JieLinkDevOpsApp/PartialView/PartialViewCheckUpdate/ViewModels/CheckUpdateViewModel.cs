@@ -428,15 +428,15 @@ namespace PartialViewCheckUpdate.ViewModels
                                 builder.Append($" DEFAULT '{column.Default}'");
                             }
 
-                            builder.Append(" COLLATE utf8_unicode_ci");
+                            builder.Append(" COLLATE utf8_unicode_ci;");
                             ShowMessage($"添加{column.Field}字段...");
                             try
                             {
-                                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, builder.ToString());
+                                MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
                             }
                             catch (Exception)
                             {
-                                exceptMessage.Append($"{table.TableName}表添加{column.Field}字段失败...").Append(Environment.NewLine);
+                                exceptMessage.Append($"-- {table.TableName}表添加{column.Field}字段失败...").Append(Environment.NewLine);
                                 exceptMessage.Append(builder.ToString()).Append(Environment.NewLine);
                             }
 
@@ -480,7 +480,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     #region int bigint
                     if (field.Type.StartsWith("int") || field.Type.StartsWith("bigint"))
                     {
-                        if (field.IsKey)
+                        if (field.IsKey && field.Extra.Equals("auto_increment"))
                         {
                             script.Append($"`{field.Field}` {field.Type} NOT NULL AUTO_INCREMENT,").Append(Environment.NewLine);
                         }
@@ -622,7 +622,10 @@ namespace PartialViewCheckUpdate.ViewModels
                             }
                             else
                             {
-                                script.Append($"`{field.Field}` {field.Type} NOT NULL DEFAULT '{field.Default}',").Append(Environment.NewLine);
+                                if (field.Default.Equals("CURRENT_TIMESTAMP"))
+                                { script.Append($"`{field.Field}` {field.Type} NOT NULL DEFAULT {field.Default},").Append(Environment.NewLine); }
+                                else
+                                { script.Append($"`{field.Field}` {field.Type} NOT NULL DEFAULT '{field.Default}',").Append(Environment.NewLine); }
                             }
                         }
                     }
@@ -653,40 +656,78 @@ namespace PartialViewCheckUpdate.ViewModels
                         }
                         else if (index.NonUnique == 1)
                         {
-                            script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                            var groupByKeyName = table.IndexList.Where(x => x.NonUnique == 1)
+                                .GroupBy(x => x.KeyName).Select(x => x.Key).Distinct();
+                            foreach (var keyName in groupByKeyName)
+                            {
+                                int nonUniqueKeyCount = table.IndexList.Count(x => x.KeyName == keyName);
+                                var uniqueKey = table.IndexList.Where(x => x.KeyName == keyName);
+                                if (nonUniqueKeyCount > 1)
+                                {
+                                    script.Append($"KEY `{keyName}` (");
+                                    string uky = "";
+                                    foreach (var key in uniqueKey)
+                                    {
+                                        uky += "`" + key.ColumnName + "`,";
+                                    }
+                                    script.Append(uky.Trim(','));
+                                    script.Append($") USING BTREE,").Append(Environment.NewLine);
+                                }
+                                else
+                                {
+                                    Index uniqueIndex = uniqueKey.FirstOrDefault();
+                                    script.Append($"KEY `{uniqueIndex.KeyName}` (`{uniqueIndex.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                                }
+                            }
                         }
                         #endregion
                     }
                 }
                 else
                 {
-                    //索引
-                    foreach (var index in table.IndexList)
+                    var otherKey = table.IndexList.Where(x => x.NonUnique == 0);
+                    foreach (var index in otherKey)
                     {
-                        #region 创建索引
-                        if (index.NonUnique == 0)
+                        if (index.KeyName == "PRIMARY")
                         {
-                            if (index.KeyName == "PRIMARY")
-                            {
-                                script.Append($"PRIMARY KEY (`{index.ColumnName}`),").Append(Environment.NewLine);
-                            }
-                            else
-                            {
-                                script.Append($"UNIQUE KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
-                            }
+                            script.Append($"PRIMARY KEY (`{index.ColumnName}`),").Append(Environment.NewLine);
                         }
-
-                        if (index.NonUnique == 1)
+                        else
                         {
+                            script.Append($"UNIQUE KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                        }
+                    }
+
+                    #region 创建索引
+                    var groupByKeyName = table.IndexList.Where(x => x.NonUnique == 1)
+                                            .GroupBy(x => x.KeyName).Select(x => x.Key).Distinct();
+                    foreach (var keyName in groupByKeyName)
+                    {
+                        int nonUniqueKeyCount = table.IndexList.Count(x => x.KeyName == keyName);
+                        var uniqueKey = table.IndexList.Where(x => x.KeyName == keyName);
+                        if (nonUniqueKeyCount > 1)//联合索引
+                        {
+                            script.Append($"KEY `{keyName}` (");
+                            string uky = "";
+                            foreach (var key in uniqueKey)
+                            {
+                                uky += "`" + key.ColumnName + "`,";
+                            }
+                            script.Append(uky.Trim(','));
+                            script.Append($") USING BTREE,").Append(Environment.NewLine);
+                        }
+                        else
+                        {
+                            Index index = uniqueKey.FirstOrDefault();
                             script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
                         }
-                        #endregion
                     }
+                    #endregion
                 }
 
                 string ddlScript = script.ToString().TrimEnd(Environment.NewLine.ToCharArray()).TrimEnd(',') + Environment.NewLine;
 
-                ddlScript += $") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+                ddlScript += $") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
                 try
                 {
@@ -695,12 +736,12 @@ namespace PartialViewCheckUpdate.ViewModels
                         sw.WriteLine(ddlScript);
                     }
 
-                    MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, ddlScript);
+                    MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, ddlScript);
                 }
                 catch (Exception)
                 {
                     StringBuilder ddlStringBuilder = new StringBuilder();
-                    ddlStringBuilder.Append($"表{table.TableName}创建失败！").Append(Environment.NewLine);
+                    ddlStringBuilder.Append($"-- 表{table.TableName}创建失败！").Append(Environment.NewLine);
                     ddlStringBuilder.Append(ddlScript);
                     return ddlStringBuilder.ToString();
                 }

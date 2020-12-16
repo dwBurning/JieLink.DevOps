@@ -34,13 +34,25 @@
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="20" Foreground="#20A0FF" Text="{Binding Message}" ></TextBlock>
-        <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" x:Name="txtInstall" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\mysql-5.6.24-winx64\data\db_newg3_main"
+        <Grid  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="txtInstall" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\mysql-5.6.24-winx64\data\db_newg3_main"
                  VerticalAlignment="Center" Height="40" Margin="5"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4" Text="{Binding DBJKDataPath,Mode=TwoWay}"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
+            <Button Grid.Column="1" Content="浏览" Name="btnChoose" Click="btnChoose_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        </Grid>
+        
         <Button Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" Content="清理XMPP表" Command="{Binding CleanDataCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"

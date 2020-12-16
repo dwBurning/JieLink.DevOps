@@ -4,6 +4,7 @@ using PartialViewInterface;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +61,26 @@ namespace PartialViewHistoryDataClean
             {
                 MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
                 this.IsEnabled = false;
+            }
+        }
+
+        private void btnChoose_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                string xmppidb = System.IO.Path.Combine(folderBrowserDialog.SelectedPath.Trim(), "sync_xmpp.ibd");
+                if (File.Exists(xmppidb))
+                {
+                    viewModel.DBJKDataPath = folderBrowserDialog.SelectedPath.Trim();
+                    FileInfo fileInfo = new FileInfo(xmppidb);
+                    viewModel.ConvertToSizeString(fileInfo.Length);
+                }
+                else
+                {
+                    MessageBoxHelper.MessageBoxShowWarning("sync_xmpp.ibd不存在！");
+                }
             }
         }
     }

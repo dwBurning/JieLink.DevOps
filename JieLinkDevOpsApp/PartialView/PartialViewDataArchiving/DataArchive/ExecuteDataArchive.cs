@@ -63,7 +63,7 @@ namespace PartialViewDataArchiving.DataArchive
                     builder.Append($" DEFAULT '{tableCharacter.Default}'");
                 }
 
-                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, builder.ToString());
+                MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
             }
         }
 
