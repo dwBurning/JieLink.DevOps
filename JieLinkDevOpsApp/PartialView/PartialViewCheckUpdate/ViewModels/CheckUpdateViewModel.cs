@@ -90,7 +90,7 @@ namespace PartialViewCheckUpdate.ViewModels
             {
             }
 
-            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n6.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n7.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n";
+            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n6.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n7.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n8.版本跨度大的话，建议先归档数据，这将有效的缩短升级花费的时间，降低对现场的影响\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessageEx(string message)
@@ -353,6 +353,12 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
+            if (IsVersionCrossBig() 
+                && MessageBoxHelper.MessageBoxShowQuestion("版本跨度较大，建议先执行归档，是否继续？") == MessageBoxResult.No)
+            {
+                return;
+            }
+
             List<FileInfo> fileInfos = new List<FileInfo>();
             for (int i = index; i < scripts.Count; i++)
             {
@@ -386,6 +392,41 @@ namespace PartialViewCheckUpdate.ViewModels
                 ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
             });
+        }
+
+        private bool IsVersionCrossBig()
+        {
+            string sv = this.StartVersion;
+            int index = this.StartVersion.IndexOf("#");
+            if (index > 0)
+            {
+                sv = this.StartVersion.Substring(0, index);
+            }
+
+            string ev = this.EndVersion;
+            index = this.EndVersion.IndexOf("#");
+            if (index > 0)
+            {
+                ev = this.EndVersion.Substring(0, index);
+            }
+
+            sv = sv.ToLower().Replace("v", "").Replace(".", "").PadRight(3, '0');
+            ev = ev.ToLower().Replace("v", "").Replace(".", "").PadRight(3, '0');
+
+            int isv = int.Parse(sv);
+            int iev = int.Parse(ev);
+
+            if (isv < 250 && iev > 250)
+            {
+                return true;
+            }
+
+            if (iev - isv > 100)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void CheckTables(string jsonText)

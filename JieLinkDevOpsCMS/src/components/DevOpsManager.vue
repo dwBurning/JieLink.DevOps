@@ -7,10 +7,12 @@
         v-model="keywords"
         placeholder="请选择事件类型"
       >
-        <el-option label="内存溢出" value="1"></el-option>
-        <el-option label="CPU高" value="2"></el-option>
-        <el-option label="线程预警" value="3"></el-option>
-        <el-option label="磁盘预警" value="4"></el-option>
+        <el-option label="系统内存预警" value="1"></el-option>
+        <el-option label="系统CPU预警" value="2"></el-option>
+        <el-option label="进程线程预警" value="3"></el-option>
+        <el-option label="系统磁盘预警" value="4"></el-option>
+        <el-option label="进程内存溢出" value="5"></el-option>
+        <el-option label="进程CPU预警" value="6"></el-option>
       </el-select>
       <el-button
         type="primary"
@@ -57,7 +59,7 @@
           prop="eventType"
           label="事件类型"
           :formatter="eventTypeFormat"
-          width="100"
+          width="120"
         ></el-table-column>
 
         <el-table-column label="项目编号" width="120">
