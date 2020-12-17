@@ -18,7 +18,7 @@ namespace PartialViewInterface.Utils
         /// <returns></returns>
         public static int ExecuteNonQueryEx(string connectionString, string commandText, int commandTimeout = 1800)
         {
-            using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
                 MySqlCommand cmd = conn.CreateCommand();
