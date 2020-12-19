@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewDataArchiving", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewHistoryDataClean", "PartialView\PartialViewHistoryDataClean\PartialViewHistoryDataClean.csproj", "{AFBFD08A-D17A-436E-B911-6FFBF6883CFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewFacePicBackUp", "PartialView\PartialViewFacePicBackUp\PartialViewFacePicBackUp.csproj", "{DCBF7A27-F973-4997-A402-A0FDB3BDDBB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{AFBFD08A-D17A-436E-B911-6FFBF6883CFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFBFD08A-D17A-436E-B911-6FFBF6883CFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFBFD08A-D17A-436E-B911-6FFBF6883CFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCBF7A27-F973-4997-A402-A0FDB3BDDBB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCBF7A27-F973-4997-A402-A0FDB3BDDBB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCBF7A27-F973-4997-A402-A0FDB3BDDBB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCBF7A27-F973-4997-A402-A0FDB3BDDBB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
