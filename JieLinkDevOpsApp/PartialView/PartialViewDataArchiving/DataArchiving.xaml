@@ -32,7 +32,8 @@
                           pu:ProgressBarHelper.ProgressBarStyle="Ring"
                           pu:ProgressBarHelper.AnimateTo="{Binding Progress}"
                           pu:ProgressBarHelper.CornerRadius="4"
-                          pu:ProgressBarHelper.IsPercentVisible="True" />
+                          IsIndeterminate="{Binding IsIndeterminate}"
+                          pu:ProgressBarHelper.IsPercentVisible="{Binding IsPercentVisible}" />
         <StackPanel Grid.Row="1">
             <TextBlock FontSize="20" Foreground="#20A0FF" Text="{Binding Message}"></TextBlock>
             <Grid >

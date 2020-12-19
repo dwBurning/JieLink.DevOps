@@ -36,13 +36,15 @@ namespace PartialViewHealthMonitor.CheckUpdate
                 DevOpsProduct product = HttpHelper.Get<DevOpsProduct>(url, 3000);
                 if (product == null)
                 {
+                    LogHelper.CommLogger.Error("获取最新版本失败");
                     return null;
                 }
                 if (CompareVersion(EnvironmentInfo.CurrentVersion, product.ProductVersion) >= 0)
                 {
+                    LogHelper.CommLogger.Error("已经是最新版，不执行升级");
                     return null;
                 }
-
+                LogHelper.CommLogger.Info("下载安装包开始");
                 //拼接下载url
                 string downloadUrl = product.DownloadUrl;
                 if (!downloadUrl.StartsWith("http"))
@@ -70,11 +72,13 @@ namespace PartialViewHealthMonitor.CheckUpdate
                 updateRequest.Product = enumProductType.DevOps.ToString();
                 updateRequest.RootPath = AppDomain.CurrentDomain.BaseDirectory;
                 updateRequest.PackagePath = downloadFile;
+                LogHelper.CommLogger.Info("下载安装包完成");
                 return updateRequest;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+                LogHelper.CommLogger.Error(ex, "GetUploadRequest失败");
                 return null;
             }
 

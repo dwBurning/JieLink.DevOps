@@ -206,7 +206,7 @@ namespace PartialViewHistoryDataClean.ViewModels
             }
         }
 
-        private void ConvertToSizeString(long length)
+        public void ConvertToSizeString(long length)
         {
             this.Dispatcher.Invoke(new Action(() =>
             {

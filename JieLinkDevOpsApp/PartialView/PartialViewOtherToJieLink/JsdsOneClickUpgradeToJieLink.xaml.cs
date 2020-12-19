@@ -18,9 +18,9 @@ using MySql.Data.MySqlClient;
 using Panuon.UI.Silver;
 using PartialViewInterface;
 using PartialViewInterface.Utils;
-using PartialViewJsdsOneClickUpgradeToJieLink.ViewModels;
+using PartialViewOtherToJieLink.ViewModels;
 
-namespace PartialViewJsdsOneClickUpgradeToJieLink
+namespace PartialViewOtherToJieLink
 {
     /// <summary>
     /// UserControl1.xaml 的交互逻辑
@@ -148,7 +148,7 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
             }
             catch (Exception ex)
             {
-                viewModel.ShowMessage("一键升级错误，详情请分析日志：" + ex);
+                viewModel.ShowMessage("一键升级错误，详情请分析日志");
                 MessageBoxHelper.MessageBoxShowWarning("一键升级错误，详情请分析日志");
             }
             finally
@@ -175,8 +175,10 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                     groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == GROUPROOTPARENTID);
                 }
                 DataSet groupDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_organize WHERE STATE='normal' ORDER BY ORG_ID ASC;");
+                List<string> groupSuccessImportList = new List<string>();
                 if (groupDs != null && groupDs.Tables[0] != null)
                 {
+                    viewModel.ShowMessage("01.迁移组织");
                     List<TBaseOrganizeModel> tempGroupList = CommonHelper.DataTableToList<TBaseOrganizeModel>(groupDs.Tables[0]).OrderBy(x => x.ORG_ID).ToList();
                     List<TBaseOrganizeModel> groupList = GetOrganizeChildren(tempGroupList, "");
                     if (groupList.Count > 0)
@@ -197,7 +199,8 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                 if (groupRoot == null)
                                 {
                                     string orgCode = new Random().ToString().Substring(2, 8);
-                                    string sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');", new Guid(group.ID), group.ORG_NAME, orgCode, GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), group.REMARK, group.ORG_NAME + ";");
+                                    string rgguid = new Guid(group.ID).ToString();
+                                    string sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');", rgguid, group.ORG_NAME, orgCode, GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), group.REMARK, group.ORG_NAME + ";");
                                     try
                                     {
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
@@ -210,10 +213,11 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                     }
                                     catch (Exception o)
                                     {
-                                        viewModel.ShowMessage("组织根节点插入失败：" + o.Message);
-                                        MessageBoxHelper.MessageBoxShowWarning("组织根节点插入失败");
+                                        viewModel.ShowMessage("组织根节点插入异常：详情请分析日志");
+                                        LogHelper.CommLogger.Error(o, "组织根节点插入异常：");
                                         return;
                                     }
+                                    groupSuccessImportList.Add(rgguid);
                                 }
                                 else
                                 {
@@ -224,17 +228,16 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                         if (flag <= 0)
                                         {
                                             viewModel.ShowMessage("组织根节点更新失败");
-                                            MessageBoxHelper.MessageBoxShowWarning("组织根节点更新失败");
                                             return;
                                         }
                                     }
                                     catch (Exception o)
                                     {
-                                        viewModel.ShowMessage("组织根节点更新失败：" + o.Message);
-                                        MessageBoxHelper.MessageBoxShowWarning("组织根节点更新失败");
+                                        viewModel.ShowMessage("组织根节点更新异常：详情请分析日志");
+                                        LogHelper.CommLogger.Error(o, "组织根节点更新异常：");
                                         return;
                                     }
-
+                                    groupSuccessImportList.Add(groupRoot.RGGUID);
                                 }
                             }
                             else
@@ -285,13 +288,22 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                 }
                                 catch (Exception o)
                                 {
-                                    viewModel.ShowMessage("组织" + group.ORG_NAME + "插入失败：" + o.Message);
+                                    viewModel.ShowMessage("组织" + group.ORG_NAME + "插入异常：详情请分析日志");
+                                    LogHelper.CommLogger.Error(o, "组织" + group.ORG_NAME + "插入异常：");
+
                                     continue;
                                 }
+                                groupSuccessImportList.Add(currentGuid);
                             }
                         }
                     }
+                    viewModel.ShowMessage(string.Format("01.迁移组织结束，合计处理{0}条组织数据，成功迁移{1}条组织", groupList.Count, groupSuccessImportList.Count, JsonHelper.SerializeObject(groupSuccessImportList)));
                 }
+                else
+                {
+                    viewModel.ShowMessage("01.迁移组织结束：groupDs == null || groupDs.Tables[0] == null");
+                }
+
                 //2、重新查询组织
                 dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group ORDER BY id ASC;");
                 dbGroupList = new List<ControlRoleGroup>();
@@ -308,7 +320,8 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                     return;
                 }
                 //3、人事
-                DataSet personDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person WHERE STATE='NORMAL' AND ID in (SELECT PERSON_ID from t_cac_account where `STATUS`='NORMAL' ORDER BY CREATE_DATE ASC) ORDER BY PERSON_SN asc;");
+                //DataSet personDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person WHERE STATE='NORMAL' AND ID in (SELECT PERSON_ID from t_cac_account where `STATUS`='NORMAL' ORDER BY CREATE_DATE ASC) ORDER BY PERSON_SN asc;");
+                DataSet personDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person WHERE STATE='NORMAL' ORDER BY CREATE_TIME asc;");
                 List<TBasePersonModel> personList = new List<TBasePersonModel>();
                 List<TBasePersonKeyModel> personKeyList = new List<TBasePersonKeyModel>();
                 if (personDs != null && personDs.Tables[0] != null)
@@ -320,18 +333,24 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                         personKeyList = CommonHelper.DataTableToList<TBasePersonKeyModel>(personKeyDs.Tables[0]);
                     }
                 }
-                bool isContinue = false;
+                List<string> personSuccessImportList = new List<string>();   //用户成功导入数
                 if (personList.Count > 0)
                 {
+                    viewModel.ShowMessage("02.迁移用户");
                     string idNumber = "311311194910010099";
                     int userType = 2;   //业主
                     int relationship = 0;   //与户主关系：本人
-                    int gender = 1; //男                    
+                    int gender = 1; //男         
                     foreach (TBasePersonModel personModel in personList)
                     {
                         if (personModel.ID.ToUpper().Equals(DEFAULTPERSON))
                         {
                             //默认用户：跳过
+                            continue;
+                        }
+                        if (string.IsNullOrWhiteSpace(personModel.CODE))
+                        {
+                            //跳过
                             continue;
                         }
                         string personGuid = new Guid(personModel.ID).ToString();
@@ -344,9 +363,11 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                         }
                         if (currentPerson != null)
                         {
-                            viewModel.ShowMessage("不可重复一键升级");
-                            MessageBoxHelper.MessageBoxShowWarning("不可重复一键升级");
-                            return;
+                            //重复，直接跳过，以第一条为准
+                            continue;
+                            //viewModel.ShowMessage("不可重复一键升级");
+                            //MessageBoxHelper.MessageBoxShowWarning("不可重复一键升级");
+                            //return;
                         }
 
                         using (TransactionScope transaction = new TransactionScope())
@@ -434,7 +455,7 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                 int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                 if (flag <= 0)
                                 {
-                                    viewModel.ShowMessage(string.Format("用户{0}【{1}】新增失败", personModel.NAME, personModel.ID));
+                                    viewModel.ShowMessage(string.Format("02.迁移用户，用户{0}【{1}】新增失败", personModel.NAME, personModel.ID));
                                 }
                                 else
                                 {
@@ -445,34 +466,44 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                         flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                         if (flag <= 0)
                                         {
-                                            viewModel.ShowMessage(string.Format("用户与组织关系{0}【{1}】新增失败", currentGroup.RGGUID, personModel.ID));
+                                            viewModel.ShowMessage(string.Format("02.迁移用户，用户与组织关系{0}【{1}】新增失败", currentGroup.RGGUID, personModel.CODE));
                                         }
-
-                                        completeFlag = true;
+                                        else
+                                        {
+                                            completeFlag = true;
+                                        }
                                     }
                                     catch (Exception o)
                                     {
-                                        viewModel.ShowMessage(string.Format("用户与组织关系{0}【{1}】新增失败：{2}", currentGroup.RGGUID, personModel.ID, o.ToString()));
+                                        viewModel.ShowMessage(string.Format("02.迁移用户，用户与组织关系{0}【{1}】新增异常：详情请分析日志", currentGroup.RGGUID, personModel.CODE));
+                                        LogHelper.CommLogger.Error(o, string.Format("02.迁移用户，用户与组织关系{0}【{1}】新增异常：", currentGroup.RGGUID, personModel.CODE));
                                     }
                                 }
                             }
                             catch (Exception o)
                             {
-                                viewModel.ShowMessage(string.Format("用户{0}【{1}】新增失败：{2}", personModel.NAME, personModel.ID, o.ToString()));
+                                viewModel.ShowMessage(string.Format("02.迁移用户，用户{0}【{1}】新增异常：详情请分析日志", personModel.NAME, personModel.CODE));
+                                LogHelper.CommLogger.Error(o, string.Format("02.迁移用户，用户{0}【{1}】新增异常：", personModel.NAME, personModel.CODE));
                             }
 
                             if (completeFlag)
                             {
                                 transaction.Complete();
-
-                                isContinue = true;
+                                viewModel.ShowMessage(string.Format("02.迁移用户：用户编号={0}", personModel.CODE));
+                                personSuccessImportList.Add(personModel.CODE);
                             }
                         }
                     }
+                    viewModel.ShowMessage(string.Format("02.迁移用户结束，合计处理{0}条用户数据，成功迁移{1}条用户", personList.Count, personSuccessImportList.Count));
+                }
+                else
+                {
+                    viewModel.ShowMessage("02.迁移用户结束：personList.Count == 0");
                 }
 
                 List<ControlPerson> jielinkPersonList = new List<ControlPerson>();  //jielink数据库的用户列表
-                if (isContinue)
+                viewModel.ShowMessage("03.迁移凭证服务");
+                if (personSuccessImportList.Count > 0)
                 {
                     List<TCacAccountModel> accountList = new List<TCacAccountModel>();
                     List<TcacVoucherBizParamModel> cacVoucherServiceList = new List<TcacVoucherBizParamModel>();
@@ -489,12 +520,12 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                     {
                         accountList = CommonHelper.DataTableToList<TCacAccountModel>(accountDs.Tables[0]);
                     }
-                    DataSet cacVoucherServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM t_cac_voucher_biz_param WHERE ACCOUNT_ID in (SELECT ID from t_cac_account WHERE `STATUS`='NORMAL') ORDER BY CREATE_TIME ASC;");
+                    DataSet cacVoucherServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM t_cac_voucher_biz_param WHERE ACCOUNT_ID in (SELECT ID from t_cac_account WHERE `STATUS`='NORMAL') ORDER BY CREATE_TIME DESC;");
                     if (cacVoucherServiceDs != null && cacVoucherServiceDs.Tables[0] != null)
                     {
                         cacVoucherServiceList = CommonHelper.DataTableToList<TcacVoucherBizParamModel>(cacVoucherServiceDs.Tables[0]);
                     }
-                    DataSet voucherDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_cac_voucher WHERE `STATUS`='NORMAL' OR `STATUS`='BLANK' ORDER BY CREATE_TIME ASC;");
+                    DataSet voucherDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_cac_voucher WHERE (`STATUS`='NORMAL' OR `STATUS`='BLANK') and ACCOUNT_ID in (SELECT ID from t_cac_account WHERE `STATUS`='NORMAL') ORDER BY CREATE_TIME DESC;");
                     if (voucherDs != null && voucherDs.Tables[0] != null)
                     {
                         voucherList = CommonHelper.DataTableToList<TCacVoucherModel>(voucherDs.Tables[0]);
@@ -523,41 +554,66 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                     //4、凭证、门禁服务、车场服务
                     if (accountList.Count > 0)
                     {
+                        List<string> vsSuccessImportList = new List<string>();
                         foreach (TCacAccountModel account in accountList)
                         {
                             using (TransactionScope transaction = new TransactionScope())
                             {
-                                bool completeFlag = true;  //事务提交标识
+                                if (string.IsNullOrWhiteSpace(account.ID))
+                                {
+                                    continue;
+                                }
+                                if (string.IsNullOrWhiteSpace(account.PERSON_ID))
+                                {
+                                    continue;
+                                }
+                                if (account.PERSON_ID.ToUpper().Equals(DEFAULTPERSON))
+                                {
+                                    continue;
+                                }
+                                string personGuid = new Guid(account.PERSON_ID).ToString();
+                                ControlPerson jieLinkPerson = jielinkPersonList.FirstOrDefault(x => x.PGUID == personGuid);
+                                if (jieLinkPerson == null)
+                                {
+                                    continue;
+                                }
+                                bool completeFlag = true;
                                 List<TCacAuthServiceModel> parkServiceSuccessList = new List<TCacAuthServiceModel>();
+                                List<string> messages = new List<string>();
                                 try
                                 {
-                                    if (account.PERSON_ID.ToUpper().Equals(DEFAULTPERSON))
-                                    {
-                                        continue;
-                                    }
-                                    string personGuid = new Guid(account.PERSON_ID).ToString();
-                                    ControlPerson jieLinkPerson = jielinkPersonList.FirstOrDefault(x => x.PGUID == personGuid);
-                                    if (jieLinkPerson == null)
-                                    {
-                                        continue;
-                                    }
                                     //插入门禁服务
                                     TCacAuthServiceModel doorService = doorServiceList.FirstOrDefault(x => x.ACCOUNT_ID == account.ID);
                                     if (doorService != null)
                                     {
                                         string startTime = CommonHelper.GetDateTimeValue(doorService.START_TIME, DateTime.Now).ToString("yyyy-MM-dd");
                                         string endTime = CommonHelper.GetDateTimeValue(doorService.END_TIME, DateTime.Now).ToString("yyyy-MM-dd");
-                                        string sql = string.Format("INSERT INTO system_set_door_service_to_person(SGUID,PersonNo,StartTime,EndTime,Start1,End1,`Week`,WeekText,CardRightFirst,`Status`,OperNo,OperName,OperTime) VALUE('{0}','{1}','{2}','{3}','00:00','23:59','1111111','星期一,星期二,星期三,星期四,星期五,星期六,星期日',0,0,'9999','超级管理员','{4}')",
-                                                Guid.NewGuid().ToString(), jieLinkPerson.PersonNo, startTime, endTime, doorService.CREATE_TIME);
+
+                                        DataSet currentDoorServiceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from system_set_door_service_to_person WHERE `Status`=0 and PersonNo='{jieLinkPerson.PersonNo}'");
+                                        SystemSetDoorServiceToPerson currentDoorService = null;
+                                        if (currentDoorServiceDs != null && currentDoorServiceDs.Tables[0] != null)
+                                        {
+                                            currentDoorService = CommonHelper.DataTableToList<SystemSetDoorServiceToPerson>(currentDoorServiceDs.Tables[0]).FirstOrDefault();
+                                        }
+                                        string sql = string.Empty;
+                                        if (currentDoorService == null)
+                                        {
+                                            sql = string.Format("INSERT INTO system_set_door_service_to_person(SGUID,PersonNo,StartTime,EndTime,Start1,End1,`Week`,WeekText,`Status`,OperNo,OperName,OperTime) VALUE('{0}','{1}','{2}','{3}','00:00','23:59','1111111','星期一,星期二,星期三,星期四,星期五,星期六,星期日',0,'9999','超级管理员','{4}')",
+                                                   Guid.NewGuid().ToString(), jieLinkPerson.PersonNo, startTime, endTime, doorService.CREATE_TIME);
+                                        }
+                                        else
+                                        {
+                                            sql = $"update system_set_door_service_to_person set StartTime='{startTime}',EndTime='{endTime}',OperTime='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}' where `Status`=0 and PersonNo='{jieLinkPerson.PersonNo}'";
+                                        }
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                         if (flag > 0)
                                         {
+                                            messages.Add("门禁服务");
                                             MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsDoorService=1 WHERE PGUID='{0}';", personGuid));
                                         }
                                     }
                                     //车场服务+凭证
                                     List<TCacAuthServiceModel> parkServices = parkServiceList.Where(x => x.ACCOUNT_ID == account.ID).ToList();
-                                    isContinue = true;
                                     foreach (TCacAuthServiceModel parkService in parkServices)
                                     {
                                         string lguid = new Guid(parkService.ID).ToString();
@@ -565,8 +621,26 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                         string endTime = CommonHelper.GetDateTimeValue(parkService.END_TIME, DateTime.Now).ToString("yyyy-MM-dd 23:59:59");
                                         string stopServiceTime = CommonHelper.GetDateTimeValue(parkService.END_TIME, DateTime.Now).ToString("yyyy-MM-dd");
                                         string uniqueServiceNo = CommonHelper.GetUniqueId();
-                                        string sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}',50,'{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
-                                                lguid, personGuid, startTime, endTime, parkService.CREATE_TIME, jieLinkPerson.PersonName, jieLinkPerson.PersonNo, parkService.PARK_SEAT_NUM, stopServiceTime, uniqueServiceNo);
+                                        if (parkService.PARK_SEAT_NUM < 1)
+                                        {
+                                            parkService.PARK_SEAT_NUM = 1;
+                                        }
+                                        DataSet currentParkServiceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_lease_stall WHERE LGUID='{lguid}' AND `Status`=0;");
+                                        ControlLeaseStall currentParkService = null;
+                                        if (currentParkServiceDs != null && currentParkServiceDs.Tables[0] != null)
+                                        {
+                                            currentParkService = CommonHelper.DataTableToList<ControlLeaseStall>(currentParkServiceDs.Tables[0]).FirstOrDefault();
+                                        }
+                                        string sql = string.Empty;
+                                        if (currentParkService == null)
+                                        {
+                                            sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}',50,'{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
+                                                    lguid, personGuid, startTime, endTime, parkService.CREATE_TIME, jieLinkPerson.PersonName, jieLinkPerson.PersonNo, parkService.PARK_SEAT_NUM, stopServiceTime, uniqueServiceNo);
+                                        }
+                                        else
+                                        {
+                                            sql = $"update control_lease_stall set StartTime='{startTime}',EndTime='{endTime}',StopServiceTime='{stopServiceTime}',CarNumber={parkService.PARK_SEAT_NUM},VehiclePosCount={parkService.PARK_SEAT_NUM},OperateTime='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}'";
+                                        }
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                         if (flag > 0)
                                         {
@@ -575,273 +649,317 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                                             List<TcacVoucherBizParamModel> relations = cacVoucherServiceList.Where(x => x.ACCOUNT_ID == account.ID && x.AUTH_SERVICE_ID == parkService.ID).ToList();
                                             List<string> voucherGuids = relations.Select(x => x.VOUCHER_ID).ToList();
                                             List<TCacVoucherModel> vouchers = voucherList.Where(x => voucherGuids.Contains(x.ID)).ToList();
-                                            bool saveFlag = VoucherSave(vouchers, jieLinkPerson, lguid, account.ID);
-                                            if (!saveFlag)
+                                            if (vouchers.Count > 0)
                                             {
-                                                isContinue = false;
-                                                break;
+                                                List<string> voucherSuccessImportList = VoucherSave(vouchers, jieLinkPerson, lguid, account.ID);
+                                                if (voucherSuccessImportList.Count > 0)
+                                                {
+                                                    messages.Add(string.Format("车场服务lguid={0}，关联凭证Guid=【{1}】", lguid, string.Join(",", voucherSuccessImportList)));
+                                                }
+                                                else
+                                                {
+                                                    messages.Add(string.Format("车场服务lguid={0}", lguid));
+                                                }
+                                            }
+                                            else
+                                            {
+                                                messages.Add(string.Format("车场服务lguid={0}", lguid));
                                             }
                                         }
                                     }
-                                    if (isContinue)
+                                    //纯凭证
+                                    List<TCacVoucherModel> vouchersNonService = voucherNonServiceList.Where(x => x.ACCOUNT_ID == account.ID).ToList();
+                                    if (vouchersNonService.Count > 0)
                                     {
-                                        //纯凭证
-                                        List<TCacVoucherModel> vouchersNonService = voucherNonServiceList.Where(x => x.ACCOUNT_ID == account.ID).ToList();
-                                        completeFlag = VoucherSave(vouchersNonService, jieLinkPerson, "", account.ID);
+                                        List<string> voucherSuccessImportList = VoucherSave(vouchersNonService, jieLinkPerson, "", account.ID);
+                                        if (voucherSuccessImportList.Count > 0)
+                                        {
+                                            messages.Add(string.Format("没有关联服务的凭证Guid=【{0}】", string.Join(",", voucherSuccessImportList)));
+                                        }
+                                    }
+                                    if (messages.Count > 0)
+                                    {
+                                        viewModel.ShowMessage(string.Format("03.迁移用户={0}凭证服务：{1}", jieLinkPerson.PersonNo, string.Join("；", messages)));
+                                        vsSuccessImportList.Add(jieLinkPerson.PersonNo);
+                                    }
+                                    else
+                                    {
+                                        viewModel.ShowMessage(string.Format("03.迁移用户={0}凭证服务：无记录", jieLinkPerson.PersonNo));
                                     }
                                 }
                                 catch (Exception o)
                                 {
                                     completeFlag = false;
-                                    viewModel.ShowMessage(string.Format("处理账号【{0}】的凭证服务信息异常：{1}", account.ID, o.ToString()));
+                                    viewModel.ShowMessage(string.Format("03.迁移凭证服务，处理用户={0}的凭证服务信息异常：详情请分析日志", jieLinkPerson.PersonNo));
+                                    LogHelper.CommLogger.Error(o, string.Format("03.迁移凭证服务，处理用户={0}的凭证服务信息异常：", jieLinkPerson.PersonNo));
                                 }
                                 if (completeFlag)
                                 {
                                     transaction.Complete();
-
-                                    isContinue = true;
                                 }
                             }
+                        }
+                        viewModel.ShowMessage(string.Format("03.迁移凭证服务结束，合计处理{0}条账户数据，成功迁移{1}条", accountList.Count, vsSuccessImportList.Count));
+                    }
+                    else
+                    {
+                        viewModel.ShowMessage("03.迁移凭证服务结束：accountList.Count==0");
+                    }
+                }
+                else
+                {
+                    viewModel.ShowMessage("03.迁移凭证服务结束：personSuccessImportList.Count == 0");
+                }
+                viewModel.ShowMessage("04.迁移入出场收费记录");
+                List<TParkRecordInModel> recordInList = new List<TParkRecordInModel>();
+                List<TParkRecordOutModel> recordOutList = new List<TParkRecordOutModel>();
+                List<TParkPayModel> recordBillList = new List<TParkPayModel>();
+                DataSet recordInDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_in WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", INTIME));
+                if (recordInDs != null && recordInDs.Tables[0] != null && recordInDs.Tables[0].Rows.Count > 0)
+                {
+                    recordInList = CommonHelper.DataTableToList<TParkRecordInModel>(recordInDs.Tables[0]);
+                    DataSet recordOutDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_out WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", INTIME));
+                    if (recordOutDs != null && recordOutDs.Tables[0] != null && recordOutDs.Tables[0].Rows.Count > 0)
+                    {
+                        recordOutList = CommonHelper.DataTableToList<TParkRecordOutModel>(recordOutDs.Tables[0]);
+                        DataSet recordBillDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_pay WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", INTIME));
+                        if (recordBillDs != null && recordBillDs.Tables[0] != null && recordBillDs.Tables[0].Rows.Count > 0)
+                        {
+                            recordBillList = CommonHelper.DataTableToList<TParkPayModel>(recordBillDs.Tables[0]);
                         }
                     }
                 }
-
-                //两个isContinue不可以合并，因为前一个里面有对isContinue赋值：迁移入出场、收费记录
-                if (isContinue)
+                if (recordInList.Count > 0)
                 {
-                    List<TParkRecordInModel> recordInList = new List<TParkRecordInModel>();
-                    List<TParkRecordOutModel> recordOutList = new List<TParkRecordOutModel>();
-                    List<TParkPayModel> recordBillList = new List<TParkPayModel>();
-                    DataSet recordInDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_in WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", INTIME));
-                    if (recordInDs != null && recordInDs.Tables[0] != null && recordInDs.Tables[0].Rows.Count > 0)
+                    if (jielinkPersonList.Count == 0)
                     {
-                        recordInList = CommonHelper.DataTableToList<TParkRecordInModel>(recordInDs.Tables[0]);
-                        DataSet recordOutDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_out WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", INTIME));
-                        if (recordOutDs != null && recordOutDs.Tables[0] != null && recordOutDs.Tables[0].Rows.Count > 0)
+                        //获取用户
+                        DataSet jielinkPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_person WHERE `Status`=0 ORDER BY id ASC;");
+                        if (jielinkPersonDs != null && jielinkPersonDs.Tables[0] != null)
                         {
-                            recordOutList = CommonHelper.DataTableToList<TParkRecordOutModel>(recordOutDs.Tables[0]);
-                            DataSet recordBillDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_pay WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", INTIME));
-                            if (recordBillDs != null && recordBillDs.Tables[0] != null && recordBillDs.Tables[0].Rows.Count > 0)
-                            {
-                                recordBillList = CommonHelper.DataTableToList<TParkPayModel>(recordBillDs.Tables[0]);
-                            }
+                            jielinkPersonList = CommonHelper.DataTableToList<ControlPerson>(jielinkPersonDs.Tables[0]);
                         }
                     }
-                    if (recordInList.Count > 0)
+                    DataSet serviceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_lease_stall WHERE `Status`=0 ORDER BY OperateTime DESC;");
+                    List<ControlLeaseStall> parkServiceList = new List<ControlLeaseStall>();
+                    if (serviceDs != null && serviceDs.Tables[0] != null)
                     {
-                        if (jielinkPersonList.Count == 0)
+                        parkServiceList = CommonHelper.DataTableToList<ControlLeaseStall>(serviceDs.Tables[0]);
+                    }
+                    List<string> enterSuccessImportList = new List<string>();
+                    List<string> outSuccessImportList = new List<string>();
+                    List<string> billSuccessImportList = new List<string>();
+                    foreach (TParkRecordInModel recordIn in recordInList)
+                    {
+                        try
                         {
-                            //获取用户
-                            DataSet jielinkPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_person WHERE `Status`=0 ORDER BY id ASC;");
-                            if (jielinkPersonDs != null && jielinkPersonDs.Tables[0] != null)
+                            string plate = recordIn.PHYSICAL_NO;
+                            string intime = recordIn.IN_TIME;
+                            int sealId = 54;
+                            string sealName = "临时用户A";
+                            if (!string.IsNullOrWhiteSpace(recordIn.AUTHSERVICE_ID))
                             {
-                                jielinkPersonList = CommonHelper.DataTableToList<ControlPerson>(jielinkPersonDs.Tables[0]);
+                                sealId = 50;
+                                sealName = "月租用户A";
+                            }
+                            string enterDeviceId = "188766208";
+                            string enterDeviceName = "虚拟车场入口";
+                            string eguid = new Guid(recordIn.ID).ToString();
+                            int wasgone = 0;
+                            if (recordIn.OUT_FLAG.Equals("OUT"))
+                            {
+                                wasgone = 1;
+                            }
+                            string personNo = "";
+                            string personName = "临时车主";
+                            if (!string.IsNullOrWhiteSpace(recordIn.PERSON_ID) && !recordIn.PERSON_ID.Equals(DEFAULTPERSON))
+                            {
+                                string personGuid = new Guid(recordIn.PERSON_ID).ToString();
+                                ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == personGuid);
+                                if (person != null)
+                                {
+                                    personNo = person.PersonNo;
+                                    personName = person.PersonName;
+                                }
+                            }
+                            if (!string.IsNullOrWhiteSpace(recordIn.REMARK))
+                            {
+                                recordIn.REMARK = REMARK;
+                            }
+                            string sql = $"insert into box_enter_record (CredentialType,CredentialNO,Plate,CarNumOrig,EnterTime,SetmealType,SealName,EGuid,EnterRecordID,EnterDeviceID,EnterDeviceName,WasGone,EventType,EventTypeName,ParkNo,OperatorNo,OperatorName,PersonNo,PersonName,Remark,InDeviceEnterType,OptDate) " +
+                                $"VALUES(163,'{plate}','{plate}','{plate}','{intime}',{sealId},'{sealName}','{eguid}','{recordIn.ID}','{enterDeviceId}','{enterDeviceName}','{wasgone}',1,'一般正常记录','{PARKNO}','9999','超级管理员','{personNo}','{personName}','{recordIn.REMARK}',1,'{intime}');";
+                            int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                            if (result > 0)
+                            {
+                                enterSuccessImportList.Add(string.Format($"{plate}-{recordIn.ID}"));
+                                viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{recordIn.ID} 补录入场记录成功！");
                             }
                         }
-                        DataSet serviceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_lease_stall WHERE `Status`=0 ORDER BY OperateTime DESC;");
-                        List<ControlLeaseStall> parkServiceList = new List<ControlLeaseStall>();
-                        if (serviceDs != null && serviceDs.Tables[0] != null)
+                        catch (Exception o)
                         {
-                            parkServiceList = CommonHelper.DataTableToList<ControlLeaseStall>(serviceDs.Tables[0]);
+                            viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：");
                         }
-                        foreach (TParkRecordInModel recordIn in recordInList)
+                    }
+                    foreach (TParkPayModel recordBill in recordBillList)
+                    {
+                        try
                         {
-                            try
+                            string plate = recordBill.PHYSICAL_NO;
+                            string intime = recordBill.IN_TIME;
+                            int sealId = 54;
+                            string sealName = "临时用户A";
+                            if (!string.IsNullOrWhiteSpace(recordBill.VOUCHER_ID))
                             {
-                                string plate = recordIn.PHYSICAL_NO;
-                                string intime = recordIn.IN_TIME;
-                                int sealId = 54;
-                                string sealName = "临时用户A";
-                                if (!string.IsNullOrWhiteSpace(recordIn.AUTHSERVICE_ID))
+                                sealId = 50;
+                                sealName = "月租用户A";
+                            }
+                            //string enterDeviceId = "188766208";
+                            string enterDeviceName = "虚拟车场入口";
+                            string outDeviceID = "120201030";
+                            string outDeviceName = "虚拟车场出口";
+                            string bguid = new Guid(recordBill.ID).ToString();
+                            string enterRecordId = recordBill.RECORDIN_ID;
+                            string outRecordId = recordBill.RECORDOUT_ID;
+                            if (string.IsNullOrWhiteSpace(recordBill.ORDER_NO))
+                            {
+                                recordBill.ORDER_NO = recordBill.ID;
+                            }
+                            string personNo = "";
+                            string personName = "临时车主";
+                            //找出场记录
+                            TParkRecordOutModel recordOut = recordOutList.FirstOrDefault(x => x.ID == outRecordId);
+                            if (recordOut != null && !string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
+                            {
+                                string serviceGuid = new Guid(recordOut.AUTHSERVICE_ID).ToString();
+                                ControlLeaseStall service = parkServiceList.FirstOrDefault(x => x.LGUID == serviceGuid);
+                                if (service != null)
                                 {
-                                    sealId = 50;
-                                    sealName = "月租用户A";
-                                }
-                                string enterDeviceId = "188766208";
-                                string enterDeviceName = "虚拟车场入口";
-                                string eguid = new Guid(recordIn.ID).ToString();
-                                int wasgone = 0;
-                                if (recordIn.OUT_FLAG.Equals("OUT"))
-                                {
-                                    wasgone = 1;
-                                }
-                                string personNo = "";
-                                string personName = "临时车主";
-                                if (!string.IsNullOrWhiteSpace(recordIn.PERSON_ID) && !recordIn.PERSON_ID.Equals(DEFAULTPERSON))
-                                {
-                                    string personGuid = new Guid(recordIn.PERSON_ID).ToString();
-                                    ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == personGuid);
+                                    ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == service.PGUID);
                                     if (person != null)
                                     {
                                         personNo = person.PersonNo;
                                         personName = person.PersonName;
                                     }
                                 }
-                                if (!string.IsNullOrWhiteSpace(recordIn.REMARK))
-                                {
-                                    recordIn.REMARK = REMARK;
-                                }
-                                string sql = $"insert into box_enter_record (CredentialType,CredentialNO,Plate,CarNumOrig,EnterTime,SetmealType,SealName,EGuid,EnterRecordID,EnterDeviceID,EnterDeviceName,WasGone,EventType,EventTypeName,ParkNo,OperatorNo,OperatorName,PersonNo,PersonName,Remark,InDeviceEnterType,OptDate) " +
-                                    $"VALUES(163,'{plate}','{plate}','{plate}','{intime}',{sealId},'{sealName}','{eguid}','{recordIn.ID}','{enterDeviceId}','{enterDeviceName}','{wasgone}',1,'一般正常记录','{PARKNO}','9999','超级管理员','{personNo}','{personName}','{recordIn.REMARK}',1,'{intime}');";
-                                int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
-                                if (result > 0)
-                                {
-                                    viewModel.ShowMessage($"车牌：{plate}-{recordIn.ID} 补录入场记录成功！");
-                                }
                             }
-                            catch (Exception o)
+                            if (!string.IsNullOrWhiteSpace(recordBill.REMARK))
                             {
-                                viewModel.ShowMessage($"车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常！");
+                                recordBill.REMARK = REMARK;
+                            }
+                            int payType = 21;
+                            string payTypeName = "其它";
+                            GetPayType(recordBill.PAY_TYPE, out payType, out payTypeName);
+                            decimal money = recordBill.ACTUAL_BALANCE;  //实收金额
+                            decimal fees = recordBill.AVAILABLE_BALANCE;   //优惠前金额（应收金额）
+                            decimal benefit = recordBill.ABATE_BALANCE;    //优惠金额
+                            decimal derate = 0;    //滚动收费的减免金额
+                            decimal accountReceivable = recordBill.ACTUAL_BALANCE;  //实收金额
+                            decimal paid = 0;   //已支付金额
+                            decimal actualPaid = recordBill.ACTUAL_BALANCE;
+                            decimal exchange = recordBill.REFUND_BALANCE;   //找零金额
+                            decimal freeMoney = 0;  //免费金额
+                            decimal smallChange = 0;    //抹零金额，主要用于存储自助缴费机的抹零金额
+                            int orderType = 0;  //订单类型：1云支付订单 2盒子订单 3中央收费订单 4 缴费机
+                            int status = 1; //订单状态 0未支付 1已支付 2已退款 3代扣中 
+                            int replaceDeduct = 0;  //代扣标识（0：无代扣，1：支付宝代扣）
+                            string payFrom = "捷顺";    //支付来源，如：捷顺、第三方   
+                            int chargeType = 0; //正常收费
+                            string sql = $"INSERT INTO box_bill(BGUID, CredentialType, CredentialNO, Plate, OrderId, PayTime, FeesTime, CreateTime, InTime, EnterRecordID, Money, Fees, Benefit, Derate, AccountReceivable, Paid, ActualPaid, Exchange, FreeMoney, PayTypeID, PayTypeName, ChargeType, ChargeDeviceID,ChargeDeviceName, OperatorID, OperatorName,Cashier,CashierName, OrderType,`Status`, SealTypeId, SealTypeName, Remark, ReplaceDeduct, EventType, PayFrom, DeviceID, PersonNo, PersonName, ParkNo) " +
+                                $"VALUE('{bguid}', 163, '{plate}', '{plate}', '{recordBill.ORDER_NO}', '{recordBill.PAY_TIME}', '{recordBill.PAY_TIME}', '{recordBill.CREATE_TIME}', '{recordBill.IN_TIME}', '{enterRecordId}', {money}, {fees}, {benefit}, {derate}, {accountReceivable}, {paid}, {actualPaid}, {exchange},{freeMoney}, {payType}, '{payTypeName}', {chargeType}, '{outDeviceID}','{outDeviceName}', '9999', '超级管理员', '9999', '超级管理员', {orderType}, {status}, {sealId}, '{sealName}', '{REMARK}', {replaceDeduct}, 1, '{payFrom}', '{outDeviceID}', '{personNo}', '{personName}', '{PARKNO}');";
+                            int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                            if (result > 0)
+                            {
+                                billSuccessImportList.Add(string.Format($"{plate}-{recordBill.ID}"));
+                                viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{recordBill.ID} 补录收费记录成功！");
                             }
                         }
-                        foreach (TParkPayModel recordBill in recordBillList)
+                        catch (Exception o)
                         {
-                            try
-                            {
-                                string plate = recordBill.PHYSICAL_NO;
-                                string intime = recordBill.IN_TIME;
-                                int sealId = 54;
-                                string sealName = "临时用户A";
-                                if (!string.IsNullOrWhiteSpace(recordBill.VOUCHER_ID))
-                                {
-                                    sealId = 50;
-                                    sealName = "月租用户A";
-                                }
-                                //string enterDeviceId = "188766208";
-                                string enterDeviceName = "虚拟车场入口";
-                                string outDeviceID = "120201030";
-                                string outDeviceName = "虚拟车场出口";
-                                string bguid = new Guid(recordBill.ID).ToString();
-                                string enterRecordId = recordBill.RECORDIN_ID;
-                                string outRecordId = recordBill.RECORDOUT_ID;
-                                if (string.IsNullOrWhiteSpace(recordBill.ORDER_NO))
-                                {
-                                    recordBill.ORDER_NO = recordBill.ID;
-                                }
-                                string personNo = "";
-                                string personName = "临时车主";
-                                //找出场记录
-                                TParkRecordOutModel recordOut = recordOutList.FirstOrDefault(x => x.ID == outRecordId);
-                                if (recordOut != null && !string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
-                                {
-                                    string serviceGuid = new Guid(recordOut.AUTHSERVICE_ID).ToString();
-                                    ControlLeaseStall service = parkServiceList.FirstOrDefault(x => x.LGUID == serviceGuid);
-                                    if (service != null)
-                                    {
-                                        ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == service.PGUID);
-                                        if (person != null)
-                                        {
-                                            personNo = person.PersonNo;
-                                            personName = person.PersonName;
-                                        }
-                                    }
-                                }
-                                if (!string.IsNullOrWhiteSpace(recordBill.REMARK))
-                                {
-                                    recordBill.REMARK = REMARK;
-                                }
-                                int payType = 21;
-                                string payTypeName = "其它";
-                                GetPayType(recordBill.PAY_TYPE, out payType, out payTypeName);
-                                decimal money = recordBill.ACTUAL_BALANCE;  //实收金额
-                                decimal fees = recordBill.AVAILABLE_BALANCE;   //优惠前金额（应收金额）
-                                decimal benefit = recordBill.ABATE_BALANCE;    //优惠金额
-                                decimal derate = 0;    //滚动收费的减免金额
-                                decimal accountReceivable = recordBill.ACTUAL_BALANCE;  //实收金额
-                                decimal paid = 0;   //已支付金额
-                                decimal actualPaid = recordBill.ACTUAL_BALANCE;
-                                decimal exchange = recordBill.REFUND_BALANCE;   //找零金额
-                                decimal freeMoney = 0;  //免费金额
-                                decimal smallChange = 0;    //抹零金额，主要用于存储自助缴费机的抹零金额
-                                int orderType = 0;  //订单类型：1云支付订单 2盒子订单 3中央收费订单 4 缴费机
-                                int status = 1; //订单状态 0未支付 1已支付 2已退款 3代扣中 
-                                int replaceDeduct = 0;  //代扣标识（0：无代扣，1：支付宝代扣）
-                                string payFrom = "捷顺";    //支付来源，如：捷顺、第三方   
-                                int chargeType = 0; //正常收费
-                                string sql = $"INSERT INTO box_bill(BGUID, CredentialType, CredentialNO, Plate, OrderId, PayTime, FeesTime, CreateTime, InTime, EnterRecordID, Money, Fees, Benefit, Derate, AccountReceivable, Paid, ActualPaid, Exchange, FreeMoney, PayTypeID, PayTypeName, ChargeType, ChargeDeviceID,ChargeDeviceName, OperatorID, OperatorName,Cashier,CashierName, OrderType,`Status`, SealTypeId, SealTypeName, Remark, ReplaceDeduct, EventType, PayFrom, DeviceID, PersonNo, PersonName, ParkNo) " +
-                                    $"VALUE('{bguid}', 163, '{plate}', '{plate}', '{recordBill.ORDER_NO}', '{recordBill.PAY_TIME}', '{recordBill.PAY_TIME}', '{recordBill.CREATE_TIME}', '{recordBill.IN_TIME}', '{enterRecordId}', {money}, {fees}, {benefit}, {derate}, {accountReceivable}, {paid}, {actualPaid}, {exchange},{freeMoney}, {payType}, '{payTypeName}', {chargeType}, '{outDeviceID}','{outDeviceName}', '9999', '超级管理员', '9999', '超级管理员', {orderType}, {status}, {sealId}, '{sealName}', '{REMARK}', {replaceDeduct}, 1, '{payFrom}', '{outDeviceID}', '{personNo}', '{personName}', '{PARKNO}');";
-                                int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
-                                if (result > 0)
-                                {
-                                    viewModel.ShowMessage($"车牌：{plate}-{recordBill.ID} 补录收费记录成功！");
-                                }
-                            }
-                            catch (Exception o)
-                            {
-                                viewModel.ShowMessage($"车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常！");
-                            }
-                        }
-                        foreach (TParkRecordOutModel recordOut in recordOutList)
-                        {
-                            try
-                            {
-                                string plate = recordOut.PHYSICAL_NO;
-                                string intime = recordOut.IN_TIME;
-                                int sealId = 54;
-                                string sealName = "临时用户A";
-                                if (!string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
-                                {
-                                    sealId = 50;
-                                    sealName = "月租用户A";
-                                }
-                                //string enterDeviceId = "188766208";
-                                string enterDeviceName = "虚拟车场入口";
-                                string outDeviceID = "120201030";
-                                string outDeviceName = "虚拟车场出口";
-                                string oguid = new Guid(recordOut.ID).ToString();
-                                string outRecordId = recordOut.ID;
-                                string enterRecordId = recordOut.RECORDIN_ID;
-                                string personNo = "";
-                                string personName = "临时车主";
-                                if (!string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
-                                {
-                                    string serviceGuid = new Guid(recordOut.AUTHSERVICE_ID).ToString();
-                                    ControlLeaseStall service = parkServiceList.FirstOrDefault(x => x.LGUID == serviceGuid);
-                                    if (service != null)
-                                    {
-                                        ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == service.PGUID);
-                                        if (person != null)
-                                        {
-                                            personNo = person.PersonNo;
-                                            personName = person.PersonName;
-                                        }
-                                    }
-                                }
-                                if (!string.IsNullOrWhiteSpace(recordOut.REMARK))
-                                {
-                                    recordOut.REMARK = REMARK;
-                                }
-                                int payType = 21;   //其他，通过收费记录赋值    
-                                string payTypeName = "其它";
-                                TParkPayModel recordBill = recordBillList.FirstOrDefault(x => x.RECORDOUT_ID == outRecordId);
-                                if (recordBill != null)
-                                {
-                                    GetPayType(recordBill.PAY_TYPE, out payType, out payTypeName);
-                                }
-                                //AccountReceivable,Charging,HgMoney,YhMoney,FreeMoney
-                                decimal accountReceivable = recordOut.TOTAL_CHARGE_ACTUAL;  //实收金额
-                                decimal charging = recordOut.TOTAL_CHARGE_AVAILABLE;   //应收金额
-                                decimal hgMoney = 0;    //回滚金额
-                                decimal yhMoney = recordOut.TOTAL_CHARGE_REFUND;    //优惠金额
-                                decimal freeMoney = 0;  //免费金额
-                                string sql = $"INSERT INTO box_out_record(OGUID,OutRecordID,OutDeviceID,OutDeviceName,EnterRecordID,InDeviceName,InTime,CredentialType,CredentialNO,Plate,CarNumOrig,OperatorNo,OperatorName,OutTime,OptTime,PersonNo,PersonName,SetmealType,SetmealName,Remark,PayType,AccountReceivable,Charging,HgMoney,YhMoney,FreeMoney,IoType,ExtendFlag,EventType,EventTypeName,ParkNo) " +
-                                    $"VALUE('{oguid}','{outRecordId}','{outDeviceID}','{outDeviceName}','{enterRecordId}','{enterDeviceName}','{recordOut.IN_TIME}',163,'{plate}','{plate}','{plate}','9999','超级管理员','{recordOut.OUT_TIME}','{recordOut.OUT_TIME}','{personNo}','{personName}',{sealId},'{sealName}','{recordOut.REMARK}','{payType}',{accountReceivable},{charging},{hgMoney},{yhMoney},{freeMoney},2,1,1,'一般正常记录','{PARKNO}');";
-                                int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
-                                if (result > 0)
-                                {
-                                    viewModel.ShowMessage($"车牌：{plate}-{recordOut.ID} 补录出场记录成功！");
-                                }
-                            }
-                            catch (Exception o)
-                            {
-                                viewModel.ShowMessage($"车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常！");
-                            }
+                            viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：");
                         }
                     }
+                    foreach (TParkRecordOutModel recordOut in recordOutList)
+                    {
+                        try
+                        {
+                            string plate = recordOut.PHYSICAL_NO;
+                            string intime = recordOut.IN_TIME;
+                            int sealId = 54;
+                            string sealName = "临时用户A";
+                            if (!string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
+                            {
+                                sealId = 50;
+                                sealName = "月租用户A";
+                            }
+                            //string enterDeviceId = "188766208";
+                            string enterDeviceName = "虚拟车场入口";
+                            string outDeviceID = "120201030";
+                            string outDeviceName = "虚拟车场出口";
+                            string oguid = new Guid(recordOut.ID).ToString();
+                            string outRecordId = recordOut.ID;
+                            string enterRecordId = recordOut.RECORDIN_ID;
+                            string personNo = "";
+                            string personName = "临时车主";
+                            if (!string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
+                            {
+                                string serviceGuid = new Guid(recordOut.AUTHSERVICE_ID).ToString();
+                                ControlLeaseStall service = parkServiceList.FirstOrDefault(x => x.LGUID == serviceGuid);
+                                if (service != null)
+                                {
+                                    ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == service.PGUID);
+                                    if (person != null)
+                                    {
+                                        personNo = person.PersonNo;
+                                        personName = person.PersonName;
+                                    }
+                                }
+                            }
+                            if (!string.IsNullOrWhiteSpace(recordOut.REMARK))
+                            {
+                                recordOut.REMARK = REMARK;
+                            }
+                            int payType = 21;   //其他，通过收费记录赋值    
+                            string payTypeName = "其它";
+                            TParkPayModel recordBill = recordBillList.FirstOrDefault(x => x.RECORDOUT_ID == outRecordId);
+                            if (recordBill != null)
+                            {
+                                GetPayType(recordBill.PAY_TYPE, out payType, out payTypeName);
+                            }
+                            //AccountReceivable,Charging,HgMoney,YhMoney,FreeMoney
+                            decimal accountReceivable = recordOut.TOTAL_CHARGE_ACTUAL;  //实收金额
+                            decimal charging = recordOut.TOTAL_CHARGE_AVAILABLE;   //应收金额
+                            decimal hgMoney = 0;    //回滚金额
+                            decimal yhMoney = recordOut.TOTAL_CHARGE_REFUND;    //优惠金额
+                            decimal freeMoney = 0;  //免费金额
+                            string sql = $"INSERT INTO box_out_record(OGUID,OutRecordID,OutDeviceID,OutDeviceName,EnterRecordID,InDeviceName,InTime,CredentialType,CredentialNO,Plate,CarNumOrig,OperatorNo,OperatorName,OutTime,OptTime,PersonNo,PersonName,SetmealType,SetmealName,Remark,PayType,AccountReceivable,Charging,HgMoney,YhMoney,FreeMoney,IoType,ExtendFlag,EventType,EventTypeName,ParkNo) " +
+                                $"VALUE('{oguid}','{outRecordId}','{outDeviceID}','{outDeviceName}','{enterRecordId}','{enterDeviceName}','{recordOut.IN_TIME}',163,'{plate}','{plate}','{plate}','9999','超级管理员','{recordOut.OUT_TIME}','{recordOut.OUT_TIME}','{personNo}','{personName}',{sealId},'{sealName}','{recordOut.REMARK}','{payType}',{accountReceivable},{charging},{hgMoney},{yhMoney},{freeMoney},2,1,1,'一般正常记录','{PARKNO}');";
+                            int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                            if (result > 0)
+                            {
+                                outSuccessImportList.Add(string.Format($"{plate}-{recordOut.ID}"));
+                                viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{recordOut.ID} 补录出场记录成功！");
+                            }
+                        }
+                        catch (Exception o)
+                        {
+                            viewModel.ShowMessage($"04.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：");
+                        }
+                    }
+                    viewModel.ShowMessage(string.Format("04.迁移入出场收费记录，合计将解析入场记录{0}条，出场记录{1}条，收费记录{2}条；实际迁移入场记录{0}条，出场记录{1}条，收费记录{2}条",
+                        recordInList.Count, recordOutList.Count, recordBillList.Count, enterSuccessImportList.Count, outSuccessImportList.Count, billSuccessImportList.Count));
+                }
+                else
+                {
+                    viewModel.ShowMessage("04.迁移入出场收费记录结束：recordInList.Count == 0");
                 }
             }
             catch (Exception ex)
             {
+                viewModel.ShowMessage("JISDS一键升级到JieLink异常：详情请分析日志");
+                LogHelper.CommLogger.Error(ex, "JISDS一键升级到JieLink异常：");
             }
             finally
             {
@@ -857,9 +975,9 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
         /// <param name="lguid"></param>
         /// <param name="accountID"></param>
         /// <returns></returns>
-        private bool VoucherSave(List<TCacVoucherModel> voucherList, ControlPerson jieLinkPerson, string lguid, string accountID)
+        private List<string> VoucherSave(List<TCacVoucherModel> voucherList, ControlPerson jieLinkPerson, string lguid, string accountID)
         {
-            bool completeFlag = true;
+            List<string> voucherSuccessImportList = new List<string>();
             foreach (TCacVoucherModel voucher in voucherList)
             {
                 try
@@ -877,11 +995,22 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                     {
                         remark = voucher.REMARK;
                     }
+                    DataSet currentVoucherDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_voucher WHERE `Status` in (1,2) AND VoucherNo='{voucher.PHYSICAL_NO}' AND PGUID='{jieLinkPerson.PGUID}';");
+                    ControlVoucher currentControlVoucher = null;
+                    if (currentVoucherDs != null && currentVoucherDs.Tables[0] != null)
+                    {
+                        currentControlVoucher = CommonHelper.DataTableToList<ControlVoucher>(currentVoucherDs.Tables[0]).FirstOrDefault();
+                    }
+                    if (currentControlVoucher != null)
+                    {
+                        continue;
+                    }
                     string sql = string.Format("INSERT INTO control_voucher(Guid,PGUID,LGUID,PersonNo,PersonName,VoucherType,VoucherNo,CardNum,PhysicsNum,AddOperatorNo,AddTime,`Status`,LastTime,Remark,StatusFromPerson) VALUE('{0}','{1}','{2}','{3}','{4}',{5},'{6}','{6}','{7}','9999','{8}',1,'{8}','{9}',1);",
                              voucherGuid, jieLinkPerson.PGUID, lguid, jieLinkPerson.PersonNo, jieLinkPerson.PersonName, voucherType, voucher.PHYSICAL_NO, physicsNum, voucher.CREATE_TIME, remark);
                     int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                     if (flag > 0)
                     {
+                        voucherSuccessImportList.Add(voucherGuid);
                         MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsIssueCard=1 WHERE PGUID='{0}';", jieLinkPerson.PGUID));
 
                         if (voucherType == 163)
@@ -902,12 +1031,11 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink
                 }
                 catch (Exception o1)
                 {
-                    completeFlag = false;
                     viewModel.ShowMessage(string.Format("处理账号【{0}】的凭证【{1}】信息异常：{1}", accountID, voucher.ID, o1.ToString()));
                     break;
                 }
             }
-            return completeFlag;
+            return voucherSuccessImportList;
         }
         /// <summary>
         /// 支付方式转换

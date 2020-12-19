@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace PartialViewJsdsOneClickUpgradeToJieLink.ViewModels
+namespace PartialViewOtherToJieLink.ViewModels
 {
     public class JsdsOneClickUpgradeViewModel : DependencyObject
     {
@@ -41,11 +41,10 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink.ViewModels
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                if (UpgradeResult != null && UpgradeResult.Length > 5000)
-                {
-                    UpgradeResult = string.Empty;
-                }
-
+                //if (UpgradeResult != null && UpgradeResult.Length > 5000)
+                //{
+                //    UpgradeResult = string.Empty;
+                //}
                 UpgradeResult += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
             }));
         }
