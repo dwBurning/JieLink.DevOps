@@ -90,7 +90,7 @@ namespace PartialViewCheckUpdate.ViewModels
             {
             }
 
-            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n6.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n7.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n";
+            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n6.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n7.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n8.版本跨度大的话，建议先归档数据，这将有效的缩短升级花费的时间，降低对现场的影响\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessageEx(string message)
@@ -353,6 +353,12 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
+            if (IsVersionCrossBig() 
+                && MessageBoxHelper.MessageBoxShowQuestion("版本跨度较大，建议先执行归档，是否继续？") == MessageBoxResult.No)
+            {
+                return;
+            }
+
             List<FileInfo> fileInfos = new List<FileInfo>();
             for (int i = index; i < scripts.Count; i++)
             {
@@ -386,6 +392,41 @@ namespace PartialViewCheckUpdate.ViewModels
                 ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
             });
+        }
+
+        private bool IsVersionCrossBig()
+        {
+            string sv = this.StartVersion;
+            int index = this.StartVersion.IndexOf("#");
+            if (index > 0)
+            {
+                sv = this.StartVersion.Substring(0, index);
+            }
+
+            string ev = this.EndVersion;
+            index = this.EndVersion.IndexOf("#");
+            if (index > 0)
+            {
+                ev = this.EndVersion.Substring(0, index);
+            }
+
+            sv = sv.ToLower().Replace("v", "").Replace(".", "").PadRight(3, '0');
+            ev = ev.ToLower().Replace("v", "").Replace(".", "").PadRight(3, '0');
+
+            int isv = int.Parse(sv);
+            int iev = int.Parse(ev);
+
+            if (isv < 250 && iev > 250)
+            {
+                return true;
+            }
+
+            if (iev - isv > 100)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void CheckTables(string jsonText)
@@ -428,15 +469,15 @@ namespace PartialViewCheckUpdate.ViewModels
                                 builder.Append($" DEFAULT '{column.Default}'");
                             }
 
-                            builder.Append(" COLLATE utf8_unicode_ci");
+                            builder.Append(" COLLATE utf8_unicode_ci;");
                             ShowMessage($"添加{column.Field}字段...");
                             try
                             {
-                                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, builder.ToString());
+                                MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
                             }
                             catch (Exception)
                             {
-                                exceptMessage.Append($"{table.TableName}表添加{column.Field}字段失败...").Append(Environment.NewLine);
+                                exceptMessage.Append($"-- {table.TableName}表添加{column.Field}字段失败...").Append(Environment.NewLine);
                                 exceptMessage.Append(builder.ToString()).Append(Environment.NewLine);
                             }
 
@@ -480,7 +521,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     #region int bigint
                     if (field.Type.StartsWith("int") || field.Type.StartsWith("bigint"))
                     {
-                        if (field.IsKey)
+                        if (field.IsKey && field.Extra.Equals("auto_increment"))
                         {
                             script.Append($"`{field.Field}` {field.Type} NOT NULL AUTO_INCREMENT,").Append(Environment.NewLine);
                         }
@@ -622,7 +663,10 @@ namespace PartialViewCheckUpdate.ViewModels
                             }
                             else
                             {
-                                script.Append($"`{field.Field}` {field.Type} NOT NULL DEFAULT '{field.Default}',").Append(Environment.NewLine);
+                                if (field.Default.Equals("CURRENT_TIMESTAMP"))
+                                { script.Append($"`{field.Field}` {field.Type} NOT NULL DEFAULT {field.Default},").Append(Environment.NewLine); }
+                                else
+                                { script.Append($"`{field.Field}` {field.Type} NOT NULL DEFAULT '{field.Default}',").Append(Environment.NewLine); }
                             }
                         }
                     }
@@ -653,40 +697,78 @@ namespace PartialViewCheckUpdate.ViewModels
                         }
                         else if (index.NonUnique == 1)
                         {
-                            script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                            var groupByKeyName = table.IndexList.Where(x => x.NonUnique == 1)
+                                .GroupBy(x => x.KeyName).Select(x => x.Key).Distinct();
+                            foreach (var keyName in groupByKeyName)
+                            {
+                                int nonUniqueKeyCount = table.IndexList.Count(x => x.KeyName == keyName);
+                                var uniqueKey = table.IndexList.Where(x => x.KeyName == keyName);
+                                if (nonUniqueKeyCount > 1)
+                                {
+                                    script.Append($"KEY `{keyName}` (");
+                                    string uky = "";
+                                    foreach (var key in uniqueKey)
+                                    {
+                                        uky += "`" + key.ColumnName + "`,";
+                                    }
+                                    script.Append(uky.Trim(','));
+                                    script.Append($") USING BTREE,").Append(Environment.NewLine);
+                                }
+                                else
+                                {
+                                    Index uniqueIndex = uniqueKey.FirstOrDefault();
+                                    script.Append($"KEY `{uniqueIndex.KeyName}` (`{uniqueIndex.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                                }
+                            }
                         }
                         #endregion
                     }
                 }
                 else
                 {
-                    //索引
-                    foreach (var index in table.IndexList)
+                    var otherKey = table.IndexList.Where(x => x.NonUnique == 0);
+                    foreach (var index in otherKey)
                     {
-                        #region 创建索引
-                        if (index.NonUnique == 0)
+                        if (index.KeyName == "PRIMARY")
                         {
-                            if (index.KeyName == "PRIMARY")
-                            {
-                                script.Append($"PRIMARY KEY (`{index.ColumnName}`),").Append(Environment.NewLine);
-                            }
-                            else
-                            {
-                                script.Append($"UNIQUE KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
-                            }
+                            script.Append($"PRIMARY KEY (`{index.ColumnName}`),").Append(Environment.NewLine);
                         }
-
-                        if (index.NonUnique == 1)
+                        else
                         {
+                            script.Append($"UNIQUE KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
+                        }
+                    }
+
+                    #region 创建索引
+                    var groupByKeyName = table.IndexList.Where(x => x.NonUnique == 1)
+                                            .GroupBy(x => x.KeyName).Select(x => x.Key).Distinct();
+                    foreach (var keyName in groupByKeyName)
+                    {
+                        int nonUniqueKeyCount = table.IndexList.Count(x => x.KeyName == keyName);
+                        var uniqueKey = table.IndexList.Where(x => x.KeyName == keyName);
+                        if (nonUniqueKeyCount > 1)//联合索引
+                        {
+                            script.Append($"KEY `{keyName}` (");
+                            string uky = "";
+                            foreach (var key in uniqueKey)
+                            {
+                                uky += "`" + key.ColumnName + "`,";
+                            }
+                            script.Append(uky.Trim(','));
+                            script.Append($") USING BTREE,").Append(Environment.NewLine);
+                        }
+                        else
+                        {
+                            Index index = uniqueKey.FirstOrDefault();
                             script.Append($"KEY `{index.KeyName}` (`{index.ColumnName}`) USING BTREE,").Append(Environment.NewLine);
                         }
-                        #endregion
                     }
+                    #endregion
                 }
 
                 string ddlScript = script.ToString().TrimEnd(Environment.NewLine.ToCharArray()).TrimEnd(',') + Environment.NewLine;
 
-                ddlScript += $") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
+                ddlScript += $") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
                 try
                 {
@@ -695,12 +777,12 @@ namespace PartialViewCheckUpdate.ViewModels
                         sw.WriteLine(ddlScript);
                     }
 
-                    MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, ddlScript);
+                    MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, ddlScript);
                 }
                 catch (Exception)
                 {
                     StringBuilder ddlStringBuilder = new StringBuilder();
-                    ddlStringBuilder.Append($"表{table.TableName}创建失败！").Append(Environment.NewLine);
+                    ddlStringBuilder.Append($"-- 表{table.TableName}创建失败！").Append(Environment.NewLine);
                     ddlStringBuilder.Append(ddlScript);
                     return ddlStringBuilder.ToString();
                 }

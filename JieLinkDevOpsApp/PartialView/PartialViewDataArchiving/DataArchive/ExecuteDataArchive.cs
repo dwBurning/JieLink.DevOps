@@ -63,7 +63,7 @@ namespace PartialViewDataArchiving.DataArchive
                     builder.Append($" DEFAULT '{tableCharacter.Default}'");
                 }
 
-                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, builder.ToString());
+                MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
             }
         }
 
@@ -104,7 +104,7 @@ namespace PartialViewDataArchiving.DataArchive
                     conn.Open();
                     MySqlTransaction transaction = conn.BeginTransaction();
                     MySqlCommand cmd = conn.CreateCommand();
-                    cmd.CommandTimeout = 30 * 60;//超时时间设置30分钟
+                    cmd.CommandTimeout = 3600;//超时时间设置60分钟
                     cmd.Transaction = transaction;
                     try
                     {
@@ -132,6 +132,8 @@ namespace PartialViewDataArchiving.DataArchive
                     }
 
                 }
+                progress += 20;
+                DataArchivingViewModel.Instance().ShowMessage($"表{bllTableName}归档完成...请继续等待...", progress);
             }
             catch (Exception ex)
             {
@@ -180,31 +182,32 @@ namespace PartialViewDataArchiving.DataArchive
             File.Delete(filePath);
         }
 
+        int progress = 0;
+
         public void Execute()
         {
             //BackUpTables();
+            progress = 0;
 
-            int step = 100 / DataArchivingViewModel.Instance().Tables.Count;
-            int progress = 0;
+            var tasks = new List<Task>();
+            DataArchivingViewModel.Instance().ShowMessage($"正在执行归档...请等待...");
             foreach (var table in DataArchivingViewModel.Instance().Tables)
             {
-                if (progress > 100) progress = 100;
-
-                DataArchivingViewModel.Instance().ShowMessage($"正在归档{table}表...请等待...", progress);
-
-                string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";
-
-                if (!TableIsExists(archiveTable))
+                tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    CreateTable(table, archiveTable);
-                }
+                    string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";
+                    if (!TableIsExists(archiveTable))
+                    {
+                        CreateTable(table, archiveTable);
+                    }
 
-                CompareColumns(table, archiveTable);
-                DataArchive(table, archiveTable);
-                progress += step;
+                    CompareColumns(table, archiveTable);
+                    DataArchive(table, archiveTable);
+
+                }));
             }
-
-            DataArchivingViewModel.Instance().ShowMessage($"数据归档完成", 100);
+            Task.WaitAll(tasks.ToArray());
+            DataArchivingViewModel.Instance().ShowMessage($"数据归档已全部完成", 100);
         }
 
         /// <summary>

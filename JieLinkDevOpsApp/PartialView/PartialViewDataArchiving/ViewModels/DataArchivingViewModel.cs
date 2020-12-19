@@ -53,6 +53,10 @@ namespace PartialViewDataArchiving.ViewModels
             AutoArchive = EnvironmentInfo.IsAutoArchive;
             ManulArchive = !EnvironmentInfo.IsAutoArchive;
             DataSource = new Dictionary<int, string>();
+
+            Progress = 0;
+            IsIndeterminate = false;
+            IsPercentVisible = true;
         }
 
         private void DataArchive(object parameter)
@@ -116,8 +120,6 @@ namespace PartialViewDataArchiving.ViewModels
             DependencyProperty.Register("Message", typeof(string), typeof(DataArchivingViewModel));
 
 
-
-
         public bool AutoArchive
         {
             get { return (bool)GetValue(AutoArchiveProperty); }
@@ -127,8 +129,6 @@ namespace PartialViewDataArchiving.ViewModels
         // Using a DependencyProperty as the backing store for AutoArchive.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AutoArchiveProperty =
             DependencyProperty.Register("AutoArchive", typeof(bool), typeof(DataArchivingViewModel));
-
-
 
 
         public bool ManulArchive
@@ -143,7 +143,6 @@ namespace PartialViewDataArchiving.ViewModels
 
 
 
-
         public int SelectMonth
         {
             get { return (int)GetValue(SelectMonthProperty); }
@@ -153,8 +152,6 @@ namespace PartialViewDataArchiving.ViewModels
         // Using a DependencyProperty as the backing store for SelectMonth.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectMonthProperty =
             DependencyProperty.Register("SelectMonth", typeof(int), typeof(DataArchivingViewModel));
-
-
 
 
         public int Progress
@@ -168,8 +165,6 @@ namespace PartialViewDataArchiving.ViewModels
             DependencyProperty.Register("Progress", typeof(int), typeof(DataArchivingViewModel));
 
 
-
-
         public int SelectIndex
         {
             get { return (int)GetValue(SelectIndexProperty); }
@@ -181,9 +176,6 @@ namespace PartialViewDataArchiving.ViewModels
             DependencyProperty.Register("SelectIndex", typeof(int), typeof(DataArchivingViewModel));
 
 
-
-
-
         public Dictionary<int, string> DataSource
         {
             get { return (Dictionary<int, string>)GetValue(DataSourceProperty); }
@@ -193,6 +185,30 @@ namespace PartialViewDataArchiving.ViewModels
         // Using a DependencyProperty as the backing store for DataSource.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataSourceProperty =
             DependencyProperty.Register("DataSource", typeof(Dictionary<int, string>), typeof(DataArchivingViewModel));
+
+
+        public bool IsPercentVisible
+        {
+            get { return (bool)GetValue(IsPercentVisibleProperty); }
+            set { SetValue(IsPercentVisibleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsPercentVisible.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsPercentVisibleProperty =
+            DependencyProperty.Register("IsPercentVisible", typeof(bool), typeof(DataArchivingViewModel));
+
+
+
+        public bool IsIndeterminate
+        {
+            get { return (bool)GetValue(IsIndeterminateProperty); }
+            set { SetValue(IsIndeterminateProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsIndeterminate.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsIndeterminateProperty =
+            DependencyProperty.Register("IsIndeterminate", typeof(bool), typeof(DataArchivingViewModel));
+
 
 
 
@@ -209,6 +225,16 @@ namespace PartialViewDataArchiving.ViewModels
             {
                 Message = $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}";
                 Progress = progress;
+                if (progress == 0)
+                {
+                    IsIndeterminate = true;
+                    IsPercentVisible = true;
+                }
+                else if (progress == 100)
+                {
+                    IsIndeterminate = false;
+                    IsPercentVisible = true;
+                }
             }));
         }
 

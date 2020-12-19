@@ -20,14 +20,21 @@ namespace PartialViewHealthMonitor.CheckUpdate
     {
         public void Execute(IJobExecutionContext context)
         {
-
-            Console.WriteLine("CheckUpdateJob...");
-            UpdateRequest updateRequest = CheckUpdateHelper.GetUploadRequest();
-            if (updateRequest != null)
+            try
             {
-                CheckUpdateHelper.ExecuteUpdate(updateRequest);
-            }
 
+                LogHelper.CommLogger.Info("CheckUpdateJob...");
+                UpdateRequest updateRequest = CheckUpdateHelper.GetUploadRequest();
+                if (updateRequest != null)
+                {
+                    LogHelper.CommLogger.Info("开始执行升级操作");
+                    CheckUpdateHelper.ExecuteUpdate(updateRequest);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.CommLogger.Error(ex, "CheckUpdateJob失败");
+            }
             //测试
             //UpdateRequest updateRequest = new UpdateRequest();
             //updateRequest.Guid = Guid.NewGuid().ToString();
