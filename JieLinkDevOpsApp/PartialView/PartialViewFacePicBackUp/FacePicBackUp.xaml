@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="PartialViewFacePicBackUp.FacePicBackUp"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:local="clr-namespace:PartialViewFacePicBackUp"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
+    <Grid MaxWidth="{Binding ActualWidth}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="150"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">1.如果检测到人脸图片不存在需要重新上传或者拷贝备份，如果图片存在特征不存在可以重新发行人脸凭证</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3">2.<Run Foreground="Red">如果需要更换文件服务器</Run>请使用该工具将备份后的文件夹，复制到新文件服务器路径下</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="3">3.需要配置数据库后，在中心或者门禁盒子电脑上使用</TextBlock>
+        <Button Grid.Column="2" Grid.Row="2" Content="开始备份" Margin="5"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Command="{Binding FacePicBackUpCommand}" 
+                />
+        <TextBlock VerticalAlignment="Center" Grid.Row="3" TextWrapping="Wrap" Text="请选择存放备份的目录" />
+        <TextBox x:Name="txtSavePath" Margin="5"
+                            VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择存放备份的目录"
+                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath}"
+                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="3"/>
+
+        <Button Grid.Row="3" Margin="5" Grid.Column="2" Content="选择备份路径" Name ="btnChoosePath"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+        <Button Grid.Row="1" Margin="5" Grid.Column="2" Content="检测人脸有效性" Name ="btnCheckPic"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding CheckPicCommand}"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+        <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5"
+                     Grid.Row="4" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" IsReadOnly="True" >
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="{Binding Message}"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+    </Grid>
+</UserControl>
