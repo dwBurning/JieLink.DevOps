@@ -181,6 +181,26 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private void Repair(object parameter)
         {
+            DirectoryInfo installDir = new DirectoryInfo(this.InstallPath);
+            if (installDir.Name.Equals("SmartCenter", StringComparison.OrdinalIgnoreCase))
+            {
+                installDir = installDir.Parent;
+            }
+            string rootPath = installDir.FullName;
+            //检测是否是一个有效的中心按照目录
+            if (!File.Exists(Path.Combine(rootPath, "NewG3Uninstall.exe")))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择正确的中心安装目录！");
+                return;
+            }
+
+            if (parameter.ToString() == "3")
+            {
+                //替换补丁
+                UpdatePatch(rootPath);
+                return;
+            }
+
             if (string.IsNullOrEmpty(this.PackagePath) || string.IsNullOrEmpty(this.InstallPath))
             {
                 MessageBoxHelper.MessageBoxShowWarning("请选择正确的路径！");
@@ -209,22 +229,9 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
-            DirectoryInfo installDir = new DirectoryInfo(this.InstallPath);
-            if (installDir.Name.Equals("SmartCenter", StringComparison.OrdinalIgnoreCase))
-            {
-                installDir = installDir.Parent;
-            }
-            string rootPath = installDir.FullName;
-            //检测是否是一个有效的中心按照目录
-            if (!File.Exists(Path.Combine(rootPath, "NewG3Uninstall.exe")))
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请选择正确的中心安装目录！");
-                return;
-            }
-
             UpdateRequest updateRequest = new UpdateRequest();
             updateRequest.Guid = Guid.NewGuid().ToString();
-            updateRequest.Product = "JSOCT2016";
+            updateRequest.Product = enumProductType.JSOCT2016.ToString();
             updateRequest.RootPath = rootPath;
             updateRequest.PackagePath = zipPath;
 
@@ -243,18 +250,27 @@ namespace PartialViewCheckUpdate.ViewModels
                     break;
             }
         }
+        private void UpdatePatch(string rootPath)
+        {
+            UpdateRequest updateRequest = new UpdateRequest();
+            updateRequest.Guid = Guid.NewGuid().ToString();
+            updateRequest.Product = enumProductType.JSOCT2016_Patch.ToString();
+            updateRequest.RootPath = rootPath;
+            updateRequest.PackagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Resources\\JSOCT2016_Patch-20201222.zip");
+            ExecuteUpdate(updateRequest);
+        }
         private void ExecuteUpdate(UpdateRequest request)
         {
             //1.升级请求写到update文件夹下
             WriteRequestFile(request);
             //2.启动升级程序
             string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Updater.exe");
-            ProcessHelper.StartProcessDotNet(executePath, "-file=UpdateRequest_2016.json");
+            ProcessHelper.StartProcessDotNet(executePath, $"-file=UpdateRequest_{request.Product}.json");
         }
 
         private void WriteRequestFile(UpdateRequest request)
         {
-            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\UpdateRequest_2016.json");
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"update\\UpdateRequest_{request.Product}.json");
             if (!File.Exists(filePath))
             {
                 File.Create(filePath).Close();
@@ -353,7 +369,7 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
-            if (IsVersionCrossBig() 
+            if (IsVersionCrossBig()
                 && MessageBoxHelper.MessageBoxShowQuestion("版本跨度较大，建议先执行归档，是否继续？") == MessageBoxResult.No)
             {
                 return;

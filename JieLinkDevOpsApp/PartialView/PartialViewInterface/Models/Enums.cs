@@ -16,6 +16,10 @@ namespace PartialViewInterface.Models
         /// Jielink中心
         /// </summary>
         JSOCT2016 = 1,
+        /// <summary>
+        /// Jielink中心补丁
+        /// </summary>
+        JSOCT2016_Patch = 2,
     }
 
     public enum enumToolType
