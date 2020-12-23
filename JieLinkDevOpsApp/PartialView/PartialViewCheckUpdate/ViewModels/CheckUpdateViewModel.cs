@@ -231,7 +231,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
             UpdateRequest updateRequest = new UpdateRequest();
             updateRequest.Guid = Guid.NewGuid().ToString();
-            updateRequest.Product = enumProductType.JSOCT2016.ToString();
+            updateRequest.Product = Enum.GetName(typeof(enumProductType), enumProductType.JSOCT2016);
             updateRequest.RootPath = rootPath;
             updateRequest.PackagePath = zipPath;
 
@@ -254,7 +254,7 @@ namespace PartialViewCheckUpdate.ViewModels
         {
             UpdateRequest updateRequest = new UpdateRequest();
             updateRequest.Guid = Guid.NewGuid().ToString();
-            updateRequest.Product = enumProductType.JSOCT2016_Patch.ToString();
+            updateRequest.Product = Enum.GetName(typeof(enumProductType), enumProductType.JSOCT2016_Patch);
             updateRequest.RootPath = rootPath;
             updateRequest.PackagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Resources\\JSOCT2016_Patch-20201222.zip");
             ExecuteUpdate(updateRequest);
