@@ -11,6 +11,8 @@ using PartialViewFacePicBackUp;
 using System.Configuration;
 using PartialViewInterface;
 using System.Windows;
+using PartialViewInterface.Utils;
+using System.Data;
 
 namespace PartialViewFacePicBackUp.ViewModels
 {
@@ -24,8 +26,6 @@ namespace PartialViewFacePicBackUp.ViewModels
             SelectPathCommand.ExecuteAction = SelectPath;
             CheckPicCommand = new DelegateCommand();
             CheckPicCommand.ExecuteAction = CheckPic;
-
-            ReadFileServerPath();
         }
 
         /// <summary>
@@ -37,16 +37,10 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// </summary>
         public DelegateCommand CheckPicCommand { get; set; }
 
-
-        /// <summary>
-        /// 委托
-        /// </summary>
-        public delegate void DeleFun(string str);
         /// <summary>
         /// 命令=>调用
         /// </summary>
-        public static event DeleFun DeleEvent;
-        public static event DeleFun DeleEventShowWarn;
+        public static event Action<string> DeleEvent;
 
         /// <summary>
         /// 执行备份
@@ -77,9 +71,16 @@ namespace PartialViewFacePicBackUp.ViewModels
         {
             try
             {
+                ReadFileServerPath();
+
+                if (FileServerPath == "")
+                {
+                    MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
+                    return;
+                }
                 if (FilePath == "")
                 {
-                    DeleEventShowWarn("请选择有效的备份路径！");
+                    MessageBoxHelper.MessageBoxShowWarning("请选择有效的备份路径！");
                     return;
                 }
 
@@ -95,24 +96,25 @@ namespace PartialViewFacePicBackUp.ViewModels
                 #endregion
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where photopath is not null";
-                MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
-                while (reader.Read())
+                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
+                //MySqlDataReader reader 
+                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
+                foreach (DataRow dr in dt.Rows)
                 {
                     CountPersonAll++;
-                    string photopath = reader["photopath"].ToString();
-                    int personno = Convert.ToInt32(reader["personno"].ToString());
+                    string photopath = dr["photopath"].ToString();
+                    int personno = Convert.ToInt32(dr["personno"].ToString());
                     CopyPersonFile(photopath, personno, true);
                 }
 
                 //读取人脸特征
                 string sqlstrFeature = "select cpf.feature,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and cpf.feature is not null";
-                MySqlDataReader Featurereader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstrFeature);
-                while (Featurereader.Read())
+                DataTable dtfeature = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstrFeature).Tables[0];
+                foreach(DataRow dr in dtfeature.Rows)
                 {
                     CountFeatureAll++;
-                    string photopath = Featurereader["feature"].ToString();
-                    int personno = Convert.ToInt32(Featurereader["personno"].ToString());
+                    string photopath = dr["feature"].ToString();
+                    int personno = Convert.ToInt32(dr["personno"].ToString());
                     CopyPersonFile(photopath, personno, false);
                 }
 
@@ -122,7 +124,7 @@ namespace PartialViewFacePicBackUp.ViewModels
             }
             catch (Exception ex)
             {
-                DeleEventShowWarn(ex.ToString());
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
             }
         }
 
@@ -143,24 +145,31 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// <param name="parameter"></param>
         private void SelectPath(object parameter)
         {
-            System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
-
-            var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-            if (process != null)
+            try
             {
-                fileDialog.SelectedPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, "para");
+                System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
+
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                if (process != null)
+                {
+                    fileDialog.SelectedPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, "para");
+                }
+                if (!string.IsNullOrEmpty(defaultfilePath))
+                {
+                    fileDialog.SelectedPath = defaultfilePath;
+                }
+
+                System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    defaultfilePath = fileDialog.SelectedPath;
+
+                    FilePath = fileDialog.SelectedPath;
+                }
             }
-            if (!string.IsNullOrEmpty(defaultfilePath))
+            catch (Exception ex)
             {
-                fileDialog.SelectedPath = defaultfilePath;
-            }
-
-            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                defaultfilePath = fileDialog.SelectedPath;
-
-                FilePath = fileDialog.SelectedPath;
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
             }
         }
 
@@ -172,6 +181,13 @@ namespace PartialViewFacePicBackUp.ViewModels
         {
             try
             {
+                ReadFileServerPath();
+
+                if (FileServerPath == "")
+                {
+                    MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
+                    return;
+                }
                 DeleEvent("开始检测人脸图片完整性！");
 
                 int CheckPersonAll = 0;
@@ -180,12 +196,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                 int CheckFeatureNotExist = 0;
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where photopath is not null";
-                MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
-                while (reader.Read())
+                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
+                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
+                foreach (DataRow dr in dt.Rows)
                 {
-                    string photopath = reader["photopath"].ToString();
-                    int personno = Convert.ToInt32(reader["personno"].ToString());
+                    string photopath = dr["photopath"].ToString();
+                    int personno = Convert.ToInt32(dr["personno"].ToString());
                     CheckPersonAll++;
 
                     if (!File.Exists(photopath.Replace("down", FileServerPath)))
@@ -197,20 +213,21 @@ namespace PartialViewFacePicBackUp.ViewModels
 
                 //读取人脸特征
                 string sqlstrFeature = "select cpf.feature,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and cpf.feature is not null";
-                MySqlDataReader Featurereader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstrFeature);
-                while (Featurereader.Read())
+                DataTable dtf = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstrFeature).Tables[0];
+                foreach(DataRow dr in dtf.Rows)
                 {
-
-
                     CheckFeatureAll++;
-                    string photopath = Featurereader["feature"].ToString();
-                    int personno = Convert.ToInt32(Featurereader["personno"].ToString());
+                    string photopath = dr["feature"].ToString();
+                    int personno = Convert.ToInt32(dr["personno"].ToString());
 
                     #region 人脸特征文件夹路径日期加一个/
-                    if (photopath.Split('/')[1] == "pic" && photopath.Split('/')[2].Length == 8)
-                        photopath = photopath.Insert(photopath.IndexOf("pic") + 10, "/");
-                    else
-                        DeleEvent("人脸特征路径解析有误！");
+                    string temp = photopath.Split('/')[2];
+                    string dsttemp = temp.Insert(6, "/");
+                    photopath = photopath.Replace(temp, dsttemp);
+                    //if (photopath.Split('/')[1] == "pic" && photopath.Split('/')[2].Length == 8)
+                    //    photopath = photopath.Insert(photopath.IndexOf("pic") + 10, "/");
+                    //else
+                    //    DeleEvent("人脸特征路径解析有误！");
                     #endregion
 
                     if (!File.Exists(photopath.Replace("down", FileServerPath)))
@@ -226,7 +243,7 @@ namespace PartialViewFacePicBackUp.ViewModels
             }
             catch (Exception ex)
             {
-                DeleEventShowWarn(ex.ToString());
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
             }
         }
 
@@ -241,10 +258,13 @@ namespace PartialViewFacePicBackUp.ViewModels
                 #region 人脸特征文件夹路径日期加一个/
                 if (!IsPerson)
                 {
-                    if (sourcePath.Split('/')[1] == "pic" && sourcePath.Split('/')[2].Length == 8)
-                        sourcePath = sourcePath.Insert(sourcePath.IndexOf("pic") + 10, "/");
-                    else
-                        DeleEvent("人脸特征路径解析有误！");
+                    string temp = sourcePath.Split('/')[2];
+                    string dsttemp = temp.Insert(6,"/");
+                    sourcePath = sourcePath.Replace(temp,dsttemp);
+                    //if (sourcePath.Split('/')[1] == "pic" && sourcePath.Split('/')[2].Length == 8)
+                    //    sourcePath = sourcePath.Insert(sourcePath.IndexOf("pic") + 10, "/");
+                    //else
+                    //    DeleEvent("人脸特征路径解析有误！");
                 }
                 #endregion
 
@@ -312,7 +332,7 @@ namespace PartialViewFacePicBackUp.ViewModels
             {
                 //如果一个文件无法正常备份那么所有的都会无法正常备份，只弹窗提示一次报错
                 if (CountFeatureFail == 0 && CountPersonFail == 0)
-                    DeleEventShowWarn(ex.ToString());
+                    MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
 
                 if (IsPerson) CountPersonFail++;
                 else CountFeatureFail++;
@@ -324,36 +344,42 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// </summary>
         private void ReadFileServerPath()
         {
-            #region 根据门禁服务进程或者中心进程获取文件服务器路径
-
-            string configpath = string.Empty;
-            //System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
-            var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-            if (process == null)
+            try
             {
-                DeleEvent("未发现运行门禁服务");
-                process = Process.GetProcessesByName("SmartCenter").FirstOrDefault();
-            }
+                #region 根据门禁服务进程或者中心进程获取文件服务器路径
 
-            if (process != null)
-            {
-                configpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
-                configpath = configpath.Replace("SmartBoxDoor\\", "");
-                configpath = configpath.Replace("SmartCenter\\", "");
-            }
-            else
-            {
-                DeleEvent("未发现运行中心服务");
-                return;
-            }
-            #endregion
+                string configpath = string.Empty;
+                //System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                if (process == null)
+                {
+                    DeleEvent("未发现运行门禁服务");
+                    process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                }
 
-            #region 根据文件服务器config读取文件存储路径
-            FileServerPath = new StreamReader(configpath, Encoding.UTF8).ReadToEnd().Split('\"')[27];
-            FileServerPath = FileServerPath.Replace("\\\\", "\\");
-            #endregion
+                if (process != null)
+                {
+                    configpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
+                    configpath = configpath.Replace("SmartBoxDoor\\", "");
+                    configpath = configpath.Replace("SmartCenter\\", "");
+                }
+                else
+                {
+                    DeleEvent("未发现运行中心服务");
+                    return;
+                }
+                #endregion
+
+                #region 根据文件服务器config读取文件存储路径
+                FileServerPath = new StreamReader(configpath, Encoding.UTF8).ReadToEnd().Split('\"')[27];
+                FileServerPath = FileServerPath.Replace("\\\\", "\\");
+                #endregion
+
+            }
+            catch (Exception ex)
+            {
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+            }
         }
-
     }
-
 }
