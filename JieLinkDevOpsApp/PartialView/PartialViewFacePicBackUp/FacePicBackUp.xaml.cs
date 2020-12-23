@@ -24,12 +24,13 @@ namespace PartialViewFacePicBackUp
     /// </summary>
     public partial class FacePicBackUp : UserControl, IPartialView
     {
-        FacePicBackUpOptViewModel viewModel = new FacePicBackUpOptViewModel();
+        FacePicBackUpOptViewModel viewModel;
         public FacePicBackUp()
         {
-            FacePicBackUpOptViewModel.DeleEvent += AddLogs;
-            FacePicBackUpOptViewModel.DeleEventShowWarn += MessageBoxShowWarning;
             InitializeComponent();
+
+            FacePicBackUpOptViewModel.DeleEvent += AddLogs;
+            viewModel = new FacePicBackUpOptViewModel();
             DataContext = viewModel;
         }
 
@@ -82,11 +83,6 @@ namespace PartialViewFacePicBackUp
             }
             RichTextBox_Text.AppendText(DateTime.Now.ToString() + ":" + str + "\r");
             RichTextBox_Text.ScrollToEnd();
-        }
-
-        public void MessageBoxShowWarning(string str)
-        {
-            MessageBoxHelper.MessageBoxShowWarning(str);
         }
     }
 }
