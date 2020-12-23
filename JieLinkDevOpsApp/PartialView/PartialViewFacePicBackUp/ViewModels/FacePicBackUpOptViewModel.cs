@@ -96,7 +96,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                 #endregion
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where photopath is not null";
+                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
                 //MySqlDataReader reader 
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
                 foreach (DataRow dr in dt.Rows)
@@ -196,7 +196,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                 int CheckFeatureNotExist = 0;
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where photopath is not null";
+                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
                 foreach (DataRow dr in dt.Rows)
                 {
@@ -221,10 +221,13 @@ namespace PartialViewFacePicBackUp.ViewModels
                     int personno = Convert.ToInt32(dr["personno"].ToString());
 
                     #region 人脸特征文件夹路径日期加一个/
-                    if (photopath.Split('/')[1] == "pic" && photopath.Split('/')[2].Length == 8)
-                        photopath = photopath.Insert(photopath.IndexOf("pic") + 10, "/");
-                    else
-                        DeleEvent("人脸特征路径解析有误！");
+                    string temp = photopath.Split('/')[2];
+                    string dsttemp = temp.Insert(6, "/");
+                    photopath = photopath.Replace(temp, dsttemp);
+                    //if (photopath.Split('/')[1] == "pic" && photopath.Split('/')[2].Length == 8)
+                    //    photopath = photopath.Insert(photopath.IndexOf("pic") + 10, "/");
+                    //else
+                    //    DeleEvent("人脸特征路径解析有误！");
                     #endregion
 
                     if (!File.Exists(photopath.Replace("down", FileServerPath)))
@@ -255,10 +258,13 @@ namespace PartialViewFacePicBackUp.ViewModels
                 #region 人脸特征文件夹路径日期加一个/
                 if (!IsPerson)
                 {
-                    if (sourcePath.Split('/')[1] == "pic" && sourcePath.Split('/')[2].Length == 8)
-                        sourcePath = sourcePath.Insert(sourcePath.IndexOf("pic") + 10, "/");
-                    else
-                        DeleEvent("人脸特征路径解析有误！");
+                    string temp = sourcePath.Split('/')[2];
+                    string dsttemp = temp.Insert(6,"/");
+                    sourcePath = sourcePath.Replace(temp,dsttemp);
+                    //if (sourcePath.Split('/')[1] == "pic" && sourcePath.Split('/')[2].Length == 8)
+                    //    sourcePath = sourcePath.Insert(sourcePath.IndexOf("pic") + 10, "/");
+                    //else
+                    //    DeleEvent("人脸特征路径解析有误！");
                 }
                 #endregion
 
