@@ -41,7 +41,7 @@
 
         <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Grid.Column="1" Grid.Row="3" Grid.RowSpan="4" IsReadOnly="True" Margin="5">
+                     Grid.Column="1" Grid.Row="3" Grid.RowSpan="5" IsReadOnly="True" Margin="5">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>

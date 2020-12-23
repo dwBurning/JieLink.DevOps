@@ -38,12 +38,12 @@ namespace PartialViewInterface.Utils
                 });
                 using (FileStream fileStream = File.Open(sSourceFile, FileMode.Open))
                 {
-                    byte[] array = new byte[fileStream.Length];
+                    byte[] buffer = new byte[4 * 1024];  //缓冲区，每次操作大小
                     int num;
                     do
                     {
-                        num = fileStream.Read(array, 0, array.Length);
-                        zipOutputStream.Write(array, 0, num);
+                        num = fileStream.Read(buffer, 0, buffer.Length);
+                        zipOutputStream.Write(buffer, 0, num);
                     }
                     while (num > 0);
                 }

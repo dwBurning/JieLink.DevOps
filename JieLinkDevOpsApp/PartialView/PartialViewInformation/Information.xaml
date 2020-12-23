@@ -84,6 +84,17 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2020-12-23 V1.1.0">
+                <ContentControl>
+                    <TextBlock>
+                        1.增加了门禁人脸图片备份工具
+                        2.升级辅助工具中增加了替换中心补丁功能
+                        3.修订了数据备份，文件较大时压缩失败的问题
+                        4.优化了数据归档的效率，并行任务执行，效率提升4倍
+                        5.升级辅助升级版本跨度大的项目，提示先执行备份，再做升级，缩减升级影响的时间
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-12-16 V1.0.9">
                 <ContentControl>
                     <TextBlock>

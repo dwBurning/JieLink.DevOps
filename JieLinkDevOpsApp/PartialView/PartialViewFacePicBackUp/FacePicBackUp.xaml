@@ -7,7 +7,21 @@
              xmlns:local="clr-namespace:PartialViewFacePicBackUp"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Left"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -22,7 +36,7 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <TextBlock VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">1.如果检测到人脸图片不存在需要重新上传或者拷贝备份，如果图片存在特征不存在可以重新发行人脸凭证</TextBlock>
         <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3">2.<Run Foreground="Red">如果需要更换文件服务器</Run>请使用该工具将备份后的文件夹，复制到新文件服务器路径下</TextBlock>
@@ -51,7 +65,7 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
         <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5"
-                     Grid.Row="4" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3" IsReadOnly="True" >
+                     Grid.Row="4" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3" IsReadOnly="True" >
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>
