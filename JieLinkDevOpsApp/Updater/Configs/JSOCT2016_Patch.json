@@ -1,0 +1,47 @@
+{
+  "KillProcessList": [
+    {
+      "ProcessName": "JSST.JieLink.Daemon.exe",
+      "ServiceName": "JSST.JieLink.Daemon",
+      "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    },
+    {
+      "ProcessName": "SmartCenter.Host.exe",
+      "ServiceName": "JsstJieLinkSmartCenter",
+      "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
+      "Args": null
+    }
+  ],
+  "SubPackages": [
+    {
+      "SubPath": "",
+      "TargetPath": "SmartCenter",
+      "ExcludeList": [
+        "Config",
+        "update",
+        "Agent.dat",
+        "Logs",
+        "*.config"
+      ],
+      "ZipList": null
+    }
+  ],
+  "RunProcessList": [
+    {
+      "ProcessName": "SmartCenter.Host.exe",
+      "ServiceName": "JsstJieLinkSmartCenter",
+      "ExecutablePath": "SmartCenter\\SmartCenter.Host.exe",
+      "Args": null,
+      "ConfigToUpdate": {
+        "SendThreadNum": "1024"
+      }
+    },
+    {
+      "ProcessName": "JSST.JieLink.Daemon.exe",
+      "ServiceName": "JSST.JieLink.Daemon",
+      "ExecutablePath": "守护进程\\JSST.JieLink.Daemon.exe",
+      "Args": null
+    }
+  ]
+}

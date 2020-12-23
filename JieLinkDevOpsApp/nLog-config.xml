@@ -7,7 +7,7 @@
     <!--https://github.com/nlog/NLog/wiki/File-target#size-based-file-archival-->
     <target name="CommConsole" xsi:type="Console">
       <!--https://nlog-project.org/config/?tab=layout-renderers-->
-      <layout>${longdate} [${threadid}][${threadName}] ${level:uppercase=true} ${logger} - ${message}</layout>
+      <layout>${longdate} [${threadid}][${threadName}] ${level:uppercase=true} ${logger} - ${message}${exception:format=toString,Data}</layout>
     </target>
     <target name="CommFile" xsi:type="AsyncWrapper">
       <target xsi:type="BufferingWrapper"  bufferSize="1">
@@ -15,7 +15,7 @@
                 archiveAboveSize="62914560"
                 maxArchiveFiles="20"
                 >
-          <layout>${longdate} [${threadid}][${threadName}] ${level:uppercase=true} ${logger} - ${message}</layout>
+          <layout>${longdate} [${threadid}][${threadName}] ${level:uppercase=true} ${logger} - ${message}${exception:format=toString,Data}</layout>
         </target>
       </target>
     </target>
