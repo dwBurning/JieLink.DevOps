@@ -96,26 +96,25 @@ namespace PartialViewFacePicBackUp.ViewModels
                 #endregion
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
+                string sqlstr = "select photopath,personno from control_person where status = 0 and LENGTH(photopath) > 0";
                 //MySqlDataReader reader 
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
                 foreach (DataRow dr in dt.Rows)
                 {
                     CountPersonAll++;
                     string photopath = dr["photopath"].ToString();
-                    int personno = Convert.ToInt32(dr["personno"].ToString());
-                    CopyPersonFile(photopath, personno, true);
+                    
+                    CopyPersonFile(photopath, dr, true);
                 }
 
                 //读取人脸特征
-                string sqlstrFeature = "select cpf.feature,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and cpf.feature is not null";
+                string sqlstrFeature = "select cpf.feature,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and LENGTH(cpf.feature) > 0 ";
                 DataTable dtfeature = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstrFeature).Tables[0];
                 foreach(DataRow dr in dtfeature.Rows)
                 {
                     CountFeatureAll++;
                     string photopath = dr["feature"].ToString();
-                    int personno = Convert.ToInt32(dr["personno"].ToString());
-                    CopyPersonFile(photopath, personno, false);
+                    CopyPersonFile(photopath, dr, false);
                 }
 
                 DeleEvent(string.Format("获取到的文件服务器路径为：{0}", FileServerPath));
@@ -251,10 +250,13 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 复制文件到备份路径
         /// </summary>
         /// <param name="sourcePath">数据库中的文件路径</param>
-        public void CopyPersonFile(string sourcePath, int personno, bool IsPerson)
+        public void CopyPersonFile(string sourcePath, DataRow dr, bool IsPerson)
         {
             try
             {
+                int personno = Convert.ToInt32(dr["personno"].ToString());
+                string personName = dr["PersonName"].ToString();
+
                 #region 人脸特征文件夹路径日期加一个/
                 if (!IsPerson)
                 {
@@ -289,12 +291,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonNotExists++;
-                        DeleEvent(string.Format("警告：人事编号为{0}的图片不存在！", personno));
+                        DeleEvent(string.Format("警告：姓名【{1}】人事编号为【{0}】的图片不存在！", personno, personName));
                     }
                     else
                     {
                         CountFeatureNotExists++;
-                        DeleEvent(string.Format("警告：人事编号为{0}的特征文件不存在！", personno));
+                        DeleEvent(string.Format("警告：姓名【{1}】人事编号为【{0}】的特征文件不存在！", personno, personName));
                     }
                     return;
                 }
@@ -304,12 +306,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的图片时，目标文件已存在", personno));
+                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片时，目标文件已存在", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的特征文件时，目标文件已存在", personno));
+                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件时，目标文件已存在", personno, personName));
                     }
                 }
                 else
@@ -318,12 +320,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的图片成功", personno));
+                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片成功", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的特征文件成功", personno));
+                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件成功", personno, personName));
                     }
                 }
                 #endregion
