@@ -13,6 +13,7 @@ using PartialViewInterface;
 using System.Windows;
 using PartialViewInterface.Utils;
 using System.Data;
+using Panuon.UI.Silver;
 
 namespace PartialViewFacePicBackUp.ViewModels
 {
@@ -63,6 +64,7 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 文件服务器地址
         /// </summary>
         public string FileServerPath = string.Empty;
+
         /// <summary>
         /// 根据路径备份
         /// </summary>
@@ -96,26 +98,41 @@ namespace PartialViewFacePicBackUp.ViewModels
                 #endregion
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
+                string sqlstr = "select photopath,personno,PersonName from control_person where status = 0 and LENGTH(photopath) > 0";
                 //MySqlDataReader reader 
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
                 foreach (DataRow dr in dt.Rows)
                 {
                     CountPersonAll++;
                     string photopath = dr["photopath"].ToString();
-                    int personno = Convert.ToInt32(dr["personno"].ToString());
-                    CopyPersonFile(photopath, personno, true);
+
+                    // 集中管控下发时保存的人脸路径不在head
+                    if (photopath.StartsWith(@"down/pic"))
+                    {
+                        string temp = photopath.Split('/')[2];
+                        string dsttemp = temp.Insert(6, "/");
+                        photopath = photopath.Replace(temp, dsttemp);
+                    }
+
+                    CopyPersonFile(photopath, dr, true);
                 }
 
                 //读取人脸特征
-                string sqlstrFeature = "select cpf.feature,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and cpf.feature is not null";
+                string sqlstrFeature = "select cpf.feature,cp.PersonName,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and LENGTH(cpf.feature) > 0 ";
                 DataTable dtfeature = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstrFeature).Tables[0];
                 foreach(DataRow dr in dtfeature.Rows)
                 {
                     CountFeatureAll++;
                     string photopath = dr["feature"].ToString();
-                    int personno = Convert.ToInt32(dr["personno"].ToString());
-                    CopyPersonFile(photopath, personno, false);
+
+                    // 集中管控下发时保存的人脸路径不在head
+                    if (photopath.StartsWith(@"down/pic"))
+                    {
+                        string temp = photopath.Split('/')[2];
+                        string dsttemp = temp.Insert(6, "/");
+                        photopath = photopath.Replace(temp, dsttemp);
+                    }
+                    CopyPersonFile(photopath, dr, false);
                 }
 
                 DeleEvent(string.Format("获取到的文件服务器路径为：{0}", FileServerPath));
@@ -128,7 +145,6 @@ namespace PartialViewFacePicBackUp.ViewModels
             }
         }
 
-
         public string FilePath
         {
             get { return (string)GetValue(FilePathProperty); }
@@ -139,6 +155,7 @@ namespace PartialViewFacePicBackUp.ViewModels
             DependencyProperty.Register("FilePath", typeof(string), typeof(FacePicBackUpOptViewModel), new PropertyMetadata(""));
 
         string defaultfilePath = "";
+
         /// <summary>
         /// 路径
         /// </summary>
@@ -188,6 +205,8 @@ namespace PartialViewFacePicBackUp.ViewModels
                     MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
                     return;
                 }
+                Notice.Show("开始检测人脸图片", "通知", 3, MessageBoxIcon.Info);
+
                 DeleEvent("开始检测人脸图片完整性！");
 
                 int CheckPersonAll = 0;
@@ -196,44 +215,55 @@ namespace PartialViewFacePicBackUp.ViewModels
                 int CheckFeatureNotExist = 0;
 
                 //读取人事资料
-                string sqlstr = "select photopath,personno from control_person where status = 0 and photopath is not null";
+                string sqlstr = "select photopath,personno,PersonName from control_person where status = 0 and LENGTH(photopath) > 0";
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstr).Tables[0];
                 foreach (DataRow dr in dt.Rows)
                 {
                     string photopath = dr["photopath"].ToString();
-                    int personno = Convert.ToInt32(dr["personno"].ToString());
+                    string personno = dr["personno"].ToString();
+                    string personName = dr["PersonName"].ToString();
                     CheckPersonAll++;
 
-                    if (!File.Exists(photopath.Replace("down", FileServerPath)))
+                    // 集中管控下发时保存的人脸路径不在head
+                    if (photopath.StartsWith(@"down/pic"))
+                    {
+                        string temp = photopath.Split('/')[2];
+                        string dsttemp = temp.Insert(6, "/");
+                        photopath = photopath.Replace(temp, dsttemp);
+                    }
+                    string faceFilePath = Path.Combine(FileServerPath, photopath.Replace(@"down/", ""));
+                    if (!File.Exists(faceFilePath))
                     {
                         CheckPersonNotExist++;
-                        DeleEvent(string.Format("人事编号为{0}的人脸图片不存在！", personno));
+                        DeleEvent(string.Format("人事图片检查：姓名【{1}】人事编号为【{0}】的人脸图片不存在！", personno, personName));
                     }
                 }
 
-                //读取人脸特征
-                string sqlstrFeature = "select cpf.feature,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and cpf.feature is not null";
+                // 读取人脸特征
+                string sqlstrFeature = "select cpf.feature,cp.PersonName,cp.personno from control_person_face cpf inner join control_person cp on cpf.pguid = cp.pguid and cp.status = 0 and LENGTH(cpf.feature) > 0 and LENGTH(cp.PhotoPath)";
                 DataTable dtf = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sqlstrFeature).Tables[0];
                 foreach(DataRow dr in dtf.Rows)
                 {
                     CheckFeatureAll++;
                     string photopath = dr["feature"].ToString();
-                    int personno = Convert.ToInt32(dr["personno"].ToString());
+                    string personno = dr["personno"].ToString();
+                    string personName = dr["PersonName"].ToString();
 
-                    #region 人脸特征文件夹路径日期加一个/
-                    string temp = photopath.Split('/')[2];
-                    string dsttemp = temp.Insert(6, "/");
-                    photopath = photopath.Replace(temp, dsttemp);
-                    //if (photopath.Split('/')[1] == "pic" && photopath.Split('/')[2].Length == 8)
-                    //    photopath = photopath.Insert(photopath.IndexOf("pic") + 10, "/");
-                    //else
-                    //    DeleEvent("人脸特征路径解析有误！");
+                    #region 人脸特征文件夹路径日期加一个
+                    //// 2.8.1E1以后的版本不用特殊处理
+                    if (photopath.StartsWith(@"down/pic"))
+                    {
+                        string temp = photopath.Split('/')[2];
+                        string dsttemp = temp.Insert(6, "/");
+                        photopath = photopath.Replace(temp, dsttemp);
+                    }
                     #endregion
 
-                    if (!File.Exists(photopath.Replace("down", FileServerPath)))
+                    string featureFilePath = Path.Combine(FileServerPath, photopath.Replace(@"down/", ""));
+                    if (!File.Exists(featureFilePath))
                     {
                         CheckFeatureNotExist++;
-                        DeleEvent(string.Format("人事编号为{0}的人脸特征不存在！", personno));
+                        DeleEvent(string.Format("人事特征检查：姓名【{1}】人事编号为【{0}】的人脸特征不存在！", personno, personName));
                     }
                 }
 
@@ -251,22 +281,12 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 复制文件到备份路径
         /// </summary>
         /// <param name="sourcePath">数据库中的文件路径</param>
-        public void CopyPersonFile(string sourcePath, int personno, bool IsPerson)
+        public void CopyPersonFile(string sourcePath, DataRow dr, bool IsPerson)
         {
             try
             {
-                #region 人脸特征文件夹路径日期加一个/
-                if (!IsPerson)
-                {
-                    string temp = sourcePath.Split('/')[2];
-                    string dsttemp = temp.Insert(6,"/");
-                    sourcePath = sourcePath.Replace(temp,dsttemp);
-                    //if (sourcePath.Split('/')[1] == "pic" && sourcePath.Split('/')[2].Length == 8)
-                    //    sourcePath = sourcePath.Insert(sourcePath.IndexOf("pic") + 10, "/");
-                    //else
-                    //    DeleEvent("人脸特征路径解析有误！");
-                }
-                #endregion
+                string personno = dr["personno"].ToString();
+                string personName = dr["PersonName"].ToString();
 
                 sourcePath = sourcePath.Replace("/", "\\");
 
@@ -289,27 +309,28 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonNotExists++;
-                        DeleEvent(string.Format("警告：人事编号为{0}的图片不存在！", personno));
+                        DeleEvent(string.Format("警告：姓名【{1}】人事编号为【{0}】的图片不存在！", personno, personName));
                     }
                     else
                     {
                         CountFeatureNotExists++;
-                        DeleEvent(string.Format("警告：人事编号为{0}的特征文件不存在！", personno));
+                        DeleEvent(string.Format("警告：姓名【{1}】人事编号为【{0}】的特征文件不存在！", personno, personName));
                     }
                     return;
                 }
 
+                // 复制成功不打印，否则打印太多会滚动覆盖
                 if (File.Exists(FaceDestPath))
                 {
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的图片时，目标文件已存在", personno));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片时，目标文件已存在", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的特征文件时，目标文件已存在", personno));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件时，目标文件已存在", personno, personName));
                     }
                 }
                 else
@@ -318,12 +339,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的图片成功", personno));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片成功", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        DeleEvent(string.Format("备份人事编号为{0}的特征文件成功", personno));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件成功", personno, personName));
                     }
                 }
                 #endregion
@@ -370,9 +391,31 @@ namespace PartialViewFacePicBackUp.ViewModels
                 }
                 #endregion
 
-                #region 根据文件服务器config读取文件存储路径
-                FileServerPath = new StreamReader(configpath, Encoding.UTF8).ReadToEnd().Split('\"')[27];
-                FileServerPath = FileServerPath.Replace("\\\\", "\\");
+                #region 根据文件服务器config读取文件存储路径:不要写死，万一配置文件增加结点，则取不到配置
+
+                FileStream fs = new FileStream(configpath, FileMode.Open, FileAccess.Read);
+
+                StreamReader sr = new StreamReader(fs, Encoding.Default);
+                while (!sr.EndOfStream)
+                {
+                    string tmp = sr.ReadLine();
+                    if (tmp.Contains("DownFilePath"))
+                    {
+                        List<string> lst = tmp.Split('=').ToList() ;
+                        FileServerPath = lst[2].Replace(@"/>", "");
+                        break;
+                    }
+                }
+
+                sr.Close();
+                sr.Dispose();
+                fs.Close();
+                fs.Dispose();
+
+
+                FileServerPath = FileServerPath.Replace("\\\\", "\\").Replace("\"", "");//TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray());
+
+                DeleEvent("文件服务器文件保存路径：" + FileServerPath);
                 #endregion
 
             }
