@@ -319,17 +319,18 @@ namespace PartialViewFacePicBackUp.ViewModels
                     return;
                 }
 
+                // 复制成功不打印，否则打印太多会滚动覆盖
                 if (File.Exists(FaceDestPath))
                 {
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片时，目标文件已存在", personno, personName));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片时，目标文件已存在", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件时，目标文件已存在", personno, personName));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件时，目标文件已存在", personno, personName));
                     }
                 }
                 else
@@ -338,12 +339,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片成功", personno, personName));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片成功", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件成功", personno, personName));
+                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件成功", personno, personName));
                     }
                 }
                 #endregion
