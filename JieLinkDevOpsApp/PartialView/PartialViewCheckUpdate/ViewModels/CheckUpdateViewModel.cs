@@ -90,7 +90,7 @@ namespace PartialViewCheckUpdate.ViewModels
             {
             }
 
-            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n6.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n7.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n8.版本跨度大的话，建议先归档数据，这将有效的缩短升级花费的时间，降低对现场的影响\r\n";
+            Message = "1.升级辅助工具，只能升级中心，包括门禁服务，不能升级车场盒子\r\n2.一键升级，既替换文件同时也会执行脚本\r\n3.只替换文件顾名思义，只替换文件不执行脚本\r\n4.只执行脚本顾名思义，只执行脚本不替换文件\r\n5.替换中心补丁是指我们修订并发布了一些所有版本通用的dll，可以一键替换到当前项目上\r\n6.如果版本号的下拉选项中没有你需要的版本号，可以直接输入，格式要求：\r\n非紧急版本，按照V1.0.0的格式输入，\r\n紧急版本，按照V2.7.1#E1.0的格式输入\r\n7.版本升级将会对数据库执行操作，建议先使用数据备份工具做基础数据备份，再执行升级\r\n8.需要执行脚本的话，请先安装VC++的运行环境，在JieLink的安装包Tools\\vs2013运行库\\vcredist_x64.exe\r\n9.版本跨度大的话，建议先归档数据，这将有效的缩短升级花费的时间，降低对现场的影响\r\n";
         }
 
         private void ProcessHelper_ShowOutputMessageEx(string message)
@@ -207,9 +207,21 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
+            if (!this.PackagePath.EndsWith("sys"))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择sys目录！");
+                return;
+            }
+
             if (string.IsNullOrEmpty(this.StartVersion) || string.IsNullOrEmpty(this.EndVersion))
             {
                 MessageBoxHelper.MessageBoxShowWarning("请输入正确的版本号！");
+                return;
+            }
+
+            if (this.StartVersion == "V1.0.0" || this.EndVersion == "V1.0.0")
+            {
+                MessageBoxHelper.MessageBoxShowWarning("V1.0.0版本会初始化数据库，请重新选择！");
                 return;
             }
 
@@ -231,7 +243,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
             UpdateRequest updateRequest = new UpdateRequest();
             updateRequest.Guid = Guid.NewGuid().ToString();
-            updateRequest.Product = enumProductType.JSOCT2016.ToString();
+            updateRequest.Product = Enum.GetName(typeof(enumProductType), enumProductType.JSOCT2016);
             updateRequest.RootPath = rootPath;
             updateRequest.PackagePath = zipPath;
 
@@ -254,7 +266,7 @@ namespace PartialViewCheckUpdate.ViewModels
         {
             UpdateRequest updateRequest = new UpdateRequest();
             updateRequest.Guid = Guid.NewGuid().ToString();
-            updateRequest.Product = enumProductType.JSOCT2016_Patch.ToString();
+            updateRequest.Product = Enum.GetName(typeof(enumProductType), enumProductType.JSOCT2016_Patch);
             updateRequest.RootPath = rootPath;
             updateRequest.PackagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "update\\Resources\\JSOCT2016_Patch-20201222.zip");
             ExecuteUpdate(updateRequest);
@@ -338,11 +350,6 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private void ExecuteScript()
         {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
             if (!IsInstallVCRunTime())
             {
                 RunVCRunTime();
@@ -788,11 +795,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
                 try
                 {
-                    using (StreamWriter sw = new StreamWriter(filePath, true))
-                    {
-                        sw.WriteLine(ddlScript);
-                    }
-
+                    LogHelper.CommLogger.Info(ddlScript);
                     MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, ddlScript);
                 }
                 catch (Exception)
@@ -860,15 +863,10 @@ namespace PartialViewCheckUpdate.ViewModels
             DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
             return dt.Rows.Count > 0;
         }
-
-        string filePath = "OneKeyUpdateLog.txt";
+        
         public void ShowMessage(string message)
         {
-            using (StreamWriter sw = new StreamWriter(filePath, true))
-            {
-                sw.WriteLine(message);
-            }
-
+            LogHelper.CommLogger.Info(message);
             this.Dispatcher.Invoke(new Action(() =>
             {
                 if (Message != null && Message.Length > 5000)
