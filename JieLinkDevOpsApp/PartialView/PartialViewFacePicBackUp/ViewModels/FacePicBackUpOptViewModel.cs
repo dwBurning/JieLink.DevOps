@@ -14,6 +14,7 @@ using System.Windows;
 using PartialViewInterface.Utils;
 using System.Data;
 using Panuon.UI.Silver;
+using System.ComponentModel;
 
 namespace PartialViewFacePicBackUp.ViewModels
 {
@@ -22,11 +23,42 @@ namespace PartialViewFacePicBackUp.ViewModels
         public FacePicBackUpOptViewModel()
         {
             FacePicBackUpCommand = new DelegateCommand();
-            FacePicBackUpCommand.ExecuteAction = FacePicBackUp;
+            FacePicBackUpCommand.ExecuteAction = DoFacePicBackUp;
             SelectPathCommand = new DelegateCommand();
             SelectPathCommand.ExecuteAction = SelectPath;
             CheckPicCommand = new DelegateCommand();
-            CheckPicCommand.ExecuteAction = CheckPic;
+            CheckPicCommand.ExecuteAction = DoCheckPic;
+        }
+
+        /// <summary>
+        /// 后台运行
+        /// </summary>
+        BackgroundWorker bgw = new BackgroundWorker();
+        private void DoFacePicBackUp(object sender)
+        {
+            try
+            {
+                Notice.Show("开始备份人脸图片", "通知", 3, MessageBoxIcon.Info);
+                bgw.DoWork += FacePicBackUp;
+                bgw.RunWorkerAsync();
+            }
+            catch(Exception ex)
+            {
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+            }
+        }
+        private void DoCheckPic(object sender)
+        {
+            try
+            {
+                Notice.Show("开始检测人脸图片", "通知", 3, MessageBoxIcon.Info);
+                bgw.DoWork += CheckPic;
+                bgw.RunWorkerAsync();
+            }
+            catch(Exception ex)
+            {
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+            }
         }
 
         /// <summary>
@@ -37,11 +69,6 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 检测人脸图片
         /// </summary>
         public DelegateCommand CheckPicCommand { get; set; }
-
-        /// <summary>
-        /// 命令=>调用
-        /// </summary>
-        public static event Action<string> DeleEvent;
 
         /// <summary>
         /// 执行备份
@@ -69,7 +96,7 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 根据路径备份
         /// </summary>
         /// <param name="parameter"></param>
-        public void FacePicBackUp(object parameter)
+        public void FacePicBackUp(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -135,9 +162,11 @@ namespace PartialViewFacePicBackUp.ViewModels
                     CopyPersonFile(photopath, dr, false);
                 }
 
-                DeleEvent(string.Format("获取到的文件服务器路径为：{0}", FileServerPath));
-                DeleEvent(string.Format("备份人事图片共{0}个，其中成功{1}个，人事图片不存在{2}个，失败{3}个", CountPersonAll, CountPersonSuccess, CountPersonNotExists, CountPersonFail));
-                DeleEvent(string.Format("备份人脸特征共{0}个，其中成功{1}个，特征图片不存在{2}个，失败{3}个", CountFeatureAll, CountFeatureSuccess, CountFeatureNotExists, CountFeatureFail));
+                ShowMessage(string.Format("获取到的文件服务器路径为：{0}", FileServerPath));
+                ShowMessage(string.Format("备份人事图片共{0}个，其中成功{1}个，人事图片不存在{2}个，失败{3}个", CountPersonAll, CountPersonSuccess, CountPersonNotExists, CountPersonFail));
+                ShowMessage(string.Format("备份人脸特征共{0}个，其中成功{1}个，特征图片不存在{2}个，失败{3}个", CountFeatureAll, CountFeatureSuccess, CountFeatureNotExists, CountFeatureFail));
+                
+                bgw.Dispose();
             }
             catch (Exception ex)
             {
@@ -194,7 +223,7 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 检测图片是否存在
         /// </summary>
         /// <param name="parameter"></param>
-        private void CheckPic(object parameter)
+        private void CheckPic(object sender, DoWorkEventArgs e)
         {
             try
             {
@@ -205,9 +234,9 @@ namespace PartialViewFacePicBackUp.ViewModels
                     MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
                     return;
                 }
-                Notice.Show("开始检测人脸图片", "通知", 3, MessageBoxIcon.Info);
+                
 
-                DeleEvent("开始检测人脸图片完整性！");
+                ShowMessage("开始检测人脸图片完整性！");
 
                 int CheckPersonAll = 0;
                 int CheckPersonNotExist = 0;
@@ -235,7 +264,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (!File.Exists(faceFilePath))
                     {
                         CheckPersonNotExist++;
-                        DeleEvent(string.Format("人事图片检查：姓名【{1}】人事编号为【{0}】的人脸图片不存在！", personno, personName));
+                        ShowMessage(string.Format("人事图片检查：姓名【{1}】人事编号为【{0}】的人脸图片不存在！", personno, personName));
                     }
                 }
 
@@ -263,13 +292,14 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (!File.Exists(featureFilePath))
                     {
                         CheckFeatureNotExist++;
-                        DeleEvent(string.Format("人事特征检查：姓名【{1}】人事编号为【{0}】的人脸特征不存在！", personno, personName));
+                        ShowMessage(string.Format("人事特征检查：姓名【{1}】人事编号为【{0}】的人脸特征不存在！", personno, personName));
                     }
                 }
 
-                DeleEvent(string.Format("检测人事图片共{0}个，其中图片不存在{1}个", CheckPersonAll, CheckPersonNotExist));
-                DeleEvent(string.Format("检测人脸特征共{0}个，其中特征不存在{1}个", CheckFeatureAll, CheckFeatureNotExist));
-
+                ShowMessage(string.Format("检测人事图片共{0}个，其中图片不存在{1}个", CheckPersonAll, CheckPersonNotExist));
+                ShowMessage(string.Format("检测人脸特征共{0}个，其中特征不存在{1}个", CheckFeatureAll, CheckFeatureNotExist));
+                
+                bgw.Dispose();
             }
             catch (Exception ex)
             {
@@ -309,12 +339,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonNotExists++;
-                        DeleEvent(string.Format("警告：姓名【{1}】人事编号为【{0}】的图片不存在！", personno, personName));
+                        ShowMessage(string.Format("警告：姓名【{1}】人事编号为【{0}】的图片不存在！", personno, personName));
                     }
                     else
                     {
                         CountFeatureNotExists++;
-                        DeleEvent(string.Format("警告：姓名【{1}】人事编号为【{0}】的特征文件不存在！", personno, personName));
+                        ShowMessage(string.Format("警告：姓名【{1}】人事编号为【{0}】的特征文件不存在！", personno, personName));
                     }
                     return;
                 }
@@ -325,12 +355,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片时，目标文件已存在", personno, personName));
+                        //ShowMessage(string.Format("备份姓名【{1}】人事编号为【{0}】的图片时，目标文件已存在", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件时，目标文件已存在", personno, personName));
+                        //ShowMessage(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件时，目标文件已存在", personno, personName));
                     }
                 }
                 else
@@ -339,12 +369,12 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (IsPerson)
                     {
                         CountPersonSuccess++;
-                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的图片成功", personno, personName));
+                        //ShowMessage(string.Format("备份姓名【{1}】人事编号为【{0}】的图片成功", personno, personName));
                     }
                     else
                     {
                         CountFeatureSuccess++;
-                        //DeleEvent(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件成功", personno, personName));
+                        //ShowMessage(string.Format("备份姓名【{1}】人事编号为【{0}】的特征文件成功", personno, personName));
                     }
                 }
                 #endregion
@@ -374,7 +404,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                 var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
                 if (process == null)
                 {
-                    DeleEvent("未发现运行门禁服务");
+                    ShowMessage("未发现运行门禁服务");
                     process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
                 }
 
@@ -386,7 +416,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                 }
                 else
                 {
-                    DeleEvent("未发现运行中心服务");
+                    ShowMessage("未发现运行中心服务");
                     return;
                 }
                 #endregion
@@ -415,7 +445,7 @@ namespace PartialViewFacePicBackUp.ViewModels
 
                 FileServerPath = FileServerPath.Replace("\\\\", "\\").Replace("\"", "");//TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray());
 
-                DeleEvent("文件服务器文件保存路径：" + FileServerPath);
+                ShowMessage("文件服务器文件保存路径：" + FileServerPath);
                 #endregion
 
             }
@@ -423,6 +453,31 @@ namespace PartialViewFacePicBackUp.ViewModels
             {
                 MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
             }
+        }
+
+
+        //写日志变量和函数
+        public string Message
+        {
+            get { return (string)GetValue(MessageProperty); }
+            set { SetValue(MessageProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register("Message", typeof(string), typeof(FacePicBackUpOptViewModel));
+        public void ShowMessage(string message)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                //if (Message != null && Message.Length > 5000)
+                //{
+                //    Message = string.Empty;
+                //}
+                if (message.Length > 0)
+                {
+                    Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+                }
+            }));
         }
     }
 }

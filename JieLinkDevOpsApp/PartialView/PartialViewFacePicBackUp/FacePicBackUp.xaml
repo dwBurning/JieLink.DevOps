@@ -65,7 +65,13 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
         <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5"
-                     Grid.Row="4" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3" IsReadOnly="True" >
+                     Grid.Row="4" Grid.Column="0" Grid.RowSpan="5" Grid.ColumnSpan="3" IsReadOnly="True" TextChanged="RichTextBox_Text_TextChanged">
+            <RichTextBox.ContextMenu>
+                <ContextMenu Name="cm" StaysOpen="true">
+                    <MenuItem Header="清屏" Click="Clear_Click" >
+                    </MenuItem>
+                </ContextMenu>
+            </RichTextBox.ContextMenu>
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>
