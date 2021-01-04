@@ -58,5 +58,23 @@ namespace PartialViewInterface.Utils
 
             return result;
         }
+
+        /// <summary>
+        /// 等待窗
+        /// handler.UpdateMessage("新的提示信息");更新提示信息
+        /// handler.Close()关闭窗口
+        /// </summary>
+        /// <param name="message"></param>
+        public static IPendingHandler MessageBoxShowWaiting(string message)
+        {
+            return PendingBox.Show(message, "等待", false, Application.Current.MainWindow, new PendingBoxConfigurations()
+            {
+                LoadingForeground = "#F1C825".ToColor().ToBrush(),
+                ButtonBrush = "#F1C825".ToColor().ToBrush(),
+                PendingBoxStyle = PendingBoxStyle.Classic,
+                LoadingSize = 50,
+            });
+        }
+
     }
 }
