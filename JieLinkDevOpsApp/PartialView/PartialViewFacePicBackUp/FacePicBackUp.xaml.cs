@@ -28,8 +28,7 @@ namespace PartialViewFacePicBackUp
         public FacePicBackUp()
         {
             InitializeComponent();
-
-            FacePicBackUpOptViewModel.DeleEvent += AddLogs;
+            //FacePicBackUpOptViewModel.DeleEvent += AddLogs;
             viewModel = new FacePicBackUpOptViewModel();
             DataContext = viewModel;
         }
@@ -66,22 +65,17 @@ namespace PartialViewFacePicBackUp
         }
 
         /// <summary>
-        /// 日志行数
+        /// 右击菜单清屏
         /// </summary>
-        private static int LogNum = 0;
-        /// <summary>
-        /// 打印日志
-        /// </summary>
-        /// <param name="str"></param>
-        public void AddLogs(string str)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            LogNum++;
-            if (LogNum > 200)
-            {
-                RichTextBox_Text.Document.Blocks.Clear();
-                LogNum = 0;
-            }
-            RichTextBox_Text.AppendText(DateTime.Now.ToString() + ":" + str + "\r");
+            RichTextBox_Text.Document.Blocks.Clear();
+        }
+
+        private void RichTextBox_Text_TextChanged(object sender, TextChangedEventArgs e)
+        {
             RichTextBox_Text.ScrollToEnd();
         }
     }
