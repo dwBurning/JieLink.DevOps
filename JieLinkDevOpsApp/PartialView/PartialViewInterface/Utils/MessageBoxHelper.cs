@@ -69,8 +69,8 @@ namespace PartialViewInterface.Utils
         {
             return PendingBox.Show(message, "等待", false, Application.Current.MainWindow, new PendingBoxConfigurations()
             {
-                LoadingForeground = "#F1C825".ToColor().ToBrush(),
-                ButtonBrush = "#F1C825".ToColor().ToBrush(),
+                LoadingForeground = "#20A0FF".ToColor().ToBrush(),
+                ButtonBrush = "#20A0FF".ToColor().ToBrush(),
                 PendingBoxStyle = PendingBoxStyle.Classic,
                 LoadingSize = 50,
             });
