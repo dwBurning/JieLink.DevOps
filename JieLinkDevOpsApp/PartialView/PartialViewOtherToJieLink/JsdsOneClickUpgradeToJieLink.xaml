@@ -39,12 +39,21 @@
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
+                <WrapPanel Grid.Column="2" Grid.RowSpan="2">
+                    <TextBlock> <Run Foreground="#20A0FF">说明：</Run></TextBlock>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Left"> 1.本工具用于其他软件一键切换到jielink软件，迁移数据包括【组织、人事、凭证、车场服务、门禁服务、场内记录】。2.也可再迁移入场、出场、收费记录。3.欢迎加入jielink阵营。</TextBlock>
+                </WrapPanel>
                 <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
+                     Grid.Column="2" Grid.Row="2" Grid.RowSpan="11" IsReadOnly="True" Margin="5,5,0,10">
                     <FlowDocument>
                         <Paragraph>
                             <Run Text="{Binding UpgradeResult}"/>
@@ -57,6 +66,8 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" >数据库端口：</TextBlock>
                 <TextBlock Grid.Row="3" Grid.Column="0" >数据库账号：</TextBlock>
                 <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
+                <TextBlock Grid.Row="5" Grid.Column="0" TextWrapping="Wrap" >通行记录迁移时间：</TextBlock>
+                <TextBlock Grid.Row="6" Grid.Column="0" >选择性迁移：</TextBlock>
 
                 <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtJsdsDbIp" Text="127.0.0.1" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入JSDS的IP地址"
@@ -65,7 +76,7 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtJsdsDbName"  Text="jsds" 
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtJsdsDbName" Text="" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -94,11 +105,26 @@
                      pu:PasswordBoxHelper.CornerRadius="4"
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
-                <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
+                <StackPanel Grid.Column="1" Grid.Row="5" VerticalAlignment="Center">
+                    <ComboBox Height="30" x:Name="spRecordImportTime" DisplayMemberPath="Text" SelectedValuePath="Value" >
+                    </ComboBox>
+                </StackPanel>
+                <ListBox Grid.Column="1" Grid.Row="6" Grid.RowSpan="3" VerticalAlignment="Center" SelectionChanged="ListBox_SelectionChanged">
+                    <CheckBox Height="30" Content="入场记录"
+                                  pu:CheckBoxHelper.CheckedBackground="#00BCFF"
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding EnterRecord}" />
+                    <CheckBox Height="30" Content="出场记录" 
+                                  pu:CheckBoxHelper.CheckedBackground="#00BCFF"
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding OutRecord}" />
+                    <CheckBox Height="30" Content="收费记录" 
+                                  pu:CheckBoxHelper.CheckedBackground="#00BCFF"
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding BillRecord}" />
+                </ListBox>
+                <Button Grid.Column="1" Grid.Row="9" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                <Button Grid.Column="1" Grid.Row="6" Content="一键升级" Name ="btnOneClickUpgrade" Click="btnOneClickUpgrade_Click"
+                <Button Grid.Column="1" Grid.Row="10" Content="一键升级" Name ="btnOneClickUpgrade" Click="btnOneClickUpgrade_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>

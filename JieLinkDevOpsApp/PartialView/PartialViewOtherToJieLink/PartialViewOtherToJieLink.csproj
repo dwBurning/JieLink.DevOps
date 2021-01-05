@@ -55,6 +55,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\JsdsUpgradePolicy.cs" />
+    <Compile Include="Models\RecordComboxSelectType.cs" />
     <Compile Include="ViewModels\ControlLeaseStall.cs" />
     <Compile Include="ViewModels\ControlPerson.cs" />
     <Compile Include="ViewModels\ControlRoleGroup.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="ViewModels\TCacVoucherModel.cs" />
     <Compile Include="ViewModels\TcacVoucherBizParamModel.cs" />
     <Compile Include="ViewModels\TParkPayModel.cs" />
+    <Compile Include="ViewModels\TParkpayrecordModel.cs" />
     <Compile Include="ViewModels\TParkRecordInModel.cs" />
     <Compile Include="ViewModels\TParkRecordOutModel.cs" />
     <Compile Include="ViewModels\TSyncDictionary.cs" />
