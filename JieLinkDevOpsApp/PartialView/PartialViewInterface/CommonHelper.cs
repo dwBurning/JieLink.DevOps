@@ -108,5 +108,39 @@ namespace PartialViewInterface
             string uniqueId = DateTime.Now.ToString("yyMMddHHmmssffff") + random.Next(1000, 9999);
             return uniqueId;
         }
+
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>=
+        /// <returns></returns>
+        public static int GetIntValue(object objValue, int intDefault = 0)
+        {
+            if (objValue == null)
+            {
+                return intDefault;
+            }
+            return GetIntValue(objValue.ToString(), intDefault);
+        }
+
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>
+        /// <param name="dtmDefault"></param>
+        /// <returns></returns>
+        public static int GetIntValue(string strValue, int intDefault)
+        {
+            if (string.IsNullOrWhiteSpace(strValue))
+            {
+                return intDefault;
+            }
+            int iValue = 0;
+            if (!int.TryParse(strValue, out iValue))
+            {
+                iValue = intDefault;
+            }
+            return iValue;
+        }
     }
 }
