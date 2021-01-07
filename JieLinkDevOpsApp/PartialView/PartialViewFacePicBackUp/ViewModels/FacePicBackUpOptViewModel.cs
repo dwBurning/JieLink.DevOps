@@ -33,11 +33,11 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// <summary>
         /// 后台运行
         /// </summary>
-        BackgroundWorker bgw = new BackgroundWorker();
         private void DoFacePicBackUp(object sender)
         {
             try
             {
+                BackgroundWorker bgw = new BackgroundWorker();
                 Notice.Show("开始备份人脸图片", "通知", 3, MessageBoxIcon.Info);
                 bgw.DoWork += FacePicBackUp;
                 bgw.RunWorkerAsync();
@@ -51,6 +51,7 @@ namespace PartialViewFacePicBackUp.ViewModels
         {
             try
             {
+                BackgroundWorker bgw = new BackgroundWorker();
                 Notice.Show("开始检测人脸图片", "通知", 3, MessageBoxIcon.Info);
                 bgw.DoWork += CheckPic;
                 bgw.RunWorkerAsync();
@@ -165,8 +166,6 @@ namespace PartialViewFacePicBackUp.ViewModels
                 ShowMessage(string.Format("获取到的文件服务器路径为：{0}", FileServerPath));
                 ShowMessage(string.Format("备份人事图片共{0}个，其中成功{1}个，人事图片不存在{2}个，失败{3}个", CountPersonAll, CountPersonSuccess, CountPersonNotExists, CountPersonFail));
                 ShowMessage(string.Format("备份人脸特征共{0}个，其中成功{1}个，特征图片不存在{2}个，失败{3}个", CountFeatureAll, CountFeatureSuccess, CountFeatureNotExists, CountFeatureFail));
-                
-                bgw.Dispose();
             }
             catch (Exception ex)
             {
@@ -298,8 +297,6 @@ namespace PartialViewFacePicBackUp.ViewModels
 
                 ShowMessage(string.Format("检测人事图片共{0}个，其中图片不存在{1}个", CheckPersonAll, CheckPersonNotExist));
                 ShowMessage(string.Format("检测人脸特征共{0}个，其中特征不存在{1}个", CheckFeatureAll, CheckFeatureNotExist));
-                
-                bgw.Dispose();
             }
             catch (Exception ex)
             {
