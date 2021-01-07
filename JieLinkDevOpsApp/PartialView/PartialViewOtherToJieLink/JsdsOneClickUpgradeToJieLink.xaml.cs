@@ -328,11 +328,14 @@ namespace PartialViewOtherToJieLink
                             }
                         }
                     }
-                    viewModel.ShowMessage(string.Format("01.迁移组织结束，合计处理{0}条组织数据，成功迁移{1}条组织", groupList.Count, groupSuccessImportList.Count, JsonHelper.SerializeObject(groupSuccessImportList)));
+                    string msg = string.Format("01.迁移组织结束，合计处理{0}条组织数据，成功迁移{1}条组织", groupList.Count, groupSuccessImportList.Count, JsonHelper.SerializeObject(groupSuccessImportList));
+                    viewModel.ShowMessage(msg);
+                    LogHelper.CommLogger.Info(msg);
                 }
                 else
                 {
                     viewModel.ShowMessage("01.迁移组织结束：groupDs == null || groupDs.Tables[0] == null");
+                    LogHelper.CommLogger.Info("01.迁移组织结束：groupDs == null || groupDs.Tables[0] == null");
                 }
 
                 //2、重新查询组织
@@ -525,11 +528,14 @@ namespace PartialViewOtherToJieLink
                             }
                         }
                     }
-                    viewModel.ShowMessage(string.Format("02.迁移用户结束，合计处理{0}条用户数据，成功迁移{1}条用户", personList.Count, personSuccessImportList.Count));
+                    string msg = string.Format("02.迁移用户结束，合计处理{0}条用户数据，成功迁移{1}条用户", personList.Count, personSuccessImportList.Count);
+                    viewModel.ShowMessage(msg);
+                    LogHelper.CommLogger.Info(msg);
                 }
                 else
                 {
                     viewModel.ShowMessage("02.迁移用户结束：personList.Count == 0");
+                    LogHelper.CommLogger.Info("02.迁移用户结束：personList.Count == 0");
                 }
 
                 List<ControlPerson> jielinkPersonList = new List<ControlPerson>();  //jielink数据库的用户列表
@@ -730,16 +736,20 @@ namespace PartialViewOtherToJieLink
                                 }
                             }
                         }
-                        viewModel.ShowMessage(string.Format("03.迁移凭证服务结束，合计处理{0}条账户数据，成功迁移{1}条", accountList.Count, vsSuccessImportList.Count));
+                        string msg = string.Format("03.迁移凭证服务结束，合计处理{0}条账户数据，成功迁移{1}条", accountList.Count, vsSuccessImportList.Count);
+                        viewModel.ShowMessage(msg);
+                        LogHelper.CommLogger.Info(msg);
                     }
                     else
                     {
                         viewModel.ShowMessage("03.迁移凭证服务结束：accountList.Count==0");
+                        LogHelper.CommLogger.Info("03.迁移凭证服务结束：accountList.Count==0");
                     }
                 }
                 else
                 {
                     viewModel.ShowMessage("03.迁移凭证服务结束：personSuccessImportList.Count == 0");
+                    LogHelper.CommLogger.Info("03.迁移凭证服务结束：personSuccessImportList.Count == 0");
                 }
                 viewModel.ShowMessage("04.迁移入出场收费记录");
                 List<TParkRecordInModel> recordInList = new List<TParkRecordInModel>();
@@ -1084,12 +1094,15 @@ namespace PartialViewOtherToJieLink
                             }
                         }
                     }
-                    viewModel.ShowMessage(string.Format("04.迁移入出场收费记录，合计将解析入场记录{0}条，出场记录{1}条，收费记录{2}条；实际迁移入场记录{3}条，出场记录{4}条，收费记录{5}条",
-                        recordInList.Count, recordOutList.Count, enableTParkPay ? highVersionRecordBillList.Count : lowVersionPayRecordList.Count, enterSuccessImportList.Count, outSuccessImportList.Count, billSuccessImportList.Count));
+                    string msg = string.Format("04.迁移入出场收费记录，合计将解析入场记录{0}条，出场记录{1}条，收费记录{2}条；实际迁移入场记录{3}条，出场记录{4}条，收费记录{5}条",
+                        recordInList.Count, recordOutList.Count, enableTParkPay ? highVersionRecordBillList.Count : lowVersionPayRecordList.Count, enterSuccessImportList.Count, outSuccessImportList.Count, billSuccessImportList.Count);
+                    viewModel.ShowMessage(msg);
+                    LogHelper.CommLogger.Info(msg);
                 }
                 else
                 {
                     viewModel.ShowMessage("04.迁移入出场收费记录结束：recordInList.Count == 0");
+                    LogHelper.CommLogger.Info("04.迁移入出场收费记录结束：recordInList.Count == 0");
                 }
             }
             catch (Exception ex)
