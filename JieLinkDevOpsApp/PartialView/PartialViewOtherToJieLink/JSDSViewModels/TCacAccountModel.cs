@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewOtherToJieLink.ViewModels
+namespace PartialViewOtherToJieLink.JSDSViewModels
 {
     public class TCacAccountModel
     {

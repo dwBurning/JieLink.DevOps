@@ -100,5 +100,32 @@ namespace PartialViewOtherToJieLink.ViewModels
         // Using a DependencyProperty as the backing store for BillRecord.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BillRecordProperty =
             DependencyProperty.Register("BillRecord", typeof(bool), typeof(JsdsOneClickUpgradeViewModel));
+
+        /// <summary>
+        /// 车场
+        /// </summary>
+
+        public bool Park
+        {
+            get { return (bool)GetValue(ParkProperty); }
+            set { SetValue(ParkProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Park.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ParkProperty =
+            DependencyProperty.Register("Park", typeof(bool), typeof(JsdsOneClickUpgradeViewModel));
+        /// <summary>
+        /// 门禁
+        /// </summary>
+
+        public bool Door
+        {
+            get { return (bool)GetValue(DoorProperty); }
+            set { SetValue(DoorProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Door.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DoorProperty =
+            DependencyProperty.Register("Door", typeof(bool), typeof(JsdsOneClickUpgradeViewModel));
     }
 }
