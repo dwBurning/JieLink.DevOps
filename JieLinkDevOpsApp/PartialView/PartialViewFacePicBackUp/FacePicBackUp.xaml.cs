@@ -71,7 +71,8 @@ namespace PartialViewFacePicBackUp
         /// <param name="e"></param>
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
-            RichTextBox_Text.Document.Blocks.Clear();
+            viewModel.Message = "";
+            //RichTextBox_Text.Document.Blocks.Clear();
         }
 
         private void RichTextBox_Text_TextChanged(object sender, TextChangedEventArgs e)
