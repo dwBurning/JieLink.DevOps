@@ -28,6 +28,8 @@ namespace PartialViewFacePicBackUp.ViewModels
             SelectPathCommand.ExecuteAction = SelectPath;
             CheckPicCommand = new DelegateCommand();
             CheckPicCommand.ExecuteAction = DoCheckPic;
+            FilePath = "";
+            SrcFilePath = "";
         }
 
         /// <summary>
@@ -108,11 +110,15 @@ namespace PartialViewFacePicBackUp.ViewModels
                     MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
                     return;
                 }
-                if (FilePath == "")
+                this.Dispatcher.Invoke(new Action(() =>
                 {
-                    MessageBoxHelper.MessageBoxShowWarning("请选择有效的备份路径！");
-                    return;
-                }
+                    if (FilePath == "")
+                    {
+                        MessageBoxHelper.MessageBoxShowWarning("请选择有效的备份路径！");
+                        return;
+                    }
+                }));
+
 
                 #region 初始化变量
                 CountPersonAll = 0;
@@ -173,12 +179,19 @@ namespace PartialViewFacePicBackUp.ViewModels
             }
         }
 
+        public string SrcFilePath
+        {
+            get { return (string)GetValue(SrcFilePathProperty); }
+            set { SetValue(SrcFilePathProperty, value); }
+        }
+        public static readonly DependencyProperty SrcFilePathProperty =
+            DependencyProperty.Register("SrcFilePath", typeof(string), typeof(FacePicBackUpOptViewModel), new PropertyMetadata(""));
+
         public string FilePath
         {
             get { return (string)GetValue(FilePathProperty); }
             set { SetValue(FilePathProperty, value); }
         }
-
         public static readonly DependencyProperty FilePathProperty =
             DependencyProperty.Register("FilePath", typeof(string), typeof(FacePicBackUpOptViewModel), new PropertyMetadata(""));
 
@@ -300,7 +313,10 @@ namespace PartialViewFacePicBackUp.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+                }));
             }
         }
 
@@ -414,41 +430,70 @@ namespace PartialViewFacePicBackUp.ViewModels
                 else
                 {
                     ShowMessage("未发现运行中心服务");
-                    return;
+                    //return;
                 }
                 #endregion
 
                 #region 根据文件服务器config读取文件存储路径:不要写死，万一配置文件增加结点，则取不到配置
-
-                FileStream fs = new FileStream(configpath, FileMode.Open, FileAccess.Read);
-
-                StreamReader sr = new StreamReader(fs, Encoding.Default);
-                while (!sr.EndOfStream)
+                if (!string.IsNullOrEmpty(configpath))
                 {
-                    string tmp = sr.ReadLine();
-                    if (tmp.Contains("DownFilePath"))
+                    FileStream fs = new FileStream(configpath, FileMode.Open, FileAccess.Read);
+
+                    StreamReader sr = new StreamReader(fs, Encoding.Default);
+                    while (!sr.EndOfStream)
                     {
-                        List<string> lst = tmp.Split('=').ToList() ;
-                        FileServerPath = lst[2].Replace(@"/>", "");
-                        break;
+                        string tmp = sr.ReadLine();
+                        if (tmp.Contains("DownFilePath"))
+                        {
+                            List<string> lst = tmp.Split('=').ToList();
+                            FileServerPath = lst[2].Replace(@"/>", "");
+                            FileServerPath = FileServerPath.Trim();
+                            break;
+                        }
                     }
+                    sr.Close();
+                    sr.Dispose();
+                    fs.Close();
+                    fs.Dispose();
+
+                    FileServerPath = FileServerPath.Replace("\\\\", "\\").Replace("\"", "");//TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray());
                 }
-
-                sr.Close();
-                sr.Dispose();
-                fs.Close();
-                fs.Dispose();
+                #endregion
 
 
-                FileServerPath = FileServerPath.Replace("\\\\", "\\").Replace("\"", "");//TrimStart("\"".ToCharArray()).TrimEnd("\"".ToCharArray());
+                #region 如果输入的源文件目录有效，采用输入目录
+                
+                this.Dispatcher.Invoke(new Action(()=>
+                {
+                    //输入的源文件目录为空或者不存在，使用获取到的文件服务器目录
+                    if (string.IsNullOrEmpty(SrcFilePath) || !Directory.Exists(SrcFilePath))
+                    {
+                        if (!string.IsNullOrEmpty(FileServerPath))
+                        {
+                            SrcFilePath = FileServerPath;
+                            ShowMessage("使用获取到的文件服务器路径：" + FileServerPath);
+                        }
+                        else
+                        {
+                            ShowMessage("无法获取到文件服务器路径，请手动输入源文件路径：" + FileServerPath);
+                        }
+                    }
+                    else
+                    {
+                        FileServerPath = SrcFilePath;
+                        ShowMessage("使用输入的源文件路径：" + FileServerPath);
+                    }
+                }));
 
-                ShowMessage("文件服务器文件保存路径：" + FileServerPath);
                 #endregion
 
             }
             catch (Exception ex)
             {
-                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+                }));
             }
         }
 
@@ -466,10 +511,6 @@ namespace PartialViewFacePicBackUp.ViewModels
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                //if (Message != null && Message.Length > 5000)
-                //{
-                //    Message = string.Empty;
-                //}
                 if (message.Length > 0)
                 {
                     Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
