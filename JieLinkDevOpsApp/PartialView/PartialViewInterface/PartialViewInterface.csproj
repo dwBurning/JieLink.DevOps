@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Command\DelegateCommand.cs" />
     <Compile Include="CommonHelper.cs" />
+    <Compile Include="ConstantHelper.cs" />
     <Compile Include="EnvironmentInfo.cs" />
     <Compile Include="Models\AutoStartCorectEntity.cs" />
     <Compile Include="Models\AutoStartSyncEntity.cs" />

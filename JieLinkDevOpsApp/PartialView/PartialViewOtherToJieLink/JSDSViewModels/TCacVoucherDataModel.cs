@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewOtherToJieLink.ViewModels
+namespace PartialViewOtherToJieLink.JSDSViewModels
 {
     /// <summary>
     /// 人脸凭证：暂时不考虑，后期有人脸版本再优化
