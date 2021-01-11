@@ -44,6 +44,7 @@
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
@@ -53,7 +54,7 @@
                 </WrapPanel>
                 <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Grid.Column="2" Grid.Row="2" Grid.RowSpan="11" IsReadOnly="True" Margin="5,5,0,10">
+                     Grid.Column="2" Grid.Row="2" Grid.RowSpan="10" IsReadOnly="True" Margin="5,5,0,10">
                     <FlowDocument>
                         <Paragraph>
                             <Run Text="{Binding UpgradeResult}"/>
@@ -67,7 +68,8 @@
                 <TextBlock Grid.Row="3" Grid.Column="0" >数据库账号：</TextBlock>
                 <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
                 <TextBlock Grid.Row="5" Grid.Column="0" TextWrapping="Wrap" >通行记录迁移时间：</TextBlock>
-                <TextBlock Grid.Row="6" Grid.Column="0" >选择性迁移：</TextBlock>
+                <TextBlock Grid.Row="6" Grid.Column="0" >类型：</TextBlock>
+                <TextBlock Grid.Row="7" Grid.Column="0" >选择性迁移：</TextBlock>
 
                 <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtJsdsDbIp" Text="127.0.0.1" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入JSDS的IP地址"
@@ -109,7 +111,15 @@
                     <ComboBox Height="30" x:Name="spRecordImportTime" DisplayMemberPath="Text" SelectedValuePath="Value" >
                     </ComboBox>
                 </StackPanel>
-                <ListBox Grid.Column="1" Grid.Row="6" Grid.RowSpan="3" VerticalAlignment="Center" SelectionChanged="ListBox_SelectionChanged">
+                <WrapPanel Grid.Column="1" Grid.Row="6" VerticalAlignment="Center">
+                    <CheckBox Margin="5" Height="30" Content="车场"
+                                  pu:CheckBoxHelper.CheckedBackground="#00BCFF"
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Park}" />
+                    <CheckBox Margin="5" Height="30" Content="门禁"
+                                  pu:CheckBoxHelper.CheckedBackground="#00BCFF"
+                                  pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding Door}" />
+                </WrapPanel>
+                <ListBox Grid.Column="1" Grid.Row="7" Grid.RowSpan="2" BorderBrush="White" VerticalAlignment="Center">
                     <CheckBox Height="30" Content="入场记录"
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
                                   pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding EnterRecord}" />

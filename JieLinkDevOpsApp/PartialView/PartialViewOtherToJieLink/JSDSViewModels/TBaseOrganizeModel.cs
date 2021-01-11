@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewOtherToJieLink.ViewModels
+namespace PartialViewOtherToJieLink.JSDSViewModels
 {
     /// <summary>
     /// 组织表t_base_organize

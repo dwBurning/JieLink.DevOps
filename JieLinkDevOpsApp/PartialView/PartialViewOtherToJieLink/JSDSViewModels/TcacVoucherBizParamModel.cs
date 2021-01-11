@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewOtherToJieLink.ViewModels
+namespace PartialViewOtherToJieLink.JSDSViewModels
 {
     /// <summary>
     /// 人事+凭证+服务关联关系
