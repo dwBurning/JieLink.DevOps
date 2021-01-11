@@ -34,7 +34,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
             Versions = new List<string>()
             {
-                "V1.0.0",
+                //"V1.0.0",
                 "V1.0.1",
                 "V1.0.2",
                 "V1.0.3",

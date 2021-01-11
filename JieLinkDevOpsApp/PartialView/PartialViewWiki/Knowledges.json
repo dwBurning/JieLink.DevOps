@@ -1,18 +1,40 @@
 [
   {
+    "Type": 0,
     "Id": "CheckBoxLog",
     "Knowledge": "怎么查看盒子日志？",
-    "KeyWords": "怎么|查看|盒子|日志",
+    "KeyWords": "怎么|查看|盒子|日志"
   },
   {
+    "Type": 0,
     "Id": "CheckCenterLog",
     "Knowledge": "怎么查看中心日志？",
-    "KeyWords": "怎么|查看|中心|日志",
+    "KeyWords": "怎么|查看|中心|日志"
   },
   {
+    "Type": 0,
     "Id": "CheckBoxVideo",
     "Knowledge": "怎么查看盒子录屏？",
-    "KeyWords": "怎么|查看|盒子|录屏",
+    "KeyWords": "怎么|查看|盒子|录屏"
+  },
+  {
+    "Type": 2,
+    "Id": "ImportPersonFaild",
+    "Knowledge": "人事资料入库失败",
+    "KeyWords": "人事|资料|入库|失败"
+  },
+  {
+    "Type": 1,
+    "Id": "RecoverDataFromBox",
+    "Knowledge": "从盒子导出月租车数据恢复到中心",
+    "KeyWords": "盒子|月租车|恢复|中心",
+    "Solution": "select c.`no` as '车牌',v.startdate as '起始时间',v.enddate as '结束时间',v.mealid as '套餐ID',m.nickname as '套餐名',p.`Name` as '姓名',p.`No` as '人事编号',p.CellPhoneNo as '手机号码',p.RoomNo as '房号' from crd_credential c,crd_virtualslot v,crd_person p,sys_setmeal m where c.personid=v.personid and c.personid=p.id and c.state=1 and v.mealid=m.id;|复制以上SQL语句在盒子数据库中执行，然后通过中心Excel模板导入"
+  },
+  {
+    "Type": 2,
+    "Id": "ChangeDevice",
+    "Knowledge": "更换主板后，场内月租车要收费",
+    "KeyWords": "更换|主板|月租|收费"
   }
 
 ]

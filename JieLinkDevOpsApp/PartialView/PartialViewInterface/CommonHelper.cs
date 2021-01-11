@@ -48,6 +48,18 @@ namespace PartialViewInterface
                             {
                                 pi.SetValue(t, Convert.ToString(value), null);
                             }
+                            else if (pi.PropertyType.Name == "Int32")
+                            {
+                                if (value.ToString().ToLower() == "true")
+                                {
+                                    value = 1;
+                                }
+                                else if (value.ToString().ToLower() == "false")
+                                {
+                                    value = 0;
+                                }
+                                pi.SetValue(t, int.Parse(value.ToString()), null);
+                            }
                             else
                             {
                                 pi.SetValue(t, value, null);
