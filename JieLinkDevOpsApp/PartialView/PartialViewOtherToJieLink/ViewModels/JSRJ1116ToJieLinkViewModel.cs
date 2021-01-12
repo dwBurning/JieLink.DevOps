@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Panuon.UI.Silver;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
@@ -12,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace PartialViewOtherToJieLink.ViewModels
 {
@@ -19,8 +21,6 @@ namespace PartialViewOtherToJieLink.ViewModels
     {
 
         private readonly string GROUPROOTPARENTID = "00000000-0000-0000-0000-000000000000";
-
-        private readonly string DEFAULTPERSON = "DEFAULTPERSON";
 
         private readonly string REMARK = "JSRJ1116";
 
@@ -32,8 +32,6 @@ namespace PartialViewOtherToJieLink.ViewModels
 
         public bool CanExecute { get; set; }
 
-        public DbConnectionModel conn { get; set; }
-
         public JSRJ1116ToJieLinkViewModel()
         {
             TestConnCommand = new DelegateCommand();
@@ -42,24 +40,32 @@ namespace PartialViewOtherToJieLink.ViewModels
             UpgradeCommand = new DelegateCommand();
             UpgradeCommand.ExecuteAction = Upgrade;
             UpgradeCommand.CanExecuteFunc = new Func<object, bool>((object parameter) => { return CanExecute; });
-
-            conn = this.GetDbConnectionModel();
         }
 
         private void TestConn(object parameter)
         {
             try
             {
+                PasswordBox passwordBox = (PasswordBox)parameter;
+                this.Password = passwordBox.Password;
 
-                conn = this.GetDbConnectionModel();
+                if (!CheckValid())
+                {
+                    MessageBoxHelper.MessageBoxShowWarning("请填写完整的数据库配置信息！");
+                    return;
+                }
+
+                DbConnectionModel conn = this.GetDbConnectionModel();
                 if (MSSqlHelper.TestDbConnection(conn.ConnectionStr))
                 {
-                    ShowMessage("数据库连接成功！");
+                    CanExecute = true;
+                    ShowMessage("数据库连接成功");
+                    Notice.Show("数据库连接成功", "通知", 3, MessageBoxIcon.Success);
                 }
                 else
                 {
-                    CanExecute = true;
-                    ShowMessage("数据库连接失败，请检查输入是否正确！");
+                    CanExecute = false;
+                    MessageBoxHelper.MessageBoxShowWarning("连接错误，请重新输入数据库连接信息");
                 }
 
             }
@@ -67,6 +73,18 @@ namespace PartialViewOtherToJieLink.ViewModels
             {
                 MessageBoxHelper.MessageBoxShowWarning("连接错误，请重新输入JSDS数据库连接信息");
             }
+        }
+
+        private bool CheckValid()
+        {
+            if (string.IsNullOrEmpty(IpAddr)
+                || string.IsNullOrEmpty(Password)
+                || string.IsNullOrEmpty(UserName)
+                || string.IsNullOrEmpty(DbName))
+            {
+                return false;
+            }
+            return true;
         }
 
 
@@ -662,7 +680,7 @@ namespace PartialViewOtherToJieLink.ViewModels
             }
             finally
             {
-                
+
             }
         }
 

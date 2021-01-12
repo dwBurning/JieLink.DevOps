@@ -25,15 +25,13 @@
     <TabControl
         pu:TabControlHelper.SelectedForeground="#00BCFF" >
         <TabItem Header="JSDS升级">
-            <Grid x:Name="gridSOneClickUpgradeTool">
+            <Grid x:Name="gridJSDS">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="140"></ColumnDefinition>
                     <ColumnDefinition Width="200"></ColumnDefinition>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
@@ -57,7 +55,7 @@
                      Grid.Column="2" Grid.Row="2" Grid.RowSpan="10" IsReadOnly="True" Margin="5,5,0,10">
                     <FlowDocument>
                         <Paragraph>
-                            <Run Text="{Binding UpgradeResult}"/>
+                            <Run Text="{Binding Message}"/>
                         </Paragraph>
                     </FlowDocument>
                 </RichTextBox>
@@ -71,28 +69,28 @@
                 <TextBlock Grid.Row="6" Grid.Column="0" >类型：</TextBlock>
                 <TextBlock Grid.Row="7" Grid.Column="0" >选择性迁移：</TextBlock>
 
-                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtJsdsDbIp" Text="127.0.0.1" 
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtJsdsDbIp" Text="{Binding IpAddr}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入JSDS的IP地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtJsdsDbName" Text="" 
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtJsdsDbName" Text="{Binding DbName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtJsdsDbPort" Text="3306" 
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtJsdsDbPort" Text="{Binding Port}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtJsdsDbUser" Text="jieLink" 
+                <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtJsdsDbUser" Text="{Binding UserName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -108,7 +106,17 @@
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
                 <StackPanel Grid.Column="1" Grid.Row="5" VerticalAlignment="Center">
-                    <ComboBox Height="30" x:Name="spRecordImportTime" DisplayMemberPath="Text" SelectedValuePath="Value" >
+                    <ComboBox Height="40" x:Name="spRecordImportTime"
+                      SelectedValue="{Binding SelectMonth}" 
+                      ItemsSource="{Binding ImportTimeDataSource}"        
+                      DisplayMemberPath="Value" SelectedValuePath="Key"
+                      pu:ComboBoxHelper.Watermark="请选择记录迁移时间"        
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" >
                     </ComboBox>
                 </StackPanel>
                 <WrapPanel Grid.Column="1" Grid.Row="6" VerticalAlignment="Center">
@@ -130,11 +138,11 @@
                                   pu:CheckBoxHelper.CheckedBackground="#00BCFF"
                                   pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding BillRecord}" />
                 </ListBox>
-                <Button Grid.Column="1" Grid.Row="9" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                <Button Grid.Column="1" Grid.Row="9" Content="测试连接" Name ="btnTestConn" Command="{Binding TestConnCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtJsdsDbPwd}"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                <Button Grid.Column="1" Grid.Row="10" Content="一键升级" Name ="btnOneClickUpgrade" Click="btnOneClickUpgrade_Click"
+                <Button Grid.Column="1" Grid.Row="10" Content="一键升级" Name ="btnOneClickUpgrade" Command="{Binding UpgradeCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
@@ -162,7 +170,7 @@
                      Grid.Column="2" Grid.RowSpan="13" IsReadOnly="True" Margin="10,5,0,10">
                     <FlowDocument>
                         <Paragraph>
-                            <Run Text="{Binding UpgradeResult}"/>
+                            <Run Text="{Binding Message}"/>
                         </Paragraph>
                     </FlowDocument>
                 </RichTextBox>
@@ -172,28 +180,28 @@
                 <TextBlock Grid.Row="2" Grid.Column="0" >数据库用户：</TextBlock>
                 <TextBlock Grid.Row="3" Grid.Column="0" >数据库密码：</TextBlock>
 
-                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtG3DbIp" Text="106.53.255.16" 
+                <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtG3DbIp" Text="{Binding IpAddr}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入G3数据库地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtG3DbName"  Text="JSOCTNET" 
+                <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtG3DbName"  Text="{Binding DbName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名称"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtG3DbUser" Text="sa" 
+                <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtG3DbUser" Text="{Binding UserName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                <PasswordBox Grid.Row="3" Grid.Column="1" x:Name="txtG3DbPwd"
+                <PasswordBox Grid.Row="3" Grid.Column="1" x:Name="txtG3DbPwd" Password=""
                      pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
                      pu:PasswordBoxHelper.Watermark="请输入密码"
                      pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
@@ -202,12 +210,12 @@
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
 
-                <Button Grid.Column="1" Grid.Row="4" Content="测试连接" Name ="btnTestG3Conn" Click="btnTestG3Conn_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                <Button Grid.Column="1" Grid.Row="4" Content="测试连接" Name ="btnTestG3Conn" Command="{Binding TestConnCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtG3DbPwd}"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-                <Button Grid.Column="1" Grid.Row="5" Content="一键升级" Name ="btnOneClickUpgradeG3" Click="btnOneClickUpgradeG3_Click"
+                <Button Grid.Column="1" Grid.Row="5" Content="一键升级" Name ="btnOneClickUpgradeG3" Command="{Binding UpgradeCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
@@ -275,13 +283,13 @@
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
 
-                <Button Grid.Column="1" Grid.Row="4" Content="测试连接" Name ="btnTestConnJSRJ" Command="{Binding TestCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtDbPwdJSRJ, Path=Password}"
+                <Button Grid.Column="1" Grid.Row="4" Content="测试连接" Name ="btnTestConnJSRJ" Command="{Binding TestConnCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtDbPwdJSRJ}"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-                <Button Grid.Column="1" Grid.Row="5" Content="一键升级" Name ="btnOneClickUpgradeJSRJ" Command="{Binding UpgrageCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtDbPwdJSRJ, Path=Password}"
+                <Button Grid.Column="1" Grid.Row="5" Content="一键升级" Name ="btnOneClickUpgradeJSRJ" Command="{Binding UpgradeCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
