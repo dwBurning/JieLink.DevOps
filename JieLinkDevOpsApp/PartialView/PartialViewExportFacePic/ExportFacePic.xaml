@@ -40,7 +40,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">1.本功能将所有人脸图片按格式导出到指定的文件夹下面</TextBlock>
-        <TextBlock VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">2.Jielink该功能无需在文件服务器上运行也可导出</TextBlock>
+        <TextBlock VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">2.Jielink只要能连接文件服务器就能导出,G3需在文件服务器电脑下运行</TextBlock>
         <TextBlock VerticalAlignment="Center"  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">导出路径：</TextBlock>
         <TextBlock VerticalAlignment="Center"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">导出格式选择：</TextBlock>
         <TextBlock VerticalAlignment="Center"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">软件类型选择：</TextBlock>
