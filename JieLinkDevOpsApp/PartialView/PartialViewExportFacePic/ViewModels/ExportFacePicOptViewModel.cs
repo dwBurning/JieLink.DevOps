@@ -113,6 +113,7 @@ namespace PartialViewExportFacePic.ViewModels
             //1为jielink数据库
             bllProcess.TestConnect(EnvironmentInfo.ConnectionString, 1);
             string downUrl = bllProcess.GetDownServerUrl();
+            ShowMessage(string.Format("获取到文件服务器地址为:{0}",downUrl));
 
             List<PersonInfo> list = bllProcess.GetJielinkPersonImage();
             if (list != null && list.Count > 0)
@@ -124,7 +125,7 @@ namespace PartialViewExportFacePic.ViewModels
                     {
                         if (string.IsNullOrEmpty(info.Photo))
                         {
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
+                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
                             fails++;
                             continue;
                         }
@@ -171,7 +172,7 @@ namespace PartialViewExportFacePic.ViewModels
                         }
                         else
                         {
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                             fails++;
                         }
                         System.Threading.Thread.Sleep(5);
@@ -188,7 +189,11 @@ namespace PartialViewExportFacePic.ViewModels
                         fails++;
                     }
                 }
-                ShowMessage(string.Format("图片转换完成，本次转换人员总数：{0}，成功:{1},失败{2}", total, success, fails));
+                ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}", total, success, fails));
+            }
+            else
+            { 
+                ShowMessage("未检测到人事资料中的人脸图片路径，请检查人事资料表以及数据库连接！");
             }
         }
 
@@ -212,7 +217,7 @@ namespace PartialViewExportFacePic.ViewModels
                         if (string.IsNullOrEmpty(info.Photo))
                         {
                             fails++;
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
+                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
                             System.Threading.Thread.Sleep(5);
                             continue;
                         }
@@ -279,19 +284,11 @@ namespace PartialViewExportFacePic.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        if (ex.Message == "服务器提交了协议冲突. Section=ResponseStatusLine")
-                        {
-                            fails++;
-                            ShowMessage(string.Format("姓名:【{0}】,编号:【{1}】的人脸图片未找到！，图片路径【{2}】", info.PersonName, info.PersonNO, info.Photo));
-                            //ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
-                        }
-                        else
-                        {
-                            ShowMessage(ex.ToString());
-                        }
+                        fails++;
+                        ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                     }
                 }
-                ShowMessage(string.Format("图片转换完成，本次转换人员总数：{0}，成功:{1},失败{2}", total, success, fails));
+                ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}", total, success, fails));
             }
         }
 
