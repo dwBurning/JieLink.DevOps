@@ -49,6 +49,8 @@ namespace PartialViewSetting
             EnvironmentInfo.ServerUrl = url.Trim();
             ConfigHelper.WriterAppConfig("ServerUrl", url);
             EnvironmentInfo.ProjectNo = viewModel.ProjectNo;
+            EnvironmentInfo.ProjectName = viewModel.ProjectName;
+            EnvironmentInfo.ProjectVersion = viewModel.ProjectVersion;
             EnvironmentInfo.RemoteAccount = viewModel.RemoteAccount;
             EnvironmentInfo.RemotePassword = viewModel.RemotePassword;
             EnvironmentInfo.ContactName = viewModel.ContactName;
@@ -65,6 +67,8 @@ namespace PartialViewSetting
 
             ProjectInfo projectInfo = new ProjectInfo();
             projectInfo.ProjectNo = viewModel.ProjectNo;
+            projectInfo.ProjectName = viewModel.ProjectName;
+            projectInfo.ProjectVersion = viewModel.ProjectVersion;
             projectInfo.RemoteAccount = viewModel.RemoteAccount;
             projectInfo.RemotePassword = viewModel.RemotePassword;
             projectInfo.ContactName = viewModel.ContactName;
@@ -81,7 +85,7 @@ namespace PartialViewSetting
             string url = ConfigHelper.ReadAppConfig("ServerUrl");
             txtServerUrl.Text = url;
             EnvironmentInfo.ServerUrl = url;
-            if (string.IsNullOrEmpty(EnvironmentInfo.ProjectNo))
+            if (string.IsNullOrEmpty(EnvironmentInfo.ProjectVersion))
             {
                 #region 未配置的时候，尝试自动获取
                 try
@@ -100,7 +104,14 @@ namespace PartialViewSetting
                         EnvironmentInfo.DbConnEntity.DbName = mysqlsb.Database;
 
                         EnvironmentInfo.ProjectNo = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectCode'").ToString();
+
+                        EnvironmentInfo.ProjectName = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectName'").ToString();
                         //EnvironmentInfo.ContactName = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectName'").ToString();
+
+                        EnvironmentInfo.ProjectVersion = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='Version'").ToString();
+
+
+
                     }
                 }
                 catch (Exception ex)
@@ -110,6 +121,8 @@ namespace PartialViewSetting
                 #endregion
             }
             viewModel.ProjectNo = EnvironmentInfo.ProjectNo;
+            viewModel.ProjectName = EnvironmentInfo.ProjectName;
+            viewModel.ProjectVersion = EnvironmentInfo.ProjectVersion;
             viewModel.RemoteAccount = EnvironmentInfo.RemoteAccount;
             viewModel.RemotePassword = EnvironmentInfo.RemotePassword;
             viewModel.ContactName = EnvironmentInfo.ContactName;

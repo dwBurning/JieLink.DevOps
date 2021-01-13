@@ -10,6 +10,10 @@ namespace PartialViewInterface.Models
     {
         public string ProjectNo { get; set; }
 
+        public string ProjectName { get; set; }
+
+        public string ProjectVersion { get; set; }
+
         public string RemoteAccount { get; set; }
 
         public string RemotePassword { get; set; }

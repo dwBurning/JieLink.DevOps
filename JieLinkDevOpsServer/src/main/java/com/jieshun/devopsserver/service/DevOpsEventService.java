@@ -67,7 +67,7 @@ public class DevOpsEventService {
 			sysUsers.forEach((user) -> {
 				if (user.getEmail() != null && user.getEmail() != "") {
 
-					//特別关心的项目已经推送过邮件了 不再推送
+					// 特別关心的项目已经推送过邮件了 不再推送
 					if (concern != null && concern.getEmail() == user.getEmail()) {
 						return;
 					}
@@ -89,6 +89,13 @@ public class DevOpsEventService {
 		String eventMessage = DevOpsEventEnum.getDevOpsEventEnumByCode(devOpsEvent.getEventType()).getMessage();
 		emailTextString.append("事件类型：").append(eventMessage).append("\r\n");
 		emailTextString.append("项目编号：").append(devOpsEvent.getProjectNo()).append("\r\n");
+		if (devOpsEvent.getProjectName() != null && devOpsEvent.getProjectName() != "") {
+			emailTextString.append("项目名称：").append(devOpsEvent.getProjectName()).append("\r\n");
+		}
+		
+		if (devOpsEvent.getProjectVersion() != null && devOpsEvent.getProjectVersion() != "") {
+			emailTextString.append("项目版本：").append(devOpsEvent.getProjectVersion()).append("\r\n");
+		}
 		emailTextString.append("远程账号：").append(devOpsEvent.getRemoteAccount()).append("\r\n");
 		emailTextString.append("远程密码：").append(devOpsEvent.getRemotePassword()).append("\r\n");
 		emailTextString.append("联系人姓名：").append(devOpsEvent.getContactName()).append("\r\n");
