@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:JieShun.JieLink.DevOps.App"
         xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         mc:Ignorable="d"
-        Title="配置信息" Icon="favicon.ico" Height="600" Width="500" 
+        Title="配置信息" Icon="favicon.ico" Height="580" Width="500" 
         pu:WindowXCaption.HideBasicButtons="True"
         WindowStartupLocation="CenterScreen">
     <Grid>

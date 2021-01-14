@@ -9,9 +9,17 @@ namespace PartialViewInterface
     public class ConstantHelper
     {
         /// <summary>
-        /// 组织根节点
+        /// jsds区域root节点
         /// </summary>
-        public const string GROUPROOTPARENTID = "00000000-0000-0000-0000-000000000000";
+        public const string JSDSDISTRICTROOT = "root";
+        /// <summary>
+        /// jsds区域EXTERIOR节点
+        /// </summary>
+        public const string JSDSDISTRICTEXTERIOR = "EXTERIOR";
+        /// <summary>
+        /// 根节点的父Id
+        /// </summary>
+        public const string ROOTPARENTID = "00000000-0000-0000-0000-000000000000";
         /// <summary>
         /// JSDS默认操作员
         /// </summary>
@@ -41,5 +49,72 @@ namespace PartialViewInterface
         public const string JSDSPARAMGATEWAY = "gateway";
         public const string JSDSPARAMMASK = "MASK";
         public const string JSDSPARAMIP = "ip";
+        public const string JSDSPARAMMACNO = "MacNO";
+        /// <summary>
+        /// 领御III型二门
+        /// </summary>
+        public const string JSMJK0220A = "JSMJK0220A";
+        /// <summary>
+        /// 读卡器：649781404/8208，显示领御III型二门的读卡器是
+        /// 读卡器当门，有读卡器权限即有该门权限
+        /// </summary>
+        public const string JSMJK022040A_Reader = "JSMJK022040A_Reader";
+        /// <summary>
+        /// 按钮
+        /// </summary>
+        public const string JSMJK022FK_OpenDoorButton = "JSMJK02FK_OpenDoorButton";
+        /// <summary>
+        /// 门锁
+        /// </summary>
+        public const string JSMJK022FK_Locker = "JSMJK02FK_Locker";
+        /// <summary>
+        /// 报警器
+        /// </summary>
+        public const string JSMJK022FK_Warner = "JSMJK02FK_Warner";
+        /// <summary>
+        /// 读卡器？
+        /// </summary>
+        public const string JSMJK022FK_Reader = "JSMJK02FK_Reader";
+        /// <summary>
+        /// 领御III型四门
+        /// </summary>
+        public const string JSMJK0240A = "JSMJK0240A";
+        /// <summary>
+        /// JieLink门的MAC
+        /// </summary>
+        public const string JIELINKDOORMAC = "00:00:00:00:00:00";
+        /// <summary>
+        /// JieLink门的MAC
+        /// </summary>
+        public const int JIELINKDOORTYPE = 699;
+        /// <summary>
+        /// 领御III型门禁20
+        /// </summary>
+        public const int JIELINK_JSMJK02_20 = 116;
+        /// <summary>
+        /// 领御III型门禁40
+        /// </summary>
+        public const int JIELINK_JSMJK02_40 = 100;
+        /// <summary>
+        /// 领御III型门禁40
+        /// </summary>
+        public const int JIELINK_JSMJY08A_OLD = 252;
+        /// <summary>
+        /// 速通
+        /// </summary>
+        public const int JIELINK_JSTC1801_01 = 22;
+
+        /// <summary>
+        /// 车场速通
+        /// </summary>
+        public const string JSC8ST = "JSC8ST";
+        /// <summary>
+        /// 速通道闸
+        /// </summary>
+        public const string JSC8ST_Gate = "JSC8ST_Gate";
+        /// <summary>
+        /// 显示屏
+        /// </summary>
+        public const string JSC8ST_LedScreen = "JSC8ST_LedScreen";
     }
 }
