@@ -52,6 +52,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Xmpp\ReceiveData.cs" />
+    <Compile Include="Models\Xmpp\ReceiveThreadContext.cs" />
     <Compile Include="Utils\AnalyseUtils.cs" />
     <Compile Include="Models\CloudSeatDownCommandParam.cs" />
     <Compile Include="Models\DeviceInfo.cs" />
@@ -107,5 +109,6 @@
       <Name>PartialViewInterface</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

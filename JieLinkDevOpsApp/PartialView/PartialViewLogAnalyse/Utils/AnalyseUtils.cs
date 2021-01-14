@@ -1447,7 +1447,7 @@ namespace PartialViewLogAnalyse.Utils
             //2020-08-26 23:58:23,709 [174] INFO  XMPPLogger - 【md_jspay_order】返回数据给智能平台:{"attributes":{"AUTH_CODE":""},"dataItems":[{"attributes":{"deductFee":0,"goodsTitle":"停车费用","totalFee":0,"surplusMinute":"0","serviceFeeTime":1,"carLocation":"","serialNo":"20082623582369296822","invoiceReceivingPlace":"","serviceFee":0,"couponlist":"","errorCode":1002,"parkName":"东莞中达商业广场","partner":"000000008021041","inImage":"","inCarImageId":"","overtimeChargeFlag":"0","parkId":"06e1e972bdd211eabdf00c9d92138bf4","couponNum":"","integralRule":"","attach":"","memberKey":"皖-S99539","carNo":"皖-S99539","discountFee":0,"merGid":"皖-S99539","createTime":"2020-08-26 23:58:23","serviceStime":"2020-08-26 23:58:23","policyMinute":"0","serviceEtime":"2020-08-26 23:58:23","otherFee":0,"freeMinute":"0","parkCode":"p200621936","chargeStandardDesc":"","errorMessage":"未入场","curType":1,"outTradeNo":"BK200826235823709p20062193616472","serviceExpire":""},"objectId":"md.jspay.order","operateType":"READ","subItems":[]}],"message":"下发成功","resultCode":0,"seqId":"36fa915b0a494879b7fa4c3a483b76f3","serviceId":"md.jspay.order","source":""}
             //2020-08-27 10:07:53,452 [174] INFO  XMPPLogger - 【md_jspay_order】返回数据给智能平台:{"attributes":{"AUTH_CODE":""},"dataItems":[{"attributes":{"deductFee":0,"goodsTitle":"停车费用","totalFee":0,"surplusMinute":"0","serviceFeeTime":4350,"carLocation":"","serialNo":"20082710075288219651","invoiceReceivingPlace":"","serviceFee":600,"couponlist":"","errorCode":1008,"parkName":"东莞中达商业广场","partner":"000000008021041","inImage":"bd335479234f493a80ee72d2dc046f06","inCarImageId":"","overtimeChargeFlag":"0","parkId":"06e1e972bdd211eabdf00c9d92138bf4","couponNum":"","integralRule":"","attach":"","memberKey":"粤-S0J785","carNo":"粤-S0J785","discountFee":600,"merGid":"粤-S0J785","createTime":"2020-08-27 10:07:53","serviceStime":"2020-08-27 08:55:23","policyMinute":"60","serviceEtime":"2020-08-27 10:07:53","otherFee":0,"freeMinute":"15","parkCode":"p200621936","chargeStandardDesc":"免费时长(分钟) 30,是否包含免费时长 true,免费时长是否循环 false,连续停放24小时最高收费(元) 0,第1时段开始时间(不填表示不启动该段时间) 00:00,第1时段结束时间(不填表示不启动该段时间) +00:00,第1时段跨段拆分方式 false,第1时段首时段长度(小时)(0表示没有首时段) 1,第1时段首时段是否循环 false,第1时段首时段收费-计费单位 hour,第1时段首时段收费-计费基数 1,第1时段首时段收费 5,第1时段首时段后收费-计费单位 hour,第1时段首时段后收费-计费基数 1,第1时段首时段后收费 1,第2时段开始时间(不填表示不启动该段时间) ,第2时段结束时间(不填表示不启动该段时间) ,第2时段跨段拆分方式 false,第2时段收费-计费单位 hour,第2时段收费-计费基数 1,第2时段收费 0,","errorMessage":"在打折减免时间内","curType":1,"outTradeNo":"BK200827100753409p20062193628656","serviceExpire":""},"objectId":"md.jspay.order","operateType":"READ","subItems":[]}],"message":"下发成功","resultCode":0,"seqId":"f37fec2eea7d44e68e8d80951a12a1f9","serviceId":"md.jspay.order","source":""}
             int flagIndex = line.IndexOf("【md_jspay_order】返回");
-            if (flagIndex > 0 && line.LastIndexOf("totalFee\":")>=0)
+            if (flagIndex > 0 && line.LastIndexOf("totalFee\":") >= 0)
             {
                 string strLogTime = line.Substring(0, 23);
                 DateTime logTime = DateTime.ParseExact(strLogTime, "yyyy-MM-dd HH:mm:ss,fff", System.Globalization.CultureInfo.CurrentCulture);
@@ -1551,7 +1551,10 @@ namespace PartialViewLogAnalyse.Utils
 
                 int orderNoStartIndex = line.LastIndexOf("orderNo\":\"") + "orderNo\":\"".Length;
                 string orderNo = line.Substring(orderNoStartIndex, line.IndexOf('\"', orderNoStartIndex) - orderNoStartIndex);
-
+                if (string.IsNullOrEmpty(orderNo))
+                {
+                    return false;
+                }
                 int totalFeeStartIndex = line.LastIndexOf("totalFee\":\"") + "totalFee\":\"".Length;
                 string strTotalFee = line.Substring(totalFeeStartIndex, line.IndexOf('\"', totalFeeStartIndex) - totalFeeStartIndex);
                 double totalFee = double.Parse(strTotalFee) / 100.0d;
