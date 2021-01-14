@@ -88,6 +88,10 @@
     <Compile Include="Models\TBaseMjDaKqCard.cs" />
     <Compile Include="Models\TBaseTcCardInfoModel.cs" />
     <Compile Include="Models\TBaseTcRecordModel.cs" />
+    <Compile Include="ViewModels\ControlAccessPointGroup.cs" />
+    <Compile Include="ViewModels\ControlApDevcies.cs" />
+    <Compile Include="ViewModels\ControlAreaService.cs" />
+    <Compile Include="ViewModels\ControlDevices.cs" />
     <Compile Include="ViewModels\ControlLeaseStall.cs" />
     <Compile Include="ViewModels\ControlPerson.cs" />
     <Compile Include="ViewModels\ControlRoleGroup.cs" />

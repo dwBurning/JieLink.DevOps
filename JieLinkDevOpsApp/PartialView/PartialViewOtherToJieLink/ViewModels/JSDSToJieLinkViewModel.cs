@@ -19,11 +19,7 @@ namespace PartialViewOtherToJieLink.ViewModels
 {
     public class JSDSToJieLinkViewModel : DependencyObject
     {
-        private readonly string GROUPROOTPARENTID = "00000000-0000-0000-0000-000000000000";
-
         private readonly string REMARK = "JSDS";
-
-        private readonly string PARKNO = "00000000-0000-0000-0000-000000000000";
 
         public DelegateCommand TestConnCommand { get; set; }
 
@@ -36,9 +32,19 @@ namespace PartialViewOtherToJieLink.ViewModels
         public string JsdsDbConnString { get; private set; }
 
         JsdsUpgradePolicy policy = new JsdsUpgradePolicy();
-
-        string defaultPersonGuid = string.Empty;
-        Dictionary<string, string> guidMapDic = new Dictionary<string, string>();   //key为jsds不能转换为guid的字符串，value为映射是guid的字符串
+        /// <summary>
+        /// key为jsds不能转换为guid的字符串，value为映射是guid的字符串
+        /// </summary>
+        Dictionary<string, string> guidMapDic = new Dictionary<string, string>();
+        /// <summary>
+        /// 匹配不到入场记录的出场记录，入场id可能为空或者0，生成新的入场id
+        /// </summary>
+        Dictionary<string, string> recordOutIdMapDic = new Dictionary<string, string>();
+        /// <summary>
+        /// jsds区域迁移到jielink时，生成车场和门禁区域，区域若没有关联设备，可直接删除
+        /// 门禁区域的guid映射好，后面可能用到
+        /// </summary>
+        Dictionary<string, string> areaGuidMapDic = new Dictionary<string, string>();
 
         public JSDSToJieLinkViewModel()
         {
@@ -49,17 +55,15 @@ namespace PartialViewOtherToJieLink.ViewModels
             UpgradeCommand.ExecuteAction = Upgrade;
             UpgradeCommand.CanExecuteFunc = new Func<object, bool>((object parameter) => { return CanExecute; });
 
-
             ImportTimeDataSource = new Dictionary<int, string>();
             ImportTimeDataSource.Add(1, "最近1个月");
             ImportTimeDataSource.Add(3, "最近3个月");
             ImportTimeDataSource.Add(6, "最近6个月");
             ImportTimeDataSource.Add(9, "最近9个月");
             ImportTimeDataSource.Add(12, "最近12个月");
+            this.SelectMonth = 3;
 
-            defaultPersonGuid = Guid.NewGuid().ToString();   //对应jsds默认用户DEFAULTPERSON
             this.Port = 3306;
-
         }
 
         private void TestConn(object parameter)
@@ -104,7 +108,6 @@ namespace PartialViewOtherToJieLink.ViewModels
             return true;
         }
 
-
         //缓存sql配置信息
         private DbConnectionModel GetDbConnectionModel()
         {
@@ -117,22 +120,26 @@ namespace PartialViewOtherToJieLink.ViewModels
             };
         }
 
-
         private void Upgrade(object parameter)
         {
             try
             {
-
                 //判断数据库是否jsds
                 string cmd = "select * from t_cac_account";
                 MySqlHelper.ExecuteDataset(JsdsDbConnString, cmd);
-
 
                 policy.EnterRecordSelect = this.EnterRecord;
                 policy.OutRecordSelect = this.OutRecord;
                 policy.BillRecordSelect = this.BillRecord;
                 policy.ParkSelect = this.Park;
                 policy.DoorSelect = this.Door;
+                policy.ControlDeviceSelect = this.ControlDevice;
+                policy.DeviceRightSelect = this.DeviceRight;
+                if (!policy.DeviceRightSelect && policy.ControlDeviceSelect)
+                {
+                    ShowMessage("没有选择设备的情况下，请勿选择设备权限");
+                    return;
+                }
                 if (!policy.EnterRecordSelect && (policy.OutRecordSelect || policy.BillRecordSelect))
                 {
                     ShowMessage("没有选择入场记录的情况下，请勿选择出场记录或收费记录");
@@ -150,7 +157,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                     StartUpgrade();
                     CanExecute = true;
                 });
-
             }
             catch (Exception ex)
             {
@@ -159,7 +165,7 @@ namespace PartialViewOtherToJieLink.ViewModels
             }
             finally
             {
-
+                CanExecute = true;
             }
         }
 
@@ -174,13 +180,13 @@ namespace PartialViewOtherToJieLink.ViewModels
                 //string defaultServiceGuid = Guid.NewGuid().ToString();  //对应jsds默认用户开通的车场服务
                 //开始进行数据转换
                 //1、组织control_role_group
-                DataSet dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group ORDER BY id ASC;");
+                DataSet dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group WHERE `Status`=0 ORDER BY id ASC;");
                 List<ControlRoleGroup> dbGroupList = new List<ControlRoleGroup>();
                 ControlRoleGroup groupRoot = null;
                 if (dbGroupDs != null && dbGroupDs.Tables[0] != null)
                 {
                     dbGroupList = CommonHelper.DataTableToList<ControlRoleGroup>(dbGroupDs.Tables[0]).OrderBy(x => x.ID).ToList();
-                    groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == ConstantHelper.GROUPROOTPARENTID);
+                    groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == ConstantHelper.ROOTPARENTID);
                 }
                 DataSet groupDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_organize WHERE STATE='normal' ORDER BY ORG_ID ASC;");
                 List<string> groupSuccessImportList = new List<string>();
@@ -208,7 +214,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 {
                                     string orgCode = new Random().ToString().Substring(2, 8);
                                     string rgguid = new Guid(group.ID).ToString();
-                                    string sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');", rgguid, group.ORG_NAME, orgCode, ConstantHelper.GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), group.REMARK, group.ORG_NAME + ";");
+                                    string sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');", rgguid, group.ORG_NAME, orgCode, ConstantHelper.ROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), group.REMARK, group.ORG_NAME + ";");
                                     try
                                     {
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
@@ -229,7 +235,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 }
                                 else
                                 {
-                                    string sql = string.Format("UPDATE control_role_group SET Remark='{0}' WHERE RGGUID='{1}' AND ParentId='{2}';", group.REMARK, groupRoot.RGGUID, ConstantHelper.GROUPROOTPARENTID);
+                                    string sql = string.Format("UPDATE control_role_group SET Remark='{0}' WHERE RGGUID='{1}' AND ParentId='{2}';", group.REMARK, groupRoot.RGGUID, ConstantHelper.ROOTPARENTID);
                                     try
                                     {
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
@@ -304,7 +310,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             }
                         }
                     }
-                    string msg = string.Format("01.迁移组织结束，合计处理{0}条组织数据，成功迁移{1}条组织", groupList.Count, groupSuccessImportList.Count, JsonHelper.SerializeObject(groupSuccessImportList));
+                    string msg = string.Format("01.迁移组织结束，合计处理{0}条组织数据，成功迁移{1}条组织", groupList.Count, groupSuccessImportList.Count);
                     ShowMessage(msg);
                     LogHelper.CommLogger.Info(msg);
 
@@ -318,13 +324,13 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
 
                 //2、重新查询组织
-                dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group ORDER BY id ASC;");
+                dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group WHERE `Status`=0 ORDER BY id ASC;");
                 dbGroupList = new List<ControlRoleGroup>();
                 groupRoot = null;
                 if (dbGroupDs != null && dbGroupDs.Tables[0] != null)
                 {
                     dbGroupList = CommonHelper.DataTableToList<ControlRoleGroup>(dbGroupDs.Tables[0]).OrderBy(x => x.ID).ToList();
-                    groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == ConstantHelper.GROUPROOTPARENTID);
+                    groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == ConstantHelper.ROOTPARENTID);
                 }
                 if (groupRoot == null)
                 {
@@ -361,15 +367,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             //跳过
                             continue;
                         }
-                        if (personModel.ID.ToUpper().Equals(ConstantHelper.JSDSDEFAULTPERSON))
-                        {
-                            if (string.IsNullOrWhiteSpace(defaultPersonGuid))
-                            {
-                                defaultPersonGuid = Guid.NewGuid().ToString();   //对应jsds默认用户DEFAULTPERSON
-                            }
-                            personModel.ID = defaultPersonGuid;
-                        }
-                        string personGuid = new Guid(personModel.ID).ToString();
+                        string personGuid = GetGuidString(personModel.ID);
                         DataSet currentPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_person WHERE `Status`=0 AND PGUID='{0}'", personGuid));
                         ControlPerson currentPerson = null;
                         if (currentPersonDs != null && currentPersonDs.Tables[0] != null)
@@ -401,7 +399,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             {
                                 string currentGuid = new Guid(personModel.ORG_ID).ToString();
                                 //寻找当前组织是否已存在：判断是否重复升级
-                                DataSet currentGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_role_group WHERE RGGUID='{0}'", currentGuid));
+                                DataSet currentGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_role_group WHERE `Status`=0 AND RGGUID='{0}'", currentGuid));
                                 if (currentGroupDs != null && currentGroupDs.Tables[0] != null)
                                 {
                                     currentGroup = CommonHelper.DataTableToList<ControlRoleGroup>(currentGroupDs.Tables[0]).FirstOrDefault();
@@ -592,11 +590,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 {
                                     continue;
                                 }
-                                if (account.PERSON_ID.ToUpper().Equals(ConstantHelper.JSDSDEFAULTPERSON))
-                                {
-                                    account.PERSON_ID = defaultPersonGuid;
-                                }
-                                string personGuid = new Guid(account.PERSON_ID).ToString();
+                                string personGuid = GetGuidString(account.PERSON_ID);
                                 ControlPerson jieLinkPerson = jielinkPersonList.FirstOrDefault(x => x.PGUID == personGuid);
                                 if (jieLinkPerson == null)
                                 {
@@ -771,7 +765,11 @@ namespace PartialViewOtherToJieLink.ViewModels
                     ShowMessage("03.迁移凭证服务结束：personSuccessImportList.Count == 0");
                     LogHelper.CommLogger.Info("03.迁移凭证服务结束：personSuccessImportList.Count == 0");
                 }
-                ShowMessage("04.迁移入出场收费记录");
+                //设备：日志写在方法体内
+                ControlDeviceImport();
+                //设备权限：区域
+                DeviceRightImport();
+                ShowMessage("06.迁移入出场收费记录");
                 List<TParkRecordInModel> recordInList = new List<TParkRecordInModel>();
                 List<TParkRecordOutModel> recordOutList = new List<TParkRecordOutModel>();
                 List<TParkPayModel> highVersionRecordBillList = new List<TParkPayModel>();
@@ -867,6 +865,16 @@ namespace PartialViewOtherToJieLink.ViewModels
                     {
                         voucherList = CommonHelper.DataTableToList<ControlVoucher>(voucherDs.Tables[0]);
                     }
+                    List<ControlDevices> controlDevicesList = new List<ControlDevices>();
+                    if (policy.ControlDeviceSelect)
+                    {
+                        //迁移了设备
+                        DataSet controlDeviceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_devices ORDER BY id ASC;");
+                        if (controlDeviceDs != null && controlDeviceDs.Tables[0] != null && controlDeviceDs.Tables[0].Rows.Count > 0)
+                        {
+                            controlDevicesList = CommonHelper.DataTableToList<ControlDevices>(controlDeviceDs.Tables[0]).OrderBy(x => x.ID).ToList();
+                        }
+                    }
                     List<string> enterSuccessImportList = new List<string>();
                     List<string> outSuccessImportList = new List<string>();
                     List<string> billSuccessImportList = new List<string>();
@@ -875,9 +883,10 @@ namespace PartialViewOtherToJieLink.ViewModels
                         try
                         {
                             string plate = recordIn.PHYSICAL_NO;
-                            string intime = recordIn.IN_TIME;
+                            string intime = CommonHelper.GetDateTimeValue(recordIn.IN_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
                             string enterDeviceId = "188766208";
                             string enterDeviceName = "虚拟车场入口";
+                            GetEnterDeviceInfo(controlDevicesList, recordIn, ref enterDeviceId, ref enterDeviceName);
                             string eguid = new Guid(recordIn.ID).ToString();
                             int wasgone = 0;
                             if (recordIn.OUT_FLAG.Equals("OUT"))
@@ -914,13 +923,13 @@ namespace PartialViewOtherToJieLink.ViewModels
                             if (result > 0)
                             {
                                 enterSuccessImportList.Add(string.Format($"{plate}-{recordIn.ID}"));
-                                ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{recordIn.ID} 补录入场记录成功！");
+                                ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{recordIn.ID} 补录入场记录成功！");
                             }
                         }
                         catch (Exception o)
                         {
-                            ShowMessage($"04.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：{o.Message}");
-                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：");
+                            ShowMessage($"06.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"06.迁移入出场收费记录，车牌：{recordIn.PHYSICAL_NO}-{recordIn.IN_TIME}-{recordIn.ID} 补录入场记录异常：");
                         }
                     }
                     foreach (TParkRecordOutModel recordOut in recordOutList)
@@ -928,14 +937,31 @@ namespace PartialViewOtherToJieLink.ViewModels
                         try
                         {
                             string plate = recordOut.PHYSICAL_NO;
-                            string intime = recordOut.IN_TIME;
-                            //string enterDeviceId = "188766208";
+                            recordOut.IN_TIME = CommonHelper.GetDateTimeValue(recordOut.IN_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                            recordOut.OUT_TIME = CommonHelper.GetDateTimeValue(recordOut.OUT_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                            string enterDeviceId = "188766208";
                             string enterDeviceName = "虚拟车场入口";
-                            string outDeviceID = "120201030";
+                            bool newRecordInId = false; //是否重新生成的入场id，是的话不会匹配到入场记录，即不找入场记录了
+                            if (string.IsNullOrWhiteSpace(recordOut.RECORDIN_ID) || recordOut.RECORDIN_ID == "0")
+                            {
+                                //找不到入场记录的出场记录 重新生成RECORDIN_ID，并映射好出场id
+                                recordOut.RECORDIN_ID = GetOutEnterRecordIn(recordOut.ID);
+                                newRecordInId = true;
+                            }
+                            if (policy.ControlDeviceSelect && !newRecordInId)
+                            {
+                                TParkRecordInModel recordIn = recordInList.FirstOrDefault(x => x.ID == recordOut.RECORDIN_ID);
+                                if (recordIn != null)
+                                {
+                                    GetEnterDeviceInfo(controlDevicesList, recordIn, ref enterDeviceId, ref enterDeviceName);
+                                }
+                            }
+                            string outDeviceId = "120201030";
                             string outDeviceName = "虚拟车场出口";
+                            ControlDevices chargeBox = null;
+                            GetOutDeviceInfo(controlDevicesList, recordOut, ref outDeviceId, ref outDeviceName, ref chargeBox);
                             string oguid = new Guid(recordOut.ID).ToString();
                             string outRecordId = recordOut.ID;
-                            string enterRecordId = recordOut.RECORDIN_ID;
                             string personNo = "";
                             string personName = "临时车主";
                             int sealId = 54;
@@ -976,24 +1002,42 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 TParkpayrecordModel payrecord = lowVersionPayRecordList.FirstOrDefault(x => x.RECORDOUT_ID == outRecordId);
                                 if (payrecord != null)
                                 {
-                                    GetPayType(payrecord.PAY_TYPE, out payType, out payTypeName);
-                                    decimal money = payrecord.ACTUAL_BALANCE;  //实收金额
-                                    decimal fees = payrecord.AVAILABLE_BALANCE;   //优惠前金额（应收金额）
-                                    decimal benefit = payrecord.ABATE_BALANCE;    //优惠金额
-                                    decimal derate = 0;    //滚动收费的减免金额
-                                    accountReceivable = payrecord.ACTUAL_BALANCE;  //实收金额
-                                    decimal paid = 0;   //已支付金额
-                                    decimal actualPaid = payrecord.ACTUAL_BALANCE;
-                                    decimal exchange = payrecord.REFUND_BALANCE;   //找零金额                                    
-                                    decimal smallChange = 0;    //抹零金额，主要用于存储自助缴费机的抹零金额
-                                    int orderType = 0;  //订单类型：1云支付订单 2盒子订单 3中央收费订单 4 缴费机
-                                    int status = 1; //订单状态 0未支付 1已支付 2已退款 3代扣中 
-                                    int replaceDeduct = 0;  //代扣标识（0：无代扣，1：支付宝代扣）
-                                    string payFrom = "捷顺";    //支付来源，如：捷顺、第三方   
-                                    int chargeType = 0; //正常收费
-                                    billguid = new Guid(payrecord.ID).ToString();
-                                    billsql = $"INSERT INTO box_bill(BGUID, CredentialType, CredentialNO, Plate, OrderId, PayTime, FeesTime, CreateTime, InTime, EnterRecordID, Money, Fees, Benefit, Derate, AccountReceivable, Paid, ActualPaid, Exchange, FreeMoney, PayTypeID, PayTypeName, ChargeType, ChargeDeviceID,ChargeDeviceName, OperatorID, OperatorName,Cashier,CashierName, OrderType,`Status`, SealTypeId, SealTypeName, Remark, ReplaceDeduct, EventType, PayFrom, DeviceID, PersonNo, PersonName, PARKNO) " +
-                                        $"VALUE('{billguid}', 163, '{plate}', '{plate}', '{payrecord.ID}', '{payrecord.BRUSHCARD_TIME}', '{payrecord.BRUSHCARD_TIME}', '{payrecord.CREATE_TIME}', '{payrecord.IN_TIME}', '{enterRecordId}', {money}, {fees}, {benefit}, {derate}, {accountReceivable}, {paid}, {actualPaid}, {exchange},{freeMoney}, {payType}, '{payTypeName}', {chargeType}, '{outDeviceID}','{outDeviceName}', '9999', '超级管理员', '9999', '超级管理员', {orderType}, {status}, {sealId}, '{sealName}', '{REMARK}', {replaceDeduct}, 1, '{payFrom}', '{outDeviceID}', '{personNo}', '{personName}', '{ConstantHelper.PARKNO}');";
+                                    if (sealId == 54 || payrecord.ACTUAL_BALANCE > 0)
+                                    {
+                                        //临时套餐或者实收大于0
+                                        accountReceivable = payrecord.ACTUAL_BALANCE;  //实收金额
+                                        GetPayType(payrecord.PAY_TYPE, out payType, out payTypeName);
+                                        decimal money = payrecord.ACTUAL_BALANCE;  //实收金额
+                                        decimal fees = payrecord.AVAILABLE_BALANCE;   //优惠前金额（应收金额）
+                                        decimal benefit = payrecord.ABATE_BALANCE;    //优惠金额
+                                        decimal derate = 0;    //滚动收费的减免金额
+                                        decimal paid = 0;   //已支付金额
+                                        decimal actualPaid = payrecord.ACTUAL_BALANCE;
+                                        decimal exchange = payrecord.REFUND_BALANCE;   //找零金额                                    
+                                        decimal smallChange = 0;    //抹零金额，主要用于存储自助缴费机的抹零金额
+                                        int orderType = 0;  //订单类型：1云支付订单 2盒子订单 3中央收费订单 4 缴费机
+                                        int status = 1; //订单状态 0未支付 1已支付 2已退款 3代扣中 
+                                        int replaceDeduct = 0;  //代扣标识（0：无代扣，1：支付宝代扣）
+                                        string payFrom = "捷顺";    //支付来源，如：捷顺、第三方   
+                                        int chargeType = 0; //正常收费
+                                        billguid = new Guid(payrecord.ID).ToString();
+                                        payrecord.CREATE_TIME = CommonHelper.GetDateTimeValue(payrecord.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                                        payrecord.BRUSHCARD_TIME = CommonHelper.GetDateTimeValue(payrecord.BRUSHCARD_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                                        payrecord.IN_TIME = CommonHelper.GetDateTimeValue(payrecord.IN_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                                        string chargeDeviceID = outDeviceId;
+                                        string chargeDeviceName = outDeviceName;
+                                        if (chargeBox != null)
+                                        {
+                                            chargeDeviceID = chargeBox.DeviceID;
+                                            chargeDeviceName = chargeBox.DeviceName;
+                                        }
+                                        billsql = $"INSERT INTO box_bill(BGUID, CredentialType, CredentialNO, Plate, OrderId, PayTime, FeesTime, CreateTime, InTime, EnterRecordID, Money, Fees, Benefit, Derate, AccountReceivable, Paid, ActualPaid, Exchange, FreeMoney, PayTypeID, PayTypeName, ChargeType, ChargeDeviceID,ChargeDeviceName, OperatorID, OperatorName,Cashier,CashierName, OrderType,`Status`, SealTypeId, SealTypeName, Remark, ReplaceDeduct, EventType, PayFrom, DeviceID, PersonNo, PersonName, PARKNO) " +
+                                            $"VALUE('{billguid}', 163, '{plate}', '{plate}', '{payrecord.ID}', '{payrecord.BRUSHCARD_TIME}', '{payrecord.BRUSHCARD_TIME}', '{payrecord.CREATE_TIME}', '{payrecord.IN_TIME}', '{recordOut.RECORDIN_ID}', {money}, {fees}, {benefit}, {derate}, {accountReceivable}, {paid}, {actualPaid}, {exchange},{freeMoney}, {payType}, '{payTypeName}', {chargeType}, '{chargeDeviceID}','{chargeDeviceName}', '9999', '超级管理员', '9999', '超级管理员', {orderType}, {status}, {sealId}, '{sealName}', '{REMARK}', {replaceDeduct}, 1, '{payFrom}', '{outDeviceId}', '{personNo}', '{personName}', '{ConstantHelper.PARKNO}');";
+                                    }
+                                    else
+                                    {
+                                        ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{payrecord.ID} 补录收费记录，!(sealId == 54 || payrecord.ACTUAL_BALANCE > 0) 跳过！");
+                                    }
                                 }
                             }
                             else
@@ -1012,12 +1056,12 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 freeMoney = 0;  //免费金额
                             }
                             string sql = $"INSERT INTO box_out_record(OGUID,OutRecordID,OutDeviceID,OutDeviceName,EnterRecordID,InDeviceName,InTime,CredentialType,CredentialNO,Plate,CarNumOrig,OperatorNo,OperatorName,OutTime,OptTime,PersonNo,PersonName,SetmealType,SetmealName,Remark,PayType,AccountReceivable,Charging,HgMoney,YhMoney,FreeMoney,IoType,ExtendFlag,EventType,EventTypeName,PARKNO) " +
-                                $"VALUE('{oguid}','{outRecordId}','{outDeviceID}','{outDeviceName}','{enterRecordId}','{enterDeviceName}','{recordOut.IN_TIME}',163,'{plate}','{plate}','{plate}','9999','超级管理员','{recordOut.OUT_TIME}','{recordOut.OUT_TIME}','{personNo}','{personName}',{sealId},'{sealName}','{recordOut.REMARK}','{payType}',{accountReceivable},{charging},{hgMoney},{yhMoney},{freeMoney},2,1,1,'一般正常记录','{ConstantHelper.PARKNO}');";
+                                $"VALUE('{oguid}','{outRecordId}','{outDeviceId}','{outDeviceName}','{recordOut.RECORDIN_ID}','{enterDeviceName}','{recordOut.IN_TIME}',163,'{plate}','{plate}','{plate}','9999','超级管理员','{recordOut.OUT_TIME}','{recordOut.OUT_TIME}','{personNo}','{personName}',{sealId},'{sealName}','{recordOut.REMARK}','{payType}',{accountReceivable},{charging},{hgMoney},{yhMoney},{freeMoney},2,1,1,'一般正常记录','{ConstantHelper.PARKNO}');";
                             int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                             if (result > 0)
                             {
                                 outSuccessImportList.Add(string.Format($"{plate}-{recordOut.ID}"));
-                                ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{recordOut.ID} 补录出场记录成功！");
+                                ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{recordOut.ID} 补录出场记录成功！");
 
                                 if (!enableTParkPay && !string.IsNullOrWhiteSpace(billsql))
                                 {
@@ -1025,15 +1069,15 @@ namespace PartialViewOtherToJieLink.ViewModels
                                     if (result > 0)
                                     {
                                         billSuccessImportList.Add(string.Format($"{plate}-{billguid}"));
-                                        ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{billguid} 补录收费记录成功！");
+                                        ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{billguid} 补录收费记录成功！");
                                     }
                                 }
                             }
                         }
                         catch (Exception o)
                         {
-                            ShowMessage($"04.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：{o.Message}");
-                            LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：");
+                            ShowMessage($"06.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：{o.Message}");
+                            LogHelper.CommLogger.Error(o, $"06.迁移入出场收费记录，车牌：{recordOut.PHYSICAL_NO}-{recordOut.OUT_TIME}-{recordOut.ID} 补录出场记录异常：");
                         }
                     }
                     if (enableTParkPay && highVersionRecordBillList.Count > 0)
@@ -1043,16 +1087,45 @@ namespace PartialViewOtherToJieLink.ViewModels
                             try
                             {
                                 string plate = recordBill.PHYSICAL_NO;
-                                string intime = recordBill.IN_TIME;
-
-                                //string enterDeviceId = "188766208";
+                                recordBill.IN_TIME = CommonHelper.GetDateTimeValue(recordBill.IN_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                                recordBill.PAY_TIME = CommonHelper.GetDateTimeValue(recordBill.PAY_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                                recordBill.CREATE_TIME = CommonHelper.GetDateTimeValue(recordBill.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                                string enterDeviceId = "188766208";
                                 string enterDeviceName = "虚拟车场入口";
-                                string outDeviceID = "120201030";
+                                bool newRecordInId = false; //是否重新生成的入场id，是的话不会匹配到入场记录，即不找入场记录了
+                                if (string.IsNullOrWhiteSpace(recordBill.RECORDIN_ID) || recordBill.RECORDIN_ID == "0")
+                                {
+                                    //找不到入场记录的出场记录 重新生成RECORDIN_ID，并映射好出场id
+                                    recordBill.RECORDIN_ID = GetOutEnterRecordIn(recordBill.RECORDOUT_ID);
+                                    newRecordInId = true;
+                                }
+                                string outDeviceId = "120201030";
                                 string outDeviceName = "虚拟车场出口";
+                                string chargeDeviceID = outDeviceId;
+                                string chargeDeviceName = outDeviceName;
                                 string bguid = new Guid(recordBill.ID).ToString();
-                                string enterRecordId = recordBill.RECORDIN_ID;
-                                string outRecordId = recordBill.RECORDOUT_ID;
-
+                                ControlDevices chargeBox = null;
+                                if (policy.ControlDeviceSelect)
+                                {
+                                    if (!newRecordInId)
+                                    {
+                                        TParkRecordInModel recordIn = recordInList.FirstOrDefault(x => x.ID == recordBill.RECORDIN_ID);
+                                        if (recordIn != null)
+                                        {
+                                            GetEnterDeviceInfo(controlDevicesList, recordIn, ref enterDeviceId, ref enterDeviceName);
+                                        }
+                                    }
+                                    TParkRecordOutModel recordOut = recordOutList.FirstOrDefault(x => x.ID == recordBill.RECORDOUT_ID);
+                                    if (recordOut != null)
+                                    {
+                                        GetOutDeviceInfo(controlDevicesList, recordOut, ref outDeviceId, ref outDeviceName, ref chargeBox);
+                                        if (chargeBox != null)
+                                        {
+                                            chargeDeviceID = chargeBox.DeviceID;
+                                            chargeDeviceName = chargeBox.DeviceName;
+                                        }
+                                    }
+                                }
                                 if (string.IsNullOrWhiteSpace(recordBill.ORDER_NO))
                                 {
                                     recordBill.ORDER_NO = recordBill.ID;
@@ -1081,6 +1154,12 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         }
                                     }
                                 }
+                                if (!(sealId == 54 || recordBill.ACTUAL_BALANCE > 0))
+                                {
+                                    //临时套餐或者实收大于0：才生成收费记录
+                                    ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{recordBill.ID} 补录收费记录，!(sealId == 54 || recordBill.ACTUAL_BALANCE > 0) 跳过！");
+                                    continue;
+                                }
                                 if (string.IsNullOrWhiteSpace(recordBill.REMARK))
                                 {
                                     recordBill.REMARK = REMARK;
@@ -1108,22 +1187,22 @@ namespace PartialViewOtherToJieLink.ViewModels
                                     recordBill.PAY_TIME = recordBill.BRUSHCARD_TIME;
                                 }
                                 string sql = $"INSERT INTO box_bill(BGUID, CredentialType, CredentialNO, Plate, OrderId, PayTime, FeesTime, CreateTime, InTime, EnterRecordID, Money, Fees, Benefit, Derate, AccountReceivable, Paid, ActualPaid, Exchange, FreeMoney, PayTypeID, PayTypeName, ChargeType, ChargeDeviceID,ChargeDeviceName, OperatorID, OperatorName,Cashier,CashierName, OrderType,`Status`, SealTypeId, SealTypeName, Remark, ReplaceDeduct, EventType, PayFrom, DeviceID, PersonNo, PersonName, PARKNO) " +
-                                    $"VALUE('{bguid}', 163, '{plate}', '{plate}', '{recordBill.ORDER_NO}', '{recordBill.PAY_TIME}', '{recordBill.PAY_TIME}', '{recordBill.CREATE_TIME}', '{recordBill.IN_TIME}', '{enterRecordId}', {money}, {fees}, {benefit}, {derate}, {accountReceivable}, {paid}, {actualPaid}, {exchange},{freeMoney}, {payType}, '{payTypeName}', {chargeType}, '{outDeviceID}','{outDeviceName}', '9999', '超级管理员', '9999', '超级管理员', {orderType}, {status}, {sealId}, '{sealName}', '{REMARK}', {replaceDeduct}, 1, '{payFrom}', '{outDeviceID}', '{personNo}', '{personName}', '{ConstantHelper.PARKNO}');";
+                                    $"VALUE('{bguid}', 163, '{plate}', '{plate}', '{recordBill.ORDER_NO}', '{recordBill.PAY_TIME}', '{recordBill.PAY_TIME}', '{recordBill.CREATE_TIME}', '{recordBill.IN_TIME}', '{recordBill.RECORDIN_ID}', {money}, {fees}, {benefit}, {derate}, {accountReceivable}, {paid}, {actualPaid}, {exchange},{freeMoney}, {payType}, '{payTypeName}', {chargeType}, '{chargeDeviceID}','{chargeDeviceName}', '9999', '超级管理员', '9999', '超级管理员', {orderType}, {status}, {sealId}, '{sealName}', '{REMARK}', {replaceDeduct}, 1, '{payFrom}', '{outDeviceId}', '{personNo}', '{personName}', '{ConstantHelper.PARKNO}');";
                                 int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                 if (result > 0)
                                 {
                                     billSuccessImportList.Add(string.Format($"{plate}-{recordBill.ID}"));
-                                    ShowMessage($"04.迁移入出场收费记录，车牌：{plate}-{recordBill.ID} 补录收费记录成功！");
+                                    ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{recordBill.ID} 补录收费记录成功！");
                                 }
                             }
                             catch (Exception o)
                             {
-                                ShowMessage($"04.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：{o.Message}");
-                                LogHelper.CommLogger.Error(o, $"04.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：");
+                                ShowMessage($"06.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：{o.Message}");
+                                LogHelper.CommLogger.Error(o, $"06.迁移入出场收费记录，车牌：{recordBill.PHYSICAL_NO}-{recordBill.PAY_TIME}-{recordBill.ID} 补录收费记录异常：");
                             }
                         }
                     }
-                    string msg = string.Format("04.迁移入出场收费记录，合计将解析入场记录{0}条，出场记录{1}条，收费记录{2}条；实际迁移入场记录{3}条，出场记录{4}条，收费记录{5}条",
+                    string msg = string.Format("06.迁移入出场收费记录，合计将解析入场记录{0}条，出场记录{1}条，收费记录{2}条；实际迁移入场记录{3}条，出场记录{4}条，收费记录{5}条",
                         recordInList.Count, recordOutList.Count, enableTParkPay ? highVersionRecordBillList.Count : lowVersionPayRecordList.Count, enterSuccessImportList.Count, outSuccessImportList.Count, billSuccessImportList.Count);
                     ShowMessage(msg);
                     LogHelper.CommLogger.Info(msg);
@@ -1141,8 +1220,8 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
                 else
                 {
-                    ShowMessage("04.迁移入出场收费记录结束：recordInList.Count == 0");
-                    LogHelper.CommLogger.Info("04.迁移入出场收费记录结束：recordInList.Count == 0");
+                    ShowMessage("06.迁移入出场收费记录结束：recordInList.Count == 0");
+                    LogHelper.CommLogger.Info("06.迁移入出场收费记录结束：recordInList.Count == 0");
                 }
             }
             catch (Exception ex)
@@ -1152,6 +1231,7 @@ namespace PartialViewOtherToJieLink.ViewModels
             }
             finally
             {
+
             }
         }
 
@@ -1337,7 +1417,7 @@ namespace PartialViewOtherToJieLink.ViewModels
             Guid tempGuid = new Guid();
             if (Guid.TryParse(jsdsID, out tempGuid))
             {
-                jielinkGuid = jsdsID;
+                jielinkGuid = new Guid(jsdsID).ToString();
             }
             else
             {
@@ -1354,6 +1434,1133 @@ namespace PartialViewOtherToJieLink.ViewModels
             return jielinkGuid;
         }
 
+        /// <summary>
+        /// 迁移设备
+        /// </summary>
+        private void ControlDeviceImport()
+        {
+            if (!policy.ControlDeviceSelect)
+            {
+                return;
+            }
+            DataSet equipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment WHERE EQUIP_STATE='NORMAL' ORDER BY EQUIPMENT_ID asc;");
+            if (equipmentDs == null || equipmentDs.Tables[0] == null || equipmentDs.Tables[0].Rows.Count == 0)
+            {
+                ShowMessage("04.迁移设备结束：deviceDs空");
+                return;
+            }
+            List<TBaseEquipmentModel> equipmentList = CommonHelper.DataTableToList<TBaseEquipmentModel>(equipmentDs.Tables[0]).OrderBy(x => x.EQUIPMENT_ID).ToList();
+            if (equipmentList.Count == 0)
+            {
+                ShowMessage("04.迁移设备结束：equipmentList.Count == 0");
+                return;
+            }
+            //设备的MAC、IP、网关地址等在t_base_equipment_param
+            DataSet equipmentparamDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment_param ORDER BY EQUIPMENT_ID ASC;");
+            if (equipmentparamDs == null || equipmentparamDs.Tables[0] == null || equipmentparamDs.Tables[0].Rows.Count == 0)
+            {
+                ShowMessage("04.迁移设备结束：equipmentparamDs空");
+                return;
+            }
+            List<TBaseEquipmentParamModel> equipmentParamList = CommonHelper.DataTableToList<TBaseEquipmentParamModel>(equipmentparamDs.Tables[0]).OrderBy(x => x.EQUIPMENT_ID).ToList();
+            if (equipmentParamList.Count == 0)
+            {
+                ShowMessage("04.迁移设备结束：equipmentParamList.Count == 0");
+                return;
+            }
+            DataSet controlDeviceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_devices ORDER BY id ASC;");
+            List<ControlDevices> controlDevicesList = new List<ControlDevices>();
+            if (controlDeviceDs != null && controlDeviceDs.Tables[0] != null && controlDeviceDs.Tables[0].Rows.Count > 0)
+            {
+                controlDevicesList = CommonHelper.DataTableToList<ControlDevices>(controlDeviceDs.Tables[0]).OrderBy(x => x.ID).ToList();
+            }
+            if (controlDevicesList.Count == 0)
+            {
+                ShowMessage("04.迁移设备结束：controlDevicesList.Count == 0");
+                return;
+            }
+            ControlDevices mjDeivce = controlDevicesList.FirstOrDefault(x => x.DeviceType == 32);
+            ControlDevices parkBoxDeivce = controlDevicesList.FirstOrDefault(x => x.DeviceType == 25);
+            List<string> deviceSuccessImportList = new List<string>();
+            foreach (TBaseEquipmentModel equipment in equipmentList)
+            {
+                if (equipment.PRODUCT_MODEL != ConstantHelper.JSMJY08
+                    //&& equipment.PRODUCT_MODEL != ConstantHelper.JSMJY08_Locker
+                    //&& equipment.PRODUCT_MODEL != ConstantHelper.JSMJY08_Reader
+                    //&& equipment.PRODUCT_MODEL != ConstantHelper.JSMJY08_OpenDoorButton
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSMJK0220A
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSMJK0240A
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSC8ST)
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：不适配JieLink，跳过");
+                    continue;
+                    // equipment.PRODUCT_MODEL != ConstantHelper.JSMJK022040A_Reader    //领御III二门读卡器 等价于门：直接在插入领御设备的时候解析即可
+                }
+                TBaseEquipmentParamModel macItem = null;
+                TBaseEquipmentParamModel ipItem = null;
+                TBaseEquipmentParamModel devIDItem = null;
+                TBaseEquipmentParamModel gatewayItem = null;
+                TBaseEquipmentParamModel maskItem = null;
+                TBaseEquipmentParamModel macNoItem = null;
+                if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0220A
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0240A
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                {
+                    //看jsds数据库，领御设备、速通通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                    macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                    devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                    gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                    maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                    macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                }
+                else
+                {
+                    //看jsds数据库，Y08通过ID找MAC、devId、IP等设备信息
+                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    ipItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                    devIDItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                    gatewayItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                    maskItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                    macNoItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                }
+                if (macItem == null || string.IsNullOrWhiteSpace(macItem.PARAM_VALUE))
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：无MAC，跳过");
+                    continue;
+                }
+                string mac = macItem.PARAM_VALUE.ToUpper().Replace('-', ':');
+                if (devIDItem == null || string.IsNullOrWhiteSpace(devIDItem.PARAM_VALUE))
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：无devID，跳过");
+                    continue;
+                }
+                //如果是速通，mac后3位加00与devId比较，若是不一样，也跳过：因为设备注册到jielink时 设备id由mac后3位加00生成
+                if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                {
+                    string deviceId = CommonHelper.ConvertDevicesId(mac);
+                    if (devIDItem.PARAM_VALUE != deviceId)
+                    {
+                        ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：devID与jielink生成规则不符，跳过");
+                        continue;
+                    }
+                }
+                if (ipItem == null || string.IsNullOrWhiteSpace(ipItem.PARAM_VALUE))
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：无IP，跳过");
+                    continue;
+                }
+                string[] ips = ipItem.PARAM_VALUE.Split('.');
+                if (ips.Length != 4)
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：IP不对，跳过");
+                    continue;
+                }
+                string gateway = string.Empty;
+                if (gatewayItem != null && !string.IsNullOrWhiteSpace(gatewayItem.PARAM_VALUE))
+                {
+                    gateway = gatewayItem.PARAM_VALUE;
+                }
+                else
+                {
+                    //ip地址最后一位改为1
+                    gateway = $"{ips[0]}.{ips[1]}.{ips[2]}.1";
+                }
+                string mask = string.Empty;
+                if (maskItem != null && !string.IsNullOrWhiteSpace(maskItem.PARAM_VALUE))
+                {
+                    mask = maskItem.PARAM_VALUE;
+                }
+                else
+                {
+                    mask = "255.255.255.0";
+                }
+                string macNo = string.Empty;
+                if (macNoItem != null && string.IsNullOrWhiteSpace(macNoItem.PARAM_VALUE))
+                {
+                    macNo = macNoItem.PARAM_VALUE;
+                }
+                string dguid = GetGuidString(equipment.ID);
+                ControlDevices currentDevice = controlDevicesList.FirstOrDefault(x => x.DGUID == dguid || x.DeviceID == devIDItem.PARAM_VALUE);
+                if (currentDevice != null)
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：设备已存在，跳过");
+                    continue;
+                }
+                string parentGuid = equipment.EQUIPMENT_ID;
+                if (string.IsNullOrWhiteSpace(equipment.REMARK))
+                {
+                    equipment.REMARK = REMARK;
+                }
+                int deviceType = 0;
+                string model = string.Empty;
+                if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJY08)
+                {
+                    deviceType = ConstantHelper.JIELINK_JSMJY08A_OLD;    //老Y08
+                    model = "JSMJY08A";
+                }
+                else if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0220A)
+                {
+                    deviceType = ConstantHelper.JIELINK_JSMJK02_20;   //领御III型二门
+                    model = "JSMJK02_20";
+                }
+                else if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0240A)
+                {
+                    deviceType = ConstantHelper.JIELINK_JSMJK02_40;   //领御III型四门
+                    model = "JSMJK02_40";
+                }
+                else if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                {
+                    deviceType = ConstantHelper.JIELINK_JSTC1801_01;    //速通
+                    model = "JSTC1801-01";
+                }
+                if (deviceType == 0)
+                {
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：不适配JieLink，跳过");
+                    continue;
+                }
+                if (string.IsNullOrWhiteSpace(parentGuid))
+                {
+                    string parentId = string.Empty;
+                    string parentIp = string.Empty;
+                    if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJY08
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0220A
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0240A)
+                    {
+                        //控制器，找门将服务
+                        if (mjDeivce == null)
+                        {
+                            ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：没有门禁服务，跳过");
+                            continue;
+                        }
+                        parentId = mjDeivce.DeviceID;
+                        parentIp = mjDeivce.IP;
+                    }
+                    else if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                    {
+                        //车场控制器
+                        if (parkBoxDeivce == null)
+                        {
+                            ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：没有车场盒子，跳过");
+                            continue;
+                        }
+                        parentId = parkBoxDeivce.DeviceID;
+                        parentIp = parkBoxDeivce.IP;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                    int deviceStatus = 0;
+                    int authStatus = 0;
+                    string qrCodeLink = string.Empty;
+                    equipment.CREATE_TIME = CommonHelper.GetDateTimeValue(equipment.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                    equipment.UPDATE_TIME = CommonHelper.GetDateTimeValue(equipment.UPDATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss");
+                    string sql = $"INSERT INTO control_devices(DGUID,DeviceID,IP,Mac,ParentID,Net_Mask,Gateway_IP,DeviceStatus,DeviceType,IoType,DeviceName,Model,DeviceClass,Mac2," +
+                            $"Remark,InTime,UpdateTime,MasterIp,AuthStatus,MacNo,QrCodeLink,SpeakTecType,SpeakVideoType) VALUE('{dguid}','{devIDItem.PARAM_VALUE}','{ipItem.PARAM_VALUE}'," +
+                            $"'{mac}','{parentId}','{mask}','{gateway}',{deviceStatus},{deviceType},0,'{equipment.EQUIP_NAME}','{model}',0,'{mac}','{equipment.REMARK}','{equipment.CREATE_TIME}'," +
+                            $"'{equipment.UPDATE_TIME}','{parentIp}',{authStatus},'{macNo}','{qrCodeLink}',1,1)";
+                    try
+                    {
+                        int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                        if (flag <= 0)
+                        {
+                            continue;
+                        }
+                    }
+                    catch (Exception o)
+                    {
+                        ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：异常");
+                        LogHelper.CommLogger.Error(o, $"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'异常：");
+                        continue;
+                    }
+                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：成功");
+                    deviceSuccessImportList.Add(dguid);
+                    if (deviceType == ConstantHelper.JIELINK_JSMJK02_20 || deviceType == ConstantHelper.JIELINK_JSMJK02_40)
+                    {
+                        //领御
+                        string macToDeviceId = MACConvertDevicesId(mac);
+                        if (string.IsNullOrWhiteSpace(macToDeviceId))
+                        {
+                            continue;
+                        }
+                        //找读卡器，将读卡器转化为门，有读卡器权限即有该门权限
+                        List<TBaseEquipmentModel> doorEquipmentList = equipmentList.Where(x => x.PRODUCT_MODEL == ConstantHelper.JSMJK022040A_Reader
+                            && x.EQUIPMENT_ID == equipment.ID).OrderBy(x => x.EQUIP_NAME).ToList();
+                        int maxDoorCount = 0;
+                        if (deviceType == ConstantHelper.JIELINK_JSMJK02_20)
+                        {
+                            //加2个门
+                            maxDoorCount = 2;
+                        }
+                        else if (deviceType == ConstantHelper.JIELINK_JSMJK02_40)
+                        {
+                            //加4个门
+                            maxDoorCount = 4;
+                        }
+                        for (int index = 0; index < doorEquipmentList.Count; index++)
+                        {
+                            if (index == maxDoorCount)
+                            {
+                                //已达门数量上限
+                                break;
+                            }
+                            string doorGuid = GetGuidString(doorEquipmentList[index].ID);
+                            string doorId = (CommonHelper.GetUIntValue(macToDeviceId) + index + 1).ToString();
+                            string doorName = doorId + "门";
+                            if (string.IsNullOrWhiteSpace(doorEquipmentList[index].REMARK))
+                            {
+                                doorEquipmentList[index].REMARK = REMARK;
+                            }
+                            sql = $"INSERT INTO control_devices(DGUID,DeviceID,Mac,ParentID,DeviceStatus,DeviceType,IoType,DeviceName,Model,DeviceClass,Mac2," +
+                            $"Remark,InTime,UpdateTime,MasterIp,AuthStatus,SpeakTecType,SpeakVideoType) VALUE('{doorGuid}','{doorId}','{ConstantHelper.JIELINKDOORMAC}'," +
+                            $"'{devIDItem.PARAM_VALUE}',{deviceStatus},{ConstantHelper.JIELINKDOORTYPE},0,'{doorName}','',0,'{ConstantHelper.JIELINKDOORMAC}','{equipment.REMARK}'," +
+                            $"'{equipment.CREATE_TIME}','{equipment.UPDATE_TIME}','{ipItem.PARAM_VALUE}',{authStatus},1,1)";
+                            try
+                            {
+                                int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                                if (flag > 0)
+                                {
+                                    ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'，门='{doorId}'：成功");
+                                    deviceSuccessImportList.Add(doorGuid);
+                                }
+                            }
+                            catch (Exception o)
+                            {
+                                ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'，门='{doorId}'：异常");
+                                LogHelper.CommLogger.Error(o, $"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'，门='{doorId}'异常：");
+                            }
+                        }
+                    }
+                }
+            }
+            string msg = string.Format($"04.迁移设备结束，合计处理{equipmentList.Count}条设备数据，成功迁移{deviceSuccessImportList.Count}个设备");
+            ShowMessage(msg);
+            LogHelper.CommLogger.Info(msg);
+        }
+        /// <summary>
+        /// MAC提取设备ID
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private static string MACConvertDevicesId(string mac, string index = "")
+        {
+            string deviceId = string.Empty;
+            if (string.IsNullOrWhiteSpace(mac))
+            {
+                return deviceId;
+            }
+            mac = mac.Replace(":", "").Substring(6, 6);
+            mac = (string.IsNullOrEmpty(index) ? (mac + "00") : (mac + index));
+            return Convert.ToUInt32(mac, 16).ToString();
+        }
+
+        /// <summary>
+        /// 递归获取组织列表
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
+        private List<TBaseDefendDistrictModel> GetDefendDistrictChildren(List<TBaseDefendDistrictModel> list, string parentId)
+        {
+            var result = new List<TBaseDefendDistrictModel>();
+            var subareas = new List<TBaseDefendDistrictModel>();
+            if (string.IsNullOrWhiteSpace(parentId))
+            {
+                subareas = list.Where(e => e.DISTRICT_ID == "" || e.DISTRICT_ID == null).ToList();
+            }
+            else
+            {
+                subareas = list.Where(e => e.DISTRICT_ID == parentId).ToList();
+            }
+            if (subareas != null)
+            {
+                result.AddRange(subareas);
+                foreach (var subo in subareas)
+                {
+                    result.AddRange(GetDefendDistrictChildren(list, subo.ID));
+                }
+            }
+
+            return result;
+        }
+
+        private void ControlAccessPointGroupImport(List<TBaseDefendDistrictModel> districtList)
+        {
+            if (districtList.Count == 0)
+            {
+                ShowMessage("05.迁移区域结束：districtList.Count == 0");
+                LogHelper.CommLogger.Info("05.迁移区域结束：districtList.Count == 0");
+                return;
+            }
+            //区域
+            DataSet areaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_access_point_group WHERE `Status`=0 ORDER BY id asc;");
+            List<ControlAccessPointGroup> areaList = new List<ControlAccessPointGroup>();
+            ControlAccessPointGroup areaRoot = null;
+            if (areaDs != null && areaDs.Tables[0] != null && areaDs.Tables[0].Rows.Count > 0)
+            {
+                areaList = CommonHelper.DataTableToList<ControlAccessPointGroup>(areaDs.Tables[0]).OrderBy(x => x.Id).ToList();
+                areaRoot = areaList.FirstOrDefault(x => x.ParentId == ConstantHelper.ROOTPARENTID);
+            }
+            List<string> areaSuccessImportList = new List<string>();
+            if (areaList.Count > 0)
+            {
+                //parkNo不赋值的话，显示门禁区域，就可以选择车场和门禁设备了
+                foreach (TBaseDefendDistrictModel district in districtList)
+                {
+                    if (string.IsNullOrWhiteSpace(district.REMARK))
+                    {
+                        district.REMARK = REMARK;
+                    }
+                    if (district.ID == ConstantHelper.JSDSDISTRICTROOT)
+                    {
+                        //根区域
+                        if (areaRoot == null)
+                        {
+                            string jsdsRootId = GetGuidString(district.ID);
+                            string areaCode = "A" + CommonHelper.GetTimeStamp().ToString(); //A+时间戳
+                            string sql = $"INSERT INTO control_access_point_group(APGUID,ParkNo,APName,AreaCode,DefaultType,APType,ParentId,`Status`,CreatedOnUtc,Remark) VALUE('{jsdsRootId}',NULL,'{district.DISTRICT_NAME}','{areaCode}',1,1,'{ConstantHelper.ROOTPARENTID}',0,'{district.CREATE_TIME}','{district.REMARK}');";
+                            try
+                            {
+                                int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                                if (flag <= 0)
+                                {
+                                    ShowMessage("区域根节点插入失败");
+                                    MessageBoxHelper.MessageBoxShowWarning("区域根节点插入失败");
+                                    return;
+                                }
+                            }
+                            catch (Exception o)
+                            {
+                                ShowMessage("区域根节点插入异常：详情请分析日志");
+                                LogHelper.CommLogger.Error(o, "区域根节点插入异常：");
+                                return;
+                            }
+                            areaSuccessImportList.Add(district.ID);
+                        }
+                        else
+                        {
+                            if (guidMapDic.ContainsKey(district.ID))
+                            {
+                                guidMapDic[district.ID] = areaRoot.APGUID;
+                            }
+                            else
+                            {
+                                guidMapDic.Add(district.ID, areaRoot.APGUID);
+                            }
+                            areaSuccessImportList.Add(district.ID);
+                        }
+                    }
+                    else
+                    {
+                        string currentGuid = GetGuidString(district.ID);
+                        //寻找当前组织是否已存在：判断是否重复升级
+                        DataSet currentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{currentGuid}' ORDER BY id asc;");
+                        ControlAccessPointGroup currentArea = null;
+                        if (currentAreaDs != null && currentAreaDs.Tables[0] != null && currentAreaDs.Tables[0].Rows.Count > 0)
+                        {
+                            currentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(currentAreaDs.Tables[0]).FirstOrDefault();
+                        }
+                        if (currentArea != null)
+                        {
+                            ShowMessage("区域" + currentArea.APName + "已存在，跳过");
+                            continue;
+                        }
+                        string parentGuid = string.Empty;
+                        if (string.IsNullOrWhiteSpace(district.DISTRICT_ID) && district.ID != ConstantHelper.JSDSDISTRICTROOT)
+                        {
+                            //父节点为空的其他区域：如EXTERIOR
+                            if (areaRoot == null)
+                            {
+                                continue;
+                            }
+                            parentGuid = areaRoot.APGUID;
+                        }
+                        else
+                        {
+                            parentGuid = GetGuidString(district.DISTRICT_ID);
+                            DataSet parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{parentGuid}' ORDER BY id asc;");
+                            ControlAccessPointGroup parentArea = null;
+                            if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
+                            {
+                                parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                            }
+                            if (parentArea == null)
+                            {
+                                ShowMessage("区域" + district.DISTRICT_NAME + "的父节点区域不存在，跳过");
+                                continue;
+                            }
+                        }
+                        //车场区域
+                        AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        //门禁区域
+                        string doorGuid = GetAreaGuidString(district.ID);
+                        string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
+                        AreaInsert(doorGuid, null, doorApName, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                    }
+                }
+            }
+            string msg = $"05.迁移区域结束，合计处理{districtList.Count}条区域数据，成功迁移{areaSuccessImportList.Count}条区域";
+            ShowMessage(msg);
+            LogHelper.CommLogger.Info(msg);
+
+            areaList.Clear();
+            areaSuccessImportList.Clear();
+        }
+        /// <summary>
+        /// jsds的区域迁移到jielink后：生成车场区域和门禁区域
+        /// </summary>
+        /// <param name="district"></param>
+        /// <param name="apName"></param>
+        /// <param name="currentGuid"></param>
+        /// <param name="parentGuid"></param>
+        /// <param name="areaSuccessImportList"></param>
+        private void AreaInsert(string currentGuid, string parkNo, string apName, string parentGuid, string createTime, string remark, ref List<string> areaSuccessImportList)
+        {
+            string areaCode = "A" + CommonHelper.GetTimeStamp().ToString(); //A+时间戳
+            string sql = string.Empty;
+            if (string.IsNullOrWhiteSpace(parkNo))
+            {
+                sql = $"INSERT INTO control_access_point_group(APGUID,ParkNo,APName,AreaCode,DefaultType,APType,ParentId,`Status`,CreatedOnUtc,Remark) VALUE('{currentGuid}',null,'{apName}','{areaCode}',1,1,'{parentGuid}',0,'{createTime}','{remark}');";
+            }
+            else
+            {
+                sql = $"INSERT INTO control_access_point_group(APGUID,ParkNo,APName,AreaCode,DefaultType,APType,ParentId,`Status`,CreatedOnUtc,Remark) VALUE('{currentGuid}','{parkNo}','{apName}','{areaCode}',1,1,'{parentGuid}',0,'{createTime}','{remark}');";
+            }
+            try
+            {
+                int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                if (flag <= 0)
+                {
+                    ShowMessage("区域" + apName + "插入失败");
+                }
+                else
+                {
+                    areaSuccessImportList.Add(currentGuid);
+                }
+            }
+            catch (Exception o)
+            {
+                ShowMessage("区域" + apName + "插入异常：详情请分析日志");
+                LogHelper.CommLogger.Error(o, "区域" + apName + "插入异常：");
+            }
+        }
+
+        /// <summary>
+        /// jsds区域迁移到jielink时，生成车场和门禁区域，区域若没有关联设备，可直接删除
+        /// 门禁区域的guid映射好，后面可能用到
+        /// </summary>
+        /// <param name="jsdsID"></param>
+        /// <param name="jielinkGuid"></param>
+        private string GetAreaGuidString(string jsdsDistrictId)
+        {
+            string jielinkGuid = string.Empty;
+            if (areaGuidMapDic.ContainsKey(jsdsDistrictId))
+            {
+                jielinkGuid = areaGuidMapDic[jsdsDistrictId];
+            }
+            else
+            {
+                jielinkGuid = Guid.NewGuid().ToString();
+                areaGuidMapDic.Add(jsdsDistrictId, jielinkGuid);
+            }
+            return jielinkGuid;
+        }
+
+        /// <summary>
+        /// 迁移设备权限
+        /// </summary>
+        private void DeviceRightImport()
+        {
+            if (!policy.DeviceRightSelect)
+            {
+                return;
+            }
+            List<TBaseDefendDistrictModel> districtList = new List<TBaseDefendDistrictModel>();
+            DataSet districtDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select* from t_base_defend_district WHERE STATE = 'NORMAL' ORDER BY DISTRICT_ID ASC;");
+            if (districtDs != null && districtDs.Tables[0] != null && districtDs.Tables[0].Rows.Count > 0)
+            {
+                List<TBaseDefendDistrictModel> tempDistrictList = CommonHelper.DataTableToList<TBaseDefendDistrictModel>(districtDs.Tables[0]).OrderBy(x => x.DISTRICT_ID).ToList();
+                districtList = GetDefendDistrictChildren(tempDistrictList, "");
+                tempDistrictList.Clear();
+            }
+            ControlAccessPointGroupImport(districtList);
+            //设备
+            DataSet controlDeviceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_devices ORDER BY id ASC;");
+            List<ControlDevices> controlDevicesList = new List<ControlDevices>();
+            if (controlDeviceDs != null && controlDeviceDs.Tables[0] != null && controlDeviceDs.Tables[0].Rows.Count > 0)
+            {
+                controlDevicesList = CommonHelper.DataTableToList<ControlDevices>(controlDeviceDs.Tables[0]).OrderBy(x => x.ID).ToList();
+            }
+            if (controlDevicesList.Count == 0)
+            {
+                //已经迁移过，但迁移不成功
+                ShowMessage("05.迁移设备权限结束：controlDevicesList空");
+                return;
+            }
+            DataSet personDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_person where `Status`=0 ORDER BY Id DESC;");
+            List<ControlPerson> personList = new List<ControlPerson>();
+            if (personDs != null && personDs.Tables[0] != null && personDs.Tables[0].Rows.Count > 0)
+            {
+                personList = CommonHelper.DataTableToList<ControlPerson>(personDs.Tables[0]).OrderByDescending(x => x.Id).ToList();
+            }
+            if (personList.Count == 0)
+            {
+                //已经迁移过，但迁移不成功
+                ShowMessage("04.迁移设备权限结束：personList.Count == 0");
+                return;
+            }
+            DataSet equipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment WHERE EQUIP_STATE='NORMAL' ORDER BY EQUIPMENT_ID asc;");
+            List<TBaseEquipmentModel> equipmentList = new List<TBaseEquipmentModel>();
+            if (equipmentDs != null && equipmentDs.Tables[0] != null && equipmentDs.Tables[0].Rows.Count > 0)
+            {
+                equipmentList = CommonHelper.DataTableToList<TBaseEquipmentModel>(equipmentDs.Tables[0]).OrderBy(x => x.EQUIPMENT_ID).ToList();
+            }
+            if (equipmentList.Count == 0)
+            {
+                ShowMessage("04.迁移设备权限结束：equipmentList.Count == 0");
+                return;
+            }
+            //车场服务、门禁服务
+            DataSet parkServiceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT* from control_lease_stall WHERE `Status`= 0 ORDER BY OperateTime DESC;");
+            List<ControlLeaseStall> parkServiceList = new List<ControlLeaseStall>();
+            if (parkServiceDs != null && parkServiceDs.Tables[0] != null && parkServiceDs.Tables[0].Rows.Count > 0)
+            {
+                parkServiceList = CommonHelper.DataTableToList<ControlLeaseStall>(parkServiceDs.Tables[0]).OrderByDescending(x => x.OperateTime).ToList();
+            }
+            DataSet doorServiceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * FROM system_set_door_service_to_person WHERE `Status`=0 ORDER BY OperTime DESC;");
+            List<SystemSetDoorServiceToPerson> doorServiceList = new List<SystemSetDoorServiceToPerson>();
+            if (doorServiceDs != null && doorServiceDs.Tables[0] != null && doorServiceDs.Tables[0].Rows.Count > 0)
+            {
+                doorServiceList = CommonHelper.DataTableToList<SystemSetDoorServiceToPerson>(doorServiceDs.Tables[0]).OrderBy(x => x.OperTime).ToList();
+            }
+            if (parkServiceList.Count == 0 && doorServiceList.Count == 0)
+            {
+                ShowMessage("04.迁移设备权限结束：parkServiceList.Count == 0 && doorServiceList.Count == 0");
+                return;
+            }
+            //区域
+            List<ControlAccessPointGroup> areaList = new List<ControlAccessPointGroup>();
+            DataSet areaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_access_point_group WHERE `Status`=0 ORDER BY id ASC;");
+            if (areaDs != null && areaDs.Tables[0] != null && areaDs.Tables[0].Rows.Count > 0)
+            {
+                areaList = CommonHelper.DataTableToList<ControlAccessPointGroup>(areaDs.Tables[0]).OrderBy(x => x.Id).ToList();
+            }
+            //服务
+            DataSet cacauthserviceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE STATE='NORMAL' AND ID in (SELECT AUTHSERVICE_ID FROM t_cac_auth_establish WHERE `STATUS`='NORMAL') ORDER BY CREATE_TIME DESC;");
+            List<TCacAuthServiceModel> cacauthserviceList = new List<TCacAuthServiceModel>();
+            if (cacauthserviceDs != null && cacauthserviceDs.Tables[0] != null && cacauthserviceDs.Tables[0].Rows.Count > 0)
+            {
+                cacauthserviceList = CommonHelper.DataTableToList<TCacAuthServiceModel>(cacauthserviceDs.Tables[0]).OrderByDescending(x => x.CREATE_TIME).ToList();
+            }
+            if (cacauthserviceList.Count == 0)
+            {
+                ShowMessage("05.迁移设备权限结束：cacauthserviceList.Count == 0");
+                return;
+            }
+            //账号、用户
+            List<string> accountIdList = cacauthserviceList.Select(x => x.ACCOUNT_ID).Distinct().ToList();
+            string accountIdstr = string.Format("'{0}'", string.Join("','", accountIdList));
+            DataSet accountDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_cac_account where `STATUS`= 'NORMAL' AND ID in ({accountIdstr});");
+            List<TCacAccountModel> accountList = new List<TCacAccountModel>();
+            List<string> personIdList = new List<string>();
+            if (accountDs != null && accountDs.Tables[0] != null && accountDs.Tables[0].Rows.Count > 0)
+            {
+                accountList = CommonHelper.DataTableToList<TCacAccountModel>(accountDs.Tables[0]).OrderByDescending(x => x.CREATE_TIME).ToList();
+            }
+            if (accountList.Count == 0)
+            {
+                ShowMessage("05.迁移设备权限结束：accountList.Count == 0");
+                return;
+            }
+            personIdList = CommonHelper.DataTableToList<TCacAccountModel>(accountDs.Tables[0]).OrderByDescending(x => x.CREATE_TIME).Select(x => x.PERSON_ID).ToList();
+            if (personIdList.Count == 0)
+            {
+                ShowMessage("05.迁移设备权限结束：personIdList.Count == 0");
+                return;
+            }
+            int doorRightSuccessImportCount = 0;
+            int parkRightSuccessImportCount = 0;
+            int parkServiceAreaSuccessImportCount = 0;
+            foreach (TBaseDefendDistrictModel districtModel in districtList)
+            {
+                string apguid = GetGuidString(districtModel.ID);
+                ControlAccessPointGroup area = areaList.FirstOrDefault(x => x.APGUID == apguid);
+                if (area == null)
+                {
+                    continue;
+                }
+                //区域+通道
+                DataSet establishDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"select * from t_base_establish WHERE STATE='NORMAL' AND DISTRICT_ID='{districtModel.ID}' ORDER BY ESTABLISH_ID ASC;");
+                List<TBaseEstablishModel> establishList = new List<TBaseEstablishModel>();
+                if (establishDs != null && establishDs.Tables[0] != null && establishDs.Tables[0].Rows.Count > 0)
+                {
+                    establishList = CommonHelper.DataTableToList<TBaseEstablishModel>(establishDs.Tables[0]).OrderBy(x => x.ESTABLISH_ID).ToList();
+                }
+                if (establishList.Count == 0)
+                {
+                    continue;
+                }
+                List<string> estaIdList = establishList.Select(x => x.ID).ToList();
+                string estaIdStr = string.Format("'{0}'", string.Join("','", estaIdList));
+                //通道+设备
+                List<TBaseEstablishREquipmentModel> establishEquipmentList = IsEstablishREquipmentGoon(string.Empty, estaIdStr);
+                if (establishEquipmentList.Count == 0)
+                {
+                    continue;
+                }
+                List<TBaseEquipmentModel> tempEquipmentList = IsEquipmentGoon(establishEquipmentList, equipmentList, null);
+                if (tempEquipmentList.Count == 0)
+                {
+                    continue;
+                }
+                foreach (TBaseEquipmentModel equipmentModel in tempEquipmentList)
+                {
+                    string dguid = string.Empty;
+                    string insertAreaGuid = area.APGUID;
+                    if (equipmentModel.PRODUCT_MODEL == ConstantHelper.JSMJY08_Reader)
+                    {
+                        //Y08的话，读卡器关联通道：有读卡器找到Y08，即有Y08权限
+                        dguid = GetGuidString(equipmentModel.EQUIPMENT_ID);
+                    }
+                    else
+                    {
+                        //1. 领御，直接对应门 equipmentModel.PRODUCT_MODEL == ConstantHelper.JSMJK022040A_Reader，有读卡器即有门权限
+                        //2. 车场控制器：直接关联通道
+                        dguid = GetGuidString(equipmentModel.ID);
+                    }
+                    ControlDevices device = controlDevicesList.FirstOrDefault(x => x.DGUID == dguid);
+                    if (device == null)
+                    {
+                        continue;
+                    }
+                    if (device.DeviceType == ConstantHelper.JIELINK_JSMJY08A_OLD
+                        || device.DeviceType == ConstantHelper.JIELINK_JSMJK02_20
+                        || device.DeviceType == ConstantHelper.JIELINK_JSMJK02_40
+                        || device.DeviceType == ConstantHelper.JIELINKDOORTYPE)
+                    {
+                        //找门禁区域
+                        string doorAreaGuid = GetAreaGuidString(districtModel.ID);
+                        ControlAccessPointGroup doorArea = areaList.FirstOrDefault(x => x.APGUID == doorAreaGuid);
+                        if (doorArea == null)
+                        {
+                            continue;
+                        }
+                        insertAreaGuid = doorArea.APGUID;
+                    }
+                    try
+                    {
+                        int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_ap_devcies(AGUID,APGUID,DGUID,`Status`,CreateTime) VALUE('{Guid.NewGuid().ToString()}','{insertAreaGuid}','{device.DGUID}',0,'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}');");
+                        if (flag <= 0)
+                        {
+                            ShowMessage($"05.迁移区域='{area.APName}'【'{area.AreaCode}'】的设备关系：'{device.DeviceName}'【{device.DeviceID}】失败");
+                        }
+                        else
+                        {
+                            ShowMessage($"05.迁移区域='{area.APName}'【'{area.AreaCode}'】的设备关系：'{device.DeviceName}'【{device.DeviceID}】成功");
+                        }
+                    }
+                    catch (Exception o)
+                    {
+                        ShowMessage($"05.迁移区域='{area.APName}'【'{area.AreaCode}'】的设备关系：'{device.DeviceName}'【{device.DeviceID}】异常，详情请分析日志");
+                        LogHelper.CommLogger.Error(o, $"05.迁移区域='{area.APName}'【'{area.AreaCode}'】的设备关系：'{device.DeviceName}'【{device.DeviceID}】异常，");
+                    }
+                }
+            }
+            foreach (string personId in personIdList)
+            {
+                string personGuid = GetGuidString(personId);
+                ControlPerson person = personList.FirstOrDefault(x => x.PGUID == personGuid);
+                if (person == null)
+                {
+                    ShowMessage($"04.迁移personNo='{personId}'的设备权限：用户不存在，不迁移权限，跳过");
+                    continue;
+                }
+                if (person.CanInOut == 1)
+                {
+                    ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：用户权限已存在，不重复迁移权限，跳过");
+                    continue;
+                }
+                TCacAccountModel account = accountList.FirstOrDefault(x => x.PERSON_ID == personId);
+                if (account == null)
+                {
+                    ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：用户账号不存在，不迁移权限，跳过");
+                    continue;
+                }
+                List<TCacAuthServiceModel> cacAuthServices = cacauthserviceList.Where(x => x.ACCOUNT_ID == account.ID).ToList();
+                if (cacAuthServices.Count == 0)
+                {
+                    ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：未开通服务，不迁移权限，跳过");
+                    continue;
+                }
+                List<string> parkServiceIdList = cacAuthServices.Where(x => x.BUSINESS_CODE == "PARK").Select(x => x.ID).ToList();
+                List<string> doorServiceIdList = cacAuthServices.Where(x => x.BUSINESS_CODE == "DOOR").Select(x => x.ID).ToList();
+                bool canInOut = false;  //用户的设备权限
+                if (doorServiceIdList.Count > 0)
+                {
+                    SystemSetDoorServiceToPerson doorservice = doorServiceList.FirstOrDefault(x => x.PersonNo == person.PersonNo);
+                    if (doorservice == null)
+                    {
+                        ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：门禁服务迁移不成功，不迁移门禁权限，跳过");
+                    }
+                    else
+                    {
+                        string doorServiceIdStr = string.Format("'{0}'", string.Join("','", doorServiceIdList));
+                        //服务+通道      
+                        List<TCacauthEstablishModel> currDoorServiceEstablishList = IsServiceEstablishGoon(personGuid, doorServiceIdStr);
+                        if (currDoorServiceEstablishList.Count > 0)
+                        {
+                            List<string> estaIdList = currDoorServiceEstablishList.Select(x => x.ESTABLISH_ID).Distinct().ToList();
+                            string estaIdStr = string.Format("'{0}'", string.Join("','", estaIdList));
+                            //通道+设备
+                            List<TBaseEstablishREquipmentModel> currDoorEstablishEquipmentList = IsEstablishREquipmentGoon(personGuid, estaIdStr);
+                            if (currDoorEstablishEquipmentList.Count > 0)
+                            {
+                                List<TBaseEquipmentModel> currEquipmentList = IsEquipmentGoon(currDoorEstablishEquipmentList, equipmentList, person);
+                                if (currEquipmentList.Count > 0)
+                                {
+                                    foreach (TBaseEquipmentModel equipmentModel in currEquipmentList)
+                                    {
+                                        string dguid = string.Empty;
+                                        if (equipmentModel.PRODUCT_MODEL == ConstantHelper.JSMJY08_Reader)
+                                        {
+                                            //对应控制器
+                                            dguid = GetGuidString(equipmentModel.EQUIPMENT_ID);
+                                        }
+                                        else
+                                        {
+                                            //领御，直接对应门
+                                            dguid = GetGuidString(equipmentModel.ID);
+                                        }
+                                        ControlDevices device = controlDevicesList.FirstOrDefault(x => x.DGUID == dguid);
+                                        if (device == null)
+                                        {
+                                            continue;
+                                        }
+                                        if (!(device.DeviceType == ConstantHelper.JIELINK_JSMJY08A_OLD
+                                            || device.DeviceType == ConstantHelper.JIELINK_JSMJK02_20
+                                            || device.DeviceType == ConstantHelper.JIELINK_JSMJK02_40
+                                            || device.DeviceType == ConstantHelper.JIELINKDOORTYPE))
+                                        {
+                                            //不是门禁设备
+                                            continue;
+                                        }
+                                        try
+                                        {
+                                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_person_device_relation(PDGUID, PGUID, DGUID, ISDeleted, Type, UserType) VALUE(UUID(), '{personGuid}', '{dguid}', 0, 2, 0);");
+                                            if (flag <= 0)
+                                            {
+                                                ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：'{device.DeviceName}'【{device.DeviceID}】门禁设备权限失败");
+                                            }
+                                            else
+                                            {
+                                                ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：'{device.DeviceName}'【{device.DeviceID}】门禁设备权限成功");
+                                                doorRightSuccessImportCount++;
+                                                canInOut = true;
+                                            }
+                                        }
+                                        catch (Exception o)
+                                        {
+                                            ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：'{device.DeviceName}'【{device.DeviceID}】门禁设备权限异常，详情请分析日志");
+                                            LogHelper.CommLogger.Error(o, $"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：'{device.DeviceName}'【{device.DeviceID}】门禁设备权限异常，");
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (parkServiceIdList.Count > 0)
+                {
+                    string parkServiceIdStr = string.Format("'{0}'", string.Join("','", parkServiceIdList));
+                    //服务+通道      
+                    List<TCacauthEstablishModel> currParkServiceEstablishList = IsServiceEstablishGoon(personGuid, parkServiceIdStr);
+                    if (currParkServiceEstablishList.Count > 0)
+                    {
+                        List<string> estaIdList = currParkServiceEstablishList.Select(x => x.ESTABLISH_ID).Distinct().ToList();
+                        string estaIdStr = string.Format("'{0}'", string.Join("','", estaIdList));
+                        //通道+设备
+                        List<TBaseEstablishREquipmentModel> currParkEstablishEquipmentList = IsEstablishREquipmentGoon(personGuid, estaIdStr);
+                        List<TBaseEquipmentModel> currEquipmentList = new List<TBaseEquipmentModel>();
+                        if (currParkEstablishEquipmentList.Count > 0)
+                        {
+                            currEquipmentList = IsEquipmentGoon(currParkEstablishEquipmentList, equipmentList, person);
+                        }
+                        if (currEquipmentList.Count > 0)
+                        {
+                            foreach (string serviceId in parkServiceIdList)
+                            {
+                                string serviceGuid = GetGuidString(serviceId);
+                                ControlLeaseStall parkService = parkServiceList.FirstOrDefault(x => x.LGUID == serviceGuid);
+                                if (parkService == null)
+                                {
+                                    continue;
+                                }
+                                DataSet serviceDistrictDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_cac_auth_service_district WHERE `STATUS`= 'NORMAL' AND AUTH_SERVICE_ID = '{serviceId}' ORDER BY CREATE_TIME asc;");
+                                List<TCacauthServiceDistrictModel> serviceDistrictList = new List<TCacauthServiceDistrictModel>();
+                                if (serviceDistrictDs != null && serviceDistrictDs.Tables[0] != null && serviceDistrictDs.Tables[0].Rows.Count > 0)
+                                {
+                                    serviceDistrictList = CommonHelper.DataTableToList<TCacauthServiceDistrictModel>(serviceDistrictDs.Tables[0]);
+                                }
+                                if (serviceDistrictList.Count > 0)
+                                {
+                                    List<string> districtIdList = serviceDistrictList.Select(x => x.PARK_DISTRICT_ID).ToList();
+                                    foreach (string districtId in districtIdList)
+                                    {
+                                        string apguid = GetGuidString(districtId);
+                                        ControlAccessPointGroup area = areaList.FirstOrDefault(x => x.APGUID == apguid);
+                                        if (area == null)
+                                        {
+                                            continue;
+                                        }
+                                        try
+                                        {
+                                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_area_service(Guid,APGuid,PGuid,LGuid) VALUE('{Guid.NewGuid().ToString()}','{area.APGUID}','{person.PGUID}','{parkService.LGUID}');");
+                                            if (flag <= 0)
+                                            {
+                                                ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的服务区域关系：'{serviceId}'-'{districtId}'失败");
+                                            }
+                                            else
+                                            {
+                                                ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的服务区域关系：'{serviceId}'-'{districtId}'成功");
+                                                parkServiceAreaSuccessImportCount++;
+                                            }
+                                        }
+                                        catch (Exception o)
+                                        {
+                                            ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的服务区域关系：'{serviceId}'-'{districtId}'异常，详情请分析日志");
+                                            LogHelper.CommLogger.Error(o, $"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的服务区域关系：'{serviceId}'-'{districtId}'异常，");
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                DataSet voucherDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_voucher WHERE `Status` in (1,2) AND LGUID in ('{serviceGuid}') ORDER BY AddTime ASC;");
+                                List<ControlVoucher> currVoucherList = new List<ControlVoucher>();
+                                if (voucherDs != null && voucherDs.Tables[0] != null && voucherDs.Tables[0].Rows.Count > 0)
+                                {
+                                    currVoucherList = CommonHelper.DataTableToList<ControlVoucher>(voucherDs.Tables[0]);
+                                }
+                                if (currVoucherList.Count == 0)
+                                {
+                                    continue;
+                                }
+                                List<TCacauthEstablishModel> tempParkServiceEstablishList = currParkServiceEstablishList.Where(x => x.AUTHSERVICE_ID == serviceId).ToList();
+                                if (tempParkServiceEstablishList.Count == 0)
+                                {
+                                    continue;
+                                }
+                                List<string> tempEstaIdList = tempParkServiceEstablishList.Select(x => x.ESTABLISH_ID).ToList();
+                                List<TBaseEstablishREquipmentModel> tempParkEstablishEquipmentList = currParkEstablishEquipmentList.Where(x => tempEstaIdList.Contains(x.ESTA_ID)).ToList();
+                                if (tempParkEstablishEquipmentList.Count == 0)
+                                {
+                                    continue;
+                                }
+                                List<string> tempEquipIdList = tempParkEstablishEquipmentList.Select(x => x.EQUI_ID).ToList();
+                                List<TBaseEquipmentModel> tempEquipmentList = currEquipmentList.Where(x => tempEquipIdList.Contains(x.ID)).ToList();
+                                foreach (TBaseEquipmentModel equipment in tempEquipmentList)
+                                {
+                                    string dguid = GetGuidString(equipment.ID);
+                                    ControlDevices device = controlDevicesList.FirstOrDefault(x => x.DGUID == dguid);
+                                    if (device == null)
+                                    {
+                                        continue;
+                                    }
+                                    if (device.DeviceType != ConstantHelper.JIELINK_JSTC1801_01)
+                                    {
+                                        //不是车场控制器：目前只支持速通1810-01
+                                        continue;
+                                    }
+                                    foreach (ControlVoucher voucher in currVoucherList)
+                                    {
+                                        try
+                                        {
+                                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_voucher_device(Id, VGuid, DGuid, DeviceId,`Status`) VALUE('{Guid.NewGuid().ToString()}', '{voucher.Guid}', '{device.DGUID}', '{device.DeviceID}', 0);");
+                                            if (flag <= 0)
+                                            {
+                                                ShowMessage($"05.迁移VoucherNo='{voucher.VoucherNo}'的设备权限：'{device.DeviceName}'【{device.DeviceID}】车场设备权限失败");
+                                            }
+                                            else
+                                            {
+                                                ShowMessage($"05.迁移VoucherNo='{voucher.VoucherNo}'的设备权限：'{device.DeviceName}'【{device.DeviceID}】车场设备权限成功");
+                                                parkRightSuccessImportCount++;
+                                                canInOut = true;
+                                            }
+                                        }
+                                        catch (Exception o)
+                                        {
+                                            ShowMessage($"05.迁移VoucherNo='{voucher.VoucherNo}'的设备权限：'{device.DeviceName}'【{device.DeviceID}】车场设备权限异常，详情请分析日志");
+                                            LogHelper.CommLogger.Error(o, $"05.迁移VoucherNo='{voucher.VoucherNo}'的设备权限：：'{device.DeviceName}'【{device.DeviceID}】车场设备权限异常，");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (canInOut)
+                {
+                    try
+                    {
+                        int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"UPDATE control_person SET CanInOut=1 WHERE PGUID='{person.PGUID}';");
+                        if (flag <= 0)
+                        {
+                            ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的有权限标识失败");
+                        }
+                        else
+                        {
+                            ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的有权限标识成功");
+                        }
+                    }
+                    catch (Exception o)
+                    {
+                        ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的有权限标识异常，详情请分析日志");
+                        LogHelper.CommLogger.Error(o, $"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的有权限标识异常，");
+                        return;
+                    }
+                }
+            }
+            string msg = string.Format($"05.迁移设备权限结束，成功迁移{parkRightSuccessImportCount}条凭证设备关系数据，{doorRightSuccessImportCount}条人与设备关系数据," +
+                $"{parkServiceAreaSuccessImportCount}条服务区域数据");
+            ShowMessage(msg);
+            LogHelper.CommLogger.Info(msg);
+
+            districtList.Clear();
+            controlDevicesList.Clear();
+            equipmentList.Clear();
+            cacauthserviceList.Clear();
+            areaList.Clear();
+            personList.Clear();
+            personIdList.Clear();
+            accountList.Clear();
+            parkServiceList.Clear();
+            doorServiceList.Clear();
+        }
+        /// <summary>
+        /// 判断服务是否绑定通道
+        /// </summary>
+        /// <param name="personGuid"></param>
+        /// <param name="serviceIdStr">车场服务、门禁服务分开判断</param>
+        /// <returns></returns>
+        private List<TCacauthEstablishModel> IsServiceEstablishGoon(string personGuid, string serviceIdStr)
+        {
+            //服务+通道
+            DataSet currServiceEstablishDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * FROM t_cac_auth_establish WHERE `STATUS`='NORMAL' AND AUTHSERVICE_ID in ({serviceIdStr}) ORDER BY authservice_id ASC;");
+            List<TCacauthEstablishModel> currServiceEstablishList = new List<TCacauthEstablishModel>();
+            if (currServiceEstablishDs != null && currServiceEstablishDs.Tables[0] != null && currServiceEstablishDs.Tables[0].Rows.Count > 0)
+            {
+                currServiceEstablishList = CommonHelper.DataTableToList<TCacauthEstablishModel>(currServiceEstablishDs.Tables[0]).OrderBy(x => x.ESTABLISH_ID).ToList();
+            }
+            if (currServiceEstablishList.Count == 0)
+            {
+                ShowMessage($"04.迁移personId='{personGuid}'的设备权限：未关联通道，跳过");
+            }
+            return currServiceEstablishList;
+        }
+
+        /// <summary>
+        /// 判断通道是否绑定设备
+        /// </summary>
+        /// <param name="personGuid"></param>
+        /// <param name="estaIdStr">车场、门禁分开处理</param>
+        /// <returns></returns>
+        private List<TBaseEstablishREquipmentModel> IsEstablishREquipmentGoon(string personGuid, string estaIdStr, bool enableShowMsg = true)
+        {
+            //通道+设备
+            DataSet currEstablishEquipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_base_establish_r_equi WHERE STATE='NORMAL' AND ESTA_ID in ({estaIdStr}) ORDER BY ESTA_ID ASC,CREATE_TIME ASC;");
+            List<TBaseEstablishREquipmentModel> currEstablishEquipmentList = new List<TBaseEstablishREquipmentModel>();
+            if (currEstablishEquipmentDs != null && currEstablishEquipmentDs.Tables[0] != null && currEstablishEquipmentDs.Tables[0].Rows.Count > 0)
+            {
+                currEstablishEquipmentList = CommonHelper.DataTableToList<TBaseEstablishREquipmentModel>(currEstablishEquipmentDs.Tables[0]).OrderBy(x => x.ESTA_ID).ToList();
+            }
+            if (enableShowMsg && currEstablishEquipmentList.Count == 0)
+            {
+                ShowMessage($"04.迁移personId='{personGuid}'的设备权限：未关联设备，跳过");
+            }
+            return currEstablishEquipmentList;
+        }
+
+        /// <summary>
+        /// 判断是否有设备
+        /// </summary>
+        /// <param name="currEstablishEquipmentList"></param>
+        /// <param name="equipmentList"></param>
+        /// <param name="person"></param>
+        /// <returns></returns>
+        private List<TBaseEquipmentModel> IsEquipmentGoon(List<TBaseEstablishREquipmentModel> currEstablishEquipmentList, List<TBaseEquipmentModel> equipmentList, ControlPerson person)
+        {
+            List<string> equipIdList = currEstablishEquipmentList.Select(x => x.EQUI_ID).Distinct().ToList();
+            List<TBaseEquipmentModel> currEquipmentList = equipmentList.Where(x => equipIdList.Contains(x.ID)).ToList();
+            if (person != null && currEquipmentList.Count == 0)
+            {
+                ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：没有设备，跳过");
+            }
+            return currEquipmentList;
+        }
+
+        /// <summary>
+        /// 获取入场设备信息
+        /// </summary>
+        /// <param name="controlDevicesList"></param>
+        /// <param name="recordIn"></param>
+        /// <param name="enterDeviceId"></param>
+        /// <param name="enterDeviceName"></param>
+        private void GetEnterDeviceInfo(List<ControlDevices> controlDevicesList, TParkRecordInModel recordIn, ref string enterDeviceId, ref string enterDeviceName)
+        {
+            if (policy.ControlDeviceSelect)
+            {
+                string dguid = GetGuidString(recordIn.EQUIPMENT_ID);
+                ControlDevices device = controlDevicesList.FirstOrDefault(x => x.DGUID == dguid);
+                if (device != null)
+                {
+                    enterDeviceId = device.DeviceID;
+                    enterDeviceName = device.DeviceName;
+                }
+            }
+        }
+        /// <summary>
+        /// 获取出场设备信息
+        /// </summary>
+        /// <param name="controlDevicesList"></param>
+        /// <param name="recordIn"></param>
+        /// <param name="enterDeviceId"></param>
+        /// <param name="enterDeviceName"></param>
+        private void GetOutDeviceInfo(List<ControlDevices> controlDevicesList, TParkRecordOutModel recordOut, ref string outDeviceId, ref string outDeviceName, ref ControlDevices chargeBox)
+        {
+            if (policy.ControlDeviceSelect)
+            {
+                string dguid = GetGuidString(recordOut.EQUIPMENT_ID);
+                ControlDevices device = controlDevicesList.FirstOrDefault(x => x.DGUID == dguid);
+                if (device != null)
+                {
+                    outDeviceId = device.DeviceID;
+                    outDeviceName = device.DeviceName;
+
+                    chargeBox = controlDevicesList.FirstOrDefault(x => x.DeviceID == device.ParentID);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 匹配不到入场记录的出场记录，入场id可能为空或者0，生成新的入场id
+        /// </summary>
+        /// <param name="recordOutId">出场记录Id</param>
+        /// <returns></returns>
+        private string GetOutEnterRecordIn(string recordOutId)
+        {
+            string recordInId = string.Empty;
+            if (recordOutIdMapDic.ContainsKey(recordOutId))
+            {
+                recordInId = recordOutIdMapDic[recordOutId];
+            }
+            else
+            {
+                recordInId = Guid.NewGuid().ToString().Replace("-", "");
+            }
+            return recordInId;
+        }
 
         public string IpAddr
         {
@@ -1524,5 +2731,31 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
             }));
         }
+
+        /// <summary>
+        /// 设备
+        /// </summary>
+        public bool ControlDevice
+        {
+            get { return (bool)GetValue(ControlDeviceProperty); }
+            set { SetValue(ControlDeviceProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ControlDevice.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ControlDeviceProperty =
+            DependencyProperty.Register("ControlDevice", typeof(bool), typeof(JSDSToJieLinkViewModel));
+        /// <summary>
+        /// 设备权限
+        /// </summary>
+
+        public bool DeviceRight
+        {
+            get { return (bool)GetValue(DeviceRightProperty); }
+            set { SetValue(DeviceRightProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DeviceRight.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DeviceRightProperty =
+            DependencyProperty.Register("DeviceRight", typeof(bool), typeof(JSDSToJieLinkViewModel));
     }
 }

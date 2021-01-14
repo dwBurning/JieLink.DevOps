@@ -34,5 +34,13 @@ namespace PartialViewOtherToJieLink.Models
         /// 门禁
         /// </summary>
         public bool DoorSelect { get; set; }
+        /// <summary>
+        /// 设备
+        /// </summary>
+        public bool ControlDeviceSelect { get; set; }
+        /// <summary>
+        /// 设备权限
+        /// </summary>
+        public bool DeviceRightSelect { get; set; }
     }
 }

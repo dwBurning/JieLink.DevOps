@@ -154,5 +154,66 @@ namespace PartialViewInterface
             }
             return iValue;
         }
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>=
+        /// <returns></returns>
+        public static uint GetUIntValue(object objValue, uint uintDefault = 0)
+        {
+            if (objValue == null)
+            {
+                return uintDefault;
+            }
+            return GetUIntValue(objValue.ToString(), uintDefault);
+        }
+
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>
+        /// <param name="dtmDefault"></param>
+        /// <returns></returns>
+        public static uint GetUIntValue(string strValue, uint uintDefault)
+        {
+            if (string.IsNullOrWhiteSpace(strValue))
+            {
+                return uintDefault;
+            }
+            uint iValue = 0;
+            if (!uint.TryParse(strValue, out iValue))
+            {
+                iValue = uintDefault;
+            }
+            return iValue;
+        }
+
+        /// <summary>
+        /// 时间戳
+        /// </summary>
+        public static long GetTimeStamp()
+        {
+            DateTime d = DateTime.Now;
+            TimeSpan ts = d.ToUniversalTime() - new DateTime(1970, 1, 1);
+            return (long)ts.TotalMilliseconds;
+        }
+
+        /// <summary>
+        /// MAC后3位加00 生成设备Id
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static string ConvertDevicesId(string mac = "00-00-00-00-00-00-00-00", string index = "")
+        {
+            string empty = string.Empty;
+            if (string.IsNullOrEmpty(mac))
+            {
+                return empty;
+            }
+            mac = mac.Replace("-", "").Replace(":", "").Substring(6, 6);
+            mac = (string.IsNullOrEmpty(index) ? (mac + "00") : (mac + index));
+            return Convert.ToUInt32(mac, 16).ToString();
+        }
     }
 }
