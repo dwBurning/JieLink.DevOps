@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Command\DelegateCommand.cs" />
     <Compile Include="CommonHelper.cs" />
+    <Compile Include="ConstantHelper.cs" />
     <Compile Include="EnvironmentInfo.cs" />
     <Compile Include="Models\AutoStartCorectEntity.cs" />
     <Compile Include="Models\AutoStartSyncEntity.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Utils\NPOIExcelHelper.cs" />
     <Compile Include="Utils\ProcessHelper.cs" />
     <Compile Include="Utils\SerializationHelper.cs" />
+    <Compile Include="Utils\MSSqlHelper.cs" />
     <Compile Include="Utils\TaskHelper.cs" />
     <Compile Include="Utils\Win32API.cs" />
     <Compile Include="Utils\ZipHelper.cs" />

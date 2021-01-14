@@ -7,6 +7,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 import com.jieshun.devopsserver.bean.DevOpsEvent;
+import com.jieshun.devopsserver.bean.DevOpsEventConcern;
 import com.jieshun.devopsserver.bean.DevOpsEventEnum;
 import com.jieshun.devopsserver.bean.DevOpsEventExample;
 import com.jieshun.devopsserver.bean.DevOpsEventExample.Criteria;
@@ -33,6 +34,9 @@ public class DevOpsEventService {
 	@Autowired
 	DevOpsEventFilterService devOpsEventFilterService;
 
+	@Autowired
+	DevOpsEventConcernService devOpsEventConcernService;
+
 	public int reportDevOpsEvent(DevOpsEvent devOpsEvent) {
 
 		// 过滤事件类型
@@ -46,6 +50,13 @@ public class DevOpsEventService {
 			devOpsEvent.setIsFilter(projectInfo.getIsFilter());
 		}
 
+		// 特别关心的项目
+		DevOpsEventConcern concern = devOpsEventConcernService
+				.getdevopsEventConcernByProjectNo(devOpsEvent.getProjectNo(), devOpsEvent.getEventType());
+		if (concern != null) {
+			sendEmail(concern.getEmail(), devOpsEvent, "来自特別关心的项目");
+		}
+
 		int result = devOpsEventMapper.insertSelective(devOpsEvent);
 
 		boolean isSendMail = ((projectInfo != null && projectInfo.getIsFilter() == 0) || projectInfo == null)
@@ -55,26 +66,46 @@ public class DevOpsEventService {
 			List<SysUser> sysUsers = sysUserService.getSysUsers(null);
 			sysUsers.forEach((user) -> {
 				if (user.getEmail() != null && user.getEmail() != "") {
-					SimpleMailMessage message = new SimpleMailMessage();
-					StringBuilder emailTextString = new StringBuilder();
-					String eventMessage = DevOpsEventEnum.getDevOpsEventEnumByCode(devOpsEvent.getEventType())
-							.getMessage();
-					emailTextString.append("事件类型：").append(eventMessage).append("\r\n");
-					emailTextString.append("项目编号：").append(devOpsEvent.getProjectNo()).append("\r\n");
-					emailTextString.append("远程账号：").append(devOpsEvent.getRemoteAccount()).append("\r\n");
-					emailTextString.append("远程密码：").append(devOpsEvent.getRemotePassword()).append("\r\n");
-					emailTextString.append("联系人姓名：").append(devOpsEvent.getContactName()).append("\r\n");
-					emailTextString.append("联系人电话：").append(devOpsEvent.getContactPhone()).append("\r\n");
-					if (projectInfo != null && projectInfo.getRemark() != null) {
-						emailTextString.append("备注信息：").append(projectInfo.getRemark()).append("\r\n");
+
+					// 特別关心的项目已经推送过邮件了 不再推送
+					if (concern != null && concern.getEmail() == user.getEmail()) {
+						return;
 					}
-					message.setText(emailTextString.toString());
-					message.setTo(user.getEmail());
-					SendEmailTask.Enqueue(message);
+
+					String remark = "";
+					if (projectInfo != null && projectInfo.getRemark() != null) {
+						remark = projectInfo.getRemark();
+					}
+					sendEmail(user.getEmail(), devOpsEvent, remark);
 				}
 			});
 		}
 		return result;
+	}
+
+	private void sendEmail(String email, DevOpsEvent devOpsEvent, String remark) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		StringBuilder emailTextString = new StringBuilder();
+		String eventMessage = DevOpsEventEnum.getDevOpsEventEnumByCode(devOpsEvent.getEventType()).getMessage();
+		emailTextString.append("事件类型：").append(eventMessage).append("\r\n");
+		emailTextString.append("项目编号：").append(devOpsEvent.getProjectNo()).append("\r\n");
+		if (devOpsEvent.getProjectName() != null && devOpsEvent.getProjectName() != "") {
+			emailTextString.append("项目名称：").append(devOpsEvent.getProjectName()).append("\r\n");
+		}
+		
+		if (devOpsEvent.getProjectVersion() != null && devOpsEvent.getProjectVersion() != "") {
+			emailTextString.append("项目版本：").append(devOpsEvent.getProjectVersion()).append("\r\n");
+		}
+		emailTextString.append("远程账号：").append(devOpsEvent.getRemoteAccount()).append("\r\n");
+		emailTextString.append("远程密码：").append(devOpsEvent.getRemotePassword()).append("\r\n");
+		emailTextString.append("联系人姓名：").append(devOpsEvent.getContactName()).append("\r\n");
+		emailTextString.append("联系人电话：").append(devOpsEvent.getContactPhone()).append("\r\n");
+		if (remark != null && remark != "") {
+			emailTextString.append("备注信息：").append(remark).append("\r\n");
+		}
+		message.setText(emailTextString.toString());
+		message.setTo(email);
+		SendEmailTask.Enqueue(message);
 	}
 
 	/**

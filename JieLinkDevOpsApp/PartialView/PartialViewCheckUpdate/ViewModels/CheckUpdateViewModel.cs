@@ -34,7 +34,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
             Versions = new List<string>()
             {
-                "V1.0.0",
+                //"V1.0.0",
                 "V1.0.1",
                 "V1.0.2",
                 "V1.0.3",
@@ -207,9 +207,21 @@ namespace PartialViewCheckUpdate.ViewModels
                 return;
             }
 
+            if (!this.PackagePath.EndsWith("sys"))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择sys目录！");
+                return;
+            }
+
             if (string.IsNullOrEmpty(this.StartVersion) || string.IsNullOrEmpty(this.EndVersion))
             {
                 MessageBoxHelper.MessageBoxShowWarning("请输入正确的版本号！");
+                return;
+            }
+
+            if (this.StartVersion == "V1.0.0" || this.EndVersion == "V1.0.0")
+            {
+                MessageBoxHelper.MessageBoxShowWarning("V1.0.0版本会初始化数据库，请重新选择！");
                 return;
             }
 
@@ -338,11 +350,6 @@ namespace PartialViewCheckUpdate.ViewModels
 
         private void ExecuteScript()
         {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
             if (!IsInstallVCRunTime())
             {
                 RunVCRunTime();
@@ -390,6 +397,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 jsonText = File.ReadAllText(scriptFile, Encoding.UTF8);
             }
 
+            var handler = MessageBoxHelper.MessageBoxShowWaiting("正在执行脚本，请等待...");
+
             Task.Factory.StartNew(() =>
             {
                 foreach (var file in fileInfos)
@@ -405,8 +414,18 @@ namespace PartialViewCheckUpdate.ViewModels
                     ProcessHelper.ExecuteCommand(cmds, enumToolType.OneKeyUpdate);
                 }
 
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    handler.UpdateMessage("脚本执行完成，正在校验数据库...");
+                }));
+
                 ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
+
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    handler.Close();
+                }));
             });
         }
 
@@ -788,11 +807,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
                 try
                 {
-                    using (StreamWriter sw = new StreamWriter(filePath, true))
-                    {
-                        sw.WriteLine(ddlScript);
-                    }
-
+                    LogHelper.CommLogger.Info(ddlScript);
                     MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, ddlScript);
                 }
                 catch (Exception)
@@ -861,14 +876,9 @@ namespace PartialViewCheckUpdate.ViewModels
             return dt.Rows.Count > 0;
         }
 
-        string filePath = "OneKeyUpdateLog.txt";
         public void ShowMessage(string message)
         {
-            using (StreamWriter sw = new StreamWriter(filePath, true))
-            {
-                sw.WriteLine(message);
-            }
-
+            LogHelper.CommLogger.Info(message);
             this.Dispatcher.Invoke(new Action(() =>
             {
                 if (Message != null && Message.Length > 5000)

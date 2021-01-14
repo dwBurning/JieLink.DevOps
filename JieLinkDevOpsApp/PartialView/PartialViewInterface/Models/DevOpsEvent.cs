@@ -10,6 +10,11 @@ namespace PartialViewInterface.Models
     {
         public int EventType { get; set; }
         public string ProjectNo { get; set; }
+
+        public string ProjectName { get; set; }
+
+        public string ProjectVersion { get; set; }
+
         public string RemoteAccount { get; set; }
         public string RemotePassword { get; set; }
         public string ContactName { get; set; }

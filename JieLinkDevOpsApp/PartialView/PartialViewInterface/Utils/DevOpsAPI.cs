@@ -16,6 +16,8 @@ namespace PartialViewInterface.Utils
             opsEvent.EventType = (int)warning.WarningType;
             opsEvent.OperatorDate = DateTime.Now;
             opsEvent.ProjectNo = EnvironmentInfo.ProjectNo ?? string.Empty;
+            opsEvent.ProjectName = EnvironmentInfo.ProjectName ?? string.Empty;
+            opsEvent.ProjectVersion = EnvironmentInfo.ProjectVersion ?? string.Empty;
             opsEvent.RemoteAccount = EnvironmentInfo.RemoteAccount ?? string.Empty;
             opsEvent.RemotePassword = EnvironmentInfo.RemotePassword ?? string.Empty;
             opsEvent.ContactPhone = EnvironmentInfo.ContactPhone ?? string.Empty;
