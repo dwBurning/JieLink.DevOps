@@ -39,6 +39,9 @@ namespace PartialViewWiki.Models
         Text = 1,
 
         //程序 操作 解决问题 程序执行的方法 需要在SoftExecute类中添加 方法名称与Id相同
-        Soft = 2
+        Soft = 2,
+
+        //Url 跳转链接 url地址取自Solution字段
+        Link = 3
     }
 }

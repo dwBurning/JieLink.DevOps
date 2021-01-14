@@ -34,7 +34,7 @@ namespace PartialViewMySqlBackUp.BackUp
             {
                 var file = files[i];
                 DateTime lastWriteTime = file.LastWriteTime;
-                if ((DateTime.Now - lastWriteTime).TotalDays > 30)//删掉30天之前的文件
+                if ((DateTime.Now - lastWriteTime).TotalDays > 7)//删掉30天之前的文件
                 {
                     File.Delete(file.FullName);
                 }

@@ -89,6 +89,9 @@ namespace PartialViewWiki
                 case ActionType.Soft:
                     SoftExecute(knowledgeInfo);
                     break;
+                case ActionType.Link:
+                    StartBrowser(knowledgeInfo);
+                    break;
             }
         }
 
@@ -128,6 +131,11 @@ namespace PartialViewWiki
             Type execute = typeof(SoftExecute);
             Object obj = Activator.CreateInstance(execute);//实例化
             execute.GetMethod(knowledgeInfo.Id)?.Invoke(obj, null);
+        }
+
+        private void StartBrowser(KnowledgeInfo knowledgeInfo)
+        {
+            Process.Start(new ProcessStartInfo(knowledgeInfo.Solution));
         }
 
     }
