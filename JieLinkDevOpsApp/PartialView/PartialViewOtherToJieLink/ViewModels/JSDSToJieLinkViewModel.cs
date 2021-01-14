@@ -2248,7 +2248,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         }
                                         try
                                         {
-                                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_person_device_relation(PDGUID, PGUID, DGUID, ISDeleted, Type, UserType) VALUE(UUID(), '{personGuid}', '{dguid}', 0, 0, 0);");
+                                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_person_device_relation(PDGUID, PGUID, DGUID, ISDeleted, Type, UserType) VALUE(UUID(), '{personGuid}', '{dguid}', 0, 2, 0);");
                                             if (flag <= 0)
                                             {
                                                 ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：'{device.DeviceName}'【{device.DeviceID}】门禁设备权限失败");
