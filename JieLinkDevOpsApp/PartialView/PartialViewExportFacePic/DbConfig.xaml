@@ -26,23 +26,23 @@
         <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库名称：</TextBlock>
         <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库用户：</TextBlock>
         <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库密码：</TextBlock>
-        
-        
-        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtBoxIp" Text=""
+
+
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtBoxIp" Text="localhost" VerticalContentAlignment="Center"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtBoxDb" Text="jsoctnet" 
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtBoxDb" Text="jsoctnet"  VerticalContentAlignment="Center"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtBoxDbUser" Text="sa" 
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtBoxDbUser" Text="sa" VerticalContentAlignment="Center"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入盒子用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -56,7 +56,7 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />-->
-        <PasswordBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbPwd" 
+        <PasswordBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbPwd"  VerticalContentAlignment="Center"
                      pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
                      pu:PasswordBoxHelper.Watermark="请输入密码"
                      pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
