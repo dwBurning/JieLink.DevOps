@@ -8,6 +8,35 @@
         mc:Ignorable="d"
         Title="ChangeDevice" Height="450" Width="800">
     <Grid>
-        
+        <GroupBox Grid.Row="2" Header="以下设备发生了变更" Margin="5"
+                          pu:GroupBoxHelper.CornerRadius="4"
+                          pu:GroupBoxHelper.HeaderForeground="#20A0FF"
+                          pu:GroupBoxHelper.HeaderPadding="5,10,0,10"
+                          pu:GroupBoxHelper.IsSplitLineVisible="True"
+                          pu:GroupBoxHelper.ShadowColor="LightGray" >
+            <DataGrid x:Name="dgTables" Margin="5" ItemsSource="{Binding Tables}"
+                  BorderBrush="LightGray"
+                  BorderThickness="1"
+                  pu:DataGridHelper.HeaderMinHeight="30"
+                  pu:DataGridHelper.ColumnHorizontalContentAlignment="Left"
+                  pu:DataGridHelper.RowMinHeight="30"
+                  pu:DataGridHelper.SelectedBackground="#220082FF"
+                  pu:DataGridHelper.SelectedForeground="#00BCFF"
+                  pu:DataGridHelper.HoverBackground="#220082FF"
+                  CanUserAddRows="False" >
+                <pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Setter Property="IsChecked" Value="{Binding ElementName=cbChooseAll,Path=IsChecked}"></Setter>
+                        <Setter Property="pu:CheckBoxHelper.CheckBoxStyle" Value="Switch" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Path=(pu:CheckBoxHelper.CheckBoxStyle),
+                            RelativeSource={RelativeSource Self}}" Value="Switch">
+                                <Setter Property="pu:CheckBoxHelper.CheckedBackground" Value="#00BCFF" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+            </DataGrid>
+        </GroupBox>
     </Grid>
 </pu:WindowX>
