@@ -1517,12 +1517,38 @@ namespace PartialViewOtherToJieLink.ViewModels
                 else
                 {
                     //看jsds数据库，Y08通过ID找MAC、devId、IP等设备信息
-                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    //有的Y08通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                    //分不清了，直接两个都找下
+                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);                    
                     ipItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
                     devIDItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
                     gatewayItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
                     maskItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
                     macNoItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                    if (macItem == null)
+                    {
+                        macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    }
+                    if (ipItem == null)
+                    {
+                        ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                    }
+                    if (devIDItem == null)
+                    {
+                        devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                    }
+                    if (gatewayItem == null)
+                    {
+                        gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                    }
+                    if (maskItem == null)
+                    {
+                        maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                    }
+                    if (macNoItem == null)
+                    {
+                        macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                    }
                 }
                 if (macItem == null || string.IsNullOrWhiteSpace(macItem.PARAM_VALUE))
                 {
@@ -1868,6 +1894,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             continue;
                         }
                         string parentGuid = string.Empty;
+                        string doorParentGuid = string.Empty;
                         if (string.IsNullOrWhiteSpace(district.DISTRICT_ID) && district.ID != ConstantHelper.JSDSDISTRICTROOT)
                         {
                             //父节点为空的其他区域：如EXTERIOR
@@ -1876,28 +1903,44 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 continue;
                             }
                             parentGuid = areaRoot.APGUID;
+                            doorParentGuid = areaRoot.APGUID;
                         }
                         else
                         {
                             parentGuid = GetGuidString(district.DISTRICT_ID);
+                            doorParentGuid = GetAreaGuidString(district.DISTRICT_ID);
                             DataSet parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{parentGuid}' ORDER BY id asc;");
                             ControlAccessPointGroup parentArea = null;
                             if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
                                 parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                                if (parentArea != null)
+                                {
+                                    parentGuid = parentArea.APGUID;
+                                }
                             }
-                            if (parentArea == null)
+                            parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{doorParentGuid}' ORDER BY id asc;");
+                            if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
-                                ShowMessage("区域" + district.DISTRICT_NAME + "的父节点区域不存在，跳过");
-                                continue;
+                                parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                                if (parentArea != null)
+                                {
+                                    doorParentGuid = parentArea.APGUID;
+                                }
                             }
                         }
                         //车场区域
-                        AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        if (!string.IsNullOrWhiteSpace(parentGuid))
+                        {
+                            AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        }
                         //门禁区域
-                        string doorGuid = GetAreaGuidString(district.ID);
-                        string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
-                        AreaInsert(doorGuid, null, doorApName, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        if (!string.IsNullOrWhiteSpace(doorParentGuid))
+                        {
+                            string doorGuid = GetAreaGuidString(district.ID);
+                            string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
+                            AreaInsert(doorGuid, null, doorApName, doorParentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        }
                     }
                 }
             }
