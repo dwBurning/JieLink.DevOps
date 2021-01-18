@@ -1868,6 +1868,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             continue;
                         }
                         string parentGuid = string.Empty;
+                        string doorParentGuid = string.Empty;
                         if (string.IsNullOrWhiteSpace(district.DISTRICT_ID) && district.ID != ConstantHelper.JSDSDISTRICTROOT)
                         {
                             //父节点为空的其他区域：如EXTERIOR
@@ -1876,28 +1877,44 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 continue;
                             }
                             parentGuid = areaRoot.APGUID;
+                            doorParentGuid = areaRoot.APGUID;
                         }
                         else
                         {
                             parentGuid = GetGuidString(district.DISTRICT_ID);
+                            doorParentGuid = GetAreaGuidString(district.DISTRICT_ID);
                             DataSet parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{parentGuid}' ORDER BY id asc;");
                             ControlAccessPointGroup parentArea = null;
                             if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
                                 parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                                if (parentArea != null)
+                                {
+                                    parentGuid = parentArea.APGUID;
+                                }
                             }
-                            if (parentArea == null)
+                            parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{doorParentGuid}' ORDER BY id asc;");
+                            if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
-                                ShowMessage("区域" + district.DISTRICT_NAME + "的父节点区域不存在，跳过");
-                                continue;
+                                parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                                if (parentArea != null)
+                                {
+                                    doorParentGuid = parentArea.APGUID;
+                                }
                             }
                         }
                         //车场区域
-                        AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        if (!string.IsNullOrWhiteSpace(parentGuid))
+                        {
+                            AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        }
                         //门禁区域
-                        string doorGuid = GetAreaGuidString(district.ID);
-                        string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
-                        AreaInsert(doorGuid, null, doorApName, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        if (!string.IsNullOrWhiteSpace(doorParentGuid))
+                        {
+                            string doorGuid = GetAreaGuidString(district.ID);
+                            string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
+                            AreaInsert(doorGuid, null, doorApName, doorParentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        }
                     }
                 }
             }
