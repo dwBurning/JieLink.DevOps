@@ -135,7 +135,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                 policy.DoorSelect = this.Door;
                 policy.ControlDeviceSelect = this.ControlDevice;
                 policy.DeviceRightSelect = this.DeviceRight;
-                if (!policy.DeviceRightSelect && policy.ControlDeviceSelect)
+                if (!policy.ControlDeviceSelect && policy.DeviceRightSelect)
                 {
                     ShowMessage("没有选择设备的情况下，请勿选择设备权限");
                     return;
