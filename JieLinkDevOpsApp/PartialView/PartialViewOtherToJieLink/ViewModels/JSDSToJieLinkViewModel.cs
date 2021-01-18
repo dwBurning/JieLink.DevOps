@@ -1517,12 +1517,38 @@ namespace PartialViewOtherToJieLink.ViewModels
                 else
                 {
                     //看jsds数据库，Y08通过ID找MAC、devId、IP等设备信息
-                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    //有的Y08通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                    //分不清了，直接两个都找下
+                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);                    
                     ipItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
                     devIDItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
                     gatewayItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
                     maskItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
                     macNoItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                    if (macItem == null)
+                    {
+                        macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    }
+                    if (ipItem == null)
+                    {
+                        ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                    }
+                    if (devIDItem == null)
+                    {
+                        devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                    }
+                    if (gatewayItem == null)
+                    {
+                        gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                    }
+                    if (maskItem == null)
+                    {
+                        maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                    }
+                    if (macNoItem == null)
+                    {
+                        macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                    }
                 }
                 if (macItem == null || string.IsNullOrWhiteSpace(macItem.PARAM_VALUE))
                 {
