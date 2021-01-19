@@ -45,21 +45,21 @@
   },
   {
     "Type": 1,
-    "Id": "BoxToControlType",
+    "Id": "OpenGateFaild",
     "Knowledge": "2.7.0~2.7.1开闸失败必须重启盒子的解决方法",
     "KeyWords": "开闸|失败|重启|盒子",
     "Solution": "找到盒子的配置文件，SmartBox.Infrastructures.View.Main.exe.config添加如下的配制节，如果已经存在则将id->ip|<add key=\"BoxToControlType\" value =\"ip\" />"
   },
   {
     "Type": 1,
-    "Id": "BoxToControlType",
-    "Knowledge": "HTTP错误 500.19-Internal Server Error",
-    "KeyWords": "NTFS|权限不正确|500|Internal Server Error",
+    "Id": "AspNetNotInstall",
+    "Knowledge": "中心网页访问的时候显示为摄像机的配置界面",
+    "KeyWords": "网页|无法|访问|摄像机",
     "Solution": "cmd输入如下命令，然后回车|\"%WINDIR%/Microsoft.NET/Framework/v4.0.30319/aspnet_regiis.exe\" -iru -enable"
   },
   {
     "Type": 1,
-    "Id": "BoxToControlType",
+    "Id": "HttpError",
     "Knowledge": "HTTP错误 500.19-Internal Server Error",
     "KeyWords": "NTFS|权限不正确|500|Internal Server Error",
     "Solution": "cmd输入如下命令，然后回车|%windir%/system32/inetsrv/appcmd.exe set config -section:system.webServer/httpCompression /-[name='xpress']"
