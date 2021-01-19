@@ -135,7 +135,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                 policy.DoorSelect = this.Door;
                 policy.ControlDeviceSelect = this.ControlDevice;
                 policy.DeviceRightSelect = this.DeviceRight;
-                if (!policy.DeviceRightSelect && policy.ControlDeviceSelect)
+                if (!policy.ControlDeviceSelect && policy.DeviceRightSelect)
                 {
                     ShowMessage("没有选择设备的情况下，请勿选择设备权限");
                     return;
@@ -1496,34 +1496,13 @@ namespace PartialViewOtherToJieLink.ViewModels
                     continue;
                     // equipment.PRODUCT_MODEL != ConstantHelper.JSMJK022040A_Reader    //领御III二门读卡器 等价于门：直接在插入领御设备的时候解析即可
                 }
-                TBaseEquipmentParamModel macItem = null;
-                TBaseEquipmentParamModel ipItem = null;
-                TBaseEquipmentParamModel devIDItem = null;
-                TBaseEquipmentParamModel gatewayItem = null;
-                TBaseEquipmentParamModel maskItem = null;
-                TBaseEquipmentParamModel macNoItem = null;
-                if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0220A
-                    || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0240A
-                    || equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
-                {
-                    //看jsds数据库，领御设备、速通通过EQUIPMENT_ID找MAC、devId、IP等设备信息
-                    macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
-                    ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
-                    devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
-                    gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
-                    maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
-                    macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
-                }
-                else
-                {
-                    //看jsds数据库，Y08通过ID找MAC、devId、IP等设备信息
-                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
-                    ipItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
-                    devIDItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
-                    gatewayItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
-                    maskItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
-                    macNoItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
-                }
+                //通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                TBaseEquipmentParamModel macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                TBaseEquipmentParamModel ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                TBaseEquipmentParamModel devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                TBaseEquipmentParamModel gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                TBaseEquipmentParamModel maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                TBaseEquipmentParamModel macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
                 if (macItem == null || string.IsNullOrWhiteSpace(macItem.PARAM_VALUE))
                 {
                     ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：无MAC，跳过");
@@ -1868,6 +1847,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             continue;
                         }
                         string parentGuid = string.Empty;
+                        string doorParentGuid = string.Empty;
                         if (string.IsNullOrWhiteSpace(district.DISTRICT_ID) && district.ID != ConstantHelper.JSDSDISTRICTROOT)
                         {
                             //父节点为空的其他区域：如EXTERIOR
@@ -1876,28 +1856,44 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 continue;
                             }
                             parentGuid = areaRoot.APGUID;
+                            doorParentGuid = areaRoot.APGUID;
                         }
                         else
                         {
                             parentGuid = GetGuidString(district.DISTRICT_ID);
+                            doorParentGuid = GetAreaGuidString(district.DISTRICT_ID);
                             DataSet parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{parentGuid}' ORDER BY id asc;");
                             ControlAccessPointGroup parentArea = null;
                             if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
                                 parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                                if (parentArea != null)
+                                {
+                                    parentGuid = parentArea.APGUID;
+                                }
                             }
-                            if (parentArea == null)
+                            parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{doorParentGuid}' ORDER BY id asc;");
+                            if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
-                                ShowMessage("区域" + district.DISTRICT_NAME + "的父节点区域不存在，跳过");
-                                continue;
+                                parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
+                                if (parentArea != null)
+                                {
+                                    doorParentGuid = parentArea.APGUID;
+                                }
                             }
                         }
                         //车场区域
-                        AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        if (!string.IsNullOrWhiteSpace(parentGuid))
+                        {
+                            AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        }
                         //门禁区域
-                        string doorGuid = GetAreaGuidString(district.ID);
-                        string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
-                        AreaInsert(doorGuid, null, doorApName, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        if (!string.IsNullOrWhiteSpace(doorParentGuid))
+                        {
+                            string doorGuid = GetAreaGuidString(district.ID);
+                            string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
+                            AreaInsert(doorGuid, null, doorApName, doorParentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        }
                     }
                 }
             }
