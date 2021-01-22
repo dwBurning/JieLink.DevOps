@@ -32,7 +32,7 @@
             设备ID和设备名称显示的是旧设备的信息，设备列表显示的是系统当前所有的控制机设备
             </TextBlock>
             <TextBlock>
-            1.现在设备列表下拉选项中选择旧设备切换之后的新设备
+            1.先在设备列表下拉选项中选择旧设备切换之后的新设备
             </TextBlock>
             <TextBlock>
             2.然后点击更换按钮即可完成切换，修复更换主板之前入场的月租车要收费的问题
@@ -40,7 +40,7 @@
         </StackPanel>
 
         <DataGrid Grid.Row="1" Margin="5" ItemsSource="{Binding Devices}"
-                  BorderBrush="LightGray"
+                  BorderBrush="LightGray" SelectedItem="{Binding SelectChangeDevice}"
                   BorderThickness="1" AutoGenerateColumns="False"
                   pu:DataGridHelper.HeaderMinHeight="30"
                   pu:DataGridHelper.ColumnHorizontalContentAlignment="Left"
@@ -55,12 +55,12 @@
                 <DataGridTemplateColumn Width="*" Header="设备列表">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox Margin="5" VerticalAlignment="Center" Height="40" Width="150" 
-                      SelectedItem="{Binding DataContext.SelectDevice,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" 
+                            <ComboBox Margin="5" VerticalAlignment="Center" Height="40" Width="150" Name="cmbDevices"
+                      SelectedItem="{Binding DataContext.SelectDevice,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid},Mode=OneWayToSource}" 
                       ItemsSource="{Binding Devices}"
-                      SelectionChanged="ComboBox_SelectionChanged"
+                      SelectedValue="{Binding DeviceId}"        
                       DisplayMemberPath="DeviceName"
-                      SelectedValuePath="DeviceId"
+                      SelectionChanged="cmbDevices_SelectionChanged"
                       pu:ComboBoxHelper.Watermark="请选择设备"
                       pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
                       pu:ComboBoxHelper.SelectedForeground="#20A0FF"

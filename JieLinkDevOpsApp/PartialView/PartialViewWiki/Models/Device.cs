@@ -42,5 +42,8 @@ namespace PartialViewWiki.Models
             get { return _devices; }
             set { _devices = value; NotifyPropertyChanged(); }
         }
+
+
+        public Device SelectedDevice { get; set; }
     }
 }

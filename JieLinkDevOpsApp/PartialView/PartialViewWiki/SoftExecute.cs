@@ -38,20 +38,7 @@ namespace PartialViewWiki
         }
 
 
-        private void RepairEnterDeviceId()
-        {
-            // 查询场内记录中 当前设备列表不存在设备ID，和设备名称
-            string sql = @"select DISTINCT EnterDeviceID,EnterDeviceName from box_enter_record where WasGone=0 and EnterDeviceID not in (
-select DeviceID from control_devices where DeviceType in(select DicDetailId from dic_detail where DicTypeId = 1000 and NisspCode = '0207')); ";
-
-            DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
-
-            foreach (DataRow dr in dt.Rows)
-            {
-                string cmd = $"select * from control_devices where DeviceName='{dr["EnterDeviceName"]}' and DeviceType in(select DicDetailId from dic_detail where DicTypeId=1000 and NisspCode='0207');";
-            }
-
-        }
+        
 
     }
 }

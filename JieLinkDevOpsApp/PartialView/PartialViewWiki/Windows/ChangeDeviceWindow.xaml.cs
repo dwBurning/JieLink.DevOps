@@ -30,9 +30,9 @@ namespace PartialViewWiki.Windows
             this.DataContext = viewModel;
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void cmbDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            viewModel.SelectedChanged();
+            viewModel.SelectChangeDevice.SelectedDevice = viewModel.SelectDevice;
         }
     }
 }
