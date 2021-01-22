@@ -130,6 +130,8 @@ namespace PartialViewOtherToJieLink.ViewModels
             {
                 List<TBaseDeptModel> G3GroupList = null;
                 //开始进行数据转换
+
+                #region 1、组织control_role_group
                 //1、组织control_role_group
                 DataSet dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group ORDER BY id ASC;");
                 List<ControlRoleGroup> dbGroupList = new List<ControlRoleGroup>();
@@ -264,7 +266,10 @@ namespace PartialViewOtherToJieLink.ViewModels
                             }
                         }
                     }
-                }
+                } 
+                #endregion
+
+                #region 2、重新查询组织
                 //2、重新查询组织
                 dbGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_role_group ORDER BY id ASC;");
                 dbGroupList = new List<ControlRoleGroup>();
@@ -280,7 +285,9 @@ namespace PartialViewOtherToJieLink.ViewModels
                     MessageBoxHelper.MessageBoxShowWarning("组织根节点不存在，请确认数据库是否正确");
                     return;
                 }
+                #endregion
 
+                #region 3、人事
                 //3、人事
                 DataTable personDts = MSSqlHelper.ExecuteQuery("SELECT * from hr.person where deleteflag = 0  ORDER BY id asc;", null);
                 List<TBaseHrPersonModel> personList = new List<TBaseHrPersonModel>();
@@ -608,8 +615,10 @@ namespace PartialViewOtherToJieLink.ViewModels
                         }
                     }
                 }
+                #endregion
 
-                //入场记录
+                #region 4、入场记录
+                // 入场记录
                 if (isContinue)
                 {
                     List<TBaseTcRecordModel> recordList = null;
@@ -680,16 +689,213 @@ namespace PartialViewOtherToJieLink.ViewModels
                     }
 
                 }
+                #endregion
+
+                #region 5、门禁设备迁移（Y08、领域III）
+                
+                UpdateG3DoorDeviceToJielink();
+
+                #endregion
+
                 ShowMessage("升级完成！");
                 MessageBoxHelper.MessageBoxShowWarning("升级完成！");
             }
             catch (Exception ex)
             {
+                LogHelper.CommLogger.Error(ex, "G3数据转换到Jielink异常：");
             }
             finally
             {
 
             }
+        }
+
+        /// <summary>
+        /// 升级：门禁设备从G3迁移到jieLink
+        /// 目前只支持：Y08 领域III
+        /// </summary>
+        private void UpdateG3DoorDeviceToJielink()
+        {
+            try
+            {
+                List<string> failStringList = new List<string>();
+
+                LogHelper.CommLogger.Info("********* G3转换门禁设备到Jielink开始！ *********");
+
+                DataTable deviceDtsLY = MSSqlHelper.ExecuteQuery("select  A.ID,A.Name,A.IP,B.MAC,B.MASK,B.GATEWAY,A.GUID,A.DeviceTypeID " +
+                                                        "from mc.device A, MJ.DA_MachineDevice B " +
+                                                        "where A.ID = B.MACHINE_DEVICE_NO and A.DeleteFlag = 0; ", null);
+
+                List<TBaseMcDeviceModel> deviceListLY = new List<TBaseMcDeviceModel>();
+                List<TBaseMcDeviceModel> deviceListY08 = new List<TBaseMcDeviceModel>();
+
+                if (deviceDtsLY != null)
+                {
+                    deviceListLY = CommonHelper.DataTableToList<TBaseMcDeviceModel>(deviceDtsLY).OrderBy(x => x.ID).ToList();
+                }
+
+                DataTable deviceDtsY08 = MSSqlHelper.ExecuteQuery("select  A.ID,A.Name,A.IP,A.MAC,A.MASK,A.GATEWAY,A.GUID,A.DeviceTypeID " +
+                                                        "from mc.device A " +
+                                                        "where A.DeleteFlag = 0; ", null);
+                if (deviceDtsY08 != null)
+                {
+                    deviceListY08 = CommonHelper.DataTableToList<TBaseMcDeviceModel>(deviceDtsY08).OrderBy(x => x.ID).ToList();
+                }
+
+                DataSet controlDeviceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_devices ORDER BY id ASC;");
+                List<ControlDevices> controlDevicesList = CommonHelper.DataTableToList<ControlDevices>(controlDeviceDs.Tables[0]).OrderBy(x => x.ID).ToList();
+                // 门禁服务
+                ControlDevices mjfuDeivce = controlDevicesList.FirstOrDefault(x => x.DeviceType == 32);
+
+                foreach (TBaseMcDeviceModel device in deviceListLY)
+                {
+                    if (device.DeviceTypeID == 27)
+                    {
+                        #region 领域III
+                        int deviceType = 100;
+                        string model = "JSMJK02_40";
+                        string remark = "G3升级";
+                        string macNo = "";
+                        string qrCodeLink = "";
+
+                        try
+                        {
+                            List<ControlDevices> tempList = controlDevicesList.FindAll(x => x.DGUID == device.GUID);
+                            if (tempList != null && tempList.Count > 0)
+                            {
+                                ShowMessage($"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'，已存在，跳过");
+                                continue;
+                            }
+
+                            // 领域III
+                            string sql = $"INSERT INTO control_devices(DGUID,DeviceID,IP,Mac,ParentID,Net_Mask,Gateway_IP,DeviceStatus,DeviceType,IoType,DeviceName,Model,DeviceClass,Mac2," +
+                                    $"Remark,InTime,UpdateTime,MasterIp,AuthStatus,MacNo,QrCodeLink,SpeakTecType,SpeakVideoType) VALUE('{device.GUID}','{device.ID}','{device.Ip}'," +
+                                    $"'{device.Mac}','{mjfuDeivce.DeviceID}','{device.Mask}','{device.GateWay}',{1},{deviceType},0,'{device.Name}','{model}',0,'{device.Mac}','{remark}','{DateTime.Now}'," +
+                                    $"'{DateTime.Now}','{device.Ip}',{0},'{macNo}','{qrCodeLink}',1,1)";
+
+                        
+                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                            if (flag <= 0)
+                            {
+                                failStringList.Add("设备【" + device.Name + "】迁移失败！");
+                                continue;
+                            }
+
+                            #region 插入门
+                            int maxDoorCount = 4;
+                            for (int index = 0; index < maxDoorCount; index++)
+                            {
+                                string doorGuid = Guid.NewGuid().ToString();
+                                string doorId = (CommonHelper.GetUIntValue(MACConvertDevicesId(device.Mac.Replace("-",":"))) + index + 1).ToString();
+                                string doorName = doorId + "门";
+                                
+                                sql = $"INSERT INTO control_devices(DGUID,DeviceID,Mac,ParentID,DeviceStatus,DeviceType,IoType,DeviceName,Model,DeviceClass,Mac2," +
+                                $"Remark,InTime,UpdateTime,MasterIp,AuthStatus,SpeakTecType,SpeakVideoType) VALUE('{doorGuid}','{doorId}','{ConstantHelper.JIELINKDOORMAC}'," +
+                                $"'{device.ID}',{1},{ConstantHelper.JIELINKDOORTYPE},0,'{doorName}','',0,'{ConstantHelper.JIELINKDOORMAC}','{remark}'," +
+                                $"'{DateTime.Now}','{DateTime.Now}','{device.Ip}',{0},1,1)";
+                                try
+                                {
+                                    flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                                    if (flag > 0)
+                                    {
+                                        ShowMessage($"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'，门='{doorId}'：成功");
+                                    }
+                                }
+                                catch (Exception o)
+                                {
+                                    failStringList.Add("设备【" + device.Name + "】迁移失败！");
+                                    ShowMessage($"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'，门='{doorId}'：异常");
+                                    LogHelper.CommLogger.Error(o, $"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'，门='{doorId}'异常：");
+                                }
+                            }
+                            #endregion
+                        }
+                        catch (Exception o)
+                        {
+                            ShowMessage($"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'：异常");
+                            LogHelper.CommLogger.Error(o, $"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'：异常");
+                            failStringList.Add("设备【" + device.Name + "】迁移失败！");
+                            continue;
+
+                        }
+
+                        #endregion
+                    }
+                }
+
+                foreach (TBaseMcDeviceModel device in deviceListY08)
+                {
+                    if (device.DeviceTypeID == 203)
+                    {
+                        #region Y08
+                        int deviceType = 252;
+                        string model = "JSMJY08A";
+                        string remark = "G3升级";
+                        string macNo = "";
+                        string qrCodeLink = "";
+
+                        List<ControlDevices> tempList = controlDevicesList.FindAll(x => x.DGUID == device.GUID);
+                        if (tempList != null && tempList.Count > 0)
+                        {
+                            ShowMessage($"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'，已存在，跳过");
+                            continue;
+                        }
+
+                        string sql = $"INSERT INTO control_devices(DGUID,DeviceID,IP,Mac,ParentID,Net_Mask,Gateway_IP,DeviceStatus,DeviceType,IoType,DeviceName,Model,DeviceClass,Mac2," +
+                                    $"Remark,InTime,UpdateTime,MasterIp,AuthStatus,MacNo,QrCodeLink,SpeakTecType,SpeakVideoType) VALUE('{device.GUID}','{device.ID}','{device.Ip}'," +
+                                    $"'{device.Mac}','{mjfuDeivce.ID}','{device.Mask}','{device.GateWay}',{1},{deviceType},0,'{device.Name}','{model}',0,'{device.Mac}','{remark}','{DateTime.Now}'," +
+                                    $"'{DateTime.Now}','{device.Ip}',{0},'{macNo}','{qrCodeLink}',1,1)";
+
+                        try
+                        {
+                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
+                            if (flag <= 0)
+                            {
+                                continue;
+                            }
+                        }
+                        catch (Exception o)
+                        {
+                            ShowMessage($"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'：异常");
+                            LogHelper.CommLogger.Error(o, $"迁移设备ID='{device.ID}'，设备类型='{model}'，设备名称='{device.Name}'：异常");
+                            failStringList.Add("设备【" + device.Name + "】迁移失败！");
+                            continue;
+
+                        }
+                        #endregion
+                    }
+                }
+
+                LogHelper.CommLogger.Info("********* G3转换门禁设备到Jielink结束！ *********");
+                if (failStringList.Count > 0)
+                {
+                    ShowMessage("迁移失败设备如下：");
+                    foreach (string str in failStringList)
+                    { ShowMessage(str); }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.CommLogger.Error(ex, "G3转换门禁设备到Jielink异常：");
+            }
+        }
+
+        /// <summary>
+        /// MAC提取设备ID
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private static string MACConvertDevicesId(string mac, string index = "")
+        {
+            string deviceId = string.Empty;
+            if (string.IsNullOrWhiteSpace(mac))
+            {
+                return deviceId;
+            }
+            mac = mac.Replace(":", "").Substring(6, 6);
+            mac = (string.IsNullOrEmpty(index) ? (mac + "00") : (mac + index));
+            return Convert.ToUInt32(mac, 16).ToString();
         }
 
         /// <summary>

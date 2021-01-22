@@ -85,6 +85,7 @@
     <Compile Include="Models\TBaseHrRoomPos.cs" />
     <Compile Include="Models\TBaseJSRJCardInfoModel.cs" />
     <Compile Include="Models\TBaseMcCardInfoModel.cs" />
+    <Compile Include="Models\TBaseMcDeviceModel.cs" />
     <Compile Include="Models\TBaseMjDaKqCard.cs" />
     <Compile Include="Models\TBaseTcCardInfoModel.cs" />
     <Compile Include="Models\TBaseTcRecordModel.cs" />
