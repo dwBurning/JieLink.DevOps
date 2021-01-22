@@ -47,7 +47,7 @@
                 </Grid.RowDefinitions>
 
                 <WrapPanel Grid.Column="2" Grid.RowSpan="2">
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Left"><Run Foreground="#20A0FF">说明：</Run> 1.本工具用于其他软件一键切换到jielink软件，迁移数据包括【组织、人事、凭证、车场服务、门禁服务、场内记录】。2.也可再迁移设备、设备权限、入场、出场、收费记录。3.支持迁移的设备包含领御III型控制器、老Y08、设备Id生成规则相符的速通。4.欢迎加入jielink阵营。</TextBlock>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Left"><Run Foreground="#20A0FF">说明：</Run> 1.本工具用于其他软件一键切换到jielink软件，迁移数据包括【组织、人事、凭证、车场服务、门禁服务、场内记录】。2.也可再迁移设备、设备权限、入场、出场、收费记录。3.支持迁移的设备包含<Run Foreground="#20A0FF">领御III型控制器、老Y08、设备Id生成规则相符的速通。</Run>4.欢迎加入jielink阵营。</TextBlock>
                 </WrapPanel>
                 <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
