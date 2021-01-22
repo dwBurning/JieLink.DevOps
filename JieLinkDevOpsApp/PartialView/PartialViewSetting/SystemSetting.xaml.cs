@@ -108,7 +108,7 @@ namespace PartialViewSetting
                         EnvironmentInfo.ProjectName = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectName'").ToString();
                         //EnvironmentInfo.ContactName = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectName'").ToString();
 
-                        EnvironmentInfo.ProjectVersion = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='Version'").ToString();
+                        EnvironmentInfo.ProjectVersion = MySqlHelper.ExecuteScalar(connectionString, "select ValueText from sys_key_value_setting where KeyID='ProjectVersion'").ToString();
 
 
 
