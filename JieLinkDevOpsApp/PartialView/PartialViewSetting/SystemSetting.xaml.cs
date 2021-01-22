@@ -82,7 +82,7 @@ namespace PartialViewSetting
         {
             if (!IsLoaded)
                 return;
-            string url = ConfigHelper.ReadAppConfig("ServerUrl");
+            string url = "http://106.53.255.16:1688";//ConfigHelper.ReadAppConfig("ServerUrl");
             txtServerUrl.Text = url;
             EnvironmentInfo.ServerUrl = url;
             if (string.IsNullOrEmpty(EnvironmentInfo.ProjectVersion))
