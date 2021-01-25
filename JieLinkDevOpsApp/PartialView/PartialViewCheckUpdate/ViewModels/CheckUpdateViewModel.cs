@@ -74,6 +74,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 "V2.8.0#E1.0",
                 "V2.8.1",
                 "V2.8.1#E1.0",
+                "V2.8.2",
+                "V2.8.2#E1.0",
                 "V2.9.0",
             };
 
