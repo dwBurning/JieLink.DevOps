@@ -11,6 +11,10 @@ public class DevOpsEvent {
 
     private String projectNo;
 
+    private String projectVersion;
+
+    private String projectName;
+
     private String remoteAccount;
 
     private String remotePassword;
@@ -48,6 +52,22 @@ public class DevOpsEvent {
 
     public void setProjectNo(String projectNo) {
         this.projectNo = projectNo == null ? null : projectNo.trim();
+    }
+
+    public String getProjectVersion() {
+        return projectVersion;
+    }
+
+    public void setProjectVersion(String projectVersion) {
+        this.projectVersion = projectVersion == null ? null : projectVersion.trim();
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName == null ? null : projectName.trim();
     }
 
     public String getRemoteAccount() {

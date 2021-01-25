@@ -52,7 +52,8 @@
 
 		<!-- 指定数据库表 -->
 		<table tableName="test" domainObjectName="Test"></table>
-		<!--<table tableName="devops_product" domainObjectName="DevOpsProduct"></table>
+		<!--<table tableName="devops_event_concern" domainObjectName="DevOpsEventConcern"></table>
+		<table tableName="devops_product" domainObjectName="DevOpsProduct"></table>
 		<table tableName="devops_event" domainObjectName="DevOpsEvent"></table>
 		 	<table tableName="sys_user" domainObjectName="SysUser"></table>
 			<table tableName="order_version_info" domainObjectName="VersionInfo"></table>

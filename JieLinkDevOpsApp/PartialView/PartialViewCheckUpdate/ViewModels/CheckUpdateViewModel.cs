@@ -34,7 +34,7 @@ namespace PartialViewCheckUpdate.ViewModels
 
             Versions = new List<string>()
             {
-                "V1.0.0",
+                //"V1.0.0",
                 "V1.0.1",
                 "V1.0.2",
                 "V1.0.3",
@@ -397,6 +397,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 jsonText = File.ReadAllText(scriptFile, Encoding.UTF8);
             }
 
+            var handler = MessageBoxHelper.MessageBoxShowWaiting("正在执行脚本，请等待...");
+
             Task.Factory.StartNew(() =>
             {
                 foreach (var file in fileInfos)
@@ -412,8 +414,18 @@ namespace PartialViewCheckUpdate.ViewModels
                     ProcessHelper.ExecuteCommand(cmds, enumToolType.OneKeyUpdate);
                 }
 
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    handler.UpdateMessage("脚本执行完成，正在校验数据库...");
+                }));
+
                 ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
+
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    handler.Close();
+                }));
             });
         }
 
@@ -863,7 +875,7 @@ namespace PartialViewCheckUpdate.ViewModels
             DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
             return dt.Rows.Count > 0;
         }
-        
+
         public void ShowMessage(string message)
         {
             LogHelper.CommLogger.Info(message);

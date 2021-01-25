@@ -157,6 +157,8 @@ namespace JieShun.JieLink.DevOps.App
             {
                 ProjectInfo projectInfo = JsonConvert.DeserializeObject<ProjectInfo>(projectInfoConfig);
                 EnvironmentInfo.ProjectNo = projectInfo.ProjectNo;
+                EnvironmentInfo.ProjectName = projectInfo.ProjectName;
+                EnvironmentInfo.ProjectVersion = projectInfo.ProjectVersion;
                 EnvironmentInfo.RemoteAccount = projectInfo.RemoteAccount;
                 EnvironmentInfo.RemotePassword = projectInfo.RemotePassword;
                 EnvironmentInfo.ContactName = projectInfo.ContactName;

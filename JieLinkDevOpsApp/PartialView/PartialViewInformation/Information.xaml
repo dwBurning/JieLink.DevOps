@@ -84,6 +84,19 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2021-01-22 V1.1.1">
+                <ContentControl>
+                    <TextBlock>
+                        1.日志分析增加xmpp断线分析
+                        2.项目信息增加项目名称和项目版本
+                        3.增加人脸图片备份和人脸图片导出功能
+                        4.增加融合版，速通版一键切换到JieLink的数据库导入工具
+                        5.数据库备份文件调整为保留7天，但是删除旧文件的逻辑不变
+                        6.去掉辅助升级中去掉版本1.0.0的选项，并且不允许从1.0.0版本开始升级
+                        7.知识百科中增加更多解决方案：更换主板后场内月租车收费，人事资料入库失败等
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2020-12-23 V1.1.0">
                 <ContentControl>
                     <TextBlock>

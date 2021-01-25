@@ -20,6 +20,8 @@ namespace PartialViewLogAnalyse.ViewModels
 
         public DelegateCommand SelectPathCommand { get; set; }
         public DelegateCommand AnalyseCommand { get; set; }
+        public DelegateCommand SelectXmppPathCommand { get; set; }
+        public DelegateCommand AnalyseXmppCommand { get; set; }
         public string FilePath
         {
             get { return (string)GetValue(FilePathProperty); }
@@ -65,13 +67,51 @@ namespace PartialViewLogAnalyse.ViewModels
         public static readonly DependencyProperty ResultProperty =
             DependencyProperty.Register("Result", typeof(string), typeof(LogAnalyseViewModel), new PropertyMetadata(""));
 
+        public string XmppFilePath
+        {
+            get { return (string)GetValue(XmppFilePathProperty); }
+            set
+            {
+                SetValue(XmppFilePathProperty, value);
+                xmppFilePath = value;
+            }
+        }
 
+        // Using a DependencyProperty as the backing store for FilePath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty XmppFilePathProperty =
+            DependencyProperty.Register("XmppFilePath", typeof(string), typeof(LogAnalyseViewModel), new PropertyMetadata(""));
+
+        public string FilterText
+        {
+            get { return (string)GetValue(FilterTextProperty); }
+            set { SetValue(FilterTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FilePath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FilterTextProperty =
+            DependencyProperty.Register("FilterText", typeof(string), typeof(LogAnalyseViewModel), new PropertyMetadata("jsg3-of"));
+
+
+        public string XmppResult
+        {
+            get { return (string)GetValue(XmppResultProperty); }
+            set { SetValue(XmppResultProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Result.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty XmppResultProperty =
+            DependencyProperty.Register("XmppResult", typeof(string), typeof(LogAnalyseViewModel), new PropertyMetadata(""));
 
         private List<string> filePathList = new List<string>();
         private string plate = string.Empty;
         private string deviceName = string.Empty;
         private BackgroundWorker backgroundWorker = new BackgroundWorker();
         private IPendingHandler pendingHandler = null;
+
+        private List<string> xmppFilePathList = new List<string>();
+        private BackgroundWorker backgroundWorkerXmpp = new BackgroundWorker();
+        private string filterText = "";
+        private string xmppFilePath = "";
         public LogAnalyseViewModel()
         {
             SelectPathCommand = new DelegateCommand();
@@ -84,6 +124,17 @@ namespace PartialViewLogAnalyse.ViewModels
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
             backgroundWorker.RunWorkerCompleted += BackgroundWorker_RunWorkerCompleted;
             backgroundWorker.ProgressChanged += BackgroundWorker_ProgressChanged;
+
+            SelectXmppPathCommand = new DelegateCommand();
+            SelectXmppPathCommand.ExecuteAction = SelectXmppPath;
+            AnalyseXmppCommand = new DelegateCommand();
+            AnalyseXmppCommand.ExecuteAction = AnalyseXmpp;
+            AnalyseXmppCommand.CanExecuteFunc = o => !string.IsNullOrEmpty(XmppFilePath);
+            backgroundWorkerXmpp.WorkerSupportsCancellation = true;
+            backgroundWorkerXmpp.WorkerReportsProgress = true;
+            backgroundWorkerXmpp.DoWork += BackgroundWorkerXmpp_DoWork;
+            backgroundWorkerXmpp.RunWorkerCompleted += BackgroundWorkerXmpp_RunWorkerCompleted;
+            backgroundWorkerXmpp.ProgressChanged += BackgroundWorkerXmpp_ProgressChanged;
         }
 
 
@@ -217,6 +268,176 @@ namespace PartialViewLogAnalyse.ViewModels
             else
             {
                 this.Result = "无搜索结果";
+            }
+
+        }
+
+
+        private void SelectXmppPath(object parameter)
+        {
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            //fileDialog.Multiselect = true;
+            var process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+            if (process != null)
+            {
+                fileDialog.InitialDirectory = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, "XmppLog");
+            }
+            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                XmppFilePath = fileDialog.FileName;
+
+            }
+        }
+        private void AnalyseXmpp(object parameter)
+        {
+            if (backgroundWorkerXmpp.IsBusy)
+            {
+                return;
+            }
+            this.XmppResult = "";
+            filterText = FilterText;
+
+            backgroundWorkerXmpp.RunWorkerAsync();
+            PendingBoxConfigurations configurations = new PendingBoxConfigurations();
+            configurations.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            pendingHandler = PendingBox.Show(string.Format("正在分析日志文件...({0}%)", 0), "请等待", false, Application.Current.MainWindow, configurations);
+        }
+        private void BackgroundWorkerXmpp_DoWork(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+
+                List<ReceiveThreadContext> contexts = new List<ReceiveThreadContext>();
+                int totalLines = AnalyseUtils.GetTotalLines(new List<string>() { xmppFilePath });
+                int currentLines = 0;
+                int currentPencent = 0;
+                using (StreamReader sr = new StreamReader(xmppFilePath, Encoding.GetEncoding("gb2312")))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        string line = sr.ReadLine();
+                        int firstIndex = line.IndexOf('[');
+                        if (firstIndex > 0)
+                        {
+                            string strLogTime = line.Substring(line.IndexOf('|') + 2, 23);
+                            DateTime logTime = DateTime.Now;
+                            try
+                            {
+                                logTime = DateTime.ParseExact(strLogTime, "yyyy-MM-dd HH:mm:ss fff", System.Globalization.CultureInfo.CurrentCulture);
+                            }
+                            catch (Exception ex)
+                            {
+                                continue;
+                            }
+
+                            string threadNum = line.Substring(firstIndex + 1, line.IndexOf(']') - line.IndexOf('[') - 1);
+
+                            if (line.IndexOf("读取流--开始") >= 0)
+                            {
+                                ReceiveThreadContext context = contexts.FindLast(x => x.ThreadNum == threadNum);
+                                if (context == null || context.EndTime.Year > 2000)
+                                {
+                                    context = new ReceiveThreadContext();
+                                    context.ThreadNum = threadNum;
+                                    context.StartTime = logTime;
+                                    contexts.Add(context);
+                                }
+                                if (context.LastLines.Count > 1)
+                                {
+                                    context.LastLines.RemoveAt(1);
+                                }
+                                ReceiveData receiveData = new ReceiveData();
+                                receiveData.Content = line;
+                                receiveData.LogTime = logTime;
+                                context.LastLines.Add(receiveData);
+                            }
+                            if (line.IndexOf("断开") >= 0)
+                            {
+                                //Console.WriteLine(threadNum);
+                                ReceiveThreadContext context = contexts.FindLast(x => x.ThreadNum == threadNum);
+                                if (context != null && context.EndTime.Year < 2000)
+                                {
+                                    context.EndTime = DateTime.Now;
+                                    ReceiveData receiveData = new ReceiveData();
+                                    receiveData.Content = line;
+                                    receiveData.LogTime = logTime;
+                                    context.LastLines.Add(receiveData);
+                                }
+                                else
+                                {
+                                    Console.WriteLine(line);
+                                }
+                            }
+                            if (line.IndexOf("接收到数据：<iq id") > 0 && line.IndexOf(" type=\"get") > 0)
+                            {
+                                string name = line.Substring(line.IndexOf("to=") + 4, line.IndexOf("\"", line.IndexOf("to=") + 4) - line.IndexOf("to=") - 4);
+                                ReceiveThreadContext context = contexts.FindLast(x => x.ThreadNum == threadNum);
+                                if (context != null && context.EndTime.Year < 2000)
+                                {
+                                    context.Name = name;
+                                    //ReceiveData receiveData = new ReceiveData();
+                                    //receiveData.Content = line;
+                                    //receiveData.LogTime = logTime;
+                                    //context.LastLines.Add(receiveData);
+                                }
+                            }
+
+
+                        }
+                        //更新进度
+                        currentLines++;
+                        int pencent = (currentLines * 100) / totalLines;
+                        if (pencent > 99)
+                            pencent = 99;
+                        if (pencent != currentPencent)
+                        {
+                            backgroundWorkerXmpp.ReportProgress(pencent);
+                        }
+                        currentPencent = pencent;
+                    }
+                }
+                StringBuilder sb = new StringBuilder();
+                foreach (var context in contexts)
+                {
+                    if (string.IsNullOrEmpty(filterText) || (context.Name != null && !context.Name.Contains(filterText)))
+                    {
+                        sb.Append(string.Format("======={0}=======\n", context.Name));
+                        foreach (var data in context.LastLines)
+                        {
+                            sb.Append(data.Content.Substring(data.Content.IndexOf('|')));
+                            sb.Append(Environment.NewLine);
+                        }
+                        sb.Append(Environment.NewLine);
+                    }
+                }
+                string result = sb.ToString();
+                e.Result = string.IsNullOrEmpty(result) ? "无结果" : result;
+            }
+            catch (Exception ex)
+            {
+                e.Result = "日志分析异常：" + ex.ToString();
+            }
+
+        }
+
+        private void BackgroundWorkerXmpp_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (pendingHandler != null)
+                pendingHandler.UpdateMessage(string.Format("正在分析日志文件...({0}%)", e.ProgressPercentage));
+        }
+        private void BackgroundWorkerXmpp_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (pendingHandler != null)
+                pendingHandler.Close();
+            string log = e.Result as string;
+            if (!string.IsNullOrEmpty(log))
+            {
+                this.XmppResult = log;
+            }
+            else
+            {
+                this.XmppResult = "无搜索结果";
             }
 
         }

@@ -26,6 +26,10 @@ namespace PartialViewInterface
 
         public static string ProjectNo { get; set; }
 
+        public static string ProjectName { get; set; }
+
+        public static string ProjectVersion { get; set; }
+
         public static string RemoteAccount { get; set; }
 
         public static string RemotePassword { get; set; }
