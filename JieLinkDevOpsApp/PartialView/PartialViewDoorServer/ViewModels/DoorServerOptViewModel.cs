@@ -268,6 +268,7 @@ namespace PartialViewDoorServer.ViewModels
 
                 using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, string.Format(cmd)))
                 {
+                    _doorServerInfoList.Clear();
                     while (reader.Read())
                     {
                         ushort deviceType = Convert.ToUInt16(reader["DeviceType"].ToString());
