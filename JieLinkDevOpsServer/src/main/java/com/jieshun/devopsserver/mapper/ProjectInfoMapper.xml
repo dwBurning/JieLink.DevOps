@@ -3,6 +3,8 @@
 <mapper namespace="com.jieshun.devopsserver.mapper.ProjectInfoMapper" >
   <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.ProjectInfo" >
     <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="project_version" property="projectVersion" jdbcType="VARCHAR" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
     <result column="project_no" property="projectNo" jdbcType="VARCHAR" />
     <result column="devops_version" property="devopsVersion" jdbcType="VARCHAR" />
     <result column="is_filter" property="isFilter" jdbcType="INTEGER" />
@@ -68,7 +70,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List" >
-    id, project_no, devops_version, is_filter, operator_date, remark
+    id, project_version, project_name, project_no, devops_version, is_filter, operator_date, 
+    remark
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.ProjectInfoExample" >
     select
@@ -101,18 +104,24 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.jieshun.devopsserver.bean.ProjectInfo" >
-    insert into project_info (id, project_no, devops_version, 
-      is_filter, operator_date, remark
-      )
-    values (#{id,jdbcType=INTEGER}, #{projectNo,jdbcType=VARCHAR}, #{devopsVersion,jdbcType=VARCHAR}, 
-      #{isFilter,jdbcType=INTEGER}, #{operatorDate,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
-      )
+    insert into project_info (id, project_version, project_name, 
+      project_no, devops_version, is_filter, 
+      operator_date, remark)
+    values (#{id,jdbcType=INTEGER}, #{projectVersion,jdbcType=VARCHAR}, #{projectName,jdbcType=VARCHAR}, 
+      #{projectNo,jdbcType=VARCHAR}, #{devopsVersion,jdbcType=VARCHAR}, #{isFilter,jdbcType=INTEGER}, 
+      #{operatorDate,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.ProjectInfo" >
     insert into project_info
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
+      </if>
+      <if test="projectVersion != null" >
+        project_version,
+      </if>
+      <if test="projectName != null" >
+        project_name,
       </if>
       <if test="projectNo != null" >
         project_no,
@@ -133,6 +142,12 @@
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         #{id,jdbcType=INTEGER},
+      </if>
+      <if test="projectVersion != null" >
+        #{projectVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null" >
+        #{projectName,jdbcType=VARCHAR},
       </if>
       <if test="projectNo != null" >
         #{projectNo,jdbcType=VARCHAR},
@@ -163,6 +178,12 @@
       <if test="record.id != null" >
         id = #{record.id,jdbcType=INTEGER},
       </if>
+      <if test="record.projectVersion != null" >
+        project_version = #{record.projectVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectName != null" >
+        project_name = #{record.projectName,jdbcType=VARCHAR},
+      </if>
       <if test="record.projectNo != null" >
         project_no = #{record.projectNo,jdbcType=VARCHAR},
       </if>
@@ -186,6 +207,8 @@
   <update id="updateByExample" parameterType="map" >
     update project_info
     set id = #{record.id,jdbcType=INTEGER},
+      project_version = #{record.projectVersion,jdbcType=VARCHAR},
+      project_name = #{record.projectName,jdbcType=VARCHAR},
       project_no = #{record.projectNo,jdbcType=VARCHAR},
       devops_version = #{record.devopsVersion,jdbcType=VARCHAR},
       is_filter = #{record.isFilter,jdbcType=INTEGER},
@@ -198,6 +221,12 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.jieshun.devopsserver.bean.ProjectInfo" >
     update project_info
     <set >
+      <if test="projectVersion != null" >
+        project_version = #{projectVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null" >
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
       <if test="projectNo != null" >
         project_no = #{projectNo,jdbcType=VARCHAR},
       </if>
@@ -218,7 +247,9 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.ProjectInfo" >
     update project_info
-    set project_no = #{projectNo,jdbcType=VARCHAR},
+    set project_version = #{projectVersion,jdbcType=VARCHAR},
+      project_name = #{projectName,jdbcType=VARCHAR},
+      project_no = #{projectNo,jdbcType=VARCHAR},
       devops_version = #{devopsVersion,jdbcType=VARCHAR},
       is_filter = #{isFilter,jdbcType=INTEGER},
       operator_date = #{operatorDate,jdbcType=TIMESTAMP},

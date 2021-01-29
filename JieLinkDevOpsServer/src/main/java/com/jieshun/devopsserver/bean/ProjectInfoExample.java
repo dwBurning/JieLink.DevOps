@@ -165,6 +165,146 @@ public class ProjectInfoExample {
             return (Criteria) this;
         }
 
+        public Criteria andProjectVersionIsNull() {
+            addCriterion("project_version is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionIsNotNull() {
+            addCriterion("project_version is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionEqualTo(String value) {
+            addCriterion("project_version =", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionNotEqualTo(String value) {
+            addCriterion("project_version <>", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionGreaterThan(String value) {
+            addCriterion("project_version >", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionGreaterThanOrEqualTo(String value) {
+            addCriterion("project_version >=", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionLessThan(String value) {
+            addCriterion("project_version <", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionLessThanOrEqualTo(String value) {
+            addCriterion("project_version <=", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionLike(String value) {
+            addCriterion("project_version like", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionNotLike(String value) {
+            addCriterion("project_version not like", value, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionIn(List<String> values) {
+            addCriterion("project_version in", values, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionNotIn(List<String> values) {
+            addCriterion("project_version not in", values, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionBetween(String value1, String value2) {
+            addCriterion("project_version between", value1, value2, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectVersionNotBetween(String value1, String value2) {
+            addCriterion("project_version not between", value1, value2, "projectVersion");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameIsNull() {
+            addCriterion("project_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameIsNotNull() {
+            addCriterion("project_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameEqualTo(String value) {
+            addCriterion("project_name =", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameNotEqualTo(String value) {
+            addCriterion("project_name <>", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameGreaterThan(String value) {
+            addCriterion("project_name >", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameGreaterThanOrEqualTo(String value) {
+            addCriterion("project_name >=", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameLessThan(String value) {
+            addCriterion("project_name <", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameLessThanOrEqualTo(String value) {
+            addCriterion("project_name <=", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameLike(String value) {
+            addCriterion("project_name like", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameNotLike(String value) {
+            addCriterion("project_name not like", value, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameIn(List<String> values) {
+            addCriterion("project_name in", values, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameNotIn(List<String> values) {
+            addCriterion("project_name not in", values, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameBetween(String value1, String value2) {
+            addCriterion("project_name between", value1, value2, "projectName");
+            return (Criteria) this;
+        }
+
+        public Criteria andProjectNameNotBetween(String value1, String value2) {
+            addCriterion("project_name not between", value1, value2, "projectName");
+            return (Criteria) this;
+        }
+
         public Criteria andProjectNoIsNull() {
             addCriterion("project_no is null");
             return (Criteria) this;

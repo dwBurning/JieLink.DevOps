@@ -71,6 +71,8 @@
             >{{ scope.row.projectNo }}</el-button>
           </template>
         </el-table-column>
+        <el-table-column prop="projectName" label="项目名称" width="150"></el-table-column>
+        <el-table-column prop="projectVersion" label="项目版本" width="100"></el-table-column>
         <el-table-column prop="remoteAccount" label="远程账号" width="150"></el-table-column>
         <el-table-column prop="remotePassword" label="远程密码" width="100"></el-table-column>
         <el-table-column prop="contactName" label="联系人姓名" width="100"></el-table-column>
