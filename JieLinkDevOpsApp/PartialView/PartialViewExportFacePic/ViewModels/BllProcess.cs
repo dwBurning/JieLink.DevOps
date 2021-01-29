@@ -33,7 +33,16 @@ namespace PartialViewExportFacePic.ViewModels
             return list;
         }
 
-
+        public string GetPersonImageSavePath()
+        {
+            string sql = "select top 1 PersonImageSavePath from mc.SystemInfo";
+            DataTable dt = SQLHelper.ExecuteDataTableEx(sql, null);
+            if (dt != null && dt.Rows.Count > 0)
+            {
+                return dt.Rows[0]["PersonImageSavePath"].ToString();
+            }
+            return "";
+        }
         public string GetDownServerUrl()
         {
             string url = "";

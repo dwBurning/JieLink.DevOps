@@ -1,4 +1,5 @@
 ﻿using Panuon.UI.Silver;
+using PartialViewWiki.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,18 @@ namespace PartialViewWiki.Windows
     /// </summary>
     public partial class ChangeDeviceWindow : WindowX
     {
+        ChangeDeviceViewModel viewModel;
+
         public ChangeDeviceWindow()
         {
             InitializeComponent();
+            viewModel = new ChangeDeviceViewModel();
+            this.DataContext = viewModel;
+        }
+
+        private void cmbDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            viewModel.SelectChangeDevice.SelectedDevice = viewModel.SelectDevice;
         }
     }
 }

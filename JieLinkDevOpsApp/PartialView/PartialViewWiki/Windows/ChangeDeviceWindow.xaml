@@ -6,8 +6,85 @@
         xmlns:local="clr-namespace:PartialViewWiki.Windows"
         xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         mc:Ignorable="d"
-        Title="ChangeDevice" Height="450" Width="800">
+        Title="更换设备" Height="450" Width="800">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Left"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </Window.Resources>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="5*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock>
+            设备ID和设备名称显示的是旧设备的信息，设备列表显示的是系统当前所有的控制机设备
+            </TextBlock>
+            <TextBlock>
+            1.先在设备列表下拉选项中选择旧设备切换之后的新设备
+            </TextBlock>
+            <TextBlock>
+            2.然后点击更换按钮即可完成切换，修复更换主板之前入场的月租车要收费的问题
+            </TextBlock>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" Margin="5" ItemsSource="{Binding Devices}"
+                  BorderBrush="LightGray" SelectedItem="{Binding SelectChangeDevice}"
+                  BorderThickness="1" AutoGenerateColumns="False"
+                  pu:DataGridHelper.HeaderMinHeight="30"
+                  pu:DataGridHelper.ColumnHorizontalContentAlignment="Left"
+                  pu:DataGridHelper.RowMinHeight="40"
+                  pu:DataGridHelper.SelectedBackground="#220082FF"
+                  pu:DataGridHelper.SelectedForeground="#00BCFF"
+                  pu:DataGridHelper.HoverBackground="#220082FF"
+                  CanUserAddRows="False" >
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="*" Binding="{Binding DeviceId}" Header="设备ID"/>
+                <DataGridTextColumn Width="*" Binding="{Binding DeviceName}" Header="设备名称"/>
+                <DataGridTemplateColumn Width="*" Header="设备列表">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox Margin="5" VerticalAlignment="Center" Height="40" Width="150" Name="cmbDevices"
+                      SelectedItem="{Binding DataContext.SelectDevice,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid},Mode=OneWayToSource}" 
+                      ItemsSource="{Binding Devices}"
+                      SelectedValue="{Binding DeviceId}"        
+                      DisplayMemberPath="DeviceName"
+                      SelectionChanged="cmbDevices_SelectionChanged"
+                      pu:ComboBoxHelper.Watermark="请选择设备"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" >
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="*" Header="操作">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Margin="5" Content="更换" Command="{Binding DataContext.ChangeDeviceCommand,RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}" Width="150"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="{Binding DeviceId}"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+
+        </DataGrid>
     </Grid>
 </pu:WindowX>

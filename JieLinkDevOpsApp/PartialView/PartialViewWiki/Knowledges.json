@@ -24,17 +24,44 @@
     "KeyWords": "人事|资料|入库|失败"
   },
   {
-    "Type": 1,
-    "Id": "RecoverDataFromBox",
-    "Knowledge": "从盒子导出月租车数据恢复到中心",
-    "KeyWords": "盒子|月租车|恢复|中心",
-    "Solution": "select c.`no` as '车牌',v.startdate as '起始时间',v.enddate as '结束时间',v.mealid as '套餐ID',m.nickname as '套餐名',p.`Name` as '姓名',p.`No` as '人事编号',p.CellPhoneNo as '手机号码',p.RoomNo as '房号' from crd_credential c,crd_virtualslot v,crd_person p,sys_setmeal m where c.personid=v.personid and c.personid=p.id and c.state=1 and v.mealid=m.id;|复制以上SQL语句在盒子数据库中执行，然后通过中心Excel模板导入"
-  },
-  {
     "Type": 2,
     "Id": "ChangeDevice",
     "Knowledge": "更换主板后，场内月租车要收费",
     "KeyWords": "更换|主板|月租|收费"
+  },
+  {
+    "Type": 3,
+    "Id": "NetworkRules",
+    "Knowledge": "JieLink和G3线上线下使用的端口配置",
+    "KeyWords": "更换|主板|月租|收费",
+    "Solution": "https://docs.qq.com/sheet/DU0J1WU9TTkF1VUlv"
+  },
+  {
+    "Type": 1,
+    "Id": "RecoverDataFromBox",
+    "Knowledge": "从盒子导出月租车数据恢复到中心",
+    "KeyWords": "盒子|月租车|恢复|中心",
+    "Solution": "select c.`no` as '车牌',v.startdate as '起始时间',v.enddate as '结束时间',v.mealid as '套餐ID',m.nickname as '套餐名',p.`Name` as '姓名',p.`No` as '人事编号',p.CellPhoneNo as '手机号码',p.RoomNo as '房号' from crd_credential c,crd_virtualslot v,crd_person p,sys_setmeal m where c.personid=v.personid and c.personid=p.id and c.state=1 and v.mealid=m.id;|复制以上SQL语句在盒子数据库中执行，然后复制粘贴到Excel中，整理成模板再导入|切记前端重置了数据，要联系平台清理数据"
+  },
+  {
+    "Type": 1,
+    "Id": "OpenGateFaild",
+    "Knowledge": "2.7.0~2.7.1开闸失败必须重启盒子的解决方法",
+    "KeyWords": "开闸|失败|重启|盒子",
+    "Solution": "找到盒子的配置文件，SmartBox.Infrastructures.View.Main.exe.config添加如下的配制节，如果已经存在则将id->ip|<add key=\"BoxToControlType\" value =\"ip\" />"
+  },
+  {
+    "Type": 1,
+    "Id": "AspNetNotInstall",
+    "Knowledge": "中心网页访问的时候显示为摄像机的配置界面",
+    "KeyWords": "网页|无法|访问|摄像机",
+    "Solution": "cmd输入如下命令，然后回车|\"%WINDIR%/Microsoft.NET/Framework/v4.0.30319/aspnet_regiis.exe\" -iru -enable"
+  },
+  {
+    "Type": 1,
+    "Id": "HttpError",
+    "Knowledge": "HTTP错误 500.19-Internal Server Error",
+    "KeyWords": "NTFS|权限不正确|500|Internal Server Error",
+    "Solution": "cmd输入如下命令，然后回车|%windir%/system32/inetsrv/appcmd.exe set config -section:system.webServer/httpCompression /-[name='xpress']"
   }
-
 ]

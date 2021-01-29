@@ -30,11 +30,12 @@ namespace PartialViewExportFacePic.ViewModels
         BllProcess bllProcess = new BllProcess();
 
         public DelegateCommand ExportCommand { get; set; }
+        private string DbSqlConStr = "";
         private void DoExportFacePic(object sender)
         {
             try
             {
-                if (FilePath.IsNullOrEmpty())
+                if (FilePath.Trim().IsNullOrEmpty())
                 {
                     MessageBoxHelper.MessageBoxShowWarning("请选择图片导出路径！");
                     return;
@@ -48,17 +49,18 @@ namespace PartialViewExportFacePic.ViewModels
                 }
                 else if (rbG3)
                 {
-                    MessageBoxHelper.MessageBoxShowWarning("G3导出暂未完成");
-                    return;
+                    //MessageBoxHelper.MessageBoxShowWarning("G3导出功能暂未完成");
+                    //return;
                     //填写SQLSERVER数据库内容
                     DbConfig dbconfig = new DbConfig();
                     dbconfig.ShowDialog();
-                    ///TODOTODOTODO
-                    ///TODO
-                    ///TODO
-                    ///TODO
-                    ///TODO
-                    bgw.DoWork += ExportFacePicG3; 
+                    if (dbconfig.IsSqlCon == true)
+                    {
+                        DbSqlConStr = dbconfig.DbSQLConnString;
+                        bgw.DoWork += ExportFacePicG3;
+                    }
+                    else
+                        return;
                 }
                 bgw.RunWorkerAsync();
             }
@@ -106,12 +108,12 @@ namespace PartialViewExportFacePic.ViewModels
             int success = 0;
             int total = 0;
             int fails = 0;
-            int hasexport = 0;
 
             //自动设置数据库连接，获取文件服务器地址
             //1为jielink数据库
             bllProcess.TestConnect(EnvironmentInfo.ConnectionString, 1);
             string downUrl = bllProcess.GetDownServerUrl();
+            ShowMessage(string.Format("获取到文件服务器地址为:{0}",downUrl));
 
             List<PersonInfo> list = bllProcess.GetJielinkPersonImage();
             if (list != null && list.Count > 0)
@@ -123,10 +125,8 @@ namespace PartialViewExportFacePic.ViewModels
                     {
                         if (string.IsNullOrEmpty(info.Photo))
                         {
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
+                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
                             fails++;
-                            hasexport = fails + success;
-                            System.Threading.Thread.Sleep(5);
                             continue;
                         }
                         string photoUrl = downUrl + "/" + info.Photo;
@@ -172,7 +172,7 @@ namespace PartialViewExportFacePic.ViewModels
                         }
                         else
                         {
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                             fails++;
                         }
                         System.Threading.Thread.Sleep(5);
@@ -188,10 +188,12 @@ namespace PartialViewExportFacePic.ViewModels
                         //ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2},路径:{3}", info.PersonName, info.PersonNO, info.Photo, info.Photo));
                         fails++;
                     }
-                    hasexport = fails + success;
-                    System.Threading.Thread.Sleep(5);
                 }
-                ShowMessage(string.Format("图片转换完成，本次转换人员总数：{0}，成功:{1},失败{2}", total, success, fails));
+                ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}", total, success, fails));
+            }
+            else
+            { 
+                ShowMessage("未检测到人事资料中的人脸图片路径，请检查人事资料表以及数据库连接！");
             }
         }
 
@@ -200,7 +202,10 @@ namespace PartialViewExportFacePic.ViewModels
             int success = 0;
             int total = 0;
             int fails = 0;
-            int hasExport = 0;
+            //获取人脸图片保存路径
+            string sNotFullFilePath = bllProcess.GetPersonImageSavePath();
+
+            //输入正确数据库信息后测试连接时已建立SQL连接
             List<PersonInfo> list = bllProcess.GetFileFullPath();
             if (list != null && list.Count > 0)
             {
@@ -212,23 +217,27 @@ namespace PartialViewExportFacePic.ViewModels
                         if (string.IsNullOrEmpty(info.Photo))
                         {
                             fails++;
-                            hasExport = fails + success;
-                            hasExport = fails + success;
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
+                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
                             System.Threading.Thread.Sleep(5);
                             continue;
                         }
 
                         //源文件名
                         string sFilePath = info.Photo.Substring(0, 1) != @"\" ? @"\" + info.Photo : info.Photo;
-                        //源文件全路径
-                        string sFullFilePath = ""; //this.txtPicPath.Text + sFilePath;
-                        //目标文件全路径
-                        string dsFullFilePath = "";//this.txtNewPicPath.Text + sFilePath;
+                        string sFullFilePath = sNotFullFilePath + sFilePath;
+
+                        string dsFullFilePath = string.Empty;
+                        //多线程调用依赖对象
+                        this.Dispatcher.Invoke(new Action(() =>
+                        {
+                            //目标文件全路径
+                            dsFullFilePath = FilePath;
+                        }));
+
                         //目标文件路径
-                        string dDirectory = Path.GetDirectoryName(dsFullFilePath);
+                        //string dDirectory = Path.GetDirectoryName(dsFullFilePath);
                         //创建文件夹
-                        CreateDirectory(dDirectory);
+                        CreateDirectory(dsFullFilePath);
                         //转换后文件名
                         string dFielName = "";
                         Dispatcher.Invoke(new Action(() =>
@@ -248,7 +257,18 @@ namespace PartialViewExportFacePic.ViewModels
                         }));
 
                         //目标文件全路径
-                        string dFullFileName = dDirectory + dFielName;
+                        string dFullFileName = dsFullFilePath + dFielName;
+
+                        //bool ret = bllProcess.DownloadPicture(sFullFilePath, dFullFileName);
+                        //if (ret)
+                        //{
+                        //    success++;
+                        //}
+                        //else
+                        //{
+                        //    ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                        //    fails++;
+                        //}
 
                         if (File.Exists(sFullFilePath))
                         {
@@ -258,7 +278,8 @@ namespace PartialViewExportFacePic.ViewModels
                         else
                         {
                             fails++;
-                            ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                            ShowMessage(string.Format("姓名:【{0}】,编号:【{1}】的人脸图片未找到！，图片路径【{2}】", info.PersonName, info.PersonNO, info.Photo));
+                            //ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                         }
                     }
                     catch (Exception ex)
@@ -266,14 +287,12 @@ namespace PartialViewExportFacePic.ViewModels
                         fails++;
                         ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                     }
-                    System.Threading.Thread.Sleep(5);
-                    hasExport = fails + success;
                 }
-                ShowMessage(string.Format("图片转换完成，本次转换人员总数：{0}，成功:{1},失败{2}", total, success, fails));
+                ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}", total, success, fails));
             }
         }
 
-
+        #region 定义依赖对象
         public bool rbNoAndName
         {
             get { return Convert.ToBoolean(GetValue(rbNoAndNameProperty)); }
@@ -302,7 +321,6 @@ namespace PartialViewExportFacePic.ViewModels
         }
         public static readonly DependencyProperty rbjielinkProperty =
             DependencyProperty.Register("rbjielink", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
-
         public bool rbG3
         {
             get { return Convert.ToBoolean(GetValue(rbG3Property)); }
@@ -310,17 +328,15 @@ namespace PartialViewExportFacePic.ViewModels
         }
         public static readonly DependencyProperty rbG3Property =
             DependencyProperty.Register("rbG3", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+        #endregion
 
         void CreateDirectory(string dir)
         {
-            if (Directory.Exists(dir))
-            { }
-            else
+            if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
             }
         }
-
 
         #region 选择路径
         /// <summary>

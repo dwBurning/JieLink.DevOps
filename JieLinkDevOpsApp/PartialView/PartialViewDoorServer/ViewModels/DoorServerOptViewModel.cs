@@ -209,6 +209,11 @@ namespace PartialViewDoorServer.ViewModels
             SerializationHelper.SerializeToXMLFile<List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>>(k02DevicePath, k02DevList);
             SerializationHelper.SerializeToXMLFile<List<DeviceInfo>>(jsipDevicePath, jsipDevList);
 
+            // 2.8.1以后，自动取这个备份文件夹的文件
+            string strParaDataDirDest = string.Format(@"{0}\JieLinkDoor\para", System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
+            File.Copy(k02DevicePath, strParaDataDirDest + @"\DeviceInfos.xml", true);
+            File.Copy(jsipDevicePath, strParaDataDirDest + @"\CriterionDeviceInfos.xml", true);
+
             Notice.Show("获取设备成功....", "通知", 3, MessageBoxIcon.Success);
 
             Notice.Show("直接结束门禁服务进程，重启门禁服务!", "通知", 3, MessageBoxIcon.Success);

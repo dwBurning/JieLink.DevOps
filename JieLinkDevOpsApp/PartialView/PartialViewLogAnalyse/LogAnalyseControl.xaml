@@ -21,62 +21,115 @@
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="150"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Right"  >日志路径：</TextBlock>
-        <TextBox x:Name="txtSavePath" Margin="5" IsReadOnly="True"
-                            VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择SmartCenter日志(JieLink_Center_Comm_xxxxx.log)"
-                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath}"
-                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3"/>
-        <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Right"  >车牌号码：</TextBlock>
-        <TextBox x:Name="txtPlate" Margin="5"
-                            VerticalAlignment="Center" Height="40" 
-                            VerticalContentAlignment="Center"
-                            pu:TextBoxHelper.Watermark="请输入完整车牌(可空)"
-                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding Plate}"
-                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="1"/>
-        <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"  HorizontalAlignment="Right"  >设备名称：</TextBlock>
-        <TextBox x:Name="txtDevice" Margin="5"
-                            VerticalAlignment="Center" Height="40" 
-                            VerticalContentAlignment="Center"
-                            pu:TextBoxHelper.Watermark="请输入设备名(可空)"
-                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
-                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
-                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding DeviceName}"
-                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="3" Grid.Row="1"/>
-        <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Top"  HorizontalAlignment="Right"  >分析结果：</TextBlock>
-        <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" 
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="4" Margin="5">
-            <FlowDocument>
-                <Paragraph>
-                    <Run Text="{Binding Result}"/>
-                </Paragraph>
-            </FlowDocument>
-        </RichTextBox>
-        <Button Grid.Row="0" Margin="5" Grid.Column="4" Content="选择路径" Name ="btnChoosePath"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
-                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
-                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-        <Button Grid.Row="1" Margin="5" Grid.Column="4" Content="开始分析" Name ="btnAnalyse"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
-                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding AnalyseCommand}"
-                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+    <TabControl
+        pu:TabControlHelper.SelectedForeground="#00BCFF" >
+        <TabItem Header="中心日志">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Right"  >日志路径：</TextBlock>
+                <TextBox x:Name="txtSavePath" Margin="5" IsReadOnly="True"
+                                    VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择SmartCenter日志(JieLink_Center_Comm_xxxxx.log)"
+                                    pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                                    pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                                    pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath}"
+                                    pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3"/>
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Right"  >车牌号码：</TextBlock>
+                <TextBox x:Name="txtPlate" Margin="5"
+                                    VerticalAlignment="Center" Height="40" 
+                                    VerticalContentAlignment="Center"
+                                    pu:TextBoxHelper.Watermark="请输入完整车牌(可空)"
+                                    pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                                    pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                                    pu:TextBoxHelper.CornerRadius="4" Text="{Binding Plate}"
+                                    pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="1"/>
+                <TextBlock Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"  HorizontalAlignment="Right"  >设备名称：</TextBlock>
+                <TextBox x:Name="txtDevice" Margin="5"
+                                    VerticalAlignment="Center" Height="40" 
+                                    VerticalContentAlignment="Center"
+                                    pu:TextBoxHelper.Watermark="请输入设备名(可空)"
+                                    pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                                    pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                                    pu:TextBoxHelper.CornerRadius="4" Text="{Binding DeviceName}"
+                                    pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="3" Grid.Row="1"/>
+                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Top"  HorizontalAlignment="Right"  >分析结果：</TextBlock>
+                <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" 
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="4" Margin="5">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Result}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+                <Button Grid.Row="0" Margin="5" Grid.Column="4" Content="选择路径" Name ="btnChoosePath"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
+                                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+                <Button Grid.Row="1" Margin="5" Grid.Column="4" Content="开始分析" Name ="btnAnalyse"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding AnalyseCommand}"
+                                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
         
-    </Grid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Xmpp断线分析">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Right"  >日志路径：</TextBlock>
+                <TextBox x:Name="txtSavePath2" Margin="5" IsReadOnly="True"
+                                    VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择xmpp日志"
+                                    pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                                    pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                                    pu:TextBoxHelper.CornerRadius="4" Text="{Binding XmppFilePath}"
+                                    pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="0" />
+                <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"  HorizontalAlignment="Right"  >过滤掉线平台：</TextBlock>
+                <TextBox x:Name="txtFilterText" Margin="5" 
+                                    VerticalAlignment="Center" Height="40" 
+                                    pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                                    pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                                    pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilterText}"
+                                    pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="1" />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" VerticalAlignment="Top"  HorizontalAlignment="Right"  >分析结果：</TextBlock>
+                <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" 
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="5">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding XmppResult}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+                <Button Grid.Row="0" Margin="5" Grid.Column="2" Content="选择路径" Name ="btnChooseXmppPath"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectXmppPathCommand}"
+                                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+                <Button Grid.Row="1" Margin="5" Grid.Column="2" Content="开始分析" Name ="btnAnalyseXmpp"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding AnalyseXmppCommand}"
+                                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+            </Grid>
+        </TabItem>
+    </TabControl>
 </UserControl>

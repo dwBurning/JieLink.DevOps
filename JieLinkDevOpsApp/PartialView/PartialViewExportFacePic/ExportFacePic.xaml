@@ -22,15 +22,13 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="120"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
@@ -39,30 +37,30 @@
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock VerticalAlignment="Center"  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">1.本功能将所有人脸图片按格式导出到指定的文件夹下面</TextBlock>
-        <TextBlock VerticalAlignment="Center"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">2.Jielink该功能无需在文件服务器上运行也可导出</TextBlock>
-        <TextBlock VerticalAlignment="Center"  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">导出路径：</TextBlock>
-        <TextBlock VerticalAlignment="Center"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">导出格式选择：</TextBlock>
-        <TextBlock VerticalAlignment="Center"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">软件类型选择：</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4">1.本功能将所有人脸图片按格式导出到指定的文件夹下面</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">2.Jielink只要能连接文件服务器就能导出,G3需在文件服务器电脑下运行</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="4" Grid.Column="0">导出路径：</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">导出格式选择：</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">软件类型选择：</TextBlock>
 
         <TextBox x:Name="txtSavePath" Margin="5"
                             VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择导出的路径"
                             pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                             pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                             pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath}"
-                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3"/>
-        <Button Grid.Row="2" Margin="5" Grid.Column="4" Content="选择导出路径" Name ="btnChoosePath"
+                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3"/>
+        <Button Grid.Row="4" Margin="5" Grid.Column="5" Content="选择导出路径" Name ="btnChoosePath"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-        <Button Grid.Row="1" Margin="5" Grid.Column="4" Content="导出" Name ="btnCheckPic"
+        <Button Grid.Row="3" Margin="5" Grid.Column="5" Content="导出" Name ="btnCheckPic"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding ExportCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
 
         <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5"
-                     Grid.Row="5" Grid.Column="1" Grid.RowSpan="5" Grid.ColumnSpan="4" IsReadOnly="True" TextChanged="RichTextBox_Text_TextChanged">
+                     Grid.Row="5" Grid.Column="0"  Grid.ColumnSpan="5" IsReadOnly="True" TextChanged="RichTextBox_Text_TextChanged">
             <RichTextBox.ContextMenu>
                 <ContextMenu Name="cm" StaysOpen="true">
                     <MenuItem Header="清屏" Click="Clear_Click" >
@@ -77,31 +75,31 @@
         </RichTextBox>
         <RadioButton  Grid.Row="3" Grid.Column="1"  Height="30" IsChecked="{Binding rbNoAndName}"
 Content="编号+姓名"
-pu:RadioButtonHelper.RadioButtonStyle="Switch2"
+pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="type" />
         <RadioButton  Grid.Row="3" Grid.Column="2"  Height="30" IsChecked="{Binding rbName}"
 Content="姓名"
-pu:RadioButtonHelper.RadioButtonStyle="Switch2"
+pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="type"/>
         <RadioButton  Grid.Row="3" Grid.Column="3"  Height="30" IsChecked="{Binding rbNo}"
 Content="编号"
-pu:RadioButtonHelper.RadioButtonStyle="Switch2"
+pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="type"/>
-        <RadioButton  Grid.Row="4" Grid.Column="1"  Height="30"
+        <RadioButton  Grid.Row="2" Grid.Column="1"  Height="30"
 Content="jieLink"
-pu:RadioButtonHelper.RadioButtonStyle="Switch2"
+pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="software" IsChecked="{Binding rbjielink}"/>
-        <RadioButton  Grid.Row="4" Grid.Column="2"  Height="30"
+        <RadioButton  Grid.Row="2" Grid.Column="2"  Height="30"
 Content="G3标准版"
-pu:RadioButtonHelper.RadioButtonStyle="Switch2"
+pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="software" IsChecked="{Binding rbG3}" />
