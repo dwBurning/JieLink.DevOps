@@ -63,7 +63,7 @@
                       SelectedValue="{Binding StartVersion}" 
                       ItemsSource="{Binding Versions}"
                       IsEditable="True"
-                      pu:ComboBoxHelper.Watermark="请选择当前版本（V1.0.0）"
+                      pu:ComboBoxHelper.Watermark="请选择当前版本（V1.0.1）"
                       pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
                       pu:ComboBoxHelper.SelectedForeground="#20A0FF"
                       pu:ComboBoxHelper.HoverBackground="#20A0FF"
