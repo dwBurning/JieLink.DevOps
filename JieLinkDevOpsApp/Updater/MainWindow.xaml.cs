@@ -2,6 +2,7 @@
 using JieShun.JieLink.DevOps.Updater.Utils;
 using JieShun.JieLink.DevOps.Updater.ViewModels;
 using Panuon.UI.Silver;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +79,7 @@ namespace JieShun.JieLink.DevOps.Updater
         }
         void UpdateProgressSafely(int progress, string message)
         {
+            LogHelper.CommLogger.Info(message);
             Dispatcher.Invoke(() =>{
                 UpdateProgress(progress, message);
             });

@@ -99,66 +99,73 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             if (packageInfo == null && !string.IsNullOrEmpty(product))
                 packageInfo = UpdateUtils.ParsePackageInfo<PackageInfo>(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Configs\\" + product + ".json"));
 
-            //结束目标进程
-            progress = 30;
-            callback?.Invoke(progress, "结束目标进程");
-            UpdateUtils.KillProcess(packageInfo.KillProcessList, 1000);
-
-            //替换文件
-            foreach (var subPackage in packageInfo.SubPackages)
+            try
             {
-                if (subPackage.ZipList != null)
-                {
-                    foreach(var zipFile in subPackage.ZipList)
-                    {
-                        string zipFileFullPath = Path.Combine(packageDir, zipFile);
-                        string zipFileDir = new FileInfo(zipFileFullPath).DirectoryName;
-                        UpdateUtils.ExtractZip(zipFileFullPath, zipFileDir);
-                    }
-                }
-                progress = Math.Min(progress + 10, 80);
-                callback?.Invoke(progress, "替换" + subPackage.TargetPath);
+                //结束目标进程
+                progress = 30;
+                callback?.Invoke(progress, "结束目标进程");
+                UpdateUtils.KillProcess(packageInfo.KillProcessList, 1000);
 
-                string sourceDir = Path.Combine(packageDir, subPackage.SubPath.Trim(new char[] { '/', '\\' }));
-                string targetDir = Path.Combine(rootDir, subPackage.TargetPath.Trim(new char[] { '/', '\\' }));
-                List<string> excludeList = subPackage.ExcludeList.Select(x => Path.Combine(sourceDir, x)).ToList();
-                UpdateUtils.ReplaceFile(sourceDir, targetDir, excludeList);
+                //替换文件
+                foreach (var subPackage in packageInfo.SubPackages)
+                {
+                    if (subPackage.ZipList != null)
+                    {
+                        foreach (var zipFile in subPackage.ZipList)
+                        {
+                            string zipFileFullPath = Path.Combine(packageDir, zipFile);
+                            string zipFileDir = new FileInfo(zipFileFullPath).DirectoryName;
+                            UpdateUtils.ExtractZip(zipFileFullPath, zipFileDir);
+                        }
+                    }
+                    progress = Math.Min(progress + 10, 80);
+                    callback?.Invoke(progress, "替换" + subPackage.TargetPath);
+
+                    string sourceDir = Path.Combine(packageDir, subPackage.SubPath.Trim(new char[] { '/', '\\' }));
+                    string targetDir = Path.Combine(rootDir, subPackage.TargetPath.Trim(new char[] { '/', '\\' }));
+                    List<string> excludeList = subPackage.ExcludeList.Select(x => Path.Combine(sourceDir, x)).ToList();
+                    UpdateUtils.ReplaceFile(sourceDir, targetDir, excludeList);
+                }
+                //更新配置文件
+                foreach (var programInfo in packageInfo.RunProcessList)
+                {
+                    if (!string.IsNullOrEmpty(programInfo.ExecutablePath) && programInfo.ConfigToUpdate != null)
+                    {
+                        string filePath = programInfo.ExecutablePath;
+                        if (File.Exists(programInfo.ExecutablePath))
+                        {
+                            filePath = programInfo.ExecutablePath;
+                        }
+                        else
+                        {
+                            filePath = Path.Combine(rootDir, programInfo.ExecutablePath);
+                        }
+                        foreach (var kvp in programInfo.ConfigToUpdate)
+                        {
+                            UpdateUtils.WriterAppConfig(filePath, kvp.Key, kvp.Value);
+                        }
+                    }
+
+                }
+                //启动进程
+                progress = 90;
+                callback?.Invoke(progress, "启动进程");
+                UpdateUtils.StartProcess(rootDir, packageInfo.RunProcessList);
+
+                //删除解压的文件
+                progress = 95;
+                callback?.Invoke(progress, "删除解压的文件");
+                UpdateUtils.TryDeleteDir(packageDir);
+
+                //完成
+                progress = 100;
+                callback?.Invoke(progress, "升级完成！");
             }
-            //更新配置文件
-            foreach(var programInfo in packageInfo.RunProcessList)
+            catch (Exception ex)
             {
-                if(!string.IsNullOrEmpty(programInfo.ExecutablePath)&& programInfo.ConfigToUpdate!=null)
-                {
-                    string filePath = programInfo.ExecutablePath;
-                    if (File.Exists(programInfo.ExecutablePath))
-                    {
-                        filePath = programInfo.ExecutablePath;
-                    }
-                    else
-                    {
-                        filePath = Path.Combine(rootDir, programInfo.ExecutablePath);
-                    }
-                    foreach(var kvp in programInfo.ConfigToUpdate)
-                    {
-                        UpdateUtils.WriterAppConfig(filePath, kvp.Key, kvp.Value);
-                    }
-                }
-
+                UpdateUtils.StartProcess(rootDir, packageInfo.RunProcessList);
+                throw ex;
             }
-            //启动进程
-            progress = 90;
-            callback?.Invoke(progress, "启动进程");
-            UpdateUtils.StartProcess(rootDir, packageInfo.RunProcessList);
-
-            //删除解压的文件
-            progress = 95;
-            callback?.Invoke(progress, "删除解压的文件");
-            UpdateUtils.TryDeleteDir(packageDir);
-
-            //完成
-            progress = 100;
-            callback?.Invoke(progress, "升级完成！");
-
             return true;
         }
         void WriteUpdateResult(UpdateResult result)

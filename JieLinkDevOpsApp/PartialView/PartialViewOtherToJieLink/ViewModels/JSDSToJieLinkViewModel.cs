@@ -135,7 +135,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                 policy.DoorSelect = this.Door;
                 policy.ControlDeviceSelect = this.ControlDevice;
                 policy.DeviceRightSelect = this.DeviceRight;
-                if (!policy.ControlDeviceSelect && policy.DeviceRightSelect)
+                if (!policy.DeviceRightSelect && policy.ControlDeviceSelect)
                 {
                     ShowMessage("没有选择设备的情况下，请勿选择设备权限");
                     return;
@@ -526,10 +526,11 @@ namespace PartialViewOtherToJieLink.ViewModels
                 if (personSuccessImportList.Count > 0)
                 {
                     List<TCacAccountModel> accountList = new List<TCacAccountModel>();
-                    List<TcacVoucherBizParamModel> cacVoucherServiceList = new List<TcacVoucherBizParamModel>();
+                    List<TCacVoucherServiceModel> cacVoucherServiceList = new List<TCacVoucherServiceModel>();
                     List<TCacVoucherModel> voucherList = new List<TCacVoucherModel>();
-                    List<TCacAuthServiceModel> parkServiceList = new List<TCacAuthServiceModel>();
-                    List<TCacAuthServiceModel> doorServiceList = new List<TCacAuthServiceModel>();
+                    //JSDS的凭证关系查询方式（2021-02-02与JSDS同事沟通，他们的设计方式）：账号找服务，服务找凭证，最后生成账号与凭证的关系 
+                    List<TCacAuthServiceModel> parkServiceList = new List<TCacAuthServiceModel>();  //关联车场服务的凭证，迁移后凭证中的Lguid必需赋值
+                    List<TCacAuthServiceModel> doorServiceList = new List<TCacAuthServiceModel>();  //关联门禁服务的凭证，迁移后凭证中的Lguid无需赋值
                     DataSet jielinkPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_person WHERE `Status`=0 ORDER BY id ASC;");
                     if (jielinkPersonDs != null && jielinkPersonDs.Tables[0] != null)
                     {
@@ -540,36 +541,26 @@ namespace PartialViewOtherToJieLink.ViewModels
                     {
                         accountList = CommonHelper.DataTableToList<TCacAccountModel>(accountDs.Tables[0]);
                     }
-                    DataSet cacVoucherServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM t_cac_voucher_biz_param WHERE ACCOUNT_ID in (SELECT ID from t_cac_account WHERE `STATUS`='NORMAL') ORDER BY CREATE_TIME DESC;");
+                    DataSet cacVoucherServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM t_cac_voucher_service WHERE STATE='NORMAL' ORDER BY CREATE_TIME DESC;");  //服务与凭证关系
                     if (cacVoucherServiceDs != null && cacVoucherServiceDs.Tables[0] != null)
                     {
-                        cacVoucherServiceList = CommonHelper.DataTableToList<TcacVoucherBizParamModel>(cacVoucherServiceDs.Tables[0]);
+                        cacVoucherServiceList = CommonHelper.DataTableToList<TCacVoucherServiceModel>(cacVoucherServiceDs.Tables[0]);
                     }
-                    DataSet voucherDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_cac_voucher WHERE (`STATUS`='NORMAL' OR `STATUS`='BLANK') and ACCOUNT_ID in (SELECT ID from t_cac_account WHERE `STATUS`='NORMAL') ORDER BY CREATE_TIME DESC;");
+                    //可查询出白卡，没有绑定账号没有绑定服务的白卡，相当于录入系统（迁移数据不单纯做卡入库）
+                    DataSet voucherDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_cac_voucher WHERE (`STATUS`='NORMAL' OR `STATUS`='BLANK') ORDER BY ACCOUNT_ID asc, CREATE_TIME DESC;");
                     if (voucherDs != null && voucherDs.Tables[0] != null)
                     {
                         voucherList = CommonHelper.DataTableToList<TCacVoucherModel>(voucherDs.Tables[0]);
                     }
-                    DataSet parkServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='PARK' ORDER BY CREATE_TIME DESC;");
+                    DataSet parkServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='PARK' ORDER BY CREATE_TIME DESC;");  //车场服务
                     if (parkServiceDs != null && parkServiceDs.Tables[0] != null)
                     {
                         parkServiceList = CommonHelper.DataTableToList<TCacAuthServiceModel>(parkServiceDs.Tables[0]);
                     }
-                    DataSet doorServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='DOOR' ORDER BY CREATE_TIME DESC;");
+                    DataSet doorServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='DOOR' ORDER BY CREATE_TIME DESC;");  //门禁服务
                     if (doorServiceDs != null && doorServiceDs.Tables[0] != null)
                     {
                         doorServiceList = CommonHelper.DataTableToList<TCacAuthServiceModel>(doorServiceDs.Tables[0]);
-                    }
-                    List<TCacVoucherModel> voucherNonServiceList = new List<TCacVoucherModel>(); //不关联车场服务的凭证信息，凭证中的Lguid无需赋值：如纯门禁凭证……     
-                    List<string> parkServiceGuidList = parkServiceList.Select(x => x.ID).ToList();
-                    List<string> voucherGuidWithServceList = cacVoucherServiceList.Where(x => parkServiceGuidList.Contains(x.AUTH_SERVICE_ID)).Select(x => x.VOUCHER_ID).ToList();
-                    if (voucherGuidWithServceList.Count > 0)
-                    {
-                        voucherNonServiceList = voucherList.Where(x => !voucherGuidWithServceList.Contains(x.ID)).ToList();
-                    }
-                    else
-                    {
-                        voucherNonServiceList.AddRange(voucherList);
                     }
                     //4、凭证、门禁服务、车场服务
                     if (accountList.Count > 0)
@@ -630,6 +621,33 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             doorServiceSuccessImportCount++;
                                             messages.Add("门禁服务");
                                             MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsDoorService=1 WHERE PGUID='{0}';", personGuid));
+
+                                            //纯凭证
+                                            List<TCacVoucherServiceModel> relations = cacVoucherServiceList.Where(x => x.AUTHSERVICE_ID == doorService.ID).ToList();
+                                            List<string> voucherNonServiceGuids = relations.Select(x => x.VOUCHER_ID).ToList();
+                                            List<TCacVoucherModel> vouchersNonServiceList = voucherList.Where(x => voucherNonServiceGuids.Contains(x.ID)).ToList();
+                                            if (vouchersNonServiceList.Count > 0)
+                                            {
+                                                List<string> voucherSuccessImportList = VoucherSave(vouchersNonServiceList, jieLinkPerson, "", account.ID);
+                                                if (voucherSuccessImportList.Count > 0)
+                                                {
+                                                    voucherSuccessImportCount = voucherSuccessImportCount + voucherSuccessImportList.Count;
+                                                    messages.Add(string.Format("没有关联服务的凭证Guid=【{0}】", string.Join(",", voucherSuccessImportList)));
+                                                    voucherSuccessImportList.Clear();
+                                                }
+                                            }
+                                            if (messages.Count > 0)
+                                            {
+                                                ShowMessage(string.Format("03.迁移用户={0}凭证服务：{1}", jieLinkPerson.PersonNo, string.Join("；", messages)));
+                                                vsSuccessImportList.Add(jieLinkPerson.PersonNo);
+                                            }
+                                            else
+                                            {
+                                                ShowMessage(string.Format("03.迁移用户={0}凭证服务：无记录", jieLinkPerson.PersonNo));
+                                            }
+                                            relations.Clear();
+                                            voucherNonServiceGuids.Clear();
+                                            vouchersNonServiceList.Clear();
                                         }
                                     }
                                     //车场服务+凭证
@@ -681,7 +699,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             parkServiceSuccessImportCount++;
                                             MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsParkService=1 WHERE PGUID='{0}';", personGuid));
                                             //关联了车场服务的凭证
-                                            List<TcacVoucherBizParamModel> relations = cacVoucherServiceList.Where(x => x.ACCOUNT_ID == account.ID && x.AUTH_SERVICE_ID == parkService.ID).ToList();
+                                            List<TCacVoucherServiceModel> relations = cacVoucherServiceList.Where(x => x.AUTHSERVICE_ID == parkService.ID).ToList();
                                             List<string> voucherGuids = relations.Select(x => x.VOUCHER_ID).ToList();
                                             List<TCacVoucherModel> vouchers = voucherList.Where(x => voucherGuids.Contains(x.ID)).ToList();
                                             if (vouchers.Count > 0)
@@ -702,28 +720,10 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             {
                                                 messages.Add(string.Format("车场服务lguid={0}", lguid));
                                             }
+                                            relations.Clear();
+                                            voucherGuids.Clear();
+                                            vouchers.Clear();
                                         }
-                                    }
-                                    //纯凭证
-                                    List<TCacVoucherModel> vouchersNonService = voucherNonServiceList.Where(x => x.ACCOUNT_ID == account.ID).ToList();
-                                    if (vouchersNonService.Count > 0)
-                                    {
-                                        List<string> voucherSuccessImportList = VoucherSave(vouchersNonService, jieLinkPerson, "", account.ID);
-                                        if (voucherSuccessImportList.Count > 0)
-                                        {
-                                            voucherSuccessImportCount = voucherSuccessImportCount + voucherSuccessImportList.Count;
-                                            messages.Add(string.Format("没有关联服务的凭证Guid=【{0}】", string.Join(",", voucherSuccessImportList)));
-                                            voucherSuccessImportList.Clear();
-                                        }
-                                    }
-                                    if (messages.Count > 0)
-                                    {
-                                        ShowMessage(string.Format("03.迁移用户={0}凭证服务：{1}", jieLinkPerson.PersonNo, string.Join("；", messages)));
-                                        vsSuccessImportList.Add(jieLinkPerson.PersonNo);
-                                    }
-                                    else
-                                    {
-                                        ShowMessage(string.Format("03.迁移用户={0}凭证服务：无记录", jieLinkPerson.PersonNo));
                                     }
                                 }
                                 catch (Exception o)
@@ -749,9 +749,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                         parkServiceList.Clear();
                         doorServiceList.Clear();
                         vsSuccessImportList.Clear();
-                        voucherNonServiceList.Clear();
-                        parkServiceGuidList.Clear();
-                        voucherGuidWithServceList.Clear();
                         personSuccessImportList.Clear();
                     }
                     else
@@ -1496,13 +1493,34 @@ namespace PartialViewOtherToJieLink.ViewModels
                     continue;
                     // equipment.PRODUCT_MODEL != ConstantHelper.JSMJK022040A_Reader    //领御III二门读卡器 等价于门：直接在插入领御设备的时候解析即可
                 }
-                //通过EQUIPMENT_ID找MAC、devId、IP等设备信息
-                TBaseEquipmentParamModel macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
-                TBaseEquipmentParamModel ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
-                TBaseEquipmentParamModel devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
-                TBaseEquipmentParamModel gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
-                TBaseEquipmentParamModel maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
-                TBaseEquipmentParamModel macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                TBaseEquipmentParamModel macItem = null;
+                TBaseEquipmentParamModel ipItem = null;
+                TBaseEquipmentParamModel devIDItem = null;
+                TBaseEquipmentParamModel gatewayItem = null;
+                TBaseEquipmentParamModel maskItem = null;
+                TBaseEquipmentParamModel macNoItem = null;
+                if (equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0220A
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0240A
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                {
+                    //看jsds数据库，领御设备、速通通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                    macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                    devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                    gatewayItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                    maskItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                    macNoItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                }
+                else
+                {
+                    //看jsds数据库，Y08通过ID找MAC、devId、IP等设备信息
+                    macItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
+                    ipItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
+                    devIDItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
+                    gatewayItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMGATEWAY);
+                    maskItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMASK);
+                    macNoItem = equipmentParamList.FirstOrDefault(x => x.ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMACNO);
+                }
                 if (macItem == null || string.IsNullOrWhiteSpace(macItem.PARAM_VALUE))
                 {
                     ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：无MAC，跳过");
@@ -1847,7 +1865,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                             continue;
                         }
                         string parentGuid = string.Empty;
-                        string doorParentGuid = string.Empty;
                         if (string.IsNullOrWhiteSpace(district.DISTRICT_ID) && district.ID != ConstantHelper.JSDSDISTRICTROOT)
                         {
                             //父节点为空的其他区域：如EXTERIOR
@@ -1856,44 +1873,28 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 continue;
                             }
                             parentGuid = areaRoot.APGUID;
-                            doorParentGuid = areaRoot.APGUID;
                         }
                         else
                         {
                             parentGuid = GetGuidString(district.DISTRICT_ID);
-                            doorParentGuid = GetAreaGuidString(district.DISTRICT_ID);
                             DataSet parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{parentGuid}' ORDER BY id asc;");
                             ControlAccessPointGroup parentArea = null;
                             if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
                             {
                                 parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
-                                if (parentArea != null)
-                                {
-                                    parentGuid = parentArea.APGUID;
-                                }
                             }
-                            parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{doorParentGuid}' ORDER BY id asc;");
-                            if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
+                            if (parentArea == null)
                             {
-                                parentArea = CommonHelper.DataTableToList<ControlAccessPointGroup>(parentAreaDs.Tables[0]).FirstOrDefault();
-                                if (parentArea != null)
-                                {
-                                    doorParentGuid = parentArea.APGUID;
-                                }
+                                ShowMessage("区域" + district.DISTRICT_NAME + "的父节点区域不存在，跳过");
+                                continue;
                             }
                         }
                         //车场区域
-                        if (!string.IsNullOrWhiteSpace(parentGuid))
-                        {
-                            AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
-                        }
+                        AreaInsert(currentGuid, ConstantHelper.PARKNO, district.DISTRICT_NAME, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
                         //门禁区域
-                        if (!string.IsNullOrWhiteSpace(doorParentGuid))
-                        {
-                            string doorGuid = GetAreaGuidString(district.ID);
-                            string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
-                            AreaInsert(doorGuid, null, doorApName, doorParentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
-                        }
+                        string doorGuid = GetAreaGuidString(district.ID);
+                        string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
+                        AreaInsert(doorGuid, null, doorApName, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
                     }
                 }
             }

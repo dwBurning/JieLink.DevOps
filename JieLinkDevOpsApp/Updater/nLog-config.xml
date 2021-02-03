@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<nlog autoReload="true"  xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <!--https://github.com/nlog/NLog/wiki/Configuration-file-->
+  <variable name="currentDate" value="${date:format=yyyyMMdd}"/>
+  <targets>
+    <!--https://github.com/nlog/NLog/wiki/File-target#size-based-file-archival-->
+    <target name="CommConsole" xsi:type="Console">
+      <!--https://nlog-project.org/config/?tab=layout-renderers-->
+      <layout>${longdate} [${threadid}][${threadName}] ${level:uppercase=true} ${logger} - ${message}${exception:format=toString,Data}</layout>
+    </target>
+    <target name="CommFile" xsi:type="AsyncWrapper">
+      <target xsi:type="BufferingWrapper"  bufferSize="1">
+        <target xsi:type="File" fileName="logs/${currentDate}/DevOps_Common_${currentDate}.txt"
+                archiveAboveSize="62914560"
+                maxArchiveFiles="20"
+                >
+          <layout>${longdate} [${threadid}][${threadName}] ${level:uppercase=true} ${logger} - ${message}${exception:format=toString,Data}</layout>
+        </target>
+      </target>
+    </target>
+
+  </targets>
+
+  <rules>
+    <logger name="CommLogger" minlevel="Info" writeTo="CommFile,CommConsole" />
+    <logger name="XmppLogger" minlevel="Info" writeTo="CommFile,CommConsole" />
+  </rules>
+</nlog>
