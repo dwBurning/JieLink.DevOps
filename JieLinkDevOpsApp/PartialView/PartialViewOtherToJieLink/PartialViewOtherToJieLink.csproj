@@ -68,9 +68,9 @@
     <Compile Include="JSDSViewModels\TCacauthServiceDistrictModel.cs" />
     <Compile Include="JSDSViewModels\TCacAuthServiceModel.cs" />
     <Compile Include="JSDSViewModels\TCacServiceSetModel.cs" />
-    <Compile Include="JSDSViewModels\TcacVoucherBizParamModel.cs" />
     <Compile Include="JSDSViewModels\TCacVoucherDataModel.cs" />
     <Compile Include="JSDSViewModels\TCacVoucherModel.cs" />
+    <Compile Include="JSDSViewModels\TCacVoucherServiceModel.cs" />
     <Compile Include="JSDSViewModels\TParkPayModel.cs" />
     <Compile Include="JSDSViewModels\TParkpayrecordModel.cs" />
     <Compile Include="JSDSViewModels\TParkRecordInModel.cs" />
