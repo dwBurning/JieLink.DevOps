@@ -84,7 +84,7 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
-            <pu:TimelineItem Header="2021-02-01 V1.1.2">
+            <pu:TimelineItem Header="2021-02-03 V1.1.2">
                 <ContentControl>
                     <TextBlock>
                         1.支持低版本升级到JieLink2.8.2版本

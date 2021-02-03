@@ -70,7 +70,7 @@
                           pu:CheckBoxHelper.CheckBoxStyle="Button" IsChecked="{Binding IsSelectedAll}"
                           pu:CheckBoxHelper.CornerRadius="4" Command="{Binding ChooseAllCommand}"/>
                 <Button Grid.Column="1" Margin="5" Content="恢复默认" Name ="btnRecoverDefault" Command="{Binding RecoverDefaultCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
@@ -138,11 +138,11 @@
                     </Grid>
                     <Button Grid.Row="3" Margin="5" Content="添加策略" Name ="btnAddPolicy" Command="{Binding AddPolicyCommand}"
                             CommandParameter="{Binding ElementName=dtpTime, Path=SelectedDateTime}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     <Button Grid.Row="4" Margin="5" Content="移除策略" Name ="btnRemovePolicy" Command="{Binding RemovePolicyCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     <ListBox Margin="5" BorderBrush="#20A0FF" Grid.Column="1" Grid.Row="0" Grid.RowSpan="5"
@@ -163,17 +163,17 @@
                             pu:TextBoxHelper.CornerRadius="4" Text="{Binding TaskBackUpPath}"
                             pu:TextBoxHelper.IsClearButtonVisible="True"/>
                         <Button Grid.Row="0" Margin="5" Grid.Column="1" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
 
                     <Button Grid.Row="6" Margin="5" Grid.ColumnSpan="2" Content="执行任务" Name ="btnStart" Command="{Binding TaskStartCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     <Button Grid.Row="7" Margin="5" Grid.ColumnSpan="2" Content="终止任务" Name ="btnStop" Command="{Binding TaskStopCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 </Grid>
@@ -217,12 +217,12 @@
                             pu:TextBoxHelper.CornerRadius="4" Text="{Binding TaskBackUpPath}"
                             pu:TextBoxHelper.IsClearButtonVisible="True"/>
                         <Button Grid.Row="0" Margin="5" Grid.Column="1" Content="选择路径" Name ="btnManualChoosePath" Click="btnChoosePath_Click"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
                     <Button Grid.Row="2" Margin="5" Grid.ColumnSpan="2" Content="执行备份" Name ="btnStart1" Command="{Binding ManualExecuteCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 </Grid>

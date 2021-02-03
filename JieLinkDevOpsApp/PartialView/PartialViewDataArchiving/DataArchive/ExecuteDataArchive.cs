@@ -9,6 +9,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PartialViewDataArchiving.DataArchive
@@ -92,6 +93,8 @@ namespace PartialViewDataArchiving.DataArchive
             return tableCharacters;
         }
 
+        object obj = new object();
+
         /// <summary>
         /// 开始归档
         /// </summary>
@@ -108,36 +111,39 @@ namespace PartialViewDataArchiving.DataArchive
                     cmd.Transaction = transaction;
                     try
                     {
-                        string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
+                        DateTime archiveDate = DateTime.Now.Date.AddMonths(-EnvironmentInfo.AutoArchiveMonth);
+                        string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
                         if (bllTableName == "box_enter_record")
                         {
                             sql += " and wasgone=1";
                         }
                         cmd.CommandText = sql;
+                        LogHelper.CommLogger.Info(sql);
                         int x = cmd.ExecuteNonQuery();
 
-                        string script = $"delete from `{bllTableName}` where  DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
+                        string script = $"delete from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
                         if (bllTableName == "box_enter_record")
                         {
                             script += " and wasgone=1";
                         }
                         cmd.CommandText = script;
+                        LogHelper.CommLogger.Info(script);
                         int y = cmd.ExecuteNonQuery();
                         transaction.Commit();
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        DataArchivingViewModel.Instance().ShowMessage("数据归档遇到些问题");
+                        LogHelper.CommLogger.Error("数据归档遇到些问题，事务回滚：" + ex.ToString());
                     }
-
                 }
                 progress += 20;
                 DataArchivingViewModel.Instance().ShowMessage($"表{bllTableName}归档完成...请继续等待...", progress);
+
             }
             catch (Exception ex)
             {
-                DataArchivingViewModel.Instance().ShowMessage("数据归档遇到些问题");
+                LogHelper.CommLogger.Error("数据归档遇到些问题：" + ex.ToString());
             }
         }
 
@@ -193,6 +199,7 @@ namespace PartialViewDataArchiving.DataArchive
             DataArchivingViewModel.Instance().ShowMessage($"正在执行归档...请等待...");
             foreach (var table in DataArchivingViewModel.Instance().Tables)
             {
+                //Thread.Sleep(2000);
                 tasks.Add(Task.Factory.StartNew(() =>
                 {
                     string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";

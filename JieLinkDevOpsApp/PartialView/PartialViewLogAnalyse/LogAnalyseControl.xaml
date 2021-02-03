@@ -73,11 +73,11 @@
                     </FlowDocument>
                 </RichTextBox>
                 <Button Grid.Row="0" Margin="5" Grid.Column="4" Content="选择路径" Name ="btnChoosePath"
-                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                                     pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
                                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 <Button Grid.Row="1" Margin="5" Grid.Column="4" Content="开始分析" Name ="btnAnalyse"
-                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                                     pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding AnalyseCommand}"
                                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
         
@@ -121,11 +121,11 @@
                     </FlowDocument>
                 </RichTextBox>
                 <Button Grid.Row="0" Margin="5" Grid.Column="2" Content="选择路径" Name ="btnChooseXmppPath"
-                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                                     pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectXmppPathCommand}"
                                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 <Button Grid.Row="1" Margin="5" Grid.Column="2" Content="开始分析" Name ="btnAnalyseXmpp"
-                                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                                     pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding AnalyseXmppCommand}"
                                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
