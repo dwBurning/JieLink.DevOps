@@ -135,7 +135,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                 policy.DoorSelect = this.Door;
                 policy.ControlDeviceSelect = this.ControlDevice;
                 policy.DeviceRightSelect = this.DeviceRight;
-                if (!policy.DeviceRightSelect && policy.ControlDeviceSelect)
+                if (!policy.ControlDeviceSelect && policy.DeviceRightSelect)
                 {
                     ShowMessage("没有选择设备的情况下，请勿选择设备权限");
                     return;
@@ -621,34 +621,33 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             doorServiceSuccessImportCount++;
                                             messages.Add("门禁服务");
                                             MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsDoorService=1 WHERE PGUID='{0}';", personGuid));
-
-                                            //纯凭证
-                                            List<TCacVoucherServiceModel> relations = cacVoucherServiceList.Where(x => x.AUTHSERVICE_ID == doorService.ID).ToList();
-                                            List<string> voucherNonServiceGuids = relations.Select(x => x.VOUCHER_ID).ToList();
-                                            List<TCacVoucherModel> vouchersNonServiceList = voucherList.Where(x => voucherNonServiceGuids.Contains(x.ID)).ToList();
-                                            if (vouchersNonServiceList.Count > 0)
-                                            {
-                                                List<string> voucherSuccessImportList = VoucherSave(vouchersNonServiceList, jieLinkPerson, "", account.ID);
-                                                if (voucherSuccessImportList.Count > 0)
-                                                {
-                                                    voucherSuccessImportCount = voucherSuccessImportCount + voucherSuccessImportList.Count;
-                                                    messages.Add(string.Format("没有关联服务的凭证Guid=【{0}】", string.Join(",", voucherSuccessImportList)));
-                                                    voucherSuccessImportList.Clear();
-                                                }
-                                            }
-                                            if (messages.Count > 0)
-                                            {
-                                                ShowMessage(string.Format("03.迁移用户={0}凭证服务：{1}", jieLinkPerson.PersonNo, string.Join("；", messages)));
-                                                vsSuccessImportList.Add(jieLinkPerson.PersonNo);
-                                            }
-                                            else
-                                            {
-                                                ShowMessage(string.Format("03.迁移用户={0}凭证服务：无记录", jieLinkPerson.PersonNo));
-                                            }
-                                            relations.Clear();
-                                            voucherNonServiceGuids.Clear();
-                                            vouchersNonServiceList.Clear();
                                         }
+                                        //纯凭证
+                                        List<TCacVoucherServiceModel> relations = cacVoucherServiceList.Where(x => x.AUTHSERVICE_ID == doorService.ID).ToList();
+                                        List<string> voucherNonServiceGuids = relations.Select(x => x.VOUCHER_ID).ToList();
+                                        List<TCacVoucherModel> vouchersNonServiceList = voucherList.Where(x => voucherNonServiceGuids.Contains(x.ID)).ToList();
+                                        if (vouchersNonServiceList.Count > 0)
+                                        {
+                                            List<string> voucherSuccessImportList = VoucherSave(vouchersNonServiceList, jieLinkPerson, "", account.ID);
+                                            if (voucherSuccessImportList.Count > 0)
+                                            {
+                                                voucherSuccessImportCount = voucherSuccessImportCount + voucherSuccessImportList.Count;
+                                                messages.Add(string.Format("没有关联服务的凭证Guid=【{0}】", string.Join(",", voucherSuccessImportList)));
+                                                voucherSuccessImportList.Clear();
+                                            }
+                                        }
+                                        if (messages.Count > 0)
+                                        {
+                                            ShowMessage(string.Format("03.迁移用户={0}凭证服务：{1}", jieLinkPerson.PersonNo, string.Join("；", messages)));
+                                            vsSuccessImportList.Add(jieLinkPerson.PersonNo);
+                                        }
+                                        else
+                                        {
+                                            ShowMessage(string.Format("03.迁移用户={0}凭证服务：无记录", jieLinkPerson.PersonNo));
+                                        }
+                                        relations.Clear();
+                                        voucherNonServiceGuids.Clear();
+                                        vouchersNonServiceList.Clear();
                                     }
                                     //车场服务+凭证
                                     List<TCacAuthServiceModel> parkServices = parkServiceList.Where(x => x.ACCOUNT_ID == account.ID).ToList();
