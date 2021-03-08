@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jieshun.devopsserver.mapper.VerifyBillInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.jieshun.devopsserver.bean.VerifyBillInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="publisher_name" property="publisherName" jdbcType="VARCHAR" />
+    <result column="project_shoper_no" property="projectShoperNo" jdbcType="VARCHAR" />
+    <result column="project_no" property="projectNo" jdbcType="VARCHAR" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="project_big_version" property="projectBigVersion" jdbcType="VARCHAR" />
+    <result column="project_version" property="projectVersion" jdbcType="VARCHAR" />
+    <result column="project_is_nonstandard" property="projectIsNonstandard" jdbcType="INTEGER" />
+    <result column="project_remote" property="projectRemote" jdbcType="VARCHAR" />
+    <result column="project_remote_password" property="projectRemotePassword" jdbcType="VARCHAR" />
+    <result column="project_remark" property="projectRemark" jdbcType="VARCHAR" />
+    <result column="project_task" property="projectTask" jdbcType="VARCHAR" />
+    <result column="add_date" property="addDate" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="emergency" property="emergency" jdbcType="INTEGER" />
+    <result column="isdelete" property="isdelete" jdbcType="INTEGER" />
+    <result column="finish_date" property="finishDate" jdbcType="TIMESTAMP" />
+    <result column="uploadfilename" property="uploadfilename" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.jieshun.devopsserver.bean.VerifyBillInfo" extends="BaseResultMap" >
+    <result column="AutoSQL" property="autosql" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, publisher_name, project_shoper_no, project_no, project_name, project_big_version, 
+    project_version, project_is_nonstandard, project_remote, project_remote_password, 
+    project_remark, project_task, add_date, status, emergency, isdelete, finish_date, 
+    uploadfilename
+  </sql>
+  <sql id="Blob_Column_List" >
+    AutoSQL
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from verify_bill_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from verify_bill_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from verify_bill_info
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from verify_bill_info
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfoExample" >
+    delete from verify_bill_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfo" >
+    insert into verify_bill_info (id, publisher_name, project_shoper_no, 
+      project_no, project_name, project_big_version, 
+      project_version, project_is_nonstandard, project_remote, 
+      project_remote_password, project_remark, project_task, 
+      add_date, status, emergency, 
+      isdelete, finish_date, uploadfilename, 
+      AutoSQL)
+    values (#{id,jdbcType=INTEGER}, #{publisherName,jdbcType=VARCHAR}, #{projectShoperNo,jdbcType=VARCHAR}, 
+      #{projectNo,jdbcType=VARCHAR}, #{projectName,jdbcType=VARCHAR}, #{projectBigVersion,jdbcType=VARCHAR}, 
+      #{projectVersion,jdbcType=VARCHAR}, #{projectIsNonstandard,jdbcType=INTEGER}, #{projectRemote,jdbcType=VARCHAR}, 
+      #{projectRemotePassword,jdbcType=VARCHAR}, #{projectRemark,jdbcType=VARCHAR}, #{projectTask,jdbcType=VARCHAR}, 
+      #{addDate,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{emergency,jdbcType=INTEGER}, 
+      #{isdelete,jdbcType=INTEGER}, #{finishDate,jdbcType=TIMESTAMP}, #{uploadfilename,jdbcType=VARCHAR}, 
+      #{autosql,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfo" >
+    insert into verify_bill_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="publisherName != null" >
+        publisher_name,
+      </if>
+      <if test="projectShoperNo != null" >
+        project_shoper_no,
+      </if>
+      <if test="projectNo != null" >
+        project_no,
+      </if>
+      <if test="projectName != null" >
+        project_name,
+      </if>
+      <if test="projectBigVersion != null" >
+        project_big_version,
+      </if>
+      <if test="projectVersion != null" >
+        project_version,
+      </if>
+      <if test="projectIsNonstandard != null" >
+        project_is_nonstandard,
+      </if>
+      <if test="projectRemote != null" >
+        project_remote,
+      </if>
+      <if test="projectRemotePassword != null" >
+        project_remote_password,
+      </if>
+      <if test="projectRemark != null" >
+        project_remark,
+      </if>
+      <if test="projectTask != null" >
+        project_task,
+      </if>
+      <if test="addDate != null" >
+        add_date,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="emergency != null" >
+        emergency,
+      </if>
+      <if test="isdelete != null" >
+        isdelete,
+      </if>
+      <if test="finishDate != null" >
+        finish_date,
+      </if>
+      <if test="uploadfilename != null" >
+        uploadfilename,
+      </if>
+      <if test="autosql != null" >
+        AutoSQL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="publisherName != null" >
+        #{publisherName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectShoperNo != null" >
+        #{projectShoperNo,jdbcType=VARCHAR},
+      </if>
+      <if test="projectNo != null" >
+        #{projectNo,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null" >
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectBigVersion != null" >
+        #{projectBigVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="projectVersion != null" >
+        #{projectVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="projectIsNonstandard != null" >
+        #{projectIsNonstandard,jdbcType=INTEGER},
+      </if>
+      <if test="projectRemote != null" >
+        #{projectRemote,jdbcType=VARCHAR},
+      </if>
+      <if test="projectRemotePassword != null" >
+        #{projectRemotePassword,jdbcType=VARCHAR},
+      </if>
+      <if test="projectRemark != null" >
+        #{projectRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="projectTask != null" >
+        #{projectTask,jdbcType=VARCHAR},
+      </if>
+      <if test="addDate != null" >
+        #{addDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="emergency != null" >
+        #{emergency,jdbcType=INTEGER},
+      </if>
+      <if test="isdelete != null" >
+        #{isdelete,jdbcType=INTEGER},
+      </if>
+      <if test="finishDate != null" >
+        #{finishDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadfilename != null" >
+        #{uploadfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="autosql != null" >
+        #{autosql,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfoExample" resultType="java.lang.Integer" >
+    select count(*) from verify_bill_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update verify_bill_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.publisherName != null" >
+        publisher_name = #{record.publisherName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectShoperNo != null" >
+        project_shoper_no = #{record.projectShoperNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectNo != null" >
+        project_no = #{record.projectNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectName != null" >
+        project_name = #{record.projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectBigVersion != null" >
+        project_big_version = #{record.projectBigVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectVersion != null" >
+        project_version = #{record.projectVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectIsNonstandard != null" >
+        project_is_nonstandard = #{record.projectIsNonstandard,jdbcType=INTEGER},
+      </if>
+      <if test="record.projectRemote != null" >
+        project_remote = #{record.projectRemote,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectRemotePassword != null" >
+        project_remote_password = #{record.projectRemotePassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectRemark != null" >
+        project_remark = #{record.projectRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="record.projectTask != null" >
+        project_task = #{record.projectTask,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addDate != null" >
+        add_date = #{record.addDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.emergency != null" >
+        emergency = #{record.emergency,jdbcType=INTEGER},
+      </if>
+      <if test="record.isdelete != null" >
+        isdelete = #{record.isdelete,jdbcType=INTEGER},
+      </if>
+      <if test="record.finishDate != null" >
+        finish_date = #{record.finishDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.uploadfilename != null" >
+        uploadfilename = #{record.uploadfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.autosql != null" >
+        AutoSQL = #{record.autosql,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update verify_bill_info
+    set id = #{record.id,jdbcType=INTEGER},
+      publisher_name = #{record.publisherName,jdbcType=VARCHAR},
+      project_shoper_no = #{record.projectShoperNo,jdbcType=VARCHAR},
+      project_no = #{record.projectNo,jdbcType=VARCHAR},
+      project_name = #{record.projectName,jdbcType=VARCHAR},
+      project_big_version = #{record.projectBigVersion,jdbcType=VARCHAR},
+      project_version = #{record.projectVersion,jdbcType=VARCHAR},
+      project_is_nonstandard = #{record.projectIsNonstandard,jdbcType=INTEGER},
+      project_remote = #{record.projectRemote,jdbcType=VARCHAR},
+      project_remote_password = #{record.projectRemotePassword,jdbcType=VARCHAR},
+      project_remark = #{record.projectRemark,jdbcType=VARCHAR},
+      project_task = #{record.projectTask,jdbcType=VARCHAR},
+      add_date = #{record.addDate,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=INTEGER},
+      emergency = #{record.emergency,jdbcType=INTEGER},
+      isdelete = #{record.isdelete,jdbcType=INTEGER},
+      finish_date = #{record.finishDate,jdbcType=TIMESTAMP},
+      uploadfilename = #{record.uploadfilename,jdbcType=VARCHAR},
+      AutoSQL = #{record.autosql,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update verify_bill_info
+    set id = #{record.id,jdbcType=INTEGER},
+      publisher_name = #{record.publisherName,jdbcType=VARCHAR},
+      project_shoper_no = #{record.projectShoperNo,jdbcType=VARCHAR},
+      project_no = #{record.projectNo,jdbcType=VARCHAR},
+      project_name = #{record.projectName,jdbcType=VARCHAR},
+      project_big_version = #{record.projectBigVersion,jdbcType=VARCHAR},
+      project_version = #{record.projectVersion,jdbcType=VARCHAR},
+      project_is_nonstandard = #{record.projectIsNonstandard,jdbcType=INTEGER},
+      project_remote = #{record.projectRemote,jdbcType=VARCHAR},
+      project_remote_password = #{record.projectRemotePassword,jdbcType=VARCHAR},
+      project_remark = #{record.projectRemark,jdbcType=VARCHAR},
+      project_task = #{record.projectTask,jdbcType=VARCHAR},
+      add_date = #{record.addDate,jdbcType=TIMESTAMP},
+      status = #{record.status,jdbcType=INTEGER},
+      emergency = #{record.emergency,jdbcType=INTEGER},
+      isdelete = #{record.isdelete,jdbcType=INTEGER},
+      finish_date = #{record.finishDate,jdbcType=TIMESTAMP},
+      uploadfilename = #{record.uploadfilename,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfo" >
+    update verify_bill_info
+    <set >
+      <if test="publisherName != null" >
+        publisher_name = #{publisherName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectShoperNo != null" >
+        project_shoper_no = #{projectShoperNo,jdbcType=VARCHAR},
+      </if>
+      <if test="projectNo != null" >
+        project_no = #{projectNo,jdbcType=VARCHAR},
+      </if>
+      <if test="projectName != null" >
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="projectBigVersion != null" >
+        project_big_version = #{projectBigVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="projectVersion != null" >
+        project_version = #{projectVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="projectIsNonstandard != null" >
+        project_is_nonstandard = #{projectIsNonstandard,jdbcType=INTEGER},
+      </if>
+      <if test="projectRemote != null" >
+        project_remote = #{projectRemote,jdbcType=VARCHAR},
+      </if>
+      <if test="projectRemotePassword != null" >
+        project_remote_password = #{projectRemotePassword,jdbcType=VARCHAR},
+      </if>
+      <if test="projectRemark != null" >
+        project_remark = #{projectRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="projectTask != null" >
+        project_task = #{projectTask,jdbcType=VARCHAR},
+      </if>
+      <if test="addDate != null" >
+        add_date = #{addDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="emergency != null" >
+        emergency = #{emergency,jdbcType=INTEGER},
+      </if>
+      <if test="isdelete != null" >
+        isdelete = #{isdelete,jdbcType=INTEGER},
+      </if>
+      <if test="finishDate != null" >
+        finish_date = #{finishDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="uploadfilename != null" >
+        uploadfilename = #{uploadfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="autosql != null" >
+        AutoSQL = #{autosql,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfo" >
+    update verify_bill_info
+    set publisher_name = #{publisherName,jdbcType=VARCHAR},
+      project_shoper_no = #{projectShoperNo,jdbcType=VARCHAR},
+      project_no = #{projectNo,jdbcType=VARCHAR},
+      project_name = #{projectName,jdbcType=VARCHAR},
+      project_big_version = #{projectBigVersion,jdbcType=VARCHAR},
+      project_version = #{projectVersion,jdbcType=VARCHAR},
+      project_is_nonstandard = #{projectIsNonstandard,jdbcType=INTEGER},
+      project_remote = #{projectRemote,jdbcType=VARCHAR},
+      project_remote_password = #{projectRemotePassword,jdbcType=VARCHAR},
+      project_remark = #{projectRemark,jdbcType=VARCHAR},
+      project_task = #{projectTask,jdbcType=VARCHAR},
+      add_date = #{addDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      emergency = #{emergency,jdbcType=INTEGER},
+      isdelete = #{isdelete,jdbcType=INTEGER},
+      finish_date = #{finishDate,jdbcType=TIMESTAMP},
+      uploadfilename = #{uploadfilename,jdbcType=VARCHAR},
+      AutoSQL = #{autosql,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.jieshun.devopsserver.bean.VerifyBillInfo" >
+    update verify_bill_info
+    set publisher_name = #{publisherName,jdbcType=VARCHAR},
+      project_shoper_no = #{projectShoperNo,jdbcType=VARCHAR},
+      project_no = #{projectNo,jdbcType=VARCHAR},
+      project_name = #{projectName,jdbcType=VARCHAR},
+      project_big_version = #{projectBigVersion,jdbcType=VARCHAR},
+      project_version = #{projectVersion,jdbcType=VARCHAR},
+      project_is_nonstandard = #{projectIsNonstandard,jdbcType=INTEGER},
+      project_remote = #{projectRemote,jdbcType=VARCHAR},
+      project_remote_password = #{projectRemotePassword,jdbcType=VARCHAR},
+      project_remark = #{projectRemark,jdbcType=VARCHAR},
+      project_task = #{projectTask,jdbcType=VARCHAR},
+      add_date = #{addDate,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER},
+      emergency = #{emergency,jdbcType=INTEGER},
+      isdelete = #{isdelete,jdbcType=INTEGER},
+      finish_date = #{finishDate,jdbcType=TIMESTAMP},
+      uploadfilename = #{uploadfilename,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
