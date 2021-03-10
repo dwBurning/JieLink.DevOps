@@ -22,16 +22,34 @@
         style="margin-left: 3px"
         @click="addVersionInfo"
       >新增对账任务</el-button>
-      <el-button
+      <!--<el-button
         type="primary"
         icon="el-icon-document-add"
         size="small"
         style="margin-left: 3px"
         @click="Test"
-      >葫芦</el-button>
+      >葫芦</el-button> -->
     </el-header>
 
     <el-main class="report_main">
+
+      <el-dialog
+        title="补录语句"
+        :visible.sync="SQLDialog"
+      >
+        <el-input
+          type="textarea"
+          :rows="30"
+          v-model="textarea"
+        >
+        </el-input>
+        <el-button
+        style="margin-top :10px"
+          type="primary"
+          @click="SQLDialog=false"
+        >确定</el-button>
+      </el-dialog>
+
       <el-dialog
         title="补充远程"
         :visible.sync="AddRemoteDialog"
@@ -64,22 +82,6 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-      <!--
-      <el-dialog
-        title="SQL语句"
-        :visible.sync="SQLdialogVisible"
-        width="30%"
-        :before-close="handleClose"
-      >
-        <span>{{AutoSQL}}</span>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button @click="SQLdialogVisible = false">确定</el-button>
-        </span>
-      </el-dialog>
--->
       <el-dialog
         title="对账信息"
         :visible.sync="dialogVisible"
@@ -153,11 +155,11 @@
             >
               <el-option
                 label="是"
-                value="0"
+                value="1"
               ></el-option>
               <el-option
                 label="否"
-                value="1"
+                value="0"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -188,14 +190,11 @@
             class="upload-demo"
             ref="upload"
             accept=".xlsx,.xls"
-            action=""
-            :on-preview="handlePreview"
             :on-remove="handleRemove"
             :on-change="onUploadChange"
             :before-upload="beforeUpload"
             :auto-upload="false"
             :limit="1"
-            :on-exceed="handleExceed"
             :file-list="fileList"
           >
 
@@ -204,7 +203,7 @@
               type="primary"
               style="margin-left:100px;"
             >选择excel文件上传</el-button>
-            <label>如果jielink需要补录或者删除，数据必须放在第一个Sheet中，会自动生成SQL语句</label>
+            <label>只能上传一个excel,jielink需要补录或者删除的数据必须放在第一个Sheet中,不要有多余数据</label>
           </el-upload>
 
           <el-checkbox-group v-model="ruleForm.checkList">
@@ -214,6 +213,7 @@
             ></el-checkbox>
             <el-checkbox label="平台无车场有 补推"></el-checkbox>
             <el-checkbox label="平台无车场有 删除"></el-checkbox>
+            <el-checkbox label="退款问题"></el-checkbox>
             <el-checkbox label="查原因"></el-checkbox>
           </el-checkbox-group>
 
@@ -307,25 +307,26 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="500"
+          width="450"
         >
           <template slot-scope="scope">
             <el-button
+              style="margin-left: 10px"
               @click="finishClick(scope.row)"
-              type="primary"
+              type="success"
               icon="el-icon-check"
               size="small"
             >验收</el-button>
             <el-button
               @click="ConfirmClick(scope.row)"
-              type="primary"
-              icon="el-icon-ice-cream-round"
+              type="success"
+              icon="el-icon-chat-dot-square"
               size="small"
             >研发确认</el-button>
             <el-button
               @click="SQLClick(scope.row)"
-              type="primary"
-              icon="el-icon-tickets"
+              type="link"
+              icon="el-icon-document-copy"
               size="small"
             >补录语句</el-button>
             <el-button
@@ -335,24 +336,29 @@
               size="small"
             >加急</el-button>
             <el-button
+              style="margin-top: 10px"
+              type="primary"
+              icon="el-icon-sugar"
+              size="small"
+            >预留</el-button>
+            <el-button
+              @click="DownExcelClick(scope.row)"
+              type="primary"
+              icon="el-icon-download"
+              size="small"
+            >下载表格</el-button>
+            <el-button
+              @click="AddRemoteTemp(scope.row)"
+              type="primary"
+              icon="el-icon-thumb"
+              size="small"
+            >补充远程</el-button>
+            <el-button
               @click="deleteClick(scope.row)"
               type="danger"
               icon="el-icon-delete"
               size="small"
             >删除</el-button>
-            <el-button
-              @click="DownExcelClick(scope.row)"
-              style="margin-top: 10px"
-              type="primary"
-              icon="el-icon-tickets"
-              size="small"
-            >下载excel</el-button>
-            <el-button
-              @click="AddRemoteTemp(scope.row)"
-              type="primary"
-              icon="el-icon-tickets"
-              size="small"
-            >补充远程(临时)</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -383,24 +389,6 @@ export default {
   components: { Pagination },
   methods: {
     Test() {
-      let fd = new FormData();
-      fd.append("time", new Date());
-      console.log("response Test");
-      axios({
-        method: "post",
-        url: "/VerifyBill/uploadTest/" + new Date().getTime(),
-        data: fd,
-        headers: {
-          "Content-Type":
-            "multipart/form-data;boundary=" + new Date().getTime(),
-        },
-      })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
     },
 
     //打开对话窗 请求对话参与方数据
@@ -576,18 +564,20 @@ export default {
         id: this.selItems.id,
       }).then((resp) => {
         if (resp.data.code == 0) {
-          //换个行容易吗
-          var SQLText = resp.data.msg.split("\r\n");
-          const newDatas = [];
-          const h = this.$createElement;
-          for (const i in SQLText) {
-            newDatas.push(h("p", null, SQLText[i]));
-          }
+          // //换个行容易吗
+          // var SQLText = resp.data.msg.split("\r\n");
+          // const newDatas = [];
+          // const h = this.$createElement;
+          // for (const i in SQLText) {
+          //   newDatas.push(h("p", null, SQLText[i]));
+          // }
 
-          this.$alert(h("div", null, newDatas),
-           "补录语句", {
-            confirmButtonText: "确定",
-          });
+          this.SQLDialog = true;
+          this.textarea = resp.data.msg;
+          // this.$alert(h("div", null, newDatas), "补录语句", {
+          //   confirmButtonText: "确定",
+          // });
+
           // this.AutoSQL = resp.data.msg;
           // if(resp.data.msg != "")
           //   this.SQLdialogVisible = true;
@@ -604,21 +594,49 @@ export default {
     //下载文件按钮
     DownExcelClick(row) {
       this.selItems = row;
-      getRequest("/VerifyBill/GetUrl", {
-        id: this.selItems.id,
-      }).then((resp) => {
-        if (resp.data.code == 0) {
-          this.$alert(resp.data.msg, "补录语句", {
-            confirmButtonText: "确定",
-          });
-        } else {
-          this.$notify({
-            title: "错误",
-            type: "error",
-            message: "找不到文件啊！",
-          });
-        }
-      });
+      let fd = new FormData();
+      fd.append("id", this.selItems.id);
+      axios({
+        method: "post",
+        url: "/VerifyBill/GetFile/" + new Date().getTime(),
+        data: fd,
+        responseType: "blob",
+        //responseType: "FileOutputStream",
+        headers: {
+          "Content-Type":
+            "multipart/form-data;boundary=" + new Date().getTime(),
+        },
+      })
+        .then((response) => {
+          this.download(response);
+        })
+        .catch((error) => {
+          error.toString();
+        });
+    },
+    // 下载文件
+    download(data) {
+      if (!data) {
+        return;
+      }
+      //无文件流返回
+      if (data.data.size == 0 || data.size == 0 || data.data == "") {
+        this.$notify({
+          title: "失败",
+          type: "error",
+          message: "未找到文件!",
+        });
+        return;
+      }
+      let url = window.URL.createObjectURL(new Blob([data.data]));
+      //let url = window.URL.createObjectURL(new File([data],"excel.xlsx"));
+      let link = document.createElement("a");
+      link.style.display = "none";
+      link.href = url;
+
+      link.setAttribute("download", decodeURIComponent(data.headers.filename));
+      document.body.appendChild(link);
+      link.click();
     },
 
     //补充远程用，临时当修改用
@@ -669,6 +687,7 @@ export default {
       else this.hasFileUpload = false;
     },
     handleRemove(file, fileList) {
+      this.hasFileUpload = false;
       this.fileList = fileList;
     },
     //关键字搜索会话
@@ -701,13 +720,11 @@ export default {
       } else if (row.status == 1) {
         return "等待研发处理";
       } else if (row.status == 2) {
-        return "语句已生成,自助处理";
+        return "生成语句,自助处理";
       } else if (row.status == 3) {
         return "研发已处理";
       } else if (row.status == 4) {
         return "已完成";
-      } else if (row.status == 5) {
-        return "语句已生成,自助处理";
       }
     },
     EmergencyFormat(row, column) {
@@ -872,14 +889,14 @@ export default {
         return;
       }
       //要有选择上传文件 TODO 这里好像出问题了
-      // if (this.hasFileUpload == false) {
-      //   this.$message({
-      //     showClose: true,
-      //     message: "请选择对账差异excel表格！",
-      //     type: "error",
-      //   });
-      //   return;
-      // }
+      if (this.hasFileUpload == false) {
+        this.$message({
+          showClose: true,
+          message: "请选择对账差异excel表格！",
+          type: "error",
+        });
+        return;
+      }
 
       //获取登录用户名
       var username = "";
@@ -906,7 +923,7 @@ export default {
                 uploadfilename: this.fileList.toString(),
               }).then(
                 (resp) => {
-                  //上传文件  上传完表单上传文件，这么调用有问题
+                  //上传文件  上传完表单上传文件
                   this.$refs.upload.submit();
 
                   this.$notify({
@@ -960,6 +977,7 @@ export default {
       dialogLoading: false,
       dialogVisible: false,
       AddRemoteDialog: false,
+      SQLDialog:false,
       SQLdialogVisible: false,
       idVisible: false,
       keywords: null,
@@ -972,7 +990,7 @@ export default {
       set_project_remote: "",
       set_project_remote_password: "",
       //AutoSQL:"",
-
+      textarea: "",
       ruleForm: {
         project_shoper_no: "",
         project_no: "",
