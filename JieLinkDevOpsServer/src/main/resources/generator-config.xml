@@ -14,7 +14,7 @@
 
 		<!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
 		<jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
-			connectionURL="jdbc:mysql://106.53.255.16:3306/jielink_devops?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"
+			connectionURL="jdbc:mysql://106.53.255.16:3306/jielink_devops_gaoguodong?serverTimezone=GMT%2B8&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false"
 			userId="test" password="js*168">
 			<property name="nullCatalogMeansCurrent" value="true" />
 		</jdbcConnection>
@@ -52,7 +52,8 @@
 
 		<!-- 指定数据库表 -->
 		<table tableName="test" domainObjectName="Test"></table>
-		<!--<table tableName="devops_event_concern" domainObjectName="DevOpsEventConcern"></table>
+		<!--<table tableName="verify_bill_info" domainObjectName="VerifyBillInfo"></table>
+		<table tableName="devops_event_concern" domainObjectName="DevOpsEventConcern"></table>
 		<table tableName="devops_product" domainObjectName="DevOpsProduct"></table>
 		<table tableName="devops_event" domainObjectName="DevOpsEvent"></table>
 		 	<table tableName="sys_user" domainObjectName="SysUser"></table>

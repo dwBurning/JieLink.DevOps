@@ -28,7 +28,19 @@
         size="small"
         style="margin-left: 3px"
         @click="Test"
-      >葫芦</el-button> -->
+      >测试按钮</el-button> -->
+      <!-- <el-upload
+       action=""
+  class="upload-demo"
+  :on-preview="handlePreview"
+  :on-remove="handleRemove"
+  :before-remove="beforeRemove"
+  multiple
+  :limit="3"
+              :auto-upload="false" 
+  :file-list="fileList">
+  <el-button size="small" type="primary">点击上传</el-button>
+</el-upload> -->
     </el-header>
 
     <el-main class="report_main">
@@ -190,6 +202,7 @@
             class="upload-demo"
             ref="upload"
             accept=".xlsx,.xls"
+            action=""
             :on-remove="handleRemove"
             :on-change="onUploadChange"
             :before-upload="beforeUpload"
@@ -260,13 +273,18 @@
           prop="status"
           :formatter="statusFormat"
           label="工单状态"
-          width="100"
+          width="120"
         ></el-table-column>
         <el-table-column
           prop="projectBigVersion"
           :formatter="VersionFormat"
           label="版本类型"
           width="80"
+        ></el-table-column>
+        <el-table-column
+          prop="projectRemark"
+          label="项目信息"
+          width="400"
         ></el-table-column>
         <el-table-column
           prop="projectVersion"
@@ -298,11 +316,6 @@
           prop="projectRemotePassword"
           label="项目远程密码"
           width="100"
-        ></el-table-column>
-        <el-table-column
-          prop="projectRemark"
-          label="备注信息"
-          width="400"
         ></el-table-column>
         <el-table-column
           fixed="right"
@@ -532,6 +545,7 @@ export default {
         project_shoper_no: this.ruleForm.project_shoper_no,
         project_no: this.ruleForm.project_no,
         project_name: this.ruleForm.project_name,
+        versiontype: this.ruleForm.versionType,
       }).then((resp) => {
         if (resp.data.code == 0) {
           var temp = resp.data.msg.split("/");
@@ -572,15 +586,12 @@ export default {
           //   newDatas.push(h("p", null, SQLText[i]));
           // }
 
+          //换textarea了 能放的多了还方便复制
           this.SQLDialog = true;
           this.textarea = resp.data.msg;
           // this.$alert(h("div", null, newDatas), "补录语句", {
           //   confirmButtonText: "确定",
           // });
-
-          // this.AutoSQL = resp.data.msg;
-          // if(resp.data.msg != "")
-          //   this.SQLdialogVisible = true;
         } else {
           this.$notify({
             title: "错误",
@@ -668,17 +679,28 @@ export default {
     },
     //选择上传文件后触发
     onUploadChange(file) {
-      const isEXCEL =
-        file.raw.type ===
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-        file.raw.type === "application/vnd.ms-excel";
-      const isLt50M = file.size / 1024 / 1024 < 50;
-      if (!isEXCEL) {
-        this.$message.error("上传文件只能是excel格式!");
+            var fileName = file.name.substring(file.name.lastIndexOf(".") + 1);
+      if (fileName != "xls" && fileName != "xlsx"){
+        this.$message({
+          type: "error",
+          showClose: true,
+          duration: 3000,
+          message: "文件类型不是excel文件!",
+        });
+        this.fileList.pop();
         return false;
-      }
-      if (!isLt50M) {
-        this.$message.error("上传文件大小不能超过 50MB!");
+    }
+      // const isEXCEL =
+      //   file.raw.type ===
+      //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      //   file.raw.type === "application/vnd.ms-excel";
+      const isLt1M = file.size / 1024 / 1024 < 1;
+      // if (!isEXCEL) {
+      //   this.$message.error("上传文件只能是excel格式!");
+      //   return false;
+      // }
+      if (!isLt1M) {
+        this.$message.error("上传文件大小不能超过1MB!请删掉不必要的统计数据");
         return false;
       }
       this.fileList.pop();
@@ -688,6 +710,7 @@ export default {
     },
     handleRemove(file, fileList) {
       this.hasFileUpload = false;
+      //this.fileList.pop();
       this.fileList = fileList;
     },
     //关键字搜索会话
@@ -773,33 +796,8 @@ export default {
     },
 
     beforeUpload(file) {
-      m_filename = file.name;
+      // m_filename = file.name;
       var that = this;
-      //文件类型
-      var fileName = file.name.substring(file.name.lastIndexOf(".") + 1);
-      if (fileName != "xls" && fileName != "xlsx") {
-        that.uploadTemplateDialog = false;
-        that.$message({
-          type: "error",
-          showClose: true,
-          duration: 3000,
-          message: "文件类型不是excel文件!",
-        });
-        return false;
-      }
-      //读取文件大小
-      var fileSize = file.size;
-      console.log(fileSize);
-      if (fileSize > 104857600) {
-        that.uploadTemplateDialog = false;
-        that.$message({
-          type: "error",
-          showClose: true,
-          duration: 3000,
-          message: "文件大于100M!",
-        });
-        return false;
-      }
       that.downloadLoading = that.$loading({
         lock: true,
         text: "文件上传中...",
@@ -849,34 +847,9 @@ export default {
         });
       return false;
     },
-    // uploadFile() {
-    //   this.uploadLoading = false;
-    //   var that = this;
-    //   this.fileList = [];
-    //   this.uploadTemplateDialog = true;
-    //   setTimeout(function () {
-    //     that.$refs.upload.clearFiles();
-    //   }, 100);
-    // },
-    // handleExceed(files, fileList) {
-    //   this.$message.warning("只能选择1个文件!");
-    // },
+
     submitUpload() {
       this.uploadLoading = true;
-      var that = this;
-      setTimeout(function () {
-        if (that.$refs.upload.$children[0].fileList.length == 1) {
-          that.$refs.upload.submit();
-        } else {
-          that.uploadLoading = false;
-          that.$message({
-            type: "error",
-            showClose: true,
-            duration: 3000,
-            message: "请选择文件!",
-          });
-        }
-      }, 100);
     },
     //提交数据
     submitForm(formName) {
@@ -985,7 +958,7 @@ export default {
       total: 0, //数据总条数
       page: 1, //默认显示第1页
       limit: 5, //默认一次显示5条数据
-      hasFileUpload: false, //选择了excel文件上传
+      hasFileUpload: false, //是否选择了excel文件上传
       fileList: [],
       set_project_remote: "",
       set_project_remote_password: "",

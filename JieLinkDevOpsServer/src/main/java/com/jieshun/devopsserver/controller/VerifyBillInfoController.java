@@ -35,10 +35,14 @@ import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -271,47 +275,28 @@ public class VerifyBillInfoController {
 		int totalRowNum  = 0,totalCellNum  = 0;
 		try {
 
-			InputStream inputStream = new FileInputStream(FilePath + FileName);
+			FileInputStream inputStream = new FileInputStream(FilePath + FileName);
 			if(FileName.contains(".xlsx"))
 			{
-				//xssfWorkbook = new XSSFWorkbook(inputStream);
-				sheetAt = new XSSFWorkbook(inputStream).getSheetAt(0);
+				//这里创建xssfworkbook非常慢 不知道为什么 1M以上文件基本上内存要溢出了
+				//这样会快一点 https://blog.csdn.net/ylforever/article/details/80955595				
+				OPCPackage opcPackage = OPCPackage.open(file);
+				XSSFWorkbook xssfWorkbook = new XSSFWorkbook(opcPackage);
+
+				sheetAt = xssfWorkbook.getSheetAt(0);
 				xlsx = true;
+				xssfWorkbook.close();
 			}
 			else if(FileName.contains(".xls"))
 			{
-				HsheetAt = new HSSFWorkbook(inputStream).getSheetAt(0);
+				//HSSF还不支持opcPackage导入...
+				HSSFWorkbook hssfWorkbook = new HSSFWorkbook(inputStream);
+				HsheetAt = hssfWorkbook.getSheetAt(0);
 				xlsx = false;
+				hssfWorkbook.close();
 			}
 			else 
 				return "文件未检测到xlsx或者xls后缀";
-            //获取sheet的个数
-            //int numberOfSheets = xssfWorkbook.getNumberOfSheets();
-            //获取指定的sheet
-            //System.out.println(numberOfSheets);
-            //获取第一个工作簿
-            
-//            if (sheetAt != null) {
-//                //最后一行有数据的
-//                lastRowNum = sheetAt.getLastRowNum();
-//                XSSFRow row;
-//                XSSFCell cell;
-//                for (int i = 0; i <= lastRowNum; i++) {
-//                    //获取指定行
-//                    row = sheetAt.getRow(i);
-//                    if (row == null) {
-//                        continue;
-//                    }
-//                    //最后一列有数据的
-//                    lastCellNum = row.getLastCellNum();
-//                    for (int j = 0; j <= lastCellNum; j++) {
-//                        cell = row.getCell(j);
-//                        if (cell == null) {
-//                            continue;
-//                        }
-//                	}
-//                }
-//            }
 		} catch (Exception e) {
 			// TODO 自动生成的 catch 块
 			//e.printStackTrace();
@@ -322,7 +307,6 @@ public class VerifyBillInfoController {
 			if (sheetAt == null && HsheetAt == null)
 				return "获取工作簿失败";
 			// 如果任务有删除或者补录，那么生成SQL语句 注意不可以同时生成删除和补录
-
 			// 获得表头
 			Row rowHead;
 			if (xlsx)
@@ -358,9 +342,9 @@ public class VerifyBillInfoController {
 				String inTime = row.getCell(titles.get("服务开始时间")).getStringCellValue().toString();
 				String feesTime = row.getCell(titles.get("服务结束时间")).getStringCellValue().toString();
 				String fees = "";
-				if (row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_NUMERIC)
+				if (row.getCell(titles.get("收费金额")).getCellType() == CellType.NUMERIC)
 					fees = String.valueOf(row.getCell(titles.get("收费金额")).getNumericCellValue()).replace("元", "");
-				else if (row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_STRING)
+				else if (row.getCell(titles.get("收费金额")).getCellType() == CellType.NUMERIC.STRING)
 					fees = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
 				String accountReceivable = fees;
 				String actualPaid = fees;
@@ -405,7 +389,7 @@ public class VerifyBillInfoController {
 					ret += "\r\n";
 				}
 			}
-			ret += "-- 语句结束--";
+			ret += "-- 语句结束 --";
 
 			return ret;
 		}
