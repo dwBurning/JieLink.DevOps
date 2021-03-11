@@ -1,11 +1,6 @@
 package com.jieshun.devopsserver.service;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.stream.Collectors;
-
 import com.jieshun.devopsserver.bean.*;
 import com.jieshun.devopsserver.mapper.ApplyInfoMapper;
 import org.slf4j.Logger;
@@ -16,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.jieshun.devopsserver.bean.VerifyBillInfoExample.Criteria;
 import com.jieshun.devopsserver.controller.VerifyBillInfoController.StatusCode;
 import com.jieshun.devopsserver.mapper.VerifyBillInfoMapper;
+
+import com.jieshun.devopsserver.mapper.DevOpsEventMapper;
 /**
  * 版本管理Service
  * 
@@ -31,6 +28,8 @@ public class VerifyBillInfoService {
 	VerifyBillInfoMapper VerifyBillInfoMapper;
 	@Autowired
 	ApplyInfoMapper applyInfoMapper;
+	@Autowired
+	DevOpsEventMapper DevOpsEventMapper;
 
 	/**
 	 * 根据分页查询版本信息
@@ -67,13 +66,13 @@ public class VerifyBillInfoService {
 
 	
 	/**
-	 * 
+	 * 根据项目信息搜索一下远程
 	 * @param projectshoperno 商户号
-	 * @param projectno
-	 * @param projectname
+	 * @param projectno 项目编号
+	 * @param projectname 项目名
 	 * @return
 	 */
-	public String SearchSunloginByInfo(String projectshoperno,String projectno,String projectname)
+	public String SearchSunloginByInfo(String projectshoperno,String projectno,String projectname,String VersionType)
 	{
 		//主要搜索对账表
 		VerifyBillInfoExample example = new VerifyBillInfoExample();
@@ -109,12 +108,25 @@ public class VerifyBillInfoService {
 		if(!VerifyBillInfosProName.isEmpty())
 			return VerifyBillInfosProName.get(0).getProjectRemote() + "/" + VerifyBillInfosProName.get(0).getProjectRemotePassword();
 		
+		//如果都搜了还没找到，并且是jielink项目，在运维助手的数据库里搜索一下
+		if(VersionType.equals("0") || projectno.startsWith("p"))
+		{
+			DevOpsEventExample examp = new DevOpsEventExample();
+			String limitStringDev = String.format("operator_date limit 1");
+			examp.setOrderByClause(limitStringDev);
+			com.jieshun.devopsserver.bean.DevOpsEventExample.Criteria CriteriaProNameDev = examp.createCriteria();
+			CriteriaProNameDev.andProjectNoEqualTo(projectno);
+			List<DevOpsEvent> DevOpsEvent = DevOpsEventMapper.selectByExample(examp);
+			if(!DevOpsEvent.isEmpty())
+				return DevOpsEvent.get(0).getRemoteAccount() + "/" + DevOpsEvent.get(0).getRemotePassword();
+		}
+		
 		return "";
 	}
 	
 	/**
 	 * @param id 
-	 * @return 增加一点紧急度
+	 * @return 增加一点点紧急度
 	 */
 	public int addEmergencyById(int id) {
 		VerifyBillInfo VerifyBillInfo = VerifyBillInfoMapper.selectByPrimaryKey(id);
@@ -179,7 +191,7 @@ public class VerifyBillInfoService {
 	}
 	
 	/**
-	 * 
+	 * 根据ID返回文件名
 	 * @param id
 	 * @return
 	 */
@@ -225,6 +237,11 @@ public class VerifyBillInfoService {
 		return VerifyBillInfoMapper.updateByPrimaryKeySelective(VerifyBillInfo);
 	}
 	
+	/**
+	 * 检查一下是否生成了SQL语句，没有的话返回任务列表，准备再次生成
+	 * @param filename
+	 * @return
+	 */
 	public String CheckSQL(String filename)
 	{
 		//根据文件名搜索ID
@@ -294,18 +311,6 @@ public class VerifyBillInfoService {
 		return VerifyBillInfoMapper.insertSelective(VerifyBillInfo);
 	}
 
-	/**
-	 * 生成SQL语句 
-	 * @return
-	 */
-//	public String VerifyBillMakeSQL()
-//	{
-//		VerifyBillInfo VerifyBillInfo = new VerifyBillInfo();
-//		VerifyBillInfo.setAutosql("select \"这是测试生成sql的测试数据，看到此条说明文件上传，生成SQL，查看SQL功能正常\"");
-//		//VerifyBillInfo.setStatus(4);
-//		return "";
-//	}
-//
 //	/**
 //	 * 根据分页查询版本信息
 //	 *

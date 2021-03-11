@@ -1,11 +1,9 @@
 package com.jieshun.devopsserver.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -30,7 +26,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.sql.Blob;
 import java.text.SimpleDateFormat;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -111,8 +106,8 @@ public class VerifyBillInfoController {
 	 * @return
 	 */
 	@RequestMapping(value = "/SearchSunloginByInfo", method = RequestMethod.GET)
-	public ReturnData SearchSunloginByInfo(String project_shoper_no,String project_no,String project_name){
-		String result = VerifyBillInfoService.SearchSunloginByInfo(project_shoper_no,project_no,project_name);
+	public ReturnData SearchSunloginByInfo(String project_shoper_no,String project_no,String project_name,String versiontype){
+		String result = VerifyBillInfoService.SearchSunloginByInfo(project_shoper_no,project_no,project_name,versiontype);
 		if(result == "")
 		{
 			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
