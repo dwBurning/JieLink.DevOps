@@ -264,9 +264,12 @@ public class VerifyBillInfoService {
 		
 		List<VerifyBillInfo> VerifyBillInfo = VerifyBillInfoMapper.selectByExampleWithBLOBs(example);
 		
+		int tempID = VerifyBillInfo.get(0).getId();
 		VerifyBillInfo temp = new VerifyBillInfo();
+		temp.setId(tempID);
 		temp.setAutosql(SQL);
-		return VerifyBillInfoMapper.updateByExampleWithBLOBs(temp, example);
+		return VerifyBillInfoMapper.updateByPrimaryKeySelective(temp);
+		//return VerifyBillInfoMapper.updateByExampleWithBLOBs(temp, example);
 	}
 //	/**
 //	 * 根据工单号查询版本信息

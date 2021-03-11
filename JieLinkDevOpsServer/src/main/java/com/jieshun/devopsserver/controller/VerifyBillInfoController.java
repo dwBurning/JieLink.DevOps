@@ -22,10 +22,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.sql.Blob;
 import java.text.SimpleDateFormat;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -197,6 +202,8 @@ public class VerifyBillInfoController {
 				taskstring += "补推 ";
 			if (project_task.contains("删除"))
 				taskstring += "删除 ";
+			if (project_task.contains("退款"))
+				taskstring += "退款 ";
 			if (project_task.contains("查原因"))
 				taskstring += "查因 ";
 			verifybillInfo.setProjectTask(taskstring);
@@ -206,13 +213,13 @@ public class VerifyBillInfoController {
 			verifybillInfo.setIsdelete(0);
 
 			//无远程的话状态为需要远程
-			if(project_remote == "无")
+			if(project_remote.equals("无") )
 				verifybillInfo.setStatus(StatusCode.NeedSuportRemote.value);
 			else
 				verifybillInfo.setStatus(StatusCode.WaitForDeveloper.value);
 			
 			//如果不需要查原因，以及不需要补推，并且是jielink的 就不需要研发处理了
-			if(!taskstring.contains("查因") && !taskstring.contains("补推") && versionType == "0")
+			if(!taskstring.contains("查因") && !taskstring.contains("补推") && versionType.equals("0"))
 			{
 				verifybillInfo.setStatus(StatusCode.DoItYourSelf.value);
 			}
@@ -255,9 +262,16 @@ public class VerifyBillInfoController {
 		if(!file.exists())
 			return "没有检测到文件，如果文件较大可能还在上传中，等待1-2分钟";
 
+		if(!taskstring.contains("删除") && !taskstring.contains("补录"))
+		{
+			return "不包含删除或者补录任务，不能自动生成脚本";
+		}
+		
 		boolean xlsx = true;
 		//XSSFWorkbook xssfWorkbook = null;
+		//XLSX
 		XSSFSheet sheetAt = null;
+		//XLS
 		HSSFSheet HsheetAt = null;
 		int totalRowNum  = 0,totalCellNum  = 0;
 		try {
@@ -309,159 +323,100 @@ public class VerifyBillInfoController {
 			return e.toString();
 		}
 
-		try
-		{
-        if(sheetAt == null && HsheetAt == null)
-        	return "获取工作簿失败";
-		//如果任务有删除或者补录，那么生成SQL语句 注意不可以同时生成删除和补录
-		if(taskstring.contains("补录"))
-		{
-	        //获得表头
-	        Row rowHead; 
-	        if(xlsx)
-	        	rowHead = sheetAt.getRow(0);
-	        else
-	        	rowHead = HsheetAt.getRow(0);
-	        //获得总行数 总列
-	        if(xlsx)
-	        	totalRowNum = sheetAt.getLastRowNum();
-	        else
-	        	totalRowNum = HsheetAt.getLastRowNum();
-	        totalCellNum = rowHead.getLastCellNum();
-            //把所有标题导到MAP
-	        Map<String,Integer> titles = new HashMap<String,Integer>();
-            for (int k = 0; k < totalCellNum; k++) {
-            	Cell cell = rowHead.getCell(k);
-                titles.put(cell.toString(),k);
-            }
+		try {
+			if (sheetAt == null && HsheetAt == null)
+				return "获取工作簿失败";
+			// 如果任务有删除或者补录，那么生成SQL语句 注意不可以同时生成删除和补录
 
-			//补录语句生成
-            //搞不定换行问题
-            ret += "-- 补录语句" + "\r\n";
-			ret += "-- 生成了补录的SQL语句" +"\r\n";
-            for(int i = 1 ; i <= totalRowNum ; i++)
-	        {
-            	Row row;
-            	if(xlsx)
-            		row = sheetAt.getRow(i);
-            	else
-            		row = HsheetAt.getRow(i);
-	        	//订单号所在的列
-            	String orderID = row.getCell(titles.get("订单号")).getStringCellValue().toString();
-            	ret += "-- " + orderID + "\r\n";
-            	
-                String inTime = row.getCell(titles.get("服务开始时间")).getStringCellValue().toString();
-                String feesTime = row.getCell(titles.get("服务结束时间")).getStringCellValue().toString();
-                String fees = "";
-                if(row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_NUMERIC)
-                	fees = String.valueOf( row.getCell(titles.get("收费金额")).getNumericCellValue() ).replace("元", "");
-                else if(row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_STRING)
-                	fees = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
-                String accountReceivable = fees;
-                String actualPaid = fees;
-                //String accountReceivable = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
-                //String actualPaid = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
-                String payTime = row.getCell(titles.get("支付时间")).getStringCellValue().toString();
-                String paytype = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
-                int payTypeID = paytype == "微信" ? 2 : paytype == "支付宝" ? 1 : paytype == "捷顺金科" ? 22 : 0;
-                Date day=new Date();    
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");    
-                String createTime = df.format(day);
-                String money = row.getCell(titles.get("应收金额")).getStringCellValue().toString().replace("元", "");
-                String credentialNO = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-","").trim();
-                String plate = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-","").trim();
-                String payTypeName = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
-                String benefit = row.getCell(titles.get("优惠金额")).getStringCellValue().toString().replace("元", "");
-                int paid = 0;
-                int derate = 0;
-                int exchange = 0;
-                int smallChange = 0;
-            	
-                String str=String.format("select EnterRecordID into @enterRecordId from box_enter_record where plate='%s' and EnterTime='%s';",plate,inTime);
-                String str2=String.format("INSERT INTO `box_bill` (`BGUID`,`OrderId`,`InTime`,`FeesTime`,`Fees`,`Benefit`,`Derate`,`AccountReceivable`,`Paid`,`ActualPaid`,`Exchange`,`SmallChange`,`Cashier`,`PayTime`,`discountPicturePath`,`PayTypeID`,`ChargeType`,`ChargeDeviceID`,`OperatorID`,`OperatorName`,`CloudID`,`EnterRecordID`,`CreateTime`,`OrderType`,`Money`,`Status`,`SealTypeId`,`SealTypeName`,`Remark`,`ReplaceDeduct`,`AppUserId`,`TrusteeFlag`,`EventType`,`PayFrom`,`DeviceID`,`CredentialNO`,`CredentialType`,`CashierName`,`PersonNo`,`PersonName`,`discounts`,`ChargeDeviceName`,`FreeMoney`,`UpLoadFlag`,`Plate`,`OnlineExchange`,`PayTypeName`,`ExtStr1`,`ExtStr2`,`ExtStr3`,`ExtStr4`,`ExtStr5`,`ExtInt1`,`ExtInt2`,`ExtInt3`,`CashTotal`,`ParkNo`) VALUES (uuid(), '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%d', '9999', '%s', '', '%d', '0', '', '9999', '超级管理员', '%s', @enterRecordId, '%s', '1', '%s', '1', '54', '临时用户A', '人工补录', '0', '', '0', '1', 'jieshun', null, '%s', '163', '超级管理员', '', '', '', null, '0.00', '1', '%s', '0.00', '%s',null, null, null, null, null, '0', '0', '0','0.00', '00000000-0000-0000-0000-000000000000');",                		                                                                                     
-                		orderID,inTime,feesTime,fees,benefit,derate,accountReceivable,paid,accountReceivable,exchange,smallChange,payTime,payTypeID,orderID,createTime,fees,credentialNO,plate,payTypeName);
-                ret += str;
-                ret += str2 + "\r\n";
-                //String selSql = $"select EnterRecordID into @enterRecordId from box_enter_record where plate='{plate}' and EnterTime='{inTime}';";
-            	//String insertSql = $"INSERT INTO `box_bill` (`BGUID`,`OrderId`,`InTime`,`FeesTime`,`Fees`,`Benefit`,`Derate`,`AccountReceivable`,`Paid`,`ActualPaid`,`Exchange`,`SmallChange`,`Cashier`,`PayTime`,`discountPicturePath`,`PayTypeID`,`ChargeType`,`ChargeDeviceID`,`OperatorID`,`OperatorName`,`CloudID`,`EnterRecordID`,`CreateTime`,`OrderType`,`Money`,`Status`,`SealTypeId`,`SealTypeName`,`Remark`,`ReplaceDeduct`,`AppUserId`,`TrusteeFlag`,`EventType`,`PayFrom`,`DeviceID`,`CredentialNO`,`CredentialType`,`CashierName`,`PersonNo`,`PersonName`,`discounts`,`ChargeDeviceName`,`FreeMoney`,`UpLoadFlag`,`Plate`,`OnlineExchange`,`PayTypeName`,`ExtStr1`,`ExtStr2`,`ExtStr3`,`ExtStr4`,`ExtStr5`,`ExtInt1`,`ExtInt2`,`ExtInt3`,`CashTotal`,`ParkNo`) VALUES ('{bGuid}', '{orderId}', '{inTime}', '{feesTime}', '{fees}', '{benefit}', '{derate}', '{accountReceivable}', '{paid}', '{accountReceivable}', '{exchange}', '{smallChange}', '9999', '{payTime}', '', '{payTypeID}', '0', '', '9999', '超级管理员', '{orderId}', @enterRecordId, '{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}', '1', '{fees}', '1', '54', '临时用户A', '人工补录', '0', '', '0', '1', 'jieshun', null, '{credentialNO}', '163', '超级管理员', '', '', '', null, '0.00', '1', '{plate}', '0.00', '{payTypeName}',null, null, null, null, null, '0', '0', '0','0.00', '00000000-0000-0000-0000-000000000000');";
-	        }
-			ret += "-- 补录语句结束--";
-		}
-		else if(taskstring.contains("删除"))
-		{
-	        //获得表头
-	        Row rowHead; 
-	        if(xlsx)
-	        	rowHead = sheetAt.getRow(0);
-	        else
-	        	rowHead = HsheetAt.getRow(0);
-	        //获得总行数 总列
-	        if(xlsx)
-	        	totalRowNum = sheetAt.getLastRowNum();
-	        else
-	        	totalRowNum = HsheetAt.getLastRowNum();
-	        //获得总行数 总列
-	        totalRowNum = sheetAt.getLastRowNum();
-	        totalCellNum = rowHead.getLastCellNum();
-            //把所有标题导到MAP
-	        Map<String,Integer> titles = new HashMap<String,Integer>();
-            for (int k = 0; k < totalCellNum; k++) {
-                Cell cell = rowHead.getCell(k);
-                titles.put(cell.toString(),k);
-            }
+			// 获得表头
+			Row rowHead;
+			if (xlsx)
+				rowHead = sheetAt.getRow(0);
+			else
+				rowHead = HsheetAt.getRow(0);
+			// 获得总行数 总列
+			if (xlsx)
+				totalRowNum = sheetAt.getLastRowNum();
+			else
+				totalRowNum = HsheetAt.getLastRowNum();
+			if (totalRowNum > 51)
+				return "第一个工作簿中数据超过50条，请确认是否放对地方了或者有多余数据？";
+			totalCellNum = rowHead.getLastCellNum();
+			// 把所有标题导到MAP
+			Map<String, Integer> titles = new HashMap<String, Integer>();
+			for (int k = 0; k < totalCellNum; k++) {
+				Cell cell = rowHead.getCell(k);
+				titles.put(cell.toString(), k);
+			}
 
-			//删除语句生成
-			ret += "--删除语句--\r\n";
-			ret += "还未测试，仅供参考\r\n";
-			ret += "生成了删除的SQL语句\r\n";
-            for(int i = 1 ; i <= totalRowNum ; i++)
-	        {
-            	Row row;
-            	if(xlsx)
-            		row = sheetAt.getRow(i);
-            	else
-            		row = HsheetAt.getRow(i);
-	        	//订单号所在的列
-            	String orderID = row.getCell(titles.get("订单号")).getStringCellValue().toString();
-            	ret += "-- " + orderID;
-            	
-                String inTime = row.getCell(titles.get("服务开始时间")).getStringCellValue().toString();
-                String feesTime = row.getCell(titles.get("服务结束时间")).getStringCellValue().toString();
-                String fees = "";
-                if(row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_NUMERIC)
-                	fees = String.valueOf( row.getCell(titles.get("收费金额")).getNumericCellValue() ).replace("元", "");
-                else if(row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_STRING)
-                	fees = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
-                String accountReceivable = fees;
-                String actualPaid = fees;
-                //String accountReceivable = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
-                //String actualPaid = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
-                String payTime = row.getCell(titles.get("支付时间")).getStringCellValue().toString();
-                String paytype = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
-                int payTypeID = paytype == "微信" ? 2 : paytype == "支付宝" ? 1 : paytype == "捷顺金科" ? 22 : 0;
-                Date day=new Date();    
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");    
-                String createTime = df.format(day);
-                String money = row.getCell(titles.get("应收金额")).getStringCellValue().toString().replace("元", "");
-                String credentialNO = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-","").trim();
-                String plate = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-","").trim();
-                String payTypeName = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
-                String benefit = row.getCell(titles.get("优惠金额")).getStringCellValue().toString().replace("元", "");
-                int paid = 0;
-                int derate = 0;
-                int exchange = 0;
-                int smallChange = 0;
-            	
-                String str = String.format("delete from 'box_bill' where order id = '%s';",orderID);
-                ret += str;
-	        }			
-			ret += "--删除语句结束--\r\n";
-		}
-		return ret;
+			// 补录语句生成
+			for (int i = 1; i <= totalRowNum; i++) {
+				Row row;
+				if (xlsx)
+					row = sheetAt.getRow(i);
+				else
+					row = HsheetAt.getRow(i);
+				// 订单号所在的列
+				String orderID = row.getCell(titles.get("订单号")).getStringCellValue().toString();
+				ret += "-- " + orderID + "\r\n";
+
+				String inTime = row.getCell(titles.get("服务开始时间")).getStringCellValue().toString();
+				String feesTime = row.getCell(titles.get("服务结束时间")).getStringCellValue().toString();
+				String fees = "";
+				if (row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_NUMERIC)
+					fees = String.valueOf(row.getCell(titles.get("收费金额")).getNumericCellValue()).replace("元", "");
+				else if (row.getCell(titles.get("收费金额")).getCellType() == Cell.CELL_TYPE_STRING)
+					fees = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
+				String accountReceivable = fees;
+				String actualPaid = fees;
+				// String accountReceivable =
+				// row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元",
+				// "");
+				// String actualPaid =
+				// row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元",
+				// "");
+				String payTime = row.getCell(titles.get("支付时间")).getStringCellValue().toString();
+				String paytype = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
+				int payTypeID = paytype.equals("微信") ? 2 : paytype.equals("支付宝") ? 1 : paytype.equals("捷顺金科") ? 22 : 0;
+				Date day = new Date();
+				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String createTime = df.format(day);
+				String money = row.getCell(titles.get("应收金额")).getStringCellValue().toString().replace("元", "");
+				String credentialNO = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-", "")
+						.trim();
+				String plate = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-", "").trim();
+				String payTypeName = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
+				String benefit = row.getCell(titles.get("优惠金额")).getStringCellValue().toString().replace("元", "");
+				int paid = 0;
+				int derate = 0;
+				int exchange = 0;
+				int smallChange = 0;
+
+				if (taskstring.contains("补录")) {
+					ret += "-- 生成了补录语句" + "\r\n";
+					String str = String.format(
+							"select EnterRecordID into @enterRecordId from box_enter_record where plate='%s' and EnterTime='%s';",
+							plate, inTime);
+					String str2 = String.format(
+							"INSERT INTO `box_bill` (`BGUID`,`OrderId`,`InTime`,`FeesTime`,`Fees`,`Benefit`,`Derate`,`AccountReceivable`,`Paid`,`ActualPaid`,`Exchange`,`SmallChange`,`Cashier`,`PayTime`,`discountPicturePath`,`PayTypeID`,`ChargeType`,`ChargeDeviceID`,`OperatorID`,`OperatorName`,`CloudID`,`EnterRecordID`,`CreateTime`,`OrderType`,`Money`,`Status`,`SealTypeId`,`SealTypeName`,`Remark`,`ReplaceDeduct`,`AppUserId`,`TrusteeFlag`,`EventType`,`PayFrom`,`DeviceID`,`CredentialNO`,`CredentialType`,`CashierName`,`PersonNo`,`PersonName`,`discounts`,`ChargeDeviceName`,`FreeMoney`,`UpLoadFlag`,`Plate`,`OnlineExchange`,`PayTypeName`,`ExtStr1`,`ExtStr2`,`ExtStr3`,`ExtStr4`,`ExtStr5`,`ExtInt1`,`ExtInt2`,`ExtInt3`,`CashTotal`,`ParkNo`) VALUES (uuid(), '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d', '%d', '9999', '%s', '', '%d', '0', '', '9999', '超级管理员', '%s', @enterRecordId, '%s', '1', '%s', '1', '54', '临时用户A', '人工补录', '0', '', '0', '1', 'jieshun', null, '%s', '163', '超级管理员', '', '', '', null, '0.00', '1', '%s', '0.00', '%s',null, null, null, null, null, '0', '0', '0','0.00', '00000000-0000-0000-0000-000000000000');",
+							orderID, inTime, feesTime, fees, benefit, derate, accountReceivable, paid,
+							accountReceivable, exchange, smallChange, payTime, payTypeID, orderID, createTime, fees,
+							credentialNO, plate, payTypeName);
+					ret += str;
+					ret += str2 + "\r\n";
+				} else if (taskstring.contains("删除")) {
+					ret += "-- 生成了删除语句" + "\r\n";
+					ret += String.format("delete from 'box_bill' where orderid = '%s';", orderID);
+					ret += "\r\n";
+				}
+			}
+			ret += "-- 语句结束--";
+
+			return ret;
 		}
 		catch(Exception e)
 		{
-			return e.toString();
+			return ret + "\r\n" + "-- " + e.toString();
 		}
 	}
 	
@@ -501,24 +456,75 @@ public class VerifyBillInfoController {
 	}
 	
 	/**
-	 * 获取URL
+	 * 下载文件 返回文件流
 	 * @param req
 	 * @param resp
 	 * @return
 	 */
-	@RequestMapping(value = "/GetUrl", method = RequestMethod.GET)
-	public ReturnData GetUrl(int id)
+	@RequestMapping(value = "/GetFile/{time}", method = RequestMethod.POST)
+	//public Blob GetFile(Integer id)
+	public void GetFile(Integer id, HttpServletResponse response)
 	{
-		String result = VerifyBillInfoService.GetUrlById(id);
-		String url = FilePath + result;
-		if (result != "") {
-			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), url);
-		} else {
-			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
+		try
+		{
+			String result = VerifyBillInfoService.GetUrlById(id);
+
+			File file = new File(FilePath + result);
+			if(!file.exists())
+			{
+				return ;
+			}
+			
+			//FileOutputStream outputStream = new FileOutputStream(FilePath + result);
+			if(result != "")
+			{		
+				response.setCharacterEncoding("UTF-8");
+				OutputStream out = null;
+				//System.out.println("==========getFileOutputStream=========文件路径:"+path);
+		        //File file = new File(FilePath + result);    //1、建立连接
+		        BufferedInputStream is = null;
+		        byte[] b = new  byte[4096];
+		        int len = 1024;
+		        // 清空response
+		        response.reset();
+		        response.setContentType("application/x-download");//设置response内容的类型 普通下载类型
+		        response.setHeader("filename", URLEncoder.encode(result, "UTF-8"));//设置头部信息
+				//response.setHeader("Content-disposition","attachment;filename="+ URLEncoder.encode(file.getName(), "UTF-8"));//设置头部信息
+				out = response.getOutputStream();
+				is = new BufferedInputStream(new FileInputStream(file));
+				while((len= is.read(b)) != -1) {
+					out.write(b,0,len);
+				}
+				
+				out.flush();
+				if(is!=null)
+					is.close();
+				if(out!=null)
+					out.close();	
+			}
+			else
+			{
+				return ;
+			}
 		}
+		catch(Exception e)
+		{
+			return ;
+		}
+//		if (result != "") {
+//			return new ReturnData(ReturnStateEnum.SUCCESS.getCode(), inputStream);
+//		} else {
+//			return new ReturnData(ReturnStateEnum.FAILD.getCode(), ReturnStateEnum.FAILD.getMessage());
+//		}
 	}
 	
-	
+	/**
+	 * 根据ID补充远程
+	 * @param id
+	 * @param remote
+	 * @param remote_password
+	 * @return
+	 */
 	@RequestMapping(value = "/SetRemoteById", method = RequestMethod.PUT)
 	public ReturnData SetRemoteById(int id,String remote,String remote_password)
 	{
