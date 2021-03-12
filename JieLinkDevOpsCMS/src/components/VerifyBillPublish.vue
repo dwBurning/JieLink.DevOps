@@ -216,7 +216,7 @@
               type="primary"
               style="margin-left:100px;"
             >选择excel文件上传</el-button>
-            <label>只能上传一个excel,jielink需要补录或者删除的数据必须放在第一个Sheet中,不要有多余数据</label>
+            <label>只能上传一个不超过1M的excel,jielink需要补录或者删除的数据必须放在第一个Sheet中,多余统计数据可删除</label>
           </el-upload>
 
           <el-checkbox-group v-model="ruleForm.checkList">
