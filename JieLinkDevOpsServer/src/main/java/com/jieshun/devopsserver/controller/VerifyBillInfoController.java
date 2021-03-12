@@ -61,7 +61,7 @@ import com.jieshun.devopsserver.service.VerifyBillInfoService;
 public class VerifyBillInfoController {
 	
 	//文件存储路径
-	public static final String FilePath = "C://aa//";
+	public static final String FilePath = "C://VerifyBillFile//";
 	
 	//状态码
 	public enum StatusCode
