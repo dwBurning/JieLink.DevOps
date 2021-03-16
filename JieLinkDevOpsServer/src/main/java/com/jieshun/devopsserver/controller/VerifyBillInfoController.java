@@ -371,6 +371,16 @@ public class VerifyBillInfoController {
 				int exchange = 0;
 				int smallChange = 0;
 
+				//重要字段校验
+				if(plate.isBlank()) {
+					ret += "车牌为空,该条无法生成";
+					continue;
+					}
+				if(inTime.isBlank()){
+					ret += "入场时间为空,该条无法生成";
+					continue;
+				}
+				
 				if (taskstring.contains("补录")) {
 					ret += "-- 生成了补录语句" + "\r\n";
 					String str = String.format(
