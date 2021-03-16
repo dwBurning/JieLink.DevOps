@@ -125,9 +125,17 @@ namespace PartialViewOtherToJieLink.ViewModels
             try
             {
                 //判断数据库是否jsds
-                string cmd = "select * from t_cac_account";
-                MySqlHelper.ExecuteDataset(JsdsDbConnString, cmd);
-
+                try
+                {
+                    string cmd = "select * from t_cac_account";
+                    MySqlHelper.ExecuteDataset(JsdsDbConnString, cmd);
+                }
+                catch (Exception)
+                {
+                    ShowMessage("jsds数据库还原不成功：t_cac_account表缺失");
+                    LogHelper.CommLogger.Info("jsds数据库还原不成功：t_cac_account表缺失");
+                    return;
+                }
                 policy.EnterRecordSelect = this.EnterRecord;
                 policy.OutRecordSelect = this.OutRecord;
                 policy.BillRecordSelect = this.BillRecord;
@@ -188,7 +196,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                     dbGroupList = CommonHelper.DataTableToList<ControlRoleGroup>(dbGroupDs.Tables[0]).OrderBy(x => x.ID).ToList();
                     groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == ConstantHelper.ROOTPARENTID);
                 }
-                DataSet groupDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_organize WHERE STATE='normal' ORDER BY ORG_ID ASC;");
+                DataSet groupDs = null;
+                try
+                {
+                    groupDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_organize WHERE STATE='normal' ORDER BY ORG_ID ASC;");
+                }
+                catch (Exception)
+                {
+                    ShowMessage("jsds数据库还原不成功：t_base_organize表缺失");
+                    LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_organize表缺失");
+                    return;
+                }
                 List<string> groupSuccessImportList = new List<string>();
                 if (groupDs != null && groupDs.Tables[0] != null)
                 {
@@ -340,13 +358,33 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
                 //3、人事
                 //DataSet personDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person WHERE STATE='NORMAL' AND ID in (SELECT PERSON_ID from t_cac_account where `STATUS`='NORMAL' ORDER BY CREATE_DATE ASC) ORDER BY PERSON_SN asc;");
-                DataSet personDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person WHERE STATE='NORMAL' ORDER BY CREATE_TIME asc;");
+                DataSet personDs = null;
+                try
+                {
+                    personDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person WHERE STATE='NORMAL' ORDER BY CREATE_TIME asc;");
+                }
+                catch (Exception)
+                {
+                    ShowMessage("jsds数据库还原不成功：t_base_person表缺失");
+                    LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_person表缺失");
+                    return;
+                }
                 List<TBasePersonModel> personList = new List<TBasePersonModel>();
                 List<TBasePersonKeyModel> personKeyList = new List<TBasePersonKeyModel>();
                 if (personDs != null && personDs.Tables[0] != null)
                 {
                     personList = CommonHelper.DataTableToList<TBasePersonModel>(personDs.Tables[0]).OrderBy(x => x.PERSON_SN).ToList();
-                    DataSet personKeyDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person_key WHERE ID in (SELECT ID from t_base_person WHERE STATE='NORMAL' ORDER BY PERSON_SN asc);");
+                    DataSet personKeyDs = null;
+                    try
+                    {
+                        personKeyDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_person_key WHERE ID in (SELECT ID from t_base_person WHERE STATE='NORMAL' ORDER BY PERSON_SN asc);");
+                    }
+                    catch (Exception)
+                    {
+                        ShowMessage("jsds数据库还原不成功：t_base_person_key表缺失");
+                        LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_person_key表缺失");
+                        return;
+                    }
                     if (personKeyDs != null && personKeyDs.Tables[0] != null)
                     {
                         personKeyList = CommonHelper.DataTableToList<TBasePersonKeyModel>(personKeyDs.Tables[0]);
@@ -541,18 +579,48 @@ namespace PartialViewOtherToJieLink.ViewModels
                     {
                         accountList = CommonHelper.DataTableToList<TCacAccountModel>(accountDs.Tables[0]);
                     }
-                    DataSet cacVoucherServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM t_cac_voucher_service WHERE STATE='NORMAL' ORDER BY CREATE_TIME DESC;");  //服务与凭证关系
+                    DataSet cacVoucherServiceDs = null;
+                    try
+                    {
+                        cacVoucherServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM t_cac_voucher_service WHERE STATE='NORMAL' ORDER BY CREATE_TIME DESC;");  //服务与凭证关系
+                    }
+                    catch (Exception)
+                    {
+                        ShowMessage("jsds数据库还原不成功：t_cac_voucher_service表缺失");
+                        LogHelper.CommLogger.Info("jsds数据库还原不成功：t_cac_voucher_service表缺失");
+                        return;
+                    }
                     if (cacVoucherServiceDs != null && cacVoucherServiceDs.Tables[0] != null)
                     {
                         cacVoucherServiceList = CommonHelper.DataTableToList<TCacVoucherServiceModel>(cacVoucherServiceDs.Tables[0]);
                     }
                     //可查询出白卡，没有绑定账号没有绑定服务的白卡，相当于录入系统（迁移数据不单纯做卡入库）
-                    DataSet voucherDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_cac_voucher WHERE (`STATUS`='NORMAL' OR `STATUS`='BLANK') ORDER BY ACCOUNT_ID asc, CREATE_TIME DESC;");
+                    DataSet voucherDs = null;
+                    try
+                    {
+                        voucherDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_cac_voucher WHERE (`STATUS`='NORMAL' OR `STATUS`='BLANK') ORDER BY ACCOUNT_ID asc, CREATE_TIME DESC;");
+                    }
+                    catch (Exception)
+                    {
+                        ShowMessage("jsds数据库还原不成功：t_cac_voucher表缺失");
+                        LogHelper.CommLogger.Info("jsds数据库还原不成功：t_cac_voucher表缺失");
+                        return;
+                    }
                     if (voucherDs != null && voucherDs.Tables[0] != null)
                     {
                         voucherList = CommonHelper.DataTableToList<TCacVoucherModel>(voucherDs.Tables[0]);
                     }
-                    DataSet parkServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='PARK' ORDER BY CREATE_TIME DESC;");  //车场服务
+                    DataSet parkServiceDs = null;
+                    try
+                    {
+                        parkServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='PARK' ORDER BY CREATE_TIME DESC;");  //车场服务
+                    }
+                    catch (Exception)
+                    {
+                        ShowMessage("jsds数据库还原不成功：t_cac_auth_service表缺失");
+                        LogHelper.CommLogger.Info("jsds数据库还原不成功：t_cac_auth_service表缺失");
+                        return;
+                    }
                     if (parkServiceDs != null && parkServiceDs.Tables[0] != null)
                     {
                         parkServiceList = CommonHelper.DataTableToList<TCacAuthServiceModel>(parkServiceDs.Tables[0]);
@@ -790,15 +858,23 @@ namespace PartialViewOtherToJieLink.ViewModels
                         break;
                 }
                 DataSet recordInDs = null;
-                if (policy.EnterRecordSelect)
+                try
                 {
-                    //勾选了入场记录
-                    recordInDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_in WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", miniTime));
+                    if (policy.EnterRecordSelect)
+                    {
+                        //勾选了入场记录
+                        recordInDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_in WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", miniTime));
+                    }
+                    else
+                    {
+                        //没有勾选入场记录：默认场内记录
+                        recordInDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_in WHERE IN_TIME>='{0}' AND OUT_FLAG='NO_OUT' ORDER BY IN_TIME ASC;", miniTime));
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    //没有勾选入场记录：默认场内记录
-                    recordInDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_in WHERE IN_TIME>='{0}' AND OUT_FLAG='NO_OUT' ORDER BY IN_TIME ASC;", miniTime));
+                    ShowMessage("jsds数据库还原不成功：t_park_record_in表缺失");
+                    LogHelper.CommLogger.Info("jsds数据库还原不成功：t_park_record_in表缺失");
                 }
                 if (recordInDs != null && recordInDs.Tables[0] != null && recordInDs.Tables[0].Rows.Count > 0)
                 {
@@ -806,7 +882,16 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
                 if (recordInList.Count > 0 && policy.OutRecordSelect)
                 {
-                    DataSet recordOutDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_out WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", miniTime));
+                    DataSet recordOutDs = null;
+                    try
+                    {
+                        recordOutDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format("SELECT * FROM t_park_record_out WHERE IN_TIME>='{0}' ORDER BY IN_TIME ASC;", miniTime));
+                    }
+                    catch (Exception)
+                    {
+                        ShowMessage("jsds数据库还原不成功：t_park_record_out表缺失");
+                        LogHelper.CommLogger.Info("jsds数据库还原不成功：t_park_record_out表缺失");
+                    }
                     if (recordOutDs != null && recordOutDs.Tables[0] != null && recordOutDs.Tables[0].Rows.Count > 0)
                     {
                         recordOutList = CommonHelper.DataTableToList<TParkRecordOutModel>(recordOutDs.Tables[0]);
@@ -825,12 +910,21 @@ namespace PartialViewOtherToJieLink.ViewModels
                     }
                     catch (Exception o)
                     {
-                        LogHelper.CommLogger.Error(o, "查询收费表t_park_pay（低版本收费记录在出场表t_park_record_out）异常：");
+                        ShowMessage("查询收费表t_park_pay不存在，低版本收费信息在t_park_visitorpayrecord");
+                        LogHelper.CommLogger.Info("查询收费表t_park_pay不存在，低版本收费信息在t_park_visitorpayrecord");
                         enableTParkPay = false;
-                        DataSet recordBillDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format($"SELECT * from t_park_visitorpayrecord WHERE IN_TIME>='{miniTime}' ORDER BY IN_TIME ASC;"));
-                        if (recordBillDs != null && recordBillDs.Tables[0] != null && recordBillDs.Tables[0].Rows.Count > 0)
+                        try
                         {
-                            lowVersionPayRecordList = CommonHelper.DataTableToList<TParkpayrecordModel>(recordBillDs.Tables[0]);
+                            DataSet recordBillDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, string.Format($"SELECT * from t_park_visitorpayrecord WHERE IN_TIME>='{miniTime}' ORDER BY IN_TIME ASC;"));
+                            if (recordBillDs != null && recordBillDs.Tables[0] != null && recordBillDs.Tables[0].Rows.Count > 0)
+                            {
+                                lowVersionPayRecordList = CommonHelper.DataTableToList<TParkpayrecordModel>(recordBillDs.Tables[0]);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            ShowMessage("jsds数据库还原不成功：t_park_visitorpayrecord表缺失");
+                            LogHelper.CommLogger.Info("jsds数据库还原不成功：t_park_visitorpayrecord表缺失");
                         }
                     }
                 }
@@ -1439,7 +1533,17 @@ namespace PartialViewOtherToJieLink.ViewModels
             {
                 return;
             }
-            DataSet equipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment WHERE EQUIP_STATE='NORMAL' ORDER BY EQUIPMENT_ID asc;");
+            DataSet equipmentDs = null;
+            try
+            {
+                equipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment WHERE EQUIP_STATE='NORMAL' ORDER BY EQUIPMENT_ID asc;");
+            }
+            catch (Exception)
+            {
+                ShowMessage("jsds数据库还原不成功：t_base_equipment表缺失");
+                LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_equipment表缺失");
+                return;
+            }
             if (equipmentDs == null || equipmentDs.Tables[0] == null || equipmentDs.Tables[0].Rows.Count == 0)
             {
                 ShowMessage("04.迁移设备结束：deviceDs空");
@@ -1452,7 +1556,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                 return;
             }
             //设备的MAC、IP、网关地址等在t_base_equipment_param
-            DataSet equipmentparamDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment_param ORDER BY EQUIPMENT_ID ASC;");
+            DataSet equipmentparamDs = null;
+            try
+            {
+                equipmentparamDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment_param ORDER BY EQUIPMENT_ID ASC;");
+            }
+            catch (Exception)
+            {
+                ShowMessage("jsds数据库还原不成功：t_base_equipment_param表缺失");
+                LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_equipment_param表缺失");
+                return;
+            }
             if (equipmentparamDs == null || equipmentparamDs.Tables[0] == null || equipmentparamDs.Tables[0].Rows.Count == 0)
             {
                 ShowMessage("04.迁移设备结束：equipmentparamDs空");
@@ -1498,7 +1612,8 @@ namespace PartialViewOtherToJieLink.ViewModels
                 TBaseEquipmentParamModel gatewayItem = null;
                 TBaseEquipmentParamModel maskItem = null;
                 TBaseEquipmentParamModel macNoItem = null;
-                //看jsds数据库，领御设备、速通、JSMJY08（国家体育总局1.2.1、953776303/1234的1.3.2）通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                //看jsds数据库，领御设备、速通通过EQUIPMENT_ID找MAC、devId、IP等设备信息
+                //看jsds数据库（1.2.1、1.3.2），Y08也是通过EQUIPMENT_ID找MAC、devId、IP等设备信息
                 macItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMMAC);
                 ipItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMIP);
                 devIDItem = equipmentParamList.FirstOrDefault(x => x.EQUIPMENT_ID == equipment.ID && x.PARAM_CODE == ConstantHelper.JSDSPARAMDEVID);
@@ -1608,7 +1723,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0220A
                     || equipment.PRODUCT_MODEL == ConstantHelper.JSMJK0240A)
                     {
-                        //控制器，找门将服务
+                        //控制器，找服务
                         if (mjDeivce == null)
                         {
                             ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：没有门禁服务，跳过");
@@ -1688,7 +1803,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             }
                             string doorGuid = GetGuidString(doorEquipmentList[index].ID);
                             string doorId = (CommonHelper.GetUIntValue(macToDeviceId) + index + 1).ToString();
-                            string doorName = doorId + "门";
+                            string doorName = doorEquipmentList[index].EQUIP_NAME;
                             if (string.IsNullOrWhiteSpace(doorEquipmentList[index].REMARK))
                             {
                                 doorEquipmentList[index].REMARK = REMARK;
@@ -1959,7 +2074,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                 return;
             }
             List<TBaseDefendDistrictModel> districtList = new List<TBaseDefendDistrictModel>();
-            DataSet districtDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select* from t_base_defend_district WHERE STATE = 'NORMAL' ORDER BY DISTRICT_ID ASC;");
+            DataSet districtDs = null;
+            try
+            {
+                districtDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_base_defend_district WHERE STATE = 'NORMAL' ORDER BY DISTRICT_ID ASC;");
+            }
+            catch (Exception)
+            {
+                ShowMessage("jsds数据库还原不成功：t_base_defend_district表缺失");
+                LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_defend_district表缺失");
+                return;
+            }
             if (districtDs != null && districtDs.Tables[0] != null && districtDs.Tables[0].Rows.Count > 0)
             {
                 List<TBaseDefendDistrictModel> tempDistrictList = CommonHelper.DataTableToList<TBaseDefendDistrictModel>(districtDs.Tables[0]).OrderBy(x => x.DISTRICT_ID).ToList();
@@ -1992,7 +2117,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                 ShowMessage("04.迁移设备权限结束：personList.Count == 0");
                 return;
             }
-            DataSet equipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment WHERE EQUIP_STATE='NORMAL' ORDER BY EQUIPMENT_ID asc;");
+            DataSet equipmentDs = null;
+            try
+            {
+                equipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * from t_base_equipment WHERE EQUIP_STATE='NORMAL' ORDER BY EQUIPMENT_ID asc;");
+            }
+            catch (Exception)
+            {
+                ShowMessage("jsds数据库还原不成功：t_base_equipment表缺失");
+                LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_equipment表缺失");
+                return;
+            }
             List<TBaseEquipmentModel> equipmentList = new List<TBaseEquipmentModel>();
             if (equipmentDs != null && equipmentDs.Tables[0] != null && equipmentDs.Tables[0].Rows.Count > 0)
             {
@@ -2073,7 +2208,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                     continue;
                 }
                 //区域+通道
-                DataSet establishDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"select * from t_base_establish WHERE STATE='NORMAL' AND DISTRICT_ID='{districtModel.ID}' ORDER BY ESTABLISH_ID ASC;");
+                DataSet establishDs = null;
+                try
+                {
+                    establishDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"select * from t_base_establish WHERE STATE='NORMAL' AND DISTRICT_ID='{districtModel.ID}' ORDER BY ESTABLISH_ID ASC;");
+                }
+                catch (Exception)
+                {
+                    ShowMessage("jsds数据库还原不成功：t_base_establish表缺失");
+                    LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_establish表缺失");
+                    break;
+                }
                 List<TBaseEstablishModel> establishList = new List<TBaseEstablishModel>();
                 if (establishDs != null && establishDs.Tables[0] != null && establishDs.Tables[0].Rows.Count > 0)
                 {
@@ -2158,11 +2303,11 @@ namespace PartialViewOtherToJieLink.ViewModels
                     ShowMessage($"04.迁移personNo='{personId}'的设备权限：用户不存在，不迁移权限，跳过");
                     continue;
                 }
-                if (person.CanInOut == 1)
-                {
-                    ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：用户权限已存在，不重复迁移权限，跳过");
-                    continue;
-                }
+                //if (person.CanInOut == 1)
+                //{
+                //    ShowMessage($"04.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：用户权限已存在，不重复迁移权限，跳过");
+                //    continue;
+                //}
                 TCacAccountModel account = accountList.FirstOrDefault(x => x.PERSON_ID == personId);
                 if (account == null)
                 {
@@ -2227,6 +2372,16 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             //不是门禁设备
                                             continue;
                                         }
+                                        //查找是不是已有权限
+                                        string hasRightSql = $"SELECT * from control_person_device_relation WHERE PGUID='{personGuid}' AND DGUID='{dguid}' AND ISDeleted=0 limit 1";
+                                        using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, hasRightSql))
+                                        {
+                                            if (reader.Read())
+                                            {
+                                                ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的设备权限：'{device.DeviceName}'【{device.DeviceID}】已存在，跳过");
+                                                continue;
+                                            }
+                                        }
                                         try
                                         {
                                             int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_person_device_relation(PDGUID, PGUID, DGUID, ISDeleted, Type, UserType) VALUE(UUID(), '{personGuid}', '{dguid}', 0, 2, 0);");
@@ -2279,7 +2434,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 {
                                     continue;
                                 }
-                                DataSet serviceDistrictDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_cac_auth_service_district WHERE `STATUS`= 'NORMAL' AND AUTH_SERVICE_ID = '{serviceId}' ORDER BY CREATE_TIME asc;");
+                                DataSet serviceDistrictDs = null;
+                                try
+                                {
+                                    serviceDistrictDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_cac_auth_service_district WHERE `STATUS`= 'NORMAL' AND AUTH_SERVICE_ID = '{serviceId}' ORDER BY CREATE_TIME asc;");
+                                }
+                                catch (Exception)
+                                {
+                                    ShowMessage("jsds数据库还原不成功：t_cac_auth_service_district表缺失");
+                                    LogHelper.CommLogger.Info("jsds数据库还原不成功：t_cac_auth_service_district表缺失");
+                                    break;
+                                }
                                 List<TCacauthServiceDistrictModel> serviceDistrictList = new List<TCacauthServiceDistrictModel>();
                                 if (serviceDistrictDs != null && serviceDistrictDs.Tables[0] != null && serviceDistrictDs.Tables[0].Rows.Count > 0)
                                 {
@@ -2298,6 +2463,16 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         }
                                         try
                                         {
+                                            //查找是不是已有记录
+                                            string hasSql = $"SELECT * from control_area_service WHERE APGuid='{area.APGUID}' AND PGuid='{person.PGUID}' AND LGuid='{parkService.LGUID}' LIMIT 1;";
+                                            using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, hasSql))
+                                            {
+                                                if (reader.Read())
+                                                {
+                                                    ShowMessage($"05.迁移PersonName='{person.PersonName}'【'{person.PersonNo}'】的服务区域关系：'{serviceId}'-'{districtId}'已存在，跳过");
+                                                    continue;
+                                                }
+                                            }
                                             int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_area_service(Guid,APGuid,PGuid,LGuid) VALUE('{Guid.NewGuid().ToString()}','{area.APGUID}','{person.PGUID}','{parkService.LGUID}');");
                                             if (flag <= 0)
                                             {
@@ -2358,6 +2533,16 @@ namespace PartialViewOtherToJieLink.ViewModels
                                     {
                                         try
                                         {
+                                            //查找是不是已有记录
+                                            string hasSql = $"SELECT * from control_voucher_device WHERE VGuid='{voucher.Guid}' AND DeviceId='{device.DeviceID}' AND `Status`=0 LIMIT 1;";
+                                            using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, hasSql))
+                                            {
+                                                if (reader.Read())
+                                                {
+                                                    ShowMessage($"05.迁移VoucherNo='{voucher.VoucherNo}'的设备权限：'{device.DeviceName}'【{device.DeviceID}】车场设备权限已存在，跳过");
+                                                    continue;
+                                                }
+                                            }
                                             int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_voucher_device(Id, VGuid, DGuid, DeviceId,`Status`) VALUE('{Guid.NewGuid().ToString()}', '{voucher.Guid}', '{device.DGUID}', '{device.DeviceID}', 0);");
                                             if (flag <= 0)
                                             {
@@ -2381,7 +2566,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                         }
                     }
                 }
-                if (canInOut)
+                if (canInOut && person.CanInOut == 0)
                 {
                     try
                     {
@@ -2428,8 +2613,18 @@ namespace PartialViewOtherToJieLink.ViewModels
         private List<TCacauthEstablishModel> IsServiceEstablishGoon(string personGuid, string serviceIdStr)
         {
             //服务+通道
-            DataSet currServiceEstablishDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * FROM t_cac_auth_establish WHERE `STATUS`='NORMAL' AND AUTHSERVICE_ID in ({serviceIdStr}) ORDER BY authservice_id ASC;");
+            DataSet currServiceEstablishDs = null;
             List<TCacauthEstablishModel> currServiceEstablishList = new List<TCacauthEstablishModel>();
+            try
+            {
+                currServiceEstablishDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * FROM t_cac_auth_establish WHERE `STATUS`='NORMAL' AND AUTHSERVICE_ID in ({serviceIdStr}) ORDER BY authservice_id ASC;");
+            }
+            catch (Exception)
+            {
+                ShowMessage("jsds数据库还原不成功：t_cac_auth_establish表缺失");
+                LogHelper.CommLogger.Info("jsds数据库还原不成功：t_cac_auth_establish表缺失");
+                return currServiceEstablishList;
+            }
             if (currServiceEstablishDs != null && currServiceEstablishDs.Tables[0] != null && currServiceEstablishDs.Tables[0].Rows.Count > 0)
             {
                 currServiceEstablishList = CommonHelper.DataTableToList<TCacauthEstablishModel>(currServiceEstablishDs.Tables[0]).OrderBy(x => x.ESTABLISH_ID).ToList();
@@ -2449,9 +2644,19 @@ namespace PartialViewOtherToJieLink.ViewModels
         /// <returns></returns>
         private List<TBaseEstablishREquipmentModel> IsEstablishREquipmentGoon(string personGuid, string estaIdStr, bool enableShowMsg = true)
         {
-            //通道+设备
-            DataSet currEstablishEquipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_base_establish_r_equi WHERE STATE='NORMAL' AND ESTA_ID in ({estaIdStr}) ORDER BY ESTA_ID ASC,CREATE_TIME ASC;");
             List<TBaseEstablishREquipmentModel> currEstablishEquipmentList = new List<TBaseEstablishREquipmentModel>();
+            //通道+设备
+            DataSet currEstablishEquipmentDs = null;
+            try
+            {
+                currEstablishEquipmentDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, $"SELECT * from t_base_establish_r_equi WHERE STATE='NORMAL' AND ESTA_ID in ({estaIdStr}) ORDER BY ESTA_ID ASC,CREATE_TIME ASC;");
+            }
+            catch (Exception)
+            {
+                ShowMessage("jsds数据库还原不成功：t_base_establish_r_equi表缺失");
+                LogHelper.CommLogger.Info("jsds数据库还原不成功：t_base_establish_r_equi表缺失");
+                return currEstablishEquipmentList;
+            }
             if (currEstablishEquipmentDs != null && currEstablishEquipmentDs.Tables[0] != null && currEstablishEquipmentDs.Tables[0].Rows.Count > 0)
             {
                 currEstablishEquipmentList = CommonHelper.DataTableToList<TBaseEstablishREquipmentModel>(currEstablishEquipmentDs.Tables[0]).OrderBy(x => x.ESTA_ID).ToList();
