@@ -7,16 +7,18 @@ import com.alibaba.fastjson.annotation.JSONField;
 public class ProjectInfo {
 	private Integer id;
 
+	private String projectVersion;
+
+	private String projectName;
+
 	private String projectNo;
 
 	private String devopsVersion;
 
 	private Integer isFilter;
 
-	private boolean boolenIsFilter;
-	
 	private Integer productType;
-
+	
 	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	private Date operatorDate;
 
@@ -28,6 +30,22 @@ public class ProjectInfo {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getProjectVersion() {
+		return projectVersion;
+	}
+
+	public void setProjectVersion(String projectVersion) {
+		this.projectVersion = projectVersion == null ? null : projectVersion.trim();
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public void setProjectName(String projectName) {
+		this.projectName = projectName == null ? null : projectName.trim();
 	}
 
 	public String getProjectNo() {
@@ -54,8 +72,12 @@ public class ProjectInfo {
 		this.isFilter = isFilter;
 	}
 
-	public boolean getBoolenIsFilter() {
-		return this.isFilter == 1;
+	public Integer getProductType() {
+		return productType;
+	}
+
+	public void setProductType(Integer productType) {
+		this.productType = productType;
 	}
 
 	public Date getOperatorDate() {
@@ -73,12 +95,4 @@ public class ProjectInfo {
 	public void setRemark(String remark) {
 		this.remark = remark == null ? null : remark.trim();
 	}
-	
-	public Integer getProductType() {
-        return productType;
-    }
-
-    public void setProductType(Integer productType) {
-        this.productType = productType;
-    }
 }

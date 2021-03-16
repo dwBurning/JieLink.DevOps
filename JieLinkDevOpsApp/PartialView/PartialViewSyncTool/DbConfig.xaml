@@ -74,7 +74,7 @@
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
         <Button Grid.Column="1" Grid.Row="5" Content="确定" Name ="btnTest" Click="btnTest_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
     </Grid>

@@ -14,9 +14,9 @@ namespace PartialViewInterface.Utils
         /// </summary>
         /// <param name="connectionString">连接字符串</param>
         /// <param name="commandText">Sql语句</param>
-        /// <param name="commandTimeout">超时时间，单位秒，默认3600秒</param>
+        /// <param name="commandTimeout">超时时间，单位秒，默认int.MaxValue秒</param>
         /// <returns></returns>
-        public static int ExecuteNonQueryEx(string connectionString, string commandText, int commandTimeout = 3600)
+        public static int ExecuteNonQueryEx(string connectionString, string commandText, int commandTimeout = int.MaxValue)
         {
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {

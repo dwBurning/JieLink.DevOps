@@ -47,7 +47,7 @@
                 </Grid.RowDefinitions>
 
                 <WrapPanel Grid.Column="2" Grid.RowSpan="2">
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Left"><Run Foreground="#20A0FF">说明：</Run> 1.本工具用于其他软件一键切换到jielink软件，迁移数据包括【组织、人事、凭证、车场服务、门禁服务、场内记录】。2.也可再迁移设备、设备权限、入场、出场、收费记录。<Run Foreground="#20A0FF">3.支持迁移的设备包含领御III型控制器、老Y08、设备Id生成规则相符的速通。</Run>4.欢迎加入jielink阵营。</TextBlock>
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Left"><Run Foreground="#20A0FF">说明：</Run> 1.本工具用于其他软件一键切换到jielink软件，迁移数据包括【组织、人事、凭证、车场服务、门禁服务、场内记录】。2.也可再迁移设备、设备权限、入场、出场、收费记录。3.支持迁移的设备包含<Run Foreground="#20A0FF">领御III型控制器、老Y08、设备Id生成规则相符的速通。</Run>4.欢迎加入jielink阵营。</TextBlock>
                 </WrapPanel>
                 <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -135,11 +135,11 @@
                                   pu:CheckBoxHelper.CornerRadius="4" IsChecked="{Binding BillRecord}" />
                 </ListBox>
                 <Button Grid.Column="1" Grid.Row="9" Content="测试连接" Name ="btnTestConn" Command="{Binding TestConnCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtJsdsDbPwd}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="{Binding ElementName=txtJsdsDbPwd}"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 <Button Grid.Column="1" Grid.Row="10" Content="一键升级" Name ="btnOneClickUpgrade" Command="{Binding UpgradeCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
@@ -207,12 +207,12 @@
                      />
 
                 <Button Grid.Column="1" Grid.Row="4" Content="测试连接" Name ="btnTestG3Conn" Command="{Binding TestConnCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtG3DbPwd}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="{Binding ElementName=txtG3DbPwd}"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
                 <Button Grid.Column="1" Grid.Row="5" Content="一键升级" Name ="btnOneClickUpgradeG3" Command="{Binding UpgradeCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
@@ -280,12 +280,12 @@
                      />
 
                 <Button Grid.Column="1" Grid.Row="4" Content="测试连接" Name ="btnTestConnJSRJ" Command="{Binding TestConnCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40" CommandParameter="{Binding ElementName=txtDbPwdJSRJ}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="{Binding ElementName=txtDbPwdJSRJ}"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
                 <Button Grid.Column="1" Grid.Row="5" Content="一键升级" Name ="btnOneClickUpgradeJSRJ" Command="{Binding UpgradeCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>

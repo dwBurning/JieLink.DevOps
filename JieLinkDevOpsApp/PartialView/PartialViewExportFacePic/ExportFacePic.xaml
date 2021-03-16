@@ -50,11 +50,11 @@
                             pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath}"
                             pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3"/>
         <Button Grid.Row="4" Margin="5" Grid.Column="5" Content="选择导出路径" Name ="btnChoosePath"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
         <Button Grid.Row="3" Margin="5" Grid.Column="5" Content="导出" Name ="btnCheckPic"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding ExportCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 

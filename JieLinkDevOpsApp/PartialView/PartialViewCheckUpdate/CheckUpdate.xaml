@@ -22,7 +22,7 @@
 
     </UserControl.Resources>
 
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -102,12 +102,12 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <Button Grid.Column="2" Grid.Row="1" Content="浏览" Name="btnChooseInstallPath" Click="btnChooseInstallPath_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 />
         <Button Grid.Column="2" Grid.Row="2" Content="浏览" Name="btnChooseSetUpPackagePath" Click="btnChooseSetUpPackagePath_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 />

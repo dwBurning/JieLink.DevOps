@@ -42,7 +42,7 @@
         <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.ColumnSpan="3">2.<Run Foreground="Red">如果需要更换文件服务器</Run>请使用该工具将备份后的文件夹，复制到新文件服务器路径下</TextBlock>
        
         <Button Grid.Column="2" Grid.Row="2" Content="开始备份" Margin="5"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Command="{Binding FacePicBackUpCommand}" 
                 />
@@ -62,12 +62,12 @@
                             pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="2"/>
 
         <Button Grid.Row="3" Margin="5" Grid.Column="2" Content="选择备份路径" Name ="btnChoosePath"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
         <Button Grid.Row="1" Margin="5" Grid.Column="2" Content="检测人脸有效性" Name ="btnCheckPic"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding CheckPicCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 

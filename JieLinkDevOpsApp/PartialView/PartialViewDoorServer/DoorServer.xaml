@@ -21,7 +21,7 @@
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -43,7 +43,7 @@
         <TextBlock VerticalAlignment="Center" Grid.Row="2" Grid.ColumnSpan="3" >3、设置完成，重启门禁服务，备注：<Run Foreground="Red">直接结束门禁服务进程！直接结束门禁服务进程！直接结束门禁服务进程！</Run></TextBlock>
         <TextBlock VerticalAlignment="Center" Grid.Row="6" Grid.ColumnSpan="3" >4、备注：点开本页面会自动检测门禁卡下载问题以及MAC地址配置问题，若无弹窗提示说明正常</TextBlock>
         <Button Grid.Column="0" Grid.Row="5" Content="获取中心设备" Grid.ColumnSpan="3" Margin="5"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" Command="{Binding GetDoorDeviceCommand}" 
                 />
@@ -57,7 +57,7 @@
                             pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="3"/>
        
         <Button Grid.Row="3" Margin="5" Grid.Column="2" Content="选择路径" Name ="btnChoosePath"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
@@ -71,7 +71,7 @@
                             pu:ComboBoxHelper.CornerRadius="4"
                             pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="4" /> 
         <Button Grid.Column="0" Grid.Row="6" Content="固定门禁服务Mac(修复两个门禁服务问题)" Grid.ColumnSpan="3" Visibility="Hidden"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 

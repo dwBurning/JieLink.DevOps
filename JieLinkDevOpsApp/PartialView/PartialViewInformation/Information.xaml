@@ -84,6 +84,16 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2021-02-04 V1.1.2">
+                <ContentControl>
+                    <TextBlock>
+                        1.支持低版本升级到JieLink2.8.2版本
+                        2.优化数据归档的SQL，提升归档执行效率
+                        3.上报工具版本信息的同时上班JieLink的版本信息
+                        4.其他优化项
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2021-01-22 V1.1.1">
                 <ContentControl>
                     <TextBlock>

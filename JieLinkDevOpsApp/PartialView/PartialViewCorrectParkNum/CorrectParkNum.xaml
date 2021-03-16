@@ -22,7 +22,7 @@
     </UserControl.Resources>
 
 
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"></ColumnDefinition>
             <ColumnDefinition Width="200"></ColumnDefinition>
@@ -47,12 +47,12 @@
                      pu:TextBoxHelper.IsClearButtonVisible="True"/>
 
         <Button x:Name="Button_Start"  Margin="5" Grid.Column="1" Grid.Row="0" Content="开始校正" Click="button_Start_Click" 
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" 
                 />
         <Button x:Name="Button_Stop"  Margin="5" Grid.Column="1" Grid.Row="1" Content="停止校正" Click="button_Stop_Click" 
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4" IsEnabled="False" 
                 />

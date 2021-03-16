@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
         <ContentControl Grid.ColumnSpan="2" x:Name="ContentControl" Margin="5,0" />
         <Button Grid.Row="1" Grid.Column="1" Content="配置完成" Name="btnOK" Click="btnOK_Click" Margin="10,0"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 IsEnabled="True"/>

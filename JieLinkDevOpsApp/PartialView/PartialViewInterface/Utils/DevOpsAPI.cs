@@ -40,6 +40,8 @@ namespace PartialViewInterface.Utils
                 string url = string.Format("{0}/devops/reportProjectInfo", EnvironmentInfo.ServerUrl);
                 ProjectInfo projectInfo = new ProjectInfo();
                 projectInfo.ProjectNo = EnvironmentInfo.ProjectNo ?? "";
+                projectInfo.ProjectName = EnvironmentInfo.ProjectName ?? "";
+                projectInfo.ProjectVersion = EnvironmentInfo.ProjectVersion ?? "";
                 projectInfo.DevopsVersion = EnvironmentInfo.CurrentVersion;
                 projectInfo.ProductType = enumProductType.DevOps;
                 return HttpHelper.Post<DevOpsProduct>(url, projectInfo, 3000);
