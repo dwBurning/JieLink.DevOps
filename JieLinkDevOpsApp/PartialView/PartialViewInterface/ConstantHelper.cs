@@ -12,6 +12,8 @@ namespace PartialViewInterface
         /// jsds区域root节点
         /// </summary>
         public const string JSDSDISTRICTROOT = "root";
+
+        public const string G3DEPTNO = "00000000";
         /// <summary>
         /// jsds区域EXTERIOR节点
         /// </summary>

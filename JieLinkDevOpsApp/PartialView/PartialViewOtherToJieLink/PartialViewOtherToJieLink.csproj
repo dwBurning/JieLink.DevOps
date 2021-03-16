@@ -81,6 +81,7 @@
     <Compile Include="Models\JsdsUpgradePolicy.cs" />
     <Compile Include="Models\RecordComboxSelectType.cs" />
     <Compile Include="Models\TBaseDeptModel.cs" />
+    <Compile Include="Models\TBaseDeviceArea.cs" />
     <Compile Include="Models\TBaseHrPersonModel.cs" />
     <Compile Include="Models\TBaseHrRoomPos.cs" />
     <Compile Include="Models\TBaseJSRJCardInfoModel.cs" />

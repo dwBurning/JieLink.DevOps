@@ -903,6 +903,33 @@ namespace PartialViewOtherToJieLink.ViewModels
                         LogHelper.CommLogger.Error(o, $"05.迁移PersonName='{controlPerson.PersonName}'【'{controlPerson.PersonNo}'】的设备权限：'{controlDevice.DeviceName}'【{controlDevice.DeviceID}】门禁设备权限异常，");
                         return;
                     }
+                    List<ControlDevices> controlDeviceChildren = controlDevicesList.Where(x => x.ParentID == controlDevice.DeviceID).ToList();
+                    if (controlDeviceChildren == null)
+                    {
+                        continue;
+                    }
+                    foreach (var deviceChild in controlDeviceChildren)
+                    {
+                        try
+                        {
+                            int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, $"INSERT INTO control_person_device_relation(PDGUID, PGUID, DGUID, ISDeleted, Type, UserType) VALUE(UUID(), '{controlPerson.PGUID}', '{deviceChild.DGUID}', 0, 2, 0);");
+                            if (flag <= 0)
+                            {
+                                ShowMessage($"05.迁移PersonName='{controlPerson.PersonName}'【'{controlPerson.PersonNo}'】的设备权限：'{deviceChild.DeviceName}'【{deviceChild.DeviceID}】门禁设备权限失败");
+                            }
+                            else
+                            {
+                                ShowMessage($"05.迁移PersonName='{controlPerson.PersonName}'【'{controlPerson.PersonNo}'】的设备权限：'{deviceChild.DeviceName}'【{deviceChild.DeviceID}】门禁设备权限成功");
+                                doorRightSuccessImportCount++;
+                            }
+                        }
+                        catch (Exception o)
+                        {
+                            ShowMessage($"05.迁移PersonName='{controlPerson.PersonName}'【'{controlPerson.PersonNo}'】的设备权限：'{deviceChild.DeviceName}'【{deviceChild.DeviceID}】门禁设备权限异常，详情请分析日志");
+                            LogHelper.CommLogger.Error(o, $"05.迁移PersonName='{controlPerson.PersonName}'【'{controlPerson.PersonNo}'】的设备权限：'{deviceChild.DeviceName}'【{deviceChild.DeviceID}】门禁设备权限异常，");
+                            return;
+                        }
+                    }
                 }
             }
 
