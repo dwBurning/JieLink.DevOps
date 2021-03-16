@@ -56,7 +56,7 @@
         >
         </el-input>
         <el-button
-        style="margin-top :10px"
+          style="margin-top :10px"
           type="primary"
           @click="SQLDialog=false"
         >确定</el-button>
@@ -216,7 +216,7 @@
               type="primary"
               style="margin-left:100px;"
             >选择excel文件上传</el-button>
-            <label>只能上传一个不超过1M的excel,jielink需要补录或者删除的数据必须放在第一个Sheet中,多余统计数据可删除</label>
+            <label>只能上传一个不超过1M的excel,jielink需要补录或者删除的数据必须放在第一个Sheet中,多余统计数据需删除</label>
           </el-upload>
 
           <el-checkbox-group v-model="ruleForm.checkList">
@@ -349,11 +349,12 @@
               size="small"
             >加急</el-button>
             <el-button
+              @click="ReUpload(scope.row)"
               style="margin-top: 10px"
               type="primary"
-              icon="el-icon-sugar"
+              icon="el-icon-upload2"
               size="small"
-            >预留</el-button>
+            >重传</el-button>
             <el-button
               @click="DownExcelClick(scope.row)"
               type="primary"
@@ -401,8 +402,7 @@ var m_filename;
 export default {
   components: { Pagination },
   methods: {
-    Test() {
-    },
+    Test() {},
 
     //打开对话窗 请求对话参与方数据
     deleteClick(row) {
@@ -458,6 +458,21 @@ export default {
         });
         this.loadVsersionInfo();
       });
+    },
+
+    //重新上传 重传
+    ReUpload(row)
+    {
+      this.selItems = row;
+      this.$confirm(
+        "该操作将重新上传文件，重新生成补录语句，是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
     },
 
     //验收
@@ -524,11 +539,17 @@ export default {
               remark: value,
               user: username,
             });
-            this.$message({
-              type: "success",
-              message: "已提交！" + value,
-            });
-            this.loadVsersionInfo();
+
+            clearTimeout(this.timer); //清除延迟执行
+            this.timer = setTimeout(() => {
+              //有时候刷新页面太快，数据还没提交完成，设置刷新延迟执行700ms
+              this.$message({
+                type: "success",
+                message: "已提交！" + value,
+              });
+              this.loadVsersionInfo();
+            }, 700);
+
           });
         })
         .catch(() => {
@@ -679,8 +700,8 @@ export default {
     },
     //选择上传文件后触发
     onUploadChange(file) {
-            var fileName = file.name.substring(file.name.lastIndexOf(".") + 1);
-      if (fileName != "xls" && fileName != "xlsx"){
+      var fileName = file.name.substring(file.name.lastIndexOf(".") + 1);
+      if (fileName != "xls" && fileName != "xlsx") {
         this.$message({
           type: "error",
           showClose: true,
@@ -689,7 +710,7 @@ export default {
         });
         this.fileList.pop();
         return false;
-    }
+      }
       // const isEXCEL =
       //   file.raw.type ===
       //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
@@ -950,7 +971,7 @@ export default {
       dialogLoading: false,
       dialogVisible: false,
       AddRemoteDialog: false,
-      SQLDialog:false,
+      SQLDialog: false,
       SQLdialogVisible: false,
       idVisible: false,
       keywords: null,
