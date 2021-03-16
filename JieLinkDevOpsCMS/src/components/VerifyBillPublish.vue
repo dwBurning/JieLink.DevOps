@@ -349,11 +349,12 @@
               size="small"
             >加急</el-button>
             <el-button
+              @click="ReUpload(scope.row)"
               style="margin-top: 10px"
               type="primary"
-              icon="el-icon-sugar"
+              icon="el-icon-upload2"
               size="small"
-            >预留</el-button>
+            >重传</el-button>
             <el-button
               @click="DownExcelClick(scope.row)"
               type="primary"
@@ -457,6 +458,21 @@ export default {
         });
         this.loadVsersionInfo();
       });
+    },
+
+    //重新上传 重传
+    ReUpload(row)
+    {
+      this.selItems = row;
+      this.$confirm(
+        "该操作将重新上传文件，重新生成补录语句，是否继续?",
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
     },
 
     //验收
