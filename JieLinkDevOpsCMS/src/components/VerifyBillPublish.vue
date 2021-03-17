@@ -69,6 +69,7 @@
         <el-form
           :model="ruleForm"
           :rules="rules"
+          inline="true" 
           ref="ruleForm"
           label-width="100px"
           class="demo-ruleForm"
@@ -118,12 +119,19 @@
           >
             <el-input v-model="ruleForm.project_name"></el-input>
           </el-form-item>
-          <el-form-item
-            label="停车场编号"
-            prop="project_no"
-          >
+
+   
+          <el-form-item label="停车场编号" prop="project_no">
+            <el-col :span="10">
             <el-input v-model="ruleForm.project_no"></el-input>
+            </el-col>
+<el-col class="line" :span="2"></el-col>
+             <el-button type="small" @click="sunloginClick('ruleForm')" style="margin-left:10px;" >搜索远程</el-button>
+
           </el-form-item>
+          
+
+
           <el-form-item
             label="版本类型"
             prop="versionType"
@@ -214,14 +222,14 @@
             <el-button
               size="small"
               type="primary"
-              style="margin-left:100px;"
-            >选择excel文件上传</el-button>
-            <label>只能上传一个不超过1M的excel,jielink需要补录或者删除的数据必须放在第一个Sheet中,多余统计数据需删除</label>
+              style="margin-left:20px;margin-top:10px"
+            >选择文件上传</el-button>
+            <label>只能上传一个不超过1M的excel,jielink需要补录或者删除的数据必须放在第一个Sheet中</label>
           </el-upload>
 
           <el-checkbox-group v-model="ruleForm.checkList">
             <el-checkbox
-              style="margin-left:100px;margin-top:20px;margin-bottom:20px"
+              style="margin-left:20px;margin-top:20px;margin-bottom:20px"
               label="平台有车场无 补录"
             ></el-checkbox>
             <el-checkbox label="平台无车场有 补推"></el-checkbox>
@@ -235,12 +243,10 @@
               type="primary"
               @click="submitForm('ruleForm')"
             >发布</el-button>
-            <!--@click="submitUpload()" -->
-            <!-- @click="submitForm('ruleForm')" -->
-            <el-button
+            <!-- <el-button
               type="primary"
               @click="sunloginClick('ruleForm')"
-            >一键搜索向日葵</el-button>
+            >一键搜索向日葵</el-button> -->
             <el-button @click="resetForm('ruleForm')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -335,7 +341,7 @@
               type="success"
               icon="el-icon-chat-dot-square"
               size="small"
-            >研发确认</el-button>
+            >研发沟通</el-button>
             <el-button
               @click="SQLClick(scope.row)"
               type="link"
@@ -520,9 +526,9 @@ export default {
         });
     },
 
-    //研发确认按钮
+    //研发沟通按钮
     ConfirmClick(row) {
-      this.$prompt("输入处理结果", "研发确认", {
+      this.$prompt("输入处理结果", "研发沟通", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputErrorMessage: "错误",
