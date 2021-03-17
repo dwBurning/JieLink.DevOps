@@ -217,8 +217,8 @@ public class VerifyBillInfoController {
 			else
 				verifybillInfo.setStatus(StatusCode.WaitForDeveloper.value);
 			
-			//如果不需要查原因，以及不需要补推，并且是jielink的 就不需要研发处理了
-			if(!taskstring.contains("查因") && !taskstring.contains("补推") && versionType.equals("0"))
+			//如果不需要查原因，以及不需要补推，以及没有退款问题，并且是jielink的 就不需要研发处理了
+			if(!taskstring.contains("查因") && !taskstring.contains("补推") && !taskstring.contains("退款") && versionType.equals("0"))
 			{
 				verifybillInfo.setStatus(StatusCode.DoItYourSelf.value);
 			}
@@ -321,6 +321,7 @@ public class VerifyBillInfoController {
 			if (totalRowNum > 51)
 				return "第一个工作簿中数据超过50条，请确认是否放对地方了或者有多余数据？";
 			totalCellNum = rowHead.getLastCellNum();
+			
 			// 把所有标题导到MAP
 			Map<String, Integer> titles = new HashMap<String, Integer>();
 			for (int k = 0; k < totalCellNum; k++) {
@@ -328,6 +329,29 @@ public class VerifyBillInfoController {
 				titles.put(cell.toString(), k);
 			}
 
+			// 对表头进行校验，如果缺少某些表头，必定无法正常生成，直接返回错误
+			if(!titles.containsKey("订单号"))
+				ret += "未找到 订单号 表头，请检查excel数据";
+			//高版本为服务开始时间 服务结束时间，部分低版本为入场时间，计费时间
+			if(!titles.containsKey("服务开始时间") && !titles.containsKey("入场时间"))
+				ret += "未找到 服务开始时间 或者 入场时间 表头，请检查excel数据";
+			if(!titles.containsKey("服务结束时间") && !titles.containsKey("计费时间"))
+				ret += "未找到 服务结束时间 或者 计费时间 表头，请检查excel数据";
+			if(!titles.containsKey("收费金额") && !titles.containsKey("计费金额"))
+				ret += "未找到 收费金额 或者 计费金额 表头，请检查excel数据";
+			if(!titles.containsKey("支付时间"))
+				ret += "未找到 支付时间 表头，请检查excel数据";
+			if(!titles.containsKey("支付方式"))
+				ret += "未找到 支付方式 表头，请检查excel数据";
+			if(!titles.containsKey("应收金额"))
+				ret += "未找到 应收金额 表头，请检查excel数据";			
+			if(!titles.containsKey("车牌"))
+				ret += "未找到 车牌 表头，请检查excel数据";
+			if(!titles.containsKey("优惠金额"))
+				ret += "未找到 优惠金额 表头，请检查excel数据";
+			if(ret != "")
+				return ret;
+			
 			// 补录语句生成
 			for (int i = 1; i <= totalRowNum; i++) {
 				Row row;
@@ -335,42 +359,75 @@ public class VerifyBillInfoController {
 					row = sheetAt.getRow(i);
 				else
 					row = HsheetAt.getRow(i);
+				
 				// 订单号所在的列
 				String orderID = row.getCell(titles.get("订单号")).getStringCellValue().toString();
 				ret += "-- " + orderID + "\r\n";
-
-				String inTime = row.getCell(titles.get("服务开始时间")).getStringCellValue().toString();
-				String feesTime = row.getCell(titles.get("服务结束时间")).getStringCellValue().toString();
+				
+				//开始时间结束时间
+				String inTime = "";
+				if(titles.containsKey("服务开始时间"))
+					inTime = row.getCell(titles.get("服务开始时间")).getStringCellValue().toString();
+				else
+					inTime = row.getCell(titles.get("入场时间")).getStringCellValue().toString();
+				
+				String feesTime = "";
+				if(titles.containsKey("服务结束时间"))
+					row.getCell(titles.get("服务结束时间")).getStringCellValue().toString();
+				else
+					row.getCell(titles.get("计费时间")).getStringCellValue().toString();
+				
 				String fees = "";
-				if (row.getCell(titles.get("收费金额")).getCellType() == CellType.NUMERIC)
-					fees = String.valueOf(row.getCell(titles.get("收费金额")).getNumericCellValue()).replace("元", "");
-				else if (row.getCell(titles.get("收费金额")).getCellType() == CellType.NUMERIC.STRING)
-					fees = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
+				if(titles.containsKey("收费金额"))
+				{
+					if (row.getCell(titles.get("收费金额")).getCellType() == CellType.NUMERIC)
+						fees = String.valueOf(row.getCell(titles.get("收费金额")).getNumericCellValue()).replace("元", "");
+					else if (row.getCell(titles.get("收费金额")).getCellType() == CellType.STRING)
+						fees = row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元", "");
+				}
+				else
+				{
+					if (row.getCell(titles.get("计费金额")).getCellType() == CellType.NUMERIC)
+						fees = String.valueOf(row.getCell(titles.get("计费金额")).getNumericCellValue()).replace("元", "");
+					else if (row.getCell(titles.get("计费金额")).getCellType() == CellType.STRING)
+						fees = row.getCell(titles.get("计费金额")).getStringCellValue().toString().replace("元", "");
+				}
+					
 				String accountReceivable = fees;
 				String actualPaid = fees;
-				// String accountReceivable =
-				// row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元",
-				// "");
-				// String actualPaid =
-				// row.getCell(titles.get("收费金额")).getStringCellValue().toString().replace("元",
-				// "");
 				String payTime = row.getCell(titles.get("支付时间")).getStringCellValue().toString();
 				String paytype = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
 				int payTypeID = paytype.equals("微信") ? 2 : paytype.equals("支付宝") ? 1 : paytype.equals("捷顺金科") ? 22 : 0;
 				Date day = new Date();
 				SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				String createTime = df.format(day);
-				String money = row.getCell(titles.get("应收金额")).getStringCellValue().toString().replace("元", "");
+				//String money = row.getCell(titles.get("应收金额")).getStringCellValue().toString().replace("元", "");
 				String credentialNO = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-", "")
 						.trim();
 				String plate = row.getCell(titles.get("车牌")).getStringCellValue().toString().replace("-", "").trim();
 				String payTypeName = row.getCell(titles.get("支付方式")).getStringCellValue().toString();
-				String benefit = row.getCell(titles.get("优惠金额")).getStringCellValue().toString().replace("元", "");
+				
+				String benefit = "";
+				if (row.getCell(titles.get("优惠金额")).getCellType() == CellType.NUMERIC)
+					benefit = String.valueOf(row.getCell(titles.get("优惠金额")).getNumericCellValue()).replace("元", "");
+				else if (row.getCell(titles.get("优惠金额")).getCellType() == CellType.STRING)
+					benefit = row.getCell(titles.get("优惠金额")).getStringCellValue().toString().replace("元", "");
+				
 				int paid = 0;
 				int derate = 0;
 				int exchange = 0;
 				int smallChange = 0;
 
+				//重要字段校验
+				if(plate.isBlank()) {
+					ret += "车牌为空,该条无法生成";
+					continue;
+					}
+				if(inTime.isBlank()){
+					ret += "入场时间为空,该条无法生成";
+					continue;
+				}
+				
 				if (taskstring.contains("补录")) {
 					ret += "-- 生成了补录语句" + "\r\n";
 					String str = String.format(
@@ -538,7 +595,7 @@ public class VerifyBillInfoController {
 			String ret = VerifyBillInfoService.CheckSQL(orgfilename);
 			if(ret != "")
 			{
-				//重新生成一下 VersioType这里，既然已经检测文件是否存在了，那肯定通过jielink验证了
+				//重新生成一下 VersioType这里，既然已经检测文件是否存在了，那肯定通过jielink验证
 				int result = VerifyBillInfoService.SetSqlByFileName(orgfilename,MakeSql("0",orgfilename,ret));
 				
 				//MakeSql("0",fileMap.get("file").getOriginalFilename(),ret);

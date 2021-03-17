@@ -559,7 +559,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
 
                 List<ControlPerson> jielinkPersonList = new List<ControlPerson>();  //jielink数据库的用户列表
-                guidMapDic = new Dictionary<string, string>();
                 ShowMessage("03.迁移凭证服务");
                 if (personSuccessImportList.Count > 0)
                 {
@@ -1321,7 +1320,9 @@ namespace PartialViewOtherToJieLink.ViewModels
             }
             finally
             {
-
+                guidMapDic = new Dictionary<string, string>();
+                recordOutIdMapDic = new Dictionary<string, string>();
+                areaGuidMapDic = new Dictionary<string, string>();
             }
         }
 
@@ -1933,20 +1934,16 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 LogHelper.CommLogger.Error(o, "区域根节点插入异常：");
                                 return;
                             }
-                            areaSuccessImportList.Add(district.ID);
+                        }
+                        if (guidMapDic.ContainsKey(district.ID))
+                        {
+                            guidMapDic[district.ID] = areaRoot.APGUID;
                         }
                         else
                         {
-                            if (guidMapDic.ContainsKey(district.ID))
-                            {
-                                guidMapDic[district.ID] = areaRoot.APGUID;
-                            }
-                            else
-                            {
-                                guidMapDic.Add(district.ID, areaRoot.APGUID);
-                            }
-                            areaSuccessImportList.Add(district.ID);
+                            guidMapDic.Add(district.ID, areaRoot.APGUID);
                         }
+                        areaSuccessImportList.Add(district.ID);
                     }
                     else
                     {
@@ -1964,6 +1961,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             continue;
                         }
                         string parentGuid = string.Empty;
+                        string doorParentGuid = string.Empty;
                         if (string.IsNullOrWhiteSpace(district.DISTRICT_ID) && district.ID != ConstantHelper.JSDSDISTRICTROOT)
                         {
                             //父节点为空的其他区域：如EXTERIOR
@@ -1972,10 +1970,25 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 continue;
                             }
                             parentGuid = areaRoot.APGUID;
+                            doorParentGuid = areaRoot.APGUID;
                         }
                         else
                         {
                             parentGuid = GetGuidString(district.DISTRICT_ID);
+                            if (parentGuid == areaRoot.APGUID)
+                            {
+                                //父节点是根节点时，特殊处理
+                                doorParentGuid = parentGuid;
+                            }
+                            else if (district.DISTRICT_ID == ConstantHelper.JSDSDISTRICTEXTERIOR)
+                            {
+                                //DISTRICT_ID=EXTERIOR时，特殊处理
+                                doorParentGuid = GetAreaGuidString(ConstantHelper.JSDSDISTRICTEXTERIOR);
+                            }
+                            else
+                            {
+                                doorParentGuid = GetAreaGuidString(parentGuid);
+                            }
                             DataSet parentAreaDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_access_point_group WHERE `Status`=0 AND APGUID='{parentGuid}' ORDER BY id asc;");
                             ControlAccessPointGroup parentArea = null;
                             if (parentAreaDs != null && parentAreaDs.Tables[0] != null && parentAreaDs.Tables[0].Rows.Count > 0)
@@ -1993,7 +2006,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                         //门禁区域
                         string doorGuid = GetAreaGuidString(district.ID);
                         string doorApName = string.Format("{0}-门禁", district.DISTRICT_NAME);
-                        AreaInsert(doorGuid, null, doorApName, parentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
+                        AreaInsert(doorGuid, null, doorApName, doorParentGuid, CommonHelper.GetDateTimeValue(district.CREATE_TIME, DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss"), district.REMARK, ref areaSuccessImportList);
                     }
                 }
             }
@@ -2055,6 +2068,10 @@ namespace PartialViewOtherToJieLink.ViewModels
             if (areaGuidMapDic.ContainsKey(jsdsDistrictId))
             {
                 jielinkGuid = areaGuidMapDic[jsdsDistrictId];
+            }
+            else if (areaGuidMapDic.ContainsKey(jsdsDistrictId.Replace("-", "")))
+            {
+                jielinkGuid = areaGuidMapDic[jsdsDistrictId.Replace("-", "")];
             }
             else
             {
