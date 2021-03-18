@@ -87,7 +87,7 @@
             <el-input v-model="set_project_remote_password"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button @click="AddRemoteDialog = false">取消</el-button>
+            <el-button style="margin-left: 30px" @click="AddRemoteDialog = false">取消</el-button>
             <el-button
               type="primary"
               @click="setRemote('ruleForm')"
