@@ -790,7 +790,7 @@ export default {
         ret += "☆";
         temp -= 1;
       }
-      if (ret == "") ret = "♫";
+      if (ret == "") ret = "⊙";
       return ret;
     },
     //加载会话数据
@@ -1076,4 +1076,7 @@ export default {
 </script>
 <style>
 @import "../assets/common.css";
+    .el-table .cell {
+        white-space: pre-wrap;
+    }
 </style>>
