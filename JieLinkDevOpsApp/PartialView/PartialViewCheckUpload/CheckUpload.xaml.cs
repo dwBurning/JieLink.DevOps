@@ -27,6 +27,7 @@ namespace PartialViewCheckUpload
         public CheckUpload()
         {
             InitializeComponent();
+            viewModel = new CheckUploadViewModels();
             DataContext = viewModel;
         }
 

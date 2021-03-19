@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Panuon.UI.Silver.Core;
 
-namespace PartialViewCheckUpload.TaskInfos
+namespace PartialViewCheckUpload.Info
 {
     class TaskInfo : PropertyChangedBase
     {
@@ -29,8 +29,8 @@ namespace PartialViewCheckUpload.TaskInfos
         [ColumnWidth("3*")]
         public string ServiceId
         {
-            get { return ServiceId; }
-            set { ServiceId = value; NotifyPropertyChanged(); }
+            get { return _serviceId; }
+            set { _serviceId = value; NotifyPropertyChanged(); }
         }
 
 

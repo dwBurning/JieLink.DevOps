@@ -54,6 +54,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Info\SyncInfo.cs" />
+    <Compile Include="Info\TaskInfo.cs" />
     <Compile Include="ViewModels\CheckUploadViewModels.cs" />
     <Page Include="CheckUpload.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -95,5 +97,6 @@
       <Name>PartialViewInterface</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
