@@ -25,7 +25,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*"></ColumnDefinition>
             <ColumnDefinition Width="2*"></ColumnDefinition>
-            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"></RowDefinition>
@@ -78,6 +78,67 @@
             </Grid>
 
         </Grid>
+        <Grid Grid.Column="1" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="30"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+                <RowDefinition Height="100"></RowDefinition>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" IsChecked="True"
+Content="前10条"
+pu:RadioButtonHelper.RadioButtonStyle="Button"
+pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+            <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="1"
+Content="前20条"
+pu:RadioButtonHelper.RadioButtonStyle="Button"
+pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+            <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="0"
+Content="前50条"
+pu:RadioButtonHelper.RadioButtonStyle="Button"
+pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+            <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="1"
+Content="前100条"
+pu:RadioButtonHelper.RadioButtonStyle="Button"
+pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+
+            <Label Content="选择查询开始时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+            <pu:DateTimePicker  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+Height="30"
+DateTimePickerMode="DateTime"
+MaxDate="2021-04-22"
+MinDate="2021-02-22"
+ThemeBrush="#3F3F3F" />
+            <Label Content="选择查询结束时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
+            <pu:DateTimePicker  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+Height="30"
+DateTimePickerMode="DateTime"
+MaxDate="2021-04-22"
+MinDate="2021-02-22"
+ThemeBrush="#3F3F3F" />
+
+            <TextBox  Height="40" Grid.Row="6" Grid.ColumnSpan="2" Margin="5,0,5,0"
+pu:TextBoxHelper.Watermark="请输入查询关键字，例如姓名，车牌，凭证等"
+pu:TextBoxHelper.FocusedBorderBrush="#00C1FF"
+pu:TextBoxHelper.FocusedShadowColor="#00C1FF" />
+            <Button Grid.Row="7" Grid.ColumnSpan="2" Margin="5,0,5,0"  Content="查询" Name ="btnRemovePolicy" Command="{Binding SelectSyncCommand}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+            
+
+
+        </Grid>
         <Grid Grid.Column="2" Grid.Row="0">
             <DataGrid x:Name="dgresultTables" Margin="5" ItemsSource="{Binding SyncInfos}"
                   BorderBrush="LightGray"
@@ -92,7 +153,10 @@
                   CanUserAddRows="False" >
             </DataGrid>
         </Grid>
-            <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" 
+        
+
+        
+        <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" 
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="5">
             <FlowDocument>
