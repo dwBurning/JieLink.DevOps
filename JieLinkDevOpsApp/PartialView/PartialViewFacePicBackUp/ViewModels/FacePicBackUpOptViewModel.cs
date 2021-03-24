@@ -243,7 +243,7 @@ namespace PartialViewFacePicBackUp.ViewModels
 
                 if (FileServerPath == "")
                 {
-                    MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
+                    ShowMessage("未获取到文件服务器路径！");
                     return;
                 }
                 
@@ -276,7 +276,8 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (!File.Exists(faceFilePath))
                     {
                         CheckPersonNotExist++;
-                        ShowMessage(string.Format("人事图片检查：姓名【{1}】人事编号为【{0}】的人脸图片不存在！", personno, personName));
+                        LogHelper.CommLogger.Info(string.Format("人事图片检查：姓名【{1}】人事编号为【{0}】的人脸图片不存在！", personno, personName));
+                        //ShowMessage(string.Format("人事图片检查：姓名【{1}】人事编号为【{0}】的人脸图片不存在！", personno, personName));
                     }
                 }
 
@@ -304,12 +305,15 @@ namespace PartialViewFacePicBackUp.ViewModels
                     if (!File.Exists(featureFilePath))
                     {
                         CheckFeatureNotExist++;
-                        ShowMessage(string.Format("人事特征检查：姓名【{1}】人事编号为【{0}】的人脸特征不存在！", personno, personName));
+                        LogHelper.CommLogger.Info(string.Format("人事特征检查：姓名【{1}】人事编号为【{0}】的人脸特征不存在！", personno, personName));
+                        //ShowMessage(string.Format("人事特征检查：姓名【{1}】人事编号为【{0}】的人脸特征不存在！", personno, personName));
                     }
                 }
+                LogHelper.CommLogger.Info(string.Format("检测人事图片共{0}个，其中图片不存在{1}个", CheckPersonAll, CheckPersonNotExist));
+                LogHelper.CommLogger.Info(string.Format("检测人脸特征共{0}个，其中特征不存在{1}个", CheckFeatureAll, CheckFeatureNotExist));
+                ShowMessage(string.Format("检测人事图片共{0}个，其中图片不存在{1}个，具体不存在的人事资料在日志文件中查看", CheckPersonAll, CheckPersonNotExist));
+                ShowMessage(string.Format("检测人脸特征共{0}个，其中特征不存在{1}个，具体不存在的人事资料在日志文件中查看", CheckFeatureAll, CheckFeatureNotExist));
 
-                ShowMessage(string.Format("检测人事图片共{0}个，其中图片不存在{1}个", CheckPersonAll, CheckPersonNotExist));
-                ShowMessage(string.Format("检测人脸特征共{0}个，其中特征不存在{1}个", CheckFeatureAll, CheckFeatureNotExist));
             }
             catch (Exception ex)
             {
@@ -515,6 +519,11 @@ namespace PartialViewFacePicBackUp.ViewModels
                 {
                     Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
                 }
+                //if (message.Length > 100)
+                //{
+                //    Message = string.Empty;
+                //    Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {"打印信息过长，具体不存在的人事资料在日志文件中查询"}{Environment.NewLine}";
+                //}
             }));
         }
     }
