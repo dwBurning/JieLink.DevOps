@@ -94,40 +94,41 @@
                 <RowDefinition Height="50"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
-            
-            <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" IsChecked="True"
-Content="前10条"
+
+            <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" IsChecked="{Binding limit10}"
+Content="前10条" 
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
-            <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="1"
+            <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="1" IsChecked="{Binding limit20}"
 Content="前20条"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
-            <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="0"
+            <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="0" IsChecked="{Binding limit50}"
 Content="前50条"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
-            <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="1"
+            <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="1" IsChecked="{Binding limit100}"
 Content="前100条"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
 
             <Label Content="选择查询开始时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
-            <pu:DateTimePicker  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"
+            <pu:DateTimePicker  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding StartTime}" 
+                                SelectedDateTimeChanged="StartDateTimeChanged"
 Height="30"
 DateTimePickerMode="DateTime"
-MaxDate="2021-04-22"
-MinDate="2021-02-22"
+MaxDate="2030-01-01"
+MinDate="2020-01-01"
 ThemeBrush="#3F3F3F" />
             <Label Content="选择查询结束时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
-            <pu:DateTimePicker  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"
+            <pu:DateTimePicker  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding EndTime}" SelectedDateTimeChanged="EndDateTimeChanged"
 Height="30"
 DateTimePickerMode="DateTime"
-MaxDate="2021-04-22"
-MinDate="2021-02-22"
+MaxDate="2030-01-01"
+MinDate="2020-01-01"
 ThemeBrush="#3F3F3F" />
 
-            <TextBox  Height="40" Grid.Row="6" Grid.ColumnSpan="2" Margin="5,0,5,0"
+            <TextBox  Height="40" Grid.Row="6" Grid.ColumnSpan="2" Margin="5,0,5,0" Text="{Binding SelectLike}"
 pu:TextBoxHelper.Watermark="请输入查询关键字，例如姓名，车牌，凭证等"
 pu:TextBoxHelper.FocusedBorderBrush="#00C1FF"
 pu:TextBoxHelper.FocusedShadowColor="#00C1FF" />
@@ -140,7 +141,7 @@ pu:TextBoxHelper.FocusedShadowColor="#00C1FF" />
 
         </Grid>
         <Grid Grid.Column="2" Grid.Row="0">
-            <DataGrid x:Name="dgresultTables" Margin="5" ItemsSource="{Binding SyncInfos}"
+            <DataGrid x:Name="dgresultTables" Margin="5" ItemsSource="{Binding SyncInfos}" SelectionChanged="dgresultTables_SelectionChanged"
                   BorderBrush="LightGray"
                   BorderThickness="1"
                       FontSize="10"
@@ -157,11 +158,11 @@ pu:TextBoxHelper.FocusedShadowColor="#00C1FF" />
 
         
         <RichTextBox BorderBrush="#20A0FF" IsReadOnly="True" 
-                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" 
                      Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Margin="5">
             <FlowDocument>
                 <Paragraph>
-                    <Run Text="{Binding Message}"/>
+                    <Run Text="{Binding ShowProtocol}"/>
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>

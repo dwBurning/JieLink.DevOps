@@ -18,6 +18,7 @@ using PartialViewInterface.Utils;
 using MySql.Data.MySqlClient;
 using PartialViewCheckUpload.ViewModels;
 using Panuon.UI.Silver;
+using Panuon.UI.Silver.Core;
 
 namespace PartialViewCheckUpload
 {
@@ -64,6 +65,21 @@ namespace PartialViewCheckUpload
             //    MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
             //    this.IsEnabled = false;
             //}
+        }
+
+        private void dgresultTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            viewModel.ChooseChange(((System.Windows.Controls.DataGrid)(sender)).SelectedIndex);
+        }
+
+        private void StartDateTimeChanged(object sender, SelectedDateTimeChangedEventArgs e)
+        {
+            viewModel.StartDateChange(((DateTimePicker)sender).SelectedDateTime);
+        }
+
+        private void EndDateTimeChanged(object sender, SelectedDateTimeChangedEventArgs e)
+        {
+            viewModel.EndDateChange(((DateTimePicker)sender).SelectedDateTime);
         }
     }
 }
