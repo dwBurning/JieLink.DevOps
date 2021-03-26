@@ -49,6 +49,8 @@ namespace PartialViewCheckUpload
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            viewModel.GetTaskInfos();
+            viewModel.GetControlBaseData();
             //try
             //{
             //    MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");

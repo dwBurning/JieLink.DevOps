@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Linq;
 using System.Windows;
 
 namespace PartialViewCheckUpload.ViewModels
@@ -24,7 +25,16 @@ namespace PartialViewCheckUpload.ViewModels
         public ObservableCollection<SyncInfo> SyncInfos { get; set; }
 
         // 车场基础数据分类(哪些在sync_park_base_history)
-        public List<string> ControlBaseData = new List<string>();
+        public List<string> List_ParkBase = new List<string>();
+        
+        // 界面上选择的任务列表
+        public List<string> List_AllChoose = new List<string>();
+
+        // 界面上选择的sync任务列表
+        public List<string> List_SyncChoose = new List<string>();
+
+        // 界面上选择的parkbase任务列表
+        public List<string> List_ParkBaseChoose = new List<string>();
 
         public DelegateCommand SelectSyncCommand { get; set; }
         public DelegateCommand ChooseAllCommand { get; set; }
@@ -46,9 +56,9 @@ namespace PartialViewCheckUpload.ViewModels
             SelectSyncCommand.ExecuteAction = SelectSync;
             ChooseAllCommand.ExecuteAction = ChooseAll;
 
-            //初始化数据
-            GetTaskInfos();
-            GetControlBaseData();
+            ////初始化数据 在这里初始化一启动程序就会加载
+            //GetTaskInfos();
+            //GetControlBaseData();
         }
 
         public void GetControlBaseData()
@@ -56,10 +66,12 @@ namespace PartialViewCheckUpload.ViewModels
             try
             {
                 string sql = $"select valuetext from sys_key_value_setting where KeyID='ControlBaseData' limit 1;";
-                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];//获取所有的表
-                foreach (var item in dt.Rows[0]["valuetext"].ToString().Split(';'))
+                using (DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0])
                 {
-                    ControlBaseData.Add(item);
+                    foreach (var item in dt.Rows[0]["valuetext"].ToString().Split(';'))
+                    {
+                        List_ParkBase.Add(item);
+                    }
                 }
             }
             catch (Exception ex)
@@ -76,6 +88,41 @@ namespace PartialViewCheckUpload.ViewModels
             {
                 SyncInfos.Clear();
 
+                // 获取已选择的任务
+                TaskInfos.Clear();
+                TaskInfos.ForEach((x) =>
+                {
+                    if (x.IsChecked)
+                    { List_AllChoose.Add(x.ServiceId); }
+                });
+
+                // 已选择的任务和park_Base的表取交集
+                List_ParkBaseChoose = List_ParkBase.Intersect(List_AllChoose).ToList<string>();
+
+                string temtttp = "";
+                List_AllChoose.ForEach((x)=>
+                {
+                    temtttp += x + ",";
+                });
+                LogHelper.CommLogger.Info("List_AllChoose:" + temtttp);
+                temtttp = "";
+                List_ParkBaseChoose.ForEach((x) =>
+                {
+                    temtttp += x + ",";
+                });
+                LogHelper.CommLogger.Info("List_ParkBaseChoose:" + temtttp);
+                temtttp = "";
+                List_ParkBase.ForEach((x) =>
+                {
+                    temtttp += x + ",";
+                });
+                LogHelper.CommLogger.Info("List_ParkBase:" + temtttp);
+
+                // 总的已选择的和选择的park_Base取差集
+                List_SyncChoose = List_AllChoose.Except(List_ParkBaseChoose).ToList<string>();
+
+                var chayige = List_AllChoose.Except(List_ParkBaseChoose).ToList<string>();
+                chayige = chayige.Except(List_SyncChoose).ToList<string>();
                 string sql = $"SELECT AddTime,protocoldata,status,remark,failmessage,updatetime from sync_xmpp_history ";
 
                 //根据protocol数据筛选查询 不允许为空
@@ -95,6 +142,8 @@ namespace PartialViewCheckUpload.ViewModels
                 }
                 //根据时间筛选查询 颠倒顺序也行
                 sql += "and addtime between '" + StartTime.ToString() + "' and '" + EndTime.ToString() + "' ";
+
+                //根据任务筛选in
 
                 //根据ID排序
                 sql += "ORDER BY id desc ";
@@ -124,8 +173,9 @@ namespace PartialViewCheckUpload.ViewModels
                     SyncInfos.Add(syncinfo);
                 }
                 //sync_xmpp表里查询
-                LogHelper.CommLogger.Info("查询上传执行的SQL语句(sync_xmpp):" + sql.Replace("sync_xmpp_history", "sync_xmpp"));
-                DataTable dt2 = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];//获取所有的表
+                string sql2 = sql.Replace("sync_xmpp_history", "sync_xmpp");
+                LogHelper.CommLogger.Info("查询上传执行的SQL语句(sync_xmpp):" + sql2);
+                DataTable dt2 = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql2).Tables[0];//获取所有的表
                 foreach (DataRow dr in dt2.Rows)
                 {
                     SyncInfo syncinfo = new SyncInfo
@@ -139,6 +189,27 @@ namespace PartialViewCheckUpload.ViewModels
                     };
                     SyncInfos.Add(syncinfo);
                 }
+
+                // 在sync_park_base_history表里查询
+                // 怎么sync_park_base_history结构还和sync_xmpp不一样的
+                string sql3 = sql.Replace("sync_xmpp_history", "sync_park_base_history");
+                sql3.Replace(",failmessage,updatetime", "");
+                LogHelper.CommLogger.Info("查询上传执行的SQL语句(sync_xmpp):" + sql3);
+                DataTable dt3 = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql3).Tables[0];//获取所有的表
+                foreach (DataRow dr in dt2.Rows)
+                {
+                    SyncInfo syncinfo = new SyncInfo
+                    {
+                        AddTime = dr["AddTime"].ToString(),
+                        ProtocolData = dr["protocoldata"].ToString(),
+                        status = dr["status"].ToString(),
+                        remark = dr["remark"].ToString(),
+                        failmessage = "",
+                        updatetime = ""
+                    };
+                    SyncInfos.Add(syncinfo);
+                }
+
             }
             catch (Exception ex)
             {
@@ -152,12 +223,16 @@ namespace PartialViewCheckUpload.ViewModels
         {
             try
             {
+                
                 string sql = $"SELECT ServiceName,ServiceID from sys_taskinfo WHERE PlatType=0 AND IsSyncData=1 AND Enabled=1 ORDER BY SendPriority asc;";
-                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];//获取所有的表
-                foreach (DataRow dr in dt.Rows)
+                //获取所有的表
+                using (DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0])
                 {
-                    TaskInfo taskinfo = new TaskInfo { ServiceName = dr["ServiceName"].ToString(), ServiceId = dr["ServiceID"].ToString(), IsChecked = true };
-                    TaskInfos.Add(taskinfo);
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        TaskInfo taskinfo = new TaskInfo { ServiceName = dr["ServiceName"].ToString(), ServiceId = dr["ServiceID"].ToString(), IsChecked = true };
+                        TaskInfos.Add(taskinfo);
+                    }
                 }
             }
             catch (Exception)
