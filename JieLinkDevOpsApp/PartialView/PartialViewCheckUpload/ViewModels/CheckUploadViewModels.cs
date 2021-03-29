@@ -66,12 +66,10 @@ namespace PartialViewCheckUpload.ViewModels
             try
             {
                 string sql = $"select valuetext from sys_key_value_setting where KeyID='ControlBaseData' limit 1;";
-                using (DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0])
+                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
+                foreach (var item in dt.Rows[0]["valuetext"].ToString().Split(';'))
                 {
-                    foreach (var item in dt.Rows[0]["valuetext"].ToString().Split(';'))
-                    {
-                        List_ParkBase.Add(item);
-                    }
+                    List_ParkBase.Add(item);
                 }
             }
             catch (Exception ex)
@@ -95,6 +93,11 @@ namespace PartialViewCheckUpload.ViewModels
                     if (x.IsChecked)
                     { List_AllChoose.Add(x.ServiceId); }
                 });
+                if (List_AllChoose.Count == 0)
+                {
+                    Notice.Show("请至少选择一项任务搜索", "错误", 3, MessageBoxIcon.Error);
+                    return;
+                } 
 
                 // 已选择的任务和park_Base的表取交集
                 List_ParkBaseChoose = List_ParkBase.Intersect(List_AllChoose).ToList<string>();
@@ -213,6 +216,15 @@ namespace PartialViewCheckUpload.ViewModels
                         updatetime = ""
                     };
                     SyncInfos.Add(syncinfo);
+                }
+
+                if (SyncInfos.Count == 0)
+                {
+                    Notice.Show("搜索完成，未找到结果", "提示", 3, MessageBoxIcon.Info);
+                }
+                else
+                {
+                    Notice.Show("搜索完成，共计找到" + SyncInfos.Count + "条结果", "提示", 3, MessageBoxIcon.Info);
                 }
 
                 GC.Collect();
