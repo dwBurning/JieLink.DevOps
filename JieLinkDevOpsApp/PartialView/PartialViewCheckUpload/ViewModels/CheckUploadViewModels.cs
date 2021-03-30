@@ -98,7 +98,7 @@ namespace PartialViewCheckUpload.ViewModels
                     Notice.Show("请至少选择一项任务搜索", "错误", 3, MessageBoxIcon.Error);
                     return;
                 } 
-
+                
                 // 已选择的任务和park_Base的表取交集
                 List_ParkBaseChoose = List_ParkBase.Intersect(List_AllChoose).ToList<string>();
 
@@ -123,7 +123,14 @@ namespace PartialViewCheckUpload.ViewModels
                     Notice.Show("筛选数据条件不允许为空", "错误", 3, MessageBoxIcon.Error);
                     return;
                 }
-                //根据时间筛选查询 颠倒顺序也行
+
+                //根据时间筛选查询
+                if (EndTime < StartTime)
+                {
+                    Notice.Show("结束时间不能比开始时间早", "错误", 3, MessageBoxIcon.Error);
+                    return;
+                }
+
                 sql_xmpp += "and addtime between '" + StartTime.ToString() + "' and '" + EndTime.ToString() + "' ";
                 sql_base += "and addtime between '" + StartTime.ToString() + "' and '" + EndTime.ToString() + "' ";
 
