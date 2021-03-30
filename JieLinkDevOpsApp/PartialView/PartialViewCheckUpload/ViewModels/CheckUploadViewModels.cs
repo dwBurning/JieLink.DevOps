@@ -251,6 +251,16 @@ namespace PartialViewCheckUpload.ViewModels
                         TaskInfos.Add(taskinfo);
                     }
                 }
+
+
+
+                //string sql2 = $"select valuetext from sys_key_value_setting where KeyID='ControlBaseData' limit 1;";
+                //DataTable dt2 = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql2).Tables[0];
+                //foreach (var item in dt2.Rows[0]["valuetext"].ToString().Split(';'))
+                //{
+                //    List_ParkBase.Add(item);
+                //}
+
             }
             catch (Exception)
             {

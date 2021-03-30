@@ -49,24 +49,24 @@ namespace PartialViewCheckUpload
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            viewModel.GetTaskInfos();
-            viewModel.GetControlBaseData();
-            //try
-            //{
-            //    MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-            //    //if (viewModel.Tables.Count == 0)
-            //    //{
-            //    //    viewModel.GetTables();
-            //    //    viewModel.ShowMessage("数据库连接成功");
-            //    //}
-            //    this.IsEnabled = true;
+            try
+            {
+                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
+                //if (viewModel.Tables.Count == 0)
+                //{
+                //    viewModel.GetTables();
+                //    viewModel.ShowMessage("数据库连接成功");
+                //}
+                viewModel.GetTaskInfos();
+                viewModel.GetControlBaseData();
 
-            //}
-            //catch (Exception)
-            //{
-            //    MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
-            //    this.IsEnabled = false;
-            //}
+                this.IsEnabled = true;
+            }
+            catch (Exception)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
+                this.IsEnabled = false;
+            }
         }
 
         private void dgresultTables_SelectionChanged(object sender, SelectionChangedEventArgs e)
