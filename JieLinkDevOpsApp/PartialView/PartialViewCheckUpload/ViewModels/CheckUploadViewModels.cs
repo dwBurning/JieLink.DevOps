@@ -159,7 +159,7 @@ namespace PartialViewCheckUpload.ViewModels
                 }
                 else
                     basetask = "''";
-                sql_base += "and serviceid in (" + xmpptask + ") ";
+                sql_base += "and serviceid in (" + basetask + ") ";
 
                 //根据ID排序
                 sql_xmpp += "ORDER BY id desc ";
@@ -174,8 +174,8 @@ namespace PartialViewCheckUpload.ViewModels
                     return;
 
                 //sync_xmpp_history表里查询
-                LogHelper.CommLogger.Info("查询上传执行的SQL语句(sync_xmpp_history):" + sql_xmpp);
-                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql_xmpp).Tables[0];//获取所有的表
+                LogHelper.CommLogger.Info("查询上传执行的SQL语句(sync_xmpp_history):" + sql_xmpp.Replace(",failmessage,updatetime", ""));
+                DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql_xmpp.Replace(",failmessage,updatetime", "")).Tables[0];//获取所有的表
                 foreach (DataRow dr in dt.Rows)
                 {
                     SyncInfo syncinfo = new SyncInfo
@@ -184,8 +184,8 @@ namespace PartialViewCheckUpload.ViewModels
                         ProtocolData = dr["protocoldata"].ToString(),
                         status = dr["status"].ToString(),
                         remark = dr["remark"].ToString(),
-                        failmessage = dr["failmessage"].ToString(),
-                        updatetime = dr["updatetime"].ToString()
+                        failmessage = "",
+                        updatetime = ""
                     };
                     SyncInfos.Add(syncinfo);
                 }
