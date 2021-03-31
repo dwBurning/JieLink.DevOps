@@ -1,5 +1,7 @@
 package com.jieshun.devopsserver.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import com.jieshun.devopsserver.bean.*;
 import com.jieshun.devopsserver.mapper.ApplyInfoMapper;
@@ -169,8 +171,11 @@ public class VerifyBillInfoService {
 	 */
 	public int confirmVerifyBillInfoById(int id,String remark,String user)
 	{
+		Date date = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+
 		VerifyBillInfo VerifyBillInfo = VerifyBillInfoMapper.selectByPrimaryKey(id);
-		VerifyBillInfo.setProjectRemark(VerifyBillInfo.getProjectRemark() + "\r\n" + user + ":" + remark);
+		VerifyBillInfo.setProjectRemark(VerifyBillInfo.getProjectRemark() + "\r\n" + user + "[" + formatter.format(date) + "]:" + remark);
 		VerifyBillInfo.setStatus(StatusCode.DeveloperDone.getValue());
 		return VerifyBillInfoMapper.updateByPrimaryKeySelective(VerifyBillInfo);
 	}
