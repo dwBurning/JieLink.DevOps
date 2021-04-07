@@ -424,6 +424,9 @@ namespace PartialViewCheckUpdate.ViewModels
                 ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
 
+                ProcessHelper.StopProcess("SmartCenter.Host.exe");
+                ProcessHelper.StartService("JsstJieLinkSmartCenter");
+
                 this.Dispatcher.Invoke(new Action(() =>
                 {
                     handler.Close();

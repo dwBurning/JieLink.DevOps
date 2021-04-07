@@ -379,9 +379,9 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 }
                             } while (currentPerson != null);
                             bool completeFlag = false;  //事务提交标识
-                            string sql = string.Format("INSERT INTO control_person(PGUID,PersonNo,PersonName,Gender,Mobile,Email,Relationship,RID,EnterTime,Type,`Status`,Remark,CreateTime,CurKey,LastKey,RFullPath,PersonId,CanInOut,IsTKService,IsParkService,IsDoorService,IsIssueCard,IDNumber) VALUE('{0}','{1}','{2}',{3},'{4}','{5}',{6},'{7}','{8}',{9},0,'{10}','{11}','{12}','{13}','{14}','{15}',0,0,0,0,0,'{16}')",
+                            string sql = string.Format("INSERT INTO control_person(PGUID,PersonNo,PersonName,Gender,Mobile,Email,Relationship,RID,EnterTime,Type,`Status`,Remark,CreateTime,CurKey,LastKey,RFullPath,PersonId,CanInOut,IsTKService,IsParkService,IsDoorService,IsIssueCard,IDNumber,RoomNO) VALUE('{0}','{1}','{2}',{3},'{4}','{5}',{6},'{7}','{8}',{9},0,'{10}','{11}','{12}','{13}','{14}','{15}',0,0,0,0,0,'{16}','{17}')",
                               personGuid, personModel.NO, personModel.NAME, personModel.SEX, personModel.Mobile, personModel.Email, relationship, currentGroup.RGGUID,
-                              personModel.OptDate, userType, personModel.Remark, personModel.OptDate, personModel.NewKeyCode, personModel.OldKeyCode, currentGroup.RGFullPath, personId, idNumber);
+                              personModel.OptDate, userType, personModel.Remark, personModel.OptDate, personModel.NewKeyCode, personModel.OldKeyCode, currentGroup.RGFullPath, personId, idNumber, personModel.RoomNO);
                             try
                             {
                                 int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
@@ -453,7 +453,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     List<TBaseHrRoomPos> hrRoomPosList = new List<TBaseHrRoomPos>();
                     if (hrRoomPosDts != null)
                     {
-                        hrRoomPosList = CommonHelper.DataTableToList<TBaseHrRoomPos>(hrRoomPosDts).OrderBy(x => x.ParsonId).ToList();
+                        hrRoomPosList = CommonHelper.DataTableToList<TBaseHrRoomPos>(hrRoomPosDts).OrderBy(x => x.PersonID).ToList();
                     }
                     //门禁、车场服务
                     if (mcCardInfoList.Count > 0)
@@ -528,7 +528,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         {
                                             continue;
                                         }
-                                        TBaseHrRoomPos hrRoomPos = hrRoomPosList.FirstOrDefault(e => e.ParsonId == hrPerson.ID);
+                                        TBaseHrRoomPos hrRoomPos = hrRoomPosList.FirstOrDefault(e => e.PersonID == hrPerson.ID);
                                         if (hrRoomPos == null || hrRoomPos.MaxPos <= 0)
                                         {
                                             string lguid = new Guid(mcCardinfo.GUID).ToString();
