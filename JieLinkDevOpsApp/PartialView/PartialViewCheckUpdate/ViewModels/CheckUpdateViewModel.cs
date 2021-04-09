@@ -76,6 +76,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 "V2.8.1#E1.0",
                 "V2.8.2",
                 "V2.8.2#E1.0",
+                "V2.8.2#E2.0",
+                "V2.8.3",
                 "V2.9.0",
             };
 
@@ -425,6 +427,9 @@ namespace PartialViewCheckUpdate.ViewModels
                 CheckTables(jsonText);
 
                 ProcessHelper.StopProcess("SmartCenter.Host.exe");
+
+                Thread.Sleep(2000);
+
                 ProcessHelper.StartService("JsstJieLinkSmartCenter");
 
                 this.Dispatcher.Invoke(new Action(() =>
