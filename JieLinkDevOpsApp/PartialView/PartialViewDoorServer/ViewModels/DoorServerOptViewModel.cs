@@ -103,120 +103,128 @@ namespace PartialViewDoorServer.ViewModels
         /// <param name="parameter"></param>
         public void SelectDoorDevice(object parameter)
         {
-            if (string.IsNullOrEmpty(FilePath))
+            try
             {
-                Notice.Show("请选择Smartdoor安装目录的para文件夹！.", "通知", 3, MessageBoxIcon.Warning);
-                return;
-            }
-
-            UInt32 deviceID = curDoorServer.deviceID;
-            if (deviceID == 0)
-            {
-                Notice.Show("请选择门禁服务！.", "通知", 3, MessageBoxIcon.Warning);
-                return;
-            }
-
-            bool result = false;
-            string cmd = "select * from control_devices where deviceID = " + deviceID + " or parentID = " + deviceID;
-            List<DeviceInfo> jsipDevList = new List<DeviceInfo>();
-            List<PartialViewDoorServer.ViewModels.K02.DeviceInfo> k02DevList = new List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>();
-            using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, string.Format(cmd)))
-            {
-                while (reader.Read())
+                if (string.IsNullOrEmpty(FilePath))
                 {
-                    ushort deviceType = Convert.ToUInt16(reader["DeviceType"].ToString());
-                    if (deviceType == 32)
-                    {
-                        #region 门禁服务
-                        // 门禁服务
-                        PartialViewDoorServer.ViewModels.K02.DeviceInfo k02Dev = new PartialViewDoorServer.ViewModels.K02.DeviceInfo();
-                        k02Dev.type = deviceType;
-                        k02Dev.id = Convert.ToUInt32(reader["DeviceID"].ToString());
-                        k02Dev.ip = reader["IP"].ToString();
-                        k02Dev.model = "门禁服务客户端";
-                        k02Dev.status = 1;
-                        k02Dev.statusUpdateTime = DateTime.Now;
-                        k02Dev.DeviceAddTime = DateTime.Now;
-
-                        k02DevList.Add(k02Dev);
-                        #endregion
-                    }
-                    else if (deviceType == 100 || deviceType == 116)
-                    {
-                        #region 领域III
-                        // 领域III
-                        PartialViewDoorServer.ViewModels.K02.DeviceInfo k02Dev = new PartialViewDoorServer.ViewModels.K02.DeviceInfo();
-                        k02Dev.type = deviceType;
-                        k02Dev.id = Convert.ToUInt32(reader["DeviceID"].ToString());
-                        k02Dev.ip = reader["IP"].ToString();
-                        k02Dev.status = 1;
-                        k02Dev.productDate = DateTime.Now.ToString();
-                        k02Dev.statusUpdateTime = DateTime.Now;
-                        k02Dev.DeviceAddTime = DateTime.Now;
-
-                        k02DevList.Add(k02Dev);
-                        #endregion
-                    }
-                    else
-                    {
-                        #region JSIP设备
-                        // JSIP设备
-                        DeviceInfo dev = new DeviceInfo();
-                        dev.SendHttpTime = DateTime.Now;
-                        dev.DeviceAddTime = DateTime.Now;
-                        dev.status = 1;
-                        dev.state = 1;
-                        dev.ID = Convert.ToUInt32(reader["DeviceID"].ToString());
-                        dev.ParentDeviceID = 0;
-                        dev.Name = reader["DeviceName"].ToString();
-                        dev.Type = deviceType.ToString();
-                        dev.IP = reader["IP"].ToString();
-                        dev.Mac = reader["Mac"].ToString();
-                        dev.Mask = reader["Net_Mask"].ToString();
-                        dev.GateWay = reader["Gateway_IP"].ToString();
-
-                        dev.SN = string.IsNullOrEmpty(reader["SN"].ToString()) ? 0 : Convert.ToUInt32(reader["SN"].ToString());
-                        dev.Company = "捷顺科技";
-                        dev.Model = reader["Model"].ToString();
-                        dev.HardwareVersion = "V1.0.0";
-                        dev.SoftwareVersion = "V1.0.0";
-                        dev.Manufacturer = "捷顺科技";
-                        dev.ProductDate = DateTime.Now.ToString();
-                        dev.DeviceClass = 0;
-                        dev.CPUID = reader["CpuID"].ToString();
-                        dev.RegisterState = 1;
-                        dev.HasInit = true;
-                        dev.RegisterID = 1;
-                        dev.IsHttpSended = false;
-                        dev.AuthorizeFlag = 1;
-
-                        jsipDevList.Add(dev);
-                        #endregion
-                    }
-                    result = true;
+                    Notice.Show("请选择Smartdoor安装目录的para文件夹！.", "通知", 3, MessageBoxIcon.Warning);
+                    return;
                 }
+
+                UInt32 deviceID = curDoorServer.deviceID;
+                if (deviceID == 0)
+                {
+                    Notice.Show("请选择门禁服务！.", "通知", 3, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                bool result = false;
+                string cmd = "select * from control_devices where deviceID = " + deviceID + " or parentID = " + deviceID;
+                List<DeviceInfo> jsipDevList = new List<DeviceInfo>();
+                List<PartialViewDoorServer.ViewModels.K02.DeviceInfo> k02DevList = new List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>();
+                using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, string.Format(cmd)))
+                {
+                    while (reader.Read())
+                    {
+                        ushort deviceType = Convert.ToUInt16(reader["DeviceType"].ToString());
+                        if (deviceType == 32)
+                        {
+                            #region 门禁服务
+                            // 门禁服务
+                            PartialViewDoorServer.ViewModels.K02.DeviceInfo k02Dev = new PartialViewDoorServer.ViewModels.K02.DeviceInfo();
+                            k02Dev.type = deviceType;
+                            k02Dev.id = Convert.ToUInt32(reader["DeviceID"].ToString());
+                            k02Dev.ip = reader["IP"].ToString();
+                            k02Dev.model = "门禁服务客户端";
+                            k02Dev.status = 1;
+                            k02Dev.statusUpdateTime = DateTime.Now;
+                            k02Dev.DeviceAddTime = DateTime.Now;
+
+                            k02DevList.Add(k02Dev);
+                            #endregion
+                        }
+                        else if (deviceType == 100 || deviceType == 116)
+                        {
+                            #region 领域III
+                            // 领域III
+                            PartialViewDoorServer.ViewModels.K02.DeviceInfo k02Dev = new PartialViewDoorServer.ViewModels.K02.DeviceInfo();
+                            k02Dev.type = deviceType;
+                            k02Dev.id = Convert.ToUInt32(reader["DeviceID"].ToString());
+                            k02Dev.ip = reader["IP"].ToString();
+                            k02Dev.status = 1;
+                            k02Dev.productDate = DateTime.Now.ToString();
+                            k02Dev.statusUpdateTime = DateTime.Now;
+                            k02Dev.DeviceAddTime = DateTime.Now;
+
+                            k02DevList.Add(k02Dev);
+                            #endregion
+                        }
+                        else
+                        {
+                            #region JSIP设备
+                            // JSIP设备
+                            DeviceInfo dev = new DeviceInfo();
+                            dev.SendHttpTime = DateTime.Now;
+                            dev.DeviceAddTime = DateTime.Now;
+                            dev.status = 1;
+                            dev.state = 1;
+                            dev.ID = Convert.ToUInt32(reader["DeviceID"].ToString());
+                            dev.ParentDeviceID = 0;
+                            dev.Name = reader["DeviceName"].ToString();
+                            dev.Type = deviceType.ToString();
+                            dev.IP = reader["IP"].ToString();
+                            dev.Mac = reader["Mac"].ToString();
+                            dev.Mask = reader["Net_Mask"].ToString();
+                            dev.GateWay = reader["Gateway_IP"].ToString();
+
+                            dev.SN = string.IsNullOrEmpty(reader["SN"].ToString()) ? 0 : Convert.ToUInt32(reader["SN"].ToString());
+                            dev.Company = "捷顺科技";
+                            dev.Model = reader["Model"].ToString();
+                            dev.HardwareVersion = "V1.0.0";
+                            dev.SoftwareVersion = "V1.0.0";
+                            dev.Manufacturer = "捷顺科技";
+                            dev.ProductDate = DateTime.Now.ToString();
+                            dev.DeviceClass = 0;
+                            dev.CPUID = reader["CpuID"].ToString();
+                            dev.RegisterState = 1;
+                            dev.HasInit = true;
+                            dev.RegisterID = 1;
+                            dev.IsHttpSended = false;
+                            dev.AuthorizeFlag = 1;
+
+                            jsipDevList.Add(dev);
+                            #endregion
+                        }
+                        result = true;
+                    }
+                }
+
+                string k02DevicePath = FilePath + @"\DeviceInfos.xml";
+                string jsipDevicePath = FilePath + @"\CriterionDeviceInfos.xml";
+
+                // 备份
+                string devicePathBak = FilePath + @"_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                CopyDirectory(FilePath, devicePathBak);
+
+                Notice.Show("para文件夹备份成功：" + devicePathBak, "通知", 3, MessageBoxIcon.Success);
+
+                SerializationHelper.SerializeToXMLFile<List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>>(k02DevicePath, k02DevList);
+                SerializationHelper.SerializeToXMLFile<List<DeviceInfo>>(jsipDevicePath, jsipDevList);
+
+                Notice.Show("获取设备成功....", "通知", 3, MessageBoxIcon.Success);
+
+                Notice.Show("直接结束门禁服务进程，重启门禁服务!", "通知", 3, MessageBoxIcon.Success);
+
+                // 非2.8.1会获取不到这个路径导致报错
+                // 2.8.1以后，自动取这个备份文件夹的文件
+                string strParaDataDirDest = string.Format(@"{0}\JieLinkDoor\para", System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
+                File.Copy(k02DevicePath, strParaDataDirDest + @"\DeviceInfos.xml", true);
+                File.Copy(jsipDevicePath, strParaDataDirDest + @"\CriterionDeviceInfos.xml", true);
             }
-
-            string k02DevicePath = FilePath + @"\DeviceInfos.xml";
-            string jsipDevicePath = FilePath + @"\CriterionDeviceInfos.xml";
-
-            // 备份
-            string devicePathBak = FilePath + @"_" + DateTime.Now.ToString("yyyyMMddHHmmss");
-            CopyDirectory(FilePath, devicePathBak);
-
-            Notice.Show("para文件夹备份成功：" + devicePathBak, "通知", 3, MessageBoxIcon.Success);
-
-            SerializationHelper.SerializeToXMLFile<List<PartialViewDoorServer.ViewModels.K02.DeviceInfo>>(k02DevicePath, k02DevList);
-            SerializationHelper.SerializeToXMLFile<List<DeviceInfo>>(jsipDevicePath, jsipDevList);
-
-            // 2.8.1以后，自动取这个备份文件夹的文件
-            string strParaDataDirDest = string.Format(@"{0}\JieLinkDoor\para", System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
-            File.Copy(k02DevicePath, strParaDataDirDest + @"\DeviceInfos.xml", true);
-            File.Copy(jsipDevicePath, strParaDataDirDest + @"\CriterionDeviceInfos.xml", true);
-
-            Notice.Show("获取设备成功....", "通知", 3, MessageBoxIcon.Success);
-
-            Notice.Show("直接结束门禁服务进程，重启门禁服务!", "通知", 3, MessageBoxIcon.Success);
+            catch (Exception ex)
+            {
+                LogHelper.CommLogger.Error(ex.ToString());
+            }
         }
 
         /// <summary>
@@ -253,7 +261,7 @@ namespace PartialViewDoorServer.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                LogHelper.CommLogger.Error(ex.ToString());
             }
         }
 
@@ -289,6 +297,7 @@ namespace PartialViewDoorServer.ViewModels
             }
             catch (Exception ex)
             {
+                LogHelper.CommLogger.Error(ex.ToString());
                 //Notice.Show("请先设置数据库连接！", "通知", 3, MessageBoxIcon.Success);
                 throw ex;
             }
@@ -330,6 +339,7 @@ namespace PartialViewDoorServer.ViewModels
             }
             catch(Exception ex)
             {
+                LogHelper.CommLogger.Error(ex.ToString());
                 return false;
             }
         }
@@ -383,6 +393,7 @@ namespace PartialViewDoorServer.ViewModels
             }
             catch (Exception ex)
             {
+                LogHelper.CommLogger.Error(ex.ToString());
                 return false;
             }
         }
@@ -436,6 +447,7 @@ namespace PartialViewDoorServer.ViewModels
             }
             catch (Exception ex)
             {
+                LogHelper.CommLogger.Error(ex.ToString());
                 return false;
             }
         }
