@@ -426,6 +426,11 @@ namespace PartialViewCheckUpdate.ViewModels
                 ShowMessage("脚本执行完成，正在校验数据库...");
                 CheckTables(jsonText);
 
+                this.Dispatcher.Invoke(new Action(() =>
+                {
+                    handler.UpdateMessage("数据库校验完成，正在重启服务...");
+                }));
+
                 ProcessHelper.StopProcess("SmartCenter.Host.exe");
 
                 Thread.Sleep(2000);
