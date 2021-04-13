@@ -91,26 +91,26 @@
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
                 <RowDefinition Height="40"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
+                <RowDefinition Height="50"></RowDefinition>
                 <RowDefinition Height="50"></RowDefinition>
             </Grid.RowDefinitions>
 
             <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" IsChecked="{Binding limit10}"
 Content="前10条" 
 pu:RadioButtonHelper.RadioButtonStyle="Button"
-pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
             <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="1" IsChecked="{Binding limit20}"
 Content="前20条"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
-pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
             <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="0" IsChecked="{Binding limit50}"
 Content="前50条"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
-pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
             <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="1" IsChecked="{Binding limit100}"
 Content="前100条"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
-pu:RadioButtonHelper.CheckedBackground="#3F3F3F" />
+pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
 
             <Label Content="选择查询开始时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
             <pu:DateTimePicker  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding StartTime}" 
