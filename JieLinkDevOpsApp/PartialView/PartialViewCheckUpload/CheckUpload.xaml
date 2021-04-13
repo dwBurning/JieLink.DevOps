@@ -96,43 +96,47 @@
             </Grid.RowDefinitions>
 
             <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="0" IsChecked="{Binding limit10}"
-Content="前10条" 
+Content="前10条" Background="LightGray"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
+            
             <RadioButton Margin="5,5,5,5"  Grid.Row="0" Grid.Column="1" IsChecked="{Binding limit20}"
-Content="前20条"
+Content="前20条" Background="LightGray"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
+            
             <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="0" IsChecked="{Binding limit50}"
-Content="前50条"
+Content="前50条" Background="LightGray"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
+            
             <RadioButton Margin="5,5,5,5"  Grid.Row="1"  Grid.Column="1" IsChecked="{Binding limit100}"
-Content="前100条"
+Content="前100条" Background="LightGray"
 pu:RadioButtonHelper.RadioButtonStyle="Button"
 pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
 
-            <Label Content="选择查询开始时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
-            <pu:DateTimePicker  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding StartTime}" 
+            <Label Content="选择查询开始时间" VerticalAlignment="Center" HorizontalAlignment="Left"  Grid.Row="2" Grid.ColumnSpan="2"/>
+            <pu:DateTimePicker  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding StartTime}" 
                                 SelectedDateTimeChanged="StartDateTimeChanged"
-Height="30"
+Height="30" 
 DateTimePickerMode="DateTime"
 MaxDate="2030-01-01"
 MinDate="2020-01-01"
-ThemeBrush="#3F3F3F" />
-            <Label Content="选择查询结束时间" HorizontalAlignment="Left" Margin="0,0,0,0" Grid.Row="5" Grid.ColumnSpan="2" VerticalAlignment="Top"/>
-            <pu:DateTimePicker  Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding EndTime}" SelectedDateTimeChanged="EndDateTimeChanged"
-Height="30"
+ThemeBrush="#00BCFF" />
+            <Label Content="选择查询结束时间" VerticalAlignment="Center" HorizontalAlignment="Left"  Grid.Row="4" Grid.ColumnSpan="2"/>
+            <pu:DateTimePicker  Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" SelectedDateTime="{Binding EndTime}" SelectedDateTimeChanged="EndDateTimeChanged"
+Height="30" 
 DateTimePickerMode="DateTime"
 MaxDate="2030-01-01"
 MinDate="2020-01-01"
-ThemeBrush="#3F3F3F" />
+ThemeBrush="#00BCFF" />
 
-            <TextBox  Height="40" Grid.Row="7" Grid.ColumnSpan="2" Margin="5,5,5,5" Text="{Binding SelectLike}"
-pu:TextBoxHelper.Watermark="请输入查询关键字，例如姓名，车牌，凭证等"
-pu:TextBoxHelper.FocusedBorderBrush="#00C1FF"
-pu:TextBoxHelper.FocusedShadowColor="#00C1FF" />
-            <Button Grid.Row="8" Grid.ColumnSpan="2" Margin="5,0,5,0"  Content="查询" Name ="btnRemovePolicy" Command="{Binding SelectSyncCommand}"
+            <TextBox  Height="40" Grid.Row="6" Grid.ColumnSpan="2"  Text="{Binding SelectLike}"
+                      pu:TextBoxHelper.Watermark="请输入查询关键字，例如姓名，车牌，凭证等"
+                      pu:TextBoxHelper.CornerRadius="4"
+                      pu:TextBoxHelper.FocusedBorderBrush="#00C1FF"
+                      pu:TextBoxHelper.FocusedShadowColor="#00C1FF" />
+            <Button Grid.Row="7" Grid.ColumnSpan="2"   Content="查询" Name ="btnRemovePolicy" Command="{Binding SelectSyncCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>

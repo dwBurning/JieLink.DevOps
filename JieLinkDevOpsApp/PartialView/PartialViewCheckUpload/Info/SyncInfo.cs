@@ -35,7 +35,7 @@ namespace PartialViewCheckUpload.Info
 
         private string _protocolData;
 
-        [DisplayName("ProtocolData")]
+        [DisplayName("协议内容")]
         [ReadOnlyColumn]
         [ColumnWidth("1*")]
         public string ProtocolData
