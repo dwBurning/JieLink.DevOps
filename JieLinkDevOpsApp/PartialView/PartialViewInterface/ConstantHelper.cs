@@ -102,10 +102,14 @@ namespace PartialViewInterface
         /// </summary>
         public const int JIELINK_JSMJY08A_OLD = 252;
         /// <summary>
-        /// 速通
+        /// 速通：对应JieLink的速通II型停车场（JSTC1801-01）  设备类型为JSTC1801_01
         /// </summary>
         public const int JIELINK_JSTC1801_01 = 22;
 
+        /// <summary>
+        /// 速通：对应JieLink的速通IV（JSTC2801）  设备类型为JSTC2801
+        /// </summary>
+        public const int JIELINK_JSTC2801 = 73;
         /// <summary>
         /// 车场速通
         /// </summary>
@@ -118,5 +122,29 @@ namespace PartialViewInterface
         /// 显示屏
         /// </summary>
         public const string JSC8ST_LedScreen = "JSC8ST_LedScreen";
+        /// <summary>
+        /// 对应JieLink的速通II型停车场（JSTC1801-01）  设备类型为JSTC1801_01
+        /// </summary>
+        public const string JSKT6037B = "JSKT6037B";
+        /// <summary>
+        /// 对应JieLink的速通II型停车场（JSTC1801-01）  设备类型为JSTC1801_01
+        /// </summary>
+        public const string JSKT6037C = "JSKT6037C";
+        /// <summary>
+        /// 对应JieLink的速通II型停车场（JSTC1801-01）  设备类型为JSTC1801_01
+        /// </summary>
+        public const string JSKT6030B_L = "JSKT6030B-L";
+        /// <summary>
+        /// 与JieLink的速通IV一样
+        /// </summary>
+        public const string JSTC2801 = "JSTC2801";
+        /// <summary>
+        /// 月租用户A
+        /// </summary>
+        public const int MONTH_A = 50;
+        /// <summary>
+        /// 预付费用户A
+        /// </summary>
+        public const int PREPAYMENT_A = 51;
     }
 }

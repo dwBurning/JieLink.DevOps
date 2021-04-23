@@ -33,9 +33,9 @@ namespace PartialViewOtherToJieLink.JSDSViewModels
         /// </summary>
         public string UPDATE_TIME { get; set; }
         /// <summary>
-        /// 忽略
+        /// 账户余额：迁移到JieLink时，为储值卡才使用该值
         /// </summary>
-        public string BALANCE { get; set; }
+        public decimal BALANCE { get; set; }
         public string TYPE { get; set; }
         public string UNLOCK_TIME { get; set; }
         public string ACCOUNT_PWD { get; set; }

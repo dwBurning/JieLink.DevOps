@@ -568,6 +568,8 @@ namespace PartialViewOtherToJieLink.ViewModels
                     //JSDS的凭证关系查询方式（2021-02-02与JSDS同事沟通，他们的设计方式）：账号找服务，服务找凭证，最后生成账号与凭证的关系 
                     List<TCacAuthServiceModel> parkServiceList = new List<TCacAuthServiceModel>();  //关联车场服务的凭证，迁移后凭证中的Lguid必需赋值
                     List<TCacAuthServiceModel> doorServiceList = new List<TCacAuthServiceModel>();  //关联门禁服务的凭证，迁移后凭证中的Lguid无需赋值
+                    List<TCacServiceSetModel> cacServiceSetList = new List<TCacServiceSetModel>();  //jsds套餐列表
+                    List<TCacServiceSetParkModel> prePaymentServiceSetParkModelList = new List<TCacServiceSetParkModel>(); //jsds车场套餐对应的套餐辅助信息列表，查找出预付费套餐，RECHARGE_WAY="MONEY"
                     DataSet jielinkPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_person WHERE `Status`=0 ORDER BY id ASC;");
                     if (jielinkPersonDs != null && jielinkPersonDs.Tables[0] != null)
                     {
@@ -623,6 +625,23 @@ namespace PartialViewOtherToJieLink.ViewModels
                     if (parkServiceDs != null && parkServiceDs.Tables[0] != null)
                     {
                         parkServiceList = CommonHelper.DataTableToList<TCacAuthServiceModel>(parkServiceDs.Tables[0]);
+                    }
+                    if (parkServiceList.Count > 0)
+                    {
+                        DataSet servicesetDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM `t_cac_service_set` WHERE `STATUS`='normal' ORDER BY CREATE_TIME ASC;");  //套餐
+                        if (servicesetDs != null && servicesetDs.Tables[0] != null)
+                        {
+                            cacServiceSetList = CommonHelper.DataTableToList<TCacServiceSetModel>(servicesetDs.Tables[0]);
+                        }
+                        if (cacServiceSetList.Count > 0)
+                        {
+                            //RECHARGE_WAY='MONEY' 储值卡、业主临时卡套餐：转化为JieLink的储值卡
+                            DataSet prePaymentServiceSetDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "SELECT * FROM `t_cac_service_set_park` WHERE RECHARGE_WAY='MONEY' AND SERVICESET_ID in (SELECT ID FROM `t_cac_service_set` WHERE `STATUS`='normal');");
+                            if (prePaymentServiceSetDs != null && prePaymentServiceSetDs.Tables[0] != null)
+                            {
+                                prePaymentServiceSetParkModelList = CommonHelper.DataTableToList<TCacServiceSetParkModel>(prePaymentServiceSetDs.Tables[0]);
+                            }
+                        }
                     }
                     DataSet doorServiceDs = MySqlHelper.ExecuteDataset(JsdsDbConnString, "select * from t_cac_auth_service WHERE state='NORMAL' and BUSINESS_CODE='DOOR' ORDER BY CREATE_TIME DESC;");  //门禁服务
                     if (doorServiceDs != null && doorServiceDs.Tables[0] != null)
@@ -739,9 +758,21 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         string endTime = CommonHelper.GetDateTimeValue(parkService.END_TIME, DateTime.Now).ToString("yyyy-MM-dd 23:59:59");
                                         string stopServiceTime = CommonHelper.GetDateTimeValue(parkService.END_TIME, DateTime.Now).ToString("yyyy-MM-dd");
                                         string uniqueServiceNo = CommonHelper.GetUniqueId();
-                                        if (parkService.PARK_SEAT_NUM < 1)
+                                        int setmealNo = ConstantHelper.MONTH_A; //月租用户A，为储值卡时赋值51（预付费用户A）
+                                        decimal balance = 0;    //预付费金额：jsds对应在哪里？？
+                                        var prePaymentServiceSet = prePaymentServiceSetParkModelList.FirstOrDefault(x => x.SERVICESET_ID == parkService.SERVICESET_ID);
+                                        if (prePaymentServiceSet != null)
                                         {
+                                            setmealNo = ConstantHelper.PREPAYMENT_A;
                                             parkService.PARK_SEAT_NUM = 1;
+                                            balance = account.BALANCE;
+                                        }
+                                        else
+                                        {
+                                            if (parkService.PARK_SEAT_NUM < 1)
+                                            {
+                                                parkService.PARK_SEAT_NUM = 1;
+                                            }
                                         }
                                         DataSet currentParkServiceDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, $"SELECT * from control_lease_stall WHERE LGUID='{lguid}' AND `Status`=0;");
                                         ControlLeaseStall currentParkService = null;
@@ -752,12 +783,12 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         string sql = string.Empty;
                                         if (currentParkService == null)
                                         {
-                                            sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}',50,'{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
-                                                    lguid, personGuid, startTime, endTime, parkService.CREATE_TIME, jieLinkPerson.PersonName, jieLinkPerson.PersonNo, parkService.PARK_SEAT_NUM, stopServiceTime, uniqueServiceNo);
+                                            sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,Balance,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}',{2},'{3}','{4}','9999','超级管理员','{5}',0,'{6}','{7}','{0}','{8}','{8}','{9}','{10}','{11}',0)",
+                                                    lguid, personGuid, setmealNo, startTime, endTime, parkService.CREATE_TIME, jieLinkPerson.PersonName, jieLinkPerson.PersonNo, parkService.PARK_SEAT_NUM, balance, stopServiceTime, uniqueServiceNo);
                                         }
                                         else
                                         {
-                                            sql = $"update control_lease_stall set StartTime='{startTime}',EndTime='{endTime}',StopServiceTime='{stopServiceTime}',CarNumber={parkService.PARK_SEAT_NUM},VehiclePosCount={parkService.PARK_SEAT_NUM},OperateTime='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}'";
+                                            sql = $"update control_lease_stall set StartTime='{startTime}',EndTime='{endTime}',StopServiceTime='{stopServiceTime}',CarNumber={parkService.PARK_SEAT_NUM},VehiclePosCount={parkService.PARK_SEAT_NUM},balance={balance},OperateTime='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}' WHERE LGUID='{lguid}'";
                                         }
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                         if (flag > 0)
@@ -964,6 +995,13 @@ namespace PartialViewOtherToJieLink.ViewModels
                             controlDevicesList = CommonHelper.DataTableToList<ControlDevices>(controlDeviceDs.Tables[0]).OrderBy(x => x.ID).ToList();
                         }
                     }
+                    //套餐列表
+                    List<SysSetmealType> setMealList = new List<SysSetmealType>();
+                    DataSet setMealDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_setmeal_type ORDER BY ParentSetNo ASC, SetName ASC;");
+                    if (setMealDs != null && setMealDs.Tables[0] != null && setMealDs.Tables[0].Rows.Count > 0)
+                    {
+                        setMealList = CommonHelper.DataTableToList<SysSetmealType>(setMealDs.Tables[0]).ToList();
+                    }
                     List<string> enterSuccessImportList = new List<string>();
                     List<string> outSuccessImportList = new List<string>();
                     List<string> billSuccessImportList = new List<string>();
@@ -985,7 +1023,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                             string personNo = "";
                             string personName = "临时车主";
                             int sealId = 54;
-                            string sealName = "临时用户A";
                             if (!string.IsNullOrWhiteSpace(recordIn.AUTHSERVICE_ID))
                             {
                                 string serviceGuid = GetGuidString(recordIn.AUTHSERVICE_ID);
@@ -993,7 +1030,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 if (parkService != null)
                                 {
                                     sealId = parkService.SetmealNo;
-                                    sealName = "月租用户A";
                                     ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == parkService.PGUID);
                                     if (person != null)
                                     {
@@ -1001,6 +1037,12 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         personName = person.PersonName;
                                     }
                                 }
+                            }
+                            string sealName = "临时用户A";
+                            SysSetmealType meal = setMealList.FirstOrDefault(x => x.SetNO == sealId);
+                            if (meal != null)
+                            {
+                                sealName = meal.SetOtherName;
                             }
                             if (string.IsNullOrWhiteSpace(recordIn.REMARK))
                             {
@@ -1054,15 +1096,13 @@ namespace PartialViewOtherToJieLink.ViewModels
                             string personNo = "";
                             string personName = "临时车主";
                             int sealId = 54;
-                            string sealName = "临时用户A";
                             if (!string.IsNullOrWhiteSpace(recordOut.AUTHSERVICE_ID))
                             {
                                 string serviceGuid = GetGuidString(recordOut.AUTHSERVICE_ID);
                                 ControlLeaseStall service = parkServiceList.FirstOrDefault(x => x.LGUID == serviceGuid);
                                 if (service != null)
                                 {
-                                    sealId = service.SetmealNo;
-                                    sealName = "月租用户A";
+                                    sealId = service.SetmealNo;                                    
                                     ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == service.PGUID);
                                     if (person != null)
                                     {
@@ -1070,6 +1110,12 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         personName = person.PersonName;
                                     }
                                 }
+                            }
+                            string sealName = "临时用户A";
+                            SysSetmealType meal = setMealList.FirstOrDefault(x => x.SetNO == sealId);
+                            if (meal != null)
+                            {
+                                sealName = meal.SetOtherName;
                             }
                             if (string.IsNullOrWhiteSpace(recordOut.REMARK))
                             {
@@ -1222,7 +1268,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 string personNo = "";
                                 string personName = "临时车主";
                                 int sealId = 54;
-                                string sealName = "临时用户A";
                                 if (!string.IsNullOrWhiteSpace(recordBill.VOUCHER_ID))
                                 {
                                     string voucherGuid = GetGuidString(recordBill.VOUCHER_ID);
@@ -1233,7 +1278,6 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         if (service != null)
                                         {
                                             sealId = service.SetmealNo;
-                                            sealName = "月租用户A";
                                             ControlPerson person = jielinkPersonList.FirstOrDefault(x => x.PGUID == service.PGUID);
                                             if (person != null)
                                             {
@@ -1248,6 +1292,12 @@ namespace PartialViewOtherToJieLink.ViewModels
                                     //临时套餐或者实收大于0：才生成收费记录
                                     ShowMessage($"06.迁移入出场收费记录，车牌：{plate}-{recordBill.ID} 补录收费记录，!(sealId == 54 || recordBill.ACTUAL_BALANCE > 0) 跳过！");
                                     continue;
+                                }
+                                string sealName = "临时用户A";
+                                SysSetmealType meal = setMealList.FirstOrDefault(x => x.SetNO == sealId);
+                                if (meal != null)
+                                {
+                                    sealName = meal.SetOtherName;
                                 }
                                 if (string.IsNullOrWhiteSpace(recordBill.REMARK))
                                 {
@@ -1601,7 +1651,11 @@ namespace PartialViewOtherToJieLink.ViewModels
                     //&& equipment.PRODUCT_MODEL != ConstantHelper.JSMJY08_OpenDoorButton
                     && equipment.PRODUCT_MODEL != ConstantHelper.JSMJK0220A
                     && equipment.PRODUCT_MODEL != ConstantHelper.JSMJK0240A
-                    && equipment.PRODUCT_MODEL != ConstantHelper.JSC8ST)
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSC8ST
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSKT6037B
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSKT6037C
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSKT6030B_L
+                    && equipment.PRODUCT_MODEL != ConstantHelper.JSTC2801)
                 {
                     ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：不适配JieLink，跳过");
                     continue;
@@ -1633,12 +1687,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                     continue;
                 }
                 //如果是速通，mac后3位加00与devId比较，若是不一样，也跳过：因为设备注册到jielink时 设备id由mac后3位加00生成
-                if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6037B
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6037C
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6030B_L
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSTC2801)
                 {
                     string deviceId = CommonHelper.ConvertDevicesId(mac);
                     if (devIDItem.PARAM_VALUE != deviceId)
                     {
                         ShowMessage($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：devID与jielink生成规则不符，跳过");
+                        LogHelper.CommLogger.Info($"04.迁移设备ID='{equipment.ID}'，设备类型='{equipment.PRODUCT_MODEL}'：devID与jielink生成规则不符，跳过");
                         continue;
                     }
                 }
@@ -1706,10 +1765,18 @@ namespace PartialViewOtherToJieLink.ViewModels
                     deviceType = ConstantHelper.JIELINK_JSMJK02_40;   //领御III型四门
                     model = "JSMJK02_40";
                 }
-                else if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                else if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6037B
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6037C
+                    || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6030B_L)
                 {
                     deviceType = ConstantHelper.JIELINK_JSTC1801_01;    //速通
                     model = "JSTC1801-01";
+                }
+                else if (equipment.PRODUCT_MODEL == ConstantHelper.JSTC2801)
+                {
+                    deviceType = ConstantHelper.JIELINK_JSTC2801;    //速通
+                    model = "JSTC2801";
                 }
                 if (deviceType == 0)
                 {
@@ -1733,7 +1800,11 @@ namespace PartialViewOtherToJieLink.ViewModels
                         parentId = mjDeivce.DeviceID;
                         parentIp = mjDeivce.IP;
                     }
-                    else if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST)
+                    else if (equipment.PRODUCT_MODEL == ConstantHelper.JSC8ST
+                        || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6037B
+                        || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6037C
+                        || equipment.PRODUCT_MODEL == ConstantHelper.JSKT6030B_L
+                        || equipment.PRODUCT_MODEL == ConstantHelper.JSTC2801)
                     {
                         //车场控制器
                         if (parkBoxDeivce == null)
