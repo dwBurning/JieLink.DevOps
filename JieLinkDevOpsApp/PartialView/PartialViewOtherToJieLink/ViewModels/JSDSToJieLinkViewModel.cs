@@ -788,7 +788,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         }
                                         else
                                         {
-                                            sql = $"update control_lease_stall set StartTime='{startTime}',EndTime='{endTime}',StopServiceTime='{stopServiceTime}',CarNumber={parkService.PARK_SEAT_NUM},VehiclePosCount={parkService.PARK_SEAT_NUM},balance={balance},OperateTime='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}' WHERE LGUID='{lguid}'";
+                                            sql = $"update control_lease_stall set StartTime='{startTime}',EndTime='{endTime}',StopServiceTime='{stopServiceTime}',CarNumber={parkService.PARK_SEAT_NUM},VehiclePosCount={parkService.PARK_SEAT_NUM},balance={balance},OperateTime='{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}',SetmealNo='{setmealNo}' WHERE LGUID='{lguid}'";
                                         }
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                         if (flag > 0)
