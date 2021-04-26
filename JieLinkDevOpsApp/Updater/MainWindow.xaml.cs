@@ -74,7 +74,7 @@ namespace JieShun.JieLink.DevOps.Updater
             {
                 viewModel.UpdateMessage = "缺少升级所需的参数UpdateRequest.json,程序即将退出！";
             }
-            await Task.Delay(5000);
+            await Task.Delay(10*60*1000);
             OnClose();
         }
         void UpdateProgressSafely(int progress, string message)
