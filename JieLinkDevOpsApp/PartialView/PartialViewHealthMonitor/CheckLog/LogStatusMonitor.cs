@@ -54,7 +54,7 @@ namespace PartialViewHealthMonitor
                             }
                             watch.Stop();
                             var mSeconds = watch.ElapsedMilliseconds;
-                            //17M耗时约400ms
+                            //50M耗时约1500ms左右
                             LogHelper.CommLogger.Info("中心文件日志排查耗时：" + mSeconds.ToString() + "ms");
                         }
                     }
@@ -96,7 +96,7 @@ namespace PartialViewHealthMonitor
 
                 return string.Empty;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 LogHelper.CommLogger.Error(ex.ToString());
                 throw;
