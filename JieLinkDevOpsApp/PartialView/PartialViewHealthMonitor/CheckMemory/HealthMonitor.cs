@@ -53,8 +53,6 @@ namespace PartialViewHealthMonitor
             try
             {
                 SystemStatusMonitor systemMonitor = new SystemStatusMonitor();
-                //TODO 调试用
-                processName = "wpscloudsvr";
                 ProcessStatusMonitor processMonitor = new ProcessStatusMonitor(processName);
                 LogStatusMonitor logMonitor = new LogStatusMonitor(processName);
                 int warningInterval = 12;//12小时
