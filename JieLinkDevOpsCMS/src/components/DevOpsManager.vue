@@ -13,6 +13,7 @@
         <el-option label="系统磁盘预警" value="4"></el-option>
         <el-option label="进程内存溢出" value="5"></el-option>
         <el-option label="进程CPU预警" value="6"></el-option>
+        <el-option label="中心报错内存溢出" value="7"></el-option>
       </el-select>
       <el-button
         type="primary"
@@ -199,6 +200,8 @@ export default {
         return "进程内存溢出";
       } else if (row.eventType == 6) {
         return "进程CPU预警";
+      } else if (row.eventType == 7) {
+        return "中心报错内存溢出";
       } else {
         return "其他";
       }

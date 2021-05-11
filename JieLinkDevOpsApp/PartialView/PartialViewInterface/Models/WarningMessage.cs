@@ -15,6 +15,8 @@ namespace PartialViewInterface.Models
         Disk = 4,
         ProcessMemory=5,
         ProcessCPU = 6,
+        //中心日志文件报错内存溢出
+        CenterLogOOM = 7,
     }
     public class WarningMessage
     {

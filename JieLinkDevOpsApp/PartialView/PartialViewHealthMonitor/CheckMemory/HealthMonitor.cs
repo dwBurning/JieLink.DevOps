@@ -54,6 +54,7 @@ namespace PartialViewHealthMonitor
             {
                 SystemStatusMonitor systemMonitor = new SystemStatusMonitor();
                 ProcessStatusMonitor processMonitor = new ProcessStatusMonitor(processName);
+                LogStatusMonitor logMonitor = new LogStatusMonitor(processName);
                 int warningInterval = 12;//12小时
                 while (isRunning)
                 {
@@ -67,6 +68,8 @@ namespace PartialViewHealthMonitor
 
                             var warning = processMonitor.HasWarning(); 
                             var systemWarning = systemMonitor.HasWarning();
+                            var logWarning = logMonitor.HasWarning();
+
                             if (warning.WarningType == enumWarningType.None)
                                 warning = systemWarning;
                             if (warning.WarningType != enumWarningType.None && DateTime.Now > nextWarningTime)
@@ -74,6 +77,13 @@ namespace PartialViewHealthMonitor
                                 nextWarningTime = DateTime.Now.AddHours(warningInterval);
                                 //需要报警
                                 DevOpsAPI.SendEvent(warning);
+                            }
+                            //中心日志报警
+                            if (logWarning.WarningType != enumWarningType.None)
+                            {
+                                //中心日志检测时间间隔在HasWarning()方法里面，不与线程报警和系统报警共用间隔时间
+                                //nextWarningTime = DateTime.Now.AddHours(warningInterval);
+                                DevOpsAPI.SendEvent(logWarning);
                             }
                         }
 
