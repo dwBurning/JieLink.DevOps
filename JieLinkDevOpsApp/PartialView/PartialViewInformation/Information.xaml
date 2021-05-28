@@ -84,6 +84,21 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2021-05-26 V1.1.5">
+                <ContentControl>
+                    <TextBlock>
+                        1.更换服务器IP地址为域名地址
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-05-19 V1.1.4">
+                <ContentControl>
+                    <TextBlock>
+                        1.优化JSDS一键切换到JieLink工具
+                        2.其他优化项
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2021-03-19 V1.1.3">
                 <ContentControl>
                     <TextBlock>
