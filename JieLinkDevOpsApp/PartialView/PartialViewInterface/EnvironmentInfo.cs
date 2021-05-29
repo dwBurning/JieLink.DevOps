@@ -17,6 +17,7 @@ namespace PartialViewInterface
 
             ConfigHelper.AddAppConfig("DataArchiveJob", "0 0 0 * * ?");
             ConfigHelper.AddAppConfig("ReportProjectInfoJob", "0 0 1 * * ?");
+            ConfigHelper.AddAppConfig("TaskDataMonitorJob", "0 30 1 * * ?");
             ConfigHelper.AddAppConfig("AutoArchive", "0");
             ConfigHelper.AddAppConfig("AutoArchiveMonth", "3");
             ConfigHelper.AddAppConfig("AutoStartCorectString", "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}");

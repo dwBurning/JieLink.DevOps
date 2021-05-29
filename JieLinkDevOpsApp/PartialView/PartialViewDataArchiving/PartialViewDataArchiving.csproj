@@ -87,6 +87,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="TaskDataMonitor\IMonitor.cs" />
+    <Compile Include="TaskDataMonitor\MonitorFeeChangeState.cs" />
+    <Compile Include="TaskDataMonitor\TaskDataMonitorJob.cs" />
     <Compile Include="ViewModels\DataArchivingViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

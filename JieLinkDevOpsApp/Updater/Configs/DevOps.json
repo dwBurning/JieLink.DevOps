@@ -31,6 +31,7 @@
         "CheckDiskSpaceJob": "0 0 4 * * ?",
         "DataArchiveJob": "0 0 0 * * ?",
         "ReportProjectInfoJob": "0 0 1 * * ?",
+        "TaskDataMonitorJob": "0 30 1 * * ?",
         "AutoArchive": "0",
         "AutoArchiveMonth": "3",
         "AutoStartCorectString": "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}",
