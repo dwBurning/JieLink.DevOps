@@ -483,7 +483,7 @@ namespace PartialViewCheckUpdate.ViewModels
         {
             if (string.IsNullOrEmpty(jsonText))
             {
-                ShowMessage($"版本{this.EndVersion}的初始化json文件不存在，不执行数据库校验...");
+                ShowMessage($"当前版本的初始化json文件不存在，不执行数据库校验...");
                 ShowMessage("升级已经完成，请留意观察JieLink中心使用是否正常...");
                 return;
             }
