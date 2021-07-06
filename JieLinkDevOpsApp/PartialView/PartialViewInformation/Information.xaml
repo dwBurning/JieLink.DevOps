@@ -84,6 +84,14 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2021-06-05 V1.1.6">
+                <ContentControl>
+                    <TextBlock>
+                        1.解决遗漏JieLink2.8.3脚本导致升级一直等待中的问题
+                        2.监控dm_park_event_feechangestate事件，预防数据积压
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2021-05-26 V1.1.5">
                 <ContentControl>
                     <TextBlock>

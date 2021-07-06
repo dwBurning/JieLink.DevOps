@@ -153,7 +153,7 @@ namespace PartialViewOtherToJieLink.ViewModels
             return result;
         }
 
-        private bool VoucherSaveJSRJ(TBaseHrPersonModel hrPerson, TBaseJSRJCardInfoModel tcCardInfoModel)
+        private bool VoucherSaveJSRJ(TBaseHrPersonModel hrPerson, TBaseJSRJCardInfoModel tcCardInfoModel, TBaseJSRJCardInfoModel tcCardEndDateMax)
         {
             bool completeFlag = true;
             try
@@ -161,10 +161,9 @@ namespace PartialViewOtherToJieLink.ViewModels
                 string voucherGuid = Guid.NewGuid().ToString();
                 int voucherType = 163;
                 string physicsNum = string.Empty;
-                voucherType = 55;
                 string remark = REMARK;
                 string sql = string.Format("INSERT INTO control_voucher(Guid,PGUID,LGUID,PersonNo,PersonName,VoucherType,VoucherNo,CardNum,PhysicsNum,AddOperatorNo,AddTime,`Status`,LastTime,Remark,StatusFromPerson) VALUE('{0}','{1}','{2}','{3}','{4}',{5},'{6}','{6}','{7}','9999','{8}',1,'{8}','{9}',1);",
-                          voucherGuid, new Guid(hrPerson.GUID).ToString(), new Guid(tcCardInfoModel.GUID).ToString(), hrPerson.NO, hrPerson.NAME, voucherType, tcCardInfoModel.CarNO.Replace("-", ""), physicsNum, tcCardInfoModel.OptDate, remark);
+                          voucherGuid, new Guid(hrPerson.GUID).ToString(), new Guid(tcCardEndDateMax.GUID).ToString(), hrPerson.NO, hrPerson.NAME, voucherType, tcCardInfoModel.CarNO.Replace("-", ""), physicsNum, tcCardInfoModel.OptDate, remark);
                 int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                 if (flag > 0)
                 {
@@ -487,7 +486,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                 }
                 if (isContinue)
                 {
-                    DataTable JSRJCardInfoDts = MSSqlHelper.ExecuteQuery("SELECT * from tc.MonthCarInfo where status = 1  ORDER BY id asc;", null);
+                    DataTable JSRJCardInfoDts = MSSqlHelper.ExecuteQuery("SELECT *,b.GUID as LGUID from tc.MonthCarInfo a inner join mc.cardType b on a.cardTypeId=b.ID where status = 1  ORDER BY a.id asc;", null);
                     List<TBaseJSRJCardInfoModel> JSRJCardInfoList = new List<TBaseJSRJCardInfoModel>();
                     if (JSRJCardInfoDts != null)
                     {
@@ -529,7 +528,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         if (flag > 0)
                                         {
                                             MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsParkService=1 WHERE PGUID='{0}';", new Guid(hrPerson1.GUID).ToString()));
-                                            bool saveFlag = VoucherSaveJSRJ(hrPerson1, tcCardInfo);
+                                            bool saveFlag = VoucherSaveJSRJ(hrPerson1, tcCardInfo, tcCardInfo);
                                             if (!saveFlag)
                                             {
                                                 isContinue = false;
@@ -546,18 +545,36 @@ namespace PartialViewOtherToJieLink.ViewModels
                                         {
                                             //根据卡类分组
                                             var tcCardMap = tcCardinfoList1.GroupBy(e => e.CardTypeID).ToList();
+                                            int size;
                                             foreach (var item in tcCardMap)
                                             {
                                                 TBaseJSRJCardInfoModel tcCardEndDateMax = item.OrderByDescending(e => e.EndDate).FirstOrDefault();
-
+                                                switch (tcCardEndDateMax.CardTypeID)
+                                                {
+                                                    case 5:
+                                                        size = 50;
+                                                        break;
+                                                    case 6:
+                                                        size = 59;
+                                                        break;
+                                                    case 7:
+                                                        size = 60;
+                                                        break;
+                                                    case 8:
+                                                        size = 61;
+                                                        break;
+                                                    default:
+                                                        size = 64;
+                                                        break;
+                                                }
                                                 string lguid = new Guid(tcCardEndDateMax.GUID).ToString();
                                                 string startTime = CommonHelper.GetDateTimeValue(tcCardEndDateMax.StartDate, DateTime.Now).ToString("yyyy-MM-dd 00:00:00");
                                                 string endTime = CommonHelper.GetDateTimeValue(tcCardEndDateMax.EndDate, DateTime.Now).ToString("yyyy-MM-dd 23:59:59");
                                                 string stopServiceTime = CommonHelper.GetDateTimeValue(tcCardEndDateMax.EndDate, DateTime.Now).ToString("yyyy-MM-dd");
                                                 string uniqueServiceNo = CommonHelper.GetUniqueId();
 
-                                                string sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}',50,'{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
-                                                            lguid, new Guid(hrPerson1.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson1.NAME, hrPerson1.NO, hrPerson1.CarCount, stopServiceTime, uniqueServiceNo);
+                                                string sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}','{10}','{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
+                                                            lguid, new Guid(hrPerson1.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson1.NAME, hrPerson1.NO, hrPerson1.CarCount, stopServiceTime, uniqueServiceNo,size);
                                                 int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                                 if (flag > 0)
                                                 {
@@ -568,7 +585,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                                 //移除已经处理的车场卡信息
                                                 foreach (var a in item)
                                                 {
-                                                    bool saveFlag = VoucherSaveJSRJ(hrPerson1, a);
+                                                    bool saveFlag = VoucherSaveJSRJ(hrPerson1, a, tcCardEndDateMax);
                                                     if (!saveFlag)
                                                     {
                                                         isContinue = false;
