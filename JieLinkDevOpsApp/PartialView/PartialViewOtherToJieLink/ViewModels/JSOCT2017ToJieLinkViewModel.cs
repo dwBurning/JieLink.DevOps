@@ -570,22 +570,41 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             if (tcCardinfoList1.Count > 0)
                                             {
                                                 //根据卡类分组
-                                                var tcCardMap = tcCardinfoList1.GroupBy(e => e.CardTypeID).ToList();
+                                                var tcCardMap = tcCardinfoList1.GroupBy(e => e.CardTypeID).ToList();                                               
+                                                int size ;
                                                 foreach (var item in tcCardMap)
                                                 {
+                                                    
                                                     TBaseTcCardInfoModel tcCardEndDateMax = item.OrderByDescending(e => e.EndDate).FirstOrDefault();
-
+                                                    switch (tcCardEndDateMax.CardTypeID)
+                                                    {
+                                                        case 5:
+                                                            size = 50;
+                                                               break;
+                                                        case 6:
+                                                            size = 59;
+                                                            break;
+                                                        case 7:
+                                                            size = 60;
+                                                            break;
+                                                        case 8:
+                                                            size = 61;
+                                                            break;                                                           
+　                                                      default:
+                                                            size = 64;
+                                                            break;
+                                                    }
                                                     string lguid = new Guid(mcCardinfo.GUID).ToString();
                                                     string startTime = CommonHelper.GetDateTimeValue(tcCardEndDateMax.StartDate, DateTime.Now).ToString("yyyy-MM-dd 00:00:00");
                                                     string endTime = CommonHelper.GetDateTimeValue(tcCardEndDateMax.EndDate, DateTime.Now).ToString("yyyy-MM-dd 23:59:59");
                                                     string stopServiceTime = CommonHelper.GetDateTimeValue(tcCardEndDateMax.EndDate, DateTime.Now).ToString("yyyy-MM-dd");
                                                     string uniqueServiceNo = CommonHelper.GetUniqueId();
 
-                                                    string sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}',50,'{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
-                                                                lguid, new Guid(hrPerson.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson.NAME, hrPerson.NO, hrRoomPos.MaxPos, stopServiceTime, uniqueServiceNo);
+                                                    string sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}','{10}','{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
+                                                                lguid, new Guid(hrPerson.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson.NAME, hrPerson.NO, hrRoomPos.MaxPos, stopServiceTime, uniqueServiceNo, size);
                                                     int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                                     if (flag > 0)
-                                                    {
+                                                    {                                                       
                                                         MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsParkService=1 WHERE PGUID='{0}';", new Guid(hrPerson.GUID).ToString()));
 
 
