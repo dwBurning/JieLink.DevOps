@@ -46,7 +46,12 @@ namespace PartialViewImportEnterRecord
 
         public MenuType MenuType
         {
-            get { return MenuType.Center; }
+            get { return MenuType.Common; }
+        }
+
+        public int Order
+        {
+            get { return 2000; }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

@@ -45,6 +45,11 @@ namespace PartialViewOtherToJieLink
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         JSDSToJieLinkViewModel viewModelJSDS;
 
         JSRJ1116ToJieLinkViewModel viewModelRJ1116;

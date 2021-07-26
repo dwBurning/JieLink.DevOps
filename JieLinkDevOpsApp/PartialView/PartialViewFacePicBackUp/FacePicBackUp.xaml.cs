@@ -45,7 +45,12 @@ namespace PartialViewFacePicBackUp
 
         public MenuType MenuType
         {
-            get { return MenuType.DoorServer; }
+            get { return MenuType.Center; }
+        }
+
+        public int Order
+        {
+            get { return 902; }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

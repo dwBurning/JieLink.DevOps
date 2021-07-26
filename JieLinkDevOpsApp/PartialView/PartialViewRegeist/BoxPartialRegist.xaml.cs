@@ -40,7 +40,12 @@ namespace PartialViewRegeist
 
         public MenuType MenuType
         {
-            get { return MenuType.Box; }
+            get { return MenuType.Center; }
+        }
+
+        public int Order
+        {
+            get { return 1001; }
         }
 
         private void button_RegistOpenBox_Click(object sender, RoutedEventArgs e)

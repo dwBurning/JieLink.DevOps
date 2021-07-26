@@ -49,36 +49,58 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
 
             var centerMenus = new ObservableCollection<TreeViewItemModel>();
 
-            partialViewDic.Values.Where(x => x.MenuType == MenuType.Center).ToList()
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.Center).OrderBy(x => x.Order).ToList()
             .ForEach(x => centerMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
 
+            var centerV3Menus = new ObservableCollection<TreeViewItemModel>();
+
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.CenterV3).OrderBy(x => x.Order).ToList()
+            .ForEach(x => centerV3Menus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
+
+            var commonMenus = new ObservableCollection<TreeViewItemModel>();
+
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.Common).OrderBy(x => x.Order).ToList()
+            .ForEach(x => commonMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
+
             var boxMenus = new ObservableCollection<TreeViewItemModel>();
-            partialViewDic.Values.Where(x => x.MenuType == MenuType.Box).ToList()
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.Box).OrderBy(x => x.Order).ToList()
             .ForEach(x => boxMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
 
             var doorServerMenus = new ObservableCollection<TreeViewItemModel>();
-            partialViewDic.Values.Where(x => x.MenuType == MenuType.DoorServer).ToList()
+            partialViewDic.Values.Where(x => x.MenuType == MenuType.DoorServer).OrderBy(x => x.Order).ToList()
             .ForEach(x => doorServerMenus.Add(new TreeViewItemModel(x.MenuName, x.TagName)));
 
             MenuItems = new ObservableCollection<TreeViewItemModel>()
             {
                 new TreeViewItemModel("设计","Information","\uf05a"){ IsSelected = true},
-                new TreeViewItemModel("中心","Center", "\uf17a")
+                new TreeViewItemModel("JieLink2.X","Center", "\uf17a")
                 {
                     MenuItems = centerMenus,
                     IsExpanded = false
                 },
-                new TreeViewItemModel("盒子","Box", "\uf109")
+                new TreeViewItemModel("JieLink3.X","CenterV3", "\uf17a")
                 {
-                     MenuItems = boxMenus,
+                    MenuItems = centerV3Menus,
+                    IsExpanded = false
+                },
+
+                new TreeViewItemModel("公共","Common", "\uf109")
+                {
+                     MenuItems = commonMenus,
                      IsExpanded = false
                 },
 
-                new TreeViewItemModel("门禁","DoorServer", "\uf1ad")
-                {
-                     MenuItems = doorServerMenus,
-                     IsExpanded = false
-                },
+                //new TreeViewItemModel("盒子","Box", "\uf109")
+                //{
+                //     MenuItems = boxMenus,
+                //     IsExpanded = false
+                //},
+
+                //new TreeViewItemModel("门禁","DoorServer", "\uf1ad")
+                //{
+                //     MenuItems = doorServerMenus,
+                //     IsExpanded = false
+                //},
                 new TreeViewItemModel("百科","KnowledgeWiki","\uf266"),
                 new TreeViewItemModel("设置","SystemSetting","\uf085"),
                 new TreeViewItemModel("版本","VersionUpdate","\uf1d8"),

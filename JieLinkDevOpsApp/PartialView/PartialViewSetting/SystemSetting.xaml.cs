@@ -43,6 +43,11 @@ namespace PartialViewSetting
             get { return MenuType.None; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             string url = txtServerUrl.Text;

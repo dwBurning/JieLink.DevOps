@@ -55,6 +55,11 @@ namespace PartialViewCorrectParkNum
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         /// <summary>
         /// 日志行数
         /// </summary>
