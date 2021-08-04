@@ -689,7 +689,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     #endregion
 
                     #region datetime
-                    if (field.Type.StartsWith("datetime"))
+                    if (field.Type.StartsWith("datetime") || field.Type.StartsWith("timestamp"))
                     {
                         if (field.IsNull)
                         {
