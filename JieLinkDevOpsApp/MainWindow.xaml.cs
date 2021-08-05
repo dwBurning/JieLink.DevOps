@@ -174,17 +174,21 @@ namespace JieShun.JieLink.DevOps.App
             scheduler.Start();
             foreach (var jobType in viewModel.jobs)
             {
-                string cron = ConfigHelper.GetValue<string>(jobType.Name, "0 0 0 * * ?");
-                if (string.IsNullOrEmpty(cron))
-                    continue;
-                var job = JobBuilder.Create(jobType)
-                    .WithIdentity(jobType.Name, "scheduler").Build();
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity(jobType.Name, "scheduler")
-                    .StartNow()
-                    .WithCronSchedule(cron)
+                var jobCronConfigs = ConfigHelper.GetJobCronConfig(jobType.Name);
+                foreach (var config in jobCronConfigs)
+                {
+                    var job = JobBuilder.Create(jobType)
+                    .WithIdentity(config.JobIdentity, "scheduler")
+                    .UsingJobData("DatabaseName", config.DatabaseName)
                     .Build();
-                scheduler.ScheduleJob(job, trigger);
+
+                    var trigger = TriggerBuilder.Create()
+                        .WithIdentity(config.JobIdentity, "scheduler")
+                        .StartNow()
+                        .WithCronSchedule(config.Cron)
+                        .Build();
+                    scheduler.ScheduleJob(job, trigger);
+                }
             }
         }
 

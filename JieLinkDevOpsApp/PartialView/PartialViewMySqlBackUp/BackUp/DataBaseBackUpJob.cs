@@ -13,13 +13,16 @@ namespace PartialViewMySqlBackUp.BackUp
 {
     /// <summary>
     /// 全库备份
+    /// 修改：增加数据库名参数
     /// </summary>
     public class DataBaseBackUpJob : IJob
     {
         public void Execute(IJobExecutionContext context)
         {
+            JobDataMap data = context.JobDetail.JobDataMap;
+            string databaseName = data.GetString("DatabaseName");
             ExecuteBackUp executeBackUp = new ExecuteBackUp();
-            executeBackUp.BackUpDataBase();
+            executeBackUp.BackUpDataBase(databaseName);
         }
     }
 }

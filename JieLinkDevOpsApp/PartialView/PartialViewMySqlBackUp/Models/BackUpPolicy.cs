@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PartialViewInterface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -167,6 +168,35 @@ namespace PartialViewMySqlBackUp.Models
             }
         }
 
+        /// <summary>
+        /// 当前选中的需要备份的数据库
+        /// </summary>
+        public string SelectedDatabase
+        {
+            get { return (string)GetValue(SelectedDatabaseProperty); }
+            set { SetValue(SelectedDatabaseProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ItemString.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedDatabaseProperty =
+            DependencyProperty.Register("SelectedDatabase", typeof(string), typeof(BackUpPolicy));
+
+        /// <summary>
+        /// 当前选中的需要备份的数据库的数据库连接
+        /// </summary>
+        public string SelectedDBConnectionStr
+        {
+            get 
+            {
+                if (EnvironmentInfo.DbConnEntity == null)
+                {
+                    return string.Empty;
+                }
+
+                var entity = EnvironmentInfo.DbConnEntity;
+                return $"Data Source={entity.Ip};port={entity.Port};User ID={entity.UserName};Password={entity.Password};Initial Catalog={SelectedDatabase};Pooling=true;charset=utf8;"; ; 
+            }
+        }
 
         public string PolicyToString
         {
@@ -181,8 +211,13 @@ namespace PartialViewMySqlBackUp.Models
                 if (Friday) policyStr.Append("周五").Append(",");
                 if (Saturday) policyStr.Append("周六").Append(",");
                 policyStr.Append(SelectedTime.ToString("HH:mm:ss")).Append(" ");
-                if (IsTaskBackUpDataBase) policyStr.Append("全库备份");
-                else policyStr.Append("业务表备份");
+                policyStr.Append(SelectedDatabase).Append(" ");
+
+                if (IsTaskBackUpDataBase) 
+                    policyStr.Append("全库备份");
+                else 
+                    policyStr.Append("业务表备份");
+
                 return policyStr.ToString();
             }
         }

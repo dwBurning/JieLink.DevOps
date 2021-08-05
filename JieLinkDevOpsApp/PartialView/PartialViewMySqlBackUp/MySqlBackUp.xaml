@@ -78,6 +78,29 @@
 
         <TabControl Grid.Row="0" Grid.Column="1" Margin="5"
         pu:TabControlHelper.SelectedForeground="#00BCFF" >
+            <TabItem Header="选择备份数据库">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="80"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                        <DataGrid x:Name="dgDatabases" Margin="5" ItemsSource="{Binding Databases}"
+                  BorderBrush="LightGray"
+                  BorderThickness="1"
+                  SelectionChanged="dgDatabases_SelectionChanged"
+                  pu:DataGridHelper.HeaderMinHeight="30"
+                  pu:DataGridHelper.ColumnHorizontalContentAlignment="Left"
+                  pu:DataGridHelper.RowMinHeight="30"
+                  pu:DataGridHelper.SelectedBackground="#220082FF"
+                  pu:DataGridHelper.SelectedForeground="#00BCFF"
+                  pu:DataGridHelper.HoverBackground="#220082FF"
+                  CanUserAddRows="False" >
+                        </DataGrid>
+                    </Grid>
+                    <TextBlock Grid.Row="1" Margin="5" Grid.ColumnSpan="2" TextWrapping="Wrap" TextAlignment="Left"><Run Foreground="#20A0FF">说明：</Run><LineBreak />1)选择数据库后，请切换到自动备份界面配置备份策略，或在手动备份界面执行备份。</TextBlock>
+                </Grid>
+            </TabItem>
             <TabItem Header="自动备份">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -85,11 +108,12 @@
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="80"></RowDefinition>
+                        <RowDefinition Height="75"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="35"></RowDefinition>
+                        <RowDefinition Height="35"></RowDefinition>
+                        <RowDefinition Height="35"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
@@ -120,7 +144,6 @@
                     <pu:DateTimePicker x:Name="dtpTime" Grid.Row="1" DateTimePickerMode="Time" 
                                        SelectedDateTime="{Binding SelectedTime}"
                                        Margin="5" CornerRadius="4" ThemeBrush="#00BCFF" Height="40">
-
                     </pu:DateTimePicker>
                     <Grid x:Name="gridBackUpType" Grid.Row="2">
                         <Grid.ColumnDefinitions>
@@ -136,22 +159,29 @@
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
                     </Grid>
-                    <Button Grid.Row="3" Margin="5" Content="添加策略" Name ="btnAddPolicy" Command="{Binding AddPolicyCommand}"
+                    <Button Grid.Row="3" Margin="5" Content="新增策略" Name ="btnAddPolicy" Command="{Binding AddPolicyCommand}"
                             CommandParameter="{Binding ElementName=dtpTime, Path=SelectedDateTime}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="25"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                            ToolTipService.ToolTip="提示：如果存在同库同类型的策略，将直接更新。"  ToolTipService.InitialShowDelay="1" ToolTipService.Placement="Bottom"/>
+                    <Button Grid.Row="4" Margin="5" Content="修改策略" Name ="btnEditPolicy" Command="{Binding EditPolicyCommand}"
+                            CommandParameter="{Binding ElementName=dtpTime, Path=SelectedDateTime}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="25"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                            ToolTipService.ToolTip="提示：不允许修改备份类型，如不存在该类型的策略可选择新增。"  ToolTipService.InitialShowDelay="1" ToolTipService.Placement="Bottom"/>
+                    <Button Grid.Row="5" Margin="5" Content="移除策略" Name ="btnRemovePolicy" Command="{Binding RemovePolicyCommand}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="25"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                    <Button Grid.Row="4" Margin="5" Content="移除策略" Name ="btnRemovePolicy" Command="{Binding RemovePolicyCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
-                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
-                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                    <ListBox Margin="5" BorderBrush="#20A0FF" Grid.Column="1" Grid.Row="0" Grid.RowSpan="5"
+                    <ListBox Margin="5,5,5,5" BorderBrush="#20A0FF" Grid.Column="1" Grid.Row="0" Grid.RowSpan="6"
                              pu:ListBoxHelper.SelectedBackground="#220082FF" ItemsSource="{Binding Policys}"
                              pu:ListBoxHelper.SelectedForeground="#00BCFF" ScrollViewer.HorizontalScrollBarVisibility="Auto"
                              pu:ListBoxHelper.HoverBackground="#220082FF" SelectionChanged="ListBox_SelectionChanged"
                              pu:ListBoxHelper.ItemHeight="30" DisplayMemberPath="ItemString" >
                     </ListBox>
-                    <Grid Grid.Row="5" Grid.ColumnSpan="2">
+                    <Grid Grid.Row="6" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -168,11 +198,11 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
 
-                    <Button Grid.Row="6" Margin="5" Grid.ColumnSpan="2" Content="执行任务" Name ="btnStart" Command="{Binding TaskStartCommand}"
+                    <Button Grid.Row="7" Margin="5" Grid.ColumnSpan="2" Content="执行任务" Name ="btnStart" Command="{Binding TaskStartCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                    <Button Grid.Row="7" Margin="5" Grid.ColumnSpan="2" Content="终止任务" Name ="btnStop" Command="{Binding TaskStopCommand}"
+                    <Button Grid.Row="8" Margin="5" Grid.ColumnSpan="2" Content="终止任务" Name ="btnStop" Command="{Binding TaskStopCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
@@ -204,7 +234,7 @@
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
                     </Grid>
-                    
+
                     <Grid Grid.Row="1" Grid.ColumnSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="4*"></ColumnDefinition>
