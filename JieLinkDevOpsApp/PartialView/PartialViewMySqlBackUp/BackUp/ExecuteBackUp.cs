@@ -13,12 +13,24 @@ namespace PartialViewMySqlBackUp.BackUp
     public class ExecuteBackUp
     {
         MySqlBackUpViewModel viewModel = MySqlBackUpViewModel.Instance();
-        public void BackUpDataBase()
+
+        /// <summary>
+        /// 全库备份
+        /// 修改：增加数据库名参数
+        /// </summary>
+        /// <param name="databaseName"></param>
+        public void BackUpDataBase(string databaseName)
         {
+            if (string.IsNullOrEmpty(databaseName))
+            {
+                viewModel.ShowMessage("当前备份策略中，数据库名称为空，无法备份，请确认或重新配置策略！");
+                return;
+            }
+
             try
             {
                 viewModel.ShowMessage("正在执行全库备份...");
-                string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_db.sql";
+                string fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}_DB_{databaseName}.sql";
                 string filePath = "";
                 viewModel.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
@@ -28,8 +40,7 @@ namespace PartialViewMySqlBackUp.BackUp
                         Directory.CreateDirectory(viewModel.TaskBackUpPath);
                     }
                 }));
-                string mysqlcmd = $"mysqldump --default-character-set=utf8 --single-transaction -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port}  -B {EnvironmentInfo.DbConnEntity.DbName} -R > \"{filePath}\"";
-
+                string mysqlcmd = $"mysqldump --default-character-set=utf8 --single-transaction -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port}  -B {databaseName} -R > \"{filePath}\"";
                 viewModel.ShowMessage(mysqlcmd);
                 List<string> cmds = new List<string>();
                 cmds.Add(viewModel.MySqlBinPath.Substring(0, 2));
@@ -46,12 +57,23 @@ namespace PartialViewMySqlBackUp.BackUp
             }
         }
 
-        public void BackUpTables()
+        /// <summary>
+        /// 业务表备份
+        /// 修改：增加数据库名参数
+        /// </summary>
+        /// <param name="databaseName"></param>
+        public void BackUpTables(string databaseName)
         {
+            if (string.IsNullOrEmpty(databaseName))
+            {
+                viewModel.ShowMessage("当前备份策略中，数据库名称为空，无法备份，请确认或重新配置策略！");
+                return;
+            }
+
             try
             {
                 viewModel.ShowMessage("正在执行基础业务备份...");
-                string fileName = DateTime.Now.ToString("yyyyMMddHHmmss") + "_table.sql";
+                string fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmss")}_Table_{databaseName}.sql";
                 string filePath = "";
                 viewModel.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(() =>
                 {
@@ -61,19 +83,23 @@ namespace PartialViewMySqlBackUp.BackUp
                         Directory.CreateDirectory(viewModel.TaskBackUpPath);
                     }
                 }));
+
                 string tables = "";
-                if (viewModel.Tables.FindIndex(x => x.IsChecked) >= 0)
+                var tablesConfig = viewModel.BackUpConfig.TablesConfig.FirstOrDefault(x => x.DbName == databaseName);
+                if (tablesConfig != null)
                 {
-                    viewModel.Tables.ForEach(x =>
+                    tablesConfig.Tables.ToList().ForEach((x) =>
                     {
-                        if (x.IsChecked)
-                        {
-                            tables += x.TableName + " ";
-                        }
+                        tables += x.TableName + " ";
                     });
                 }
+                else
+                {
+                    viewModel.ShowMessage("当前备份策略中，未配置业务表范围，无法备份，请确认或重新配置策略！");
+                    return;
+                }
 
-                string mysqlcmd = $"mysqldump --default-character-set=utf8 --single-transaction -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port}  -B {EnvironmentInfo.DbConnEntity.DbName} --tables {tables} > \"{filePath}\"";
+                string mysqlcmd = $"mysqldump --default-character-set=utf8 --single-transaction -h{EnvironmentInfo.DbConnEntity.Ip} -u{EnvironmentInfo.DbConnEntity.UserName} -p{EnvironmentInfo.DbConnEntity.Password} -P{EnvironmentInfo.DbConnEntity.Port}  -B {databaseName} --tables {tables} > \"{filePath}\"";
 
                 viewModel.ShowMessage(mysqlcmd);
                 List<string> cmds = new List<string>();
@@ -89,7 +115,6 @@ namespace PartialViewMySqlBackUp.BackUp
             {
                 viewModel.ShowMessage(ex.Message);
             }
-
         }
     }
 }

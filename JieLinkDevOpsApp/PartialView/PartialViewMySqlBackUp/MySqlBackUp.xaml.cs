@@ -92,8 +92,6 @@ namespace PartialViewMySqlBackUp
                 {
                     Directory.CreateDirectory(viewModel.TaskBackUpPath);
                 }
-
-                viewModel.WriteConfig();
             }
         }
 
@@ -112,6 +110,17 @@ namespace PartialViewMySqlBackUp
             viewModel.CurrentPolicy.SelectedTime = selectItem.SelectedTime;
             viewModel.CurrentPolicy.IsTaskBackUpDataBase = selectItem.IsTaskBackUpDataBase;
             viewModel.CurrentPolicy.IsTaskBackUpTables = selectItem.IsTaskBackUpTables;
+            viewModel.CurrentPolicy.SelectedDatabase = selectItem.SelectedDatabase;
+            viewModel.CurrentPolicyBak = viewModel.DeepCopy(viewModel.CurrentPolicy);
+            viewModel.SetTables(selectItem.SelectedDatabase);
+        }
+
+        private void dgDatabases_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var backUpDatabase = dgDatabases.SelectedItem as BackUpDatabase;
+            EnvironmentInfo.SelectedDatabase = backUpDatabase.DatabaseName;
+            viewModel.CurrentPolicy.SelectedDatabase = EnvironmentInfo.SelectedDatabase; //避免选择数据库后直接编辑策略，不触发ListBox_SelectionChanged
+            viewModel.SetTables(backUpDatabase.DatabaseName);
         }
     }
 }

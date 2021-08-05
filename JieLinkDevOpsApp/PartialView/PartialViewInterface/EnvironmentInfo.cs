@@ -2,6 +2,7 @@
 using PartialViewInterface.Utils;
 using Quartz;
 using Quartz.Impl;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace PartialViewInterface
@@ -98,5 +99,25 @@ namespace PartialViewInterface
         {
             return ConfigurationManager.AppSettings[key] ?? value;
         }
+
+        /// <summary>
+        /// 2.x 数据库默认名字
+        /// </summary>
+        public static string DatabaseName2x = "db_newg3_main";
+
+        /// <summary>
+        /// 3.x 主数据库默认名字
+        /// </summary>
+        public static string DatabaseName3xMain = "jielink";
+
+        /// <summary>
+        /// 3.x pcs数据库默认名字
+        /// </summary>
+        public static string DatabaseName3xPCS = "jielink_pcs";
+
+        /// <summary>
+        /// 默认选择2.x数据库备份
+        /// </summary>
+        public static string SelectedDatabase = DatabaseName2x;
     }
 }
