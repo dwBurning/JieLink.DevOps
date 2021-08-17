@@ -351,7 +351,15 @@ namespace PartialViewMySqlBackUp.ViewModels
         private void AddPolicy(object parameter)
         {
             if (CheckDayOfWeek())
-            { return; }
+            { 
+                return; 
+            }
+
+            if (CurrentPolicy.BackUpType == BackUpType.Tables && !Tables.Any(x => x.IsChecked))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("当前备份类型为按业务表备份，但是未选择需要备份的表，请确认！");
+                return;
+            }
 
             CurrentPolicy.SelectedTime = (DateTime)parameter;//通过绑定无法获取到值 原因不明
             BackUpPolicy policy = Policys.FirstOrDefault(x => x.BackUpType == CurrentPolicy.BackUpType //备份类型
@@ -512,10 +520,11 @@ namespace PartialViewMySqlBackUp.ViewModels
             string path = BaseDirectoryPath + "plugs\\BackUpTables.json";
             BackUpConfig.SavePath = TaskBackUpPath;
             var tablesConfig = BackUpConfig.TablesConfig.FirstOrDefault(x => x.DbName == dbName);
-            if (tablesConfig == null)
+            if (tablesConfig == null) //避免数据库名称不是配置文件中的默认数据库名称
             {
-                tablesConfig = new TablesConfig { DbName = dbName };
+                tablesConfig = new TablesConfig { DbName = dbName, Tables = new List<Table>() };
             }
+
             tablesConfig.Tables.Clear();
             Tables.ToList().ForEach((x) =>
             {
@@ -548,7 +557,7 @@ namespace PartialViewMySqlBackUp.ViewModels
             {
                 Tables.ToList().ForEach((x) =>
                 {
-                    x.IsChecked = tablesConfig.DefaultTables.FindIndex(t => t.TableName == x.TableName) >= 0;
+                    x.IsChecked = tablesConfig.IgnoreTables.FindIndex(t => t.TableName == x.TableName) < 0;
                 });
             }
         }
