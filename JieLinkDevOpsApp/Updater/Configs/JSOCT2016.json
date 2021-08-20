@@ -62,6 +62,15 @@
       ],
       "ZipList": null
     },
+     {
+      "SubPath": "programfiles\\SmartSDK",
+      "TargetPath": "SmartSDK",
+      "ExcludeList": [
+        "Config",
+        "Web.config"
+      ],
+      "ZipList": null
+    },
     {
       "SubPath": "programfiles\\SmartFile\\down",
       "TargetPath": "SmartFile\\down",
