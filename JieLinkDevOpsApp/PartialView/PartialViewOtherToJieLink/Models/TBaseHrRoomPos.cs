@@ -8,7 +8,7 @@ namespace PartialViewOtherToJieLink.Models
 {
     public class TBaseHrRoomPos
     {
-        public int ParsonId { get; set; }
+        public int PersonID { get; set; }
 
         public int MaxPos { get; set; }
 

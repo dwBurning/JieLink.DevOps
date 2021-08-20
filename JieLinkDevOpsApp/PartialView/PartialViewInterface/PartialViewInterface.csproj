@@ -107,6 +107,7 @@
     <Compile Include="EnvironmentInfo.cs" />
     <Compile Include="Models\AutoStartCorectEntity.cs" />
     <Compile Include="Models\AutoStartSyncEntity.cs" />
+    <Compile Include="Models\JobCronConfig.cs" />
     <Compile Include="Models\DbConnEntity.cs" />
     <Compile Include="Models\DevOpsEvent.cs" />
     <Compile Include="Models\DevOpsProduct.cs" />

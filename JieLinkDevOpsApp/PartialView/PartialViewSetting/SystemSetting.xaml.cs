@@ -43,6 +43,11 @@ namespace PartialViewSetting
             get { return MenuType.None; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             string url = txtServerUrl.Text;
@@ -82,7 +87,7 @@ namespace PartialViewSetting
         {
             if (!IsLoaded)
                 return;
-            string url = "http://106.53.255.16:1688";//ConfigHelper.ReadAppConfig("ServerUrl");
+            string url = "http://www.dwburning.top:1688";//ConfigHelper.ReadAppConfig("ServerUrl");
             txtServerUrl.Text = url;
             EnvironmentInfo.ServerUrl = url;
             if (string.IsNullOrEmpty(EnvironmentInfo.ProjectVersion))

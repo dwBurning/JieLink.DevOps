@@ -42,7 +42,12 @@ namespace PartialViewExportFacePic
 
         public MenuType MenuType
         {
-            get { return MenuType.DoorServer; }
+            get { return MenuType.Center; }
+        }
+
+        public int Order
+        {
+            get { return 901; }
         }
 
         private void RichTextBox_Text_TextChanged(object sender, TextChangedEventArgs e)

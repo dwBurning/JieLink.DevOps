@@ -38,12 +38,15 @@ namespace PartialViewDelRegeist
 
         public MenuType MenuType
         {
-            get { return MenuType.Box; }
+            get { return MenuType.Center; }
         }
+
+        public int Order { get { return 1000; } }
+
         private void button_DelRegist_Click(object sender, RoutedEventArgs e)
         {
             SetAutoRunProject.Instance().DoWork(1);
         }
-        
+
     }
 }

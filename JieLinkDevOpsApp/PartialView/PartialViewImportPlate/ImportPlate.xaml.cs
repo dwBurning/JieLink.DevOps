@@ -48,6 +48,11 @@ namespace PartialViewImportPlate
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             try

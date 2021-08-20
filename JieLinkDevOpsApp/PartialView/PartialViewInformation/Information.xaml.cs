@@ -33,6 +33,11 @@ namespace PartialViewInformation
             { return MenuType.None; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void Hyperlink_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             Hyperlink link = sender as Hyperlink;

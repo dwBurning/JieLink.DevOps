@@ -22,5 +22,10 @@ namespace PartialViewInterface
         /// 菜单类型
         /// </summary>
         MenuType MenuType { get; }
+
+        /// <summary>
+        /// 排序规则
+        /// </summary>
+        int Order { get; }
     }
 }

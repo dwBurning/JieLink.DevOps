@@ -35,9 +35,9 @@ namespace PartialViewOtherToJieLink.Models
 
         public string User_PassWord { get; set; }
 
-        public string MaxNoEx { get; set; }
+        public string MacNoEx { get; set; }
 
-        public string MaxNo { get; set; }
+        public string MacNo { get; set; }
 
         public int MachineType { get; set; }
     }

@@ -40,6 +40,11 @@ namespace PartialViewHealthMonitor
             get { return MenuType.None; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             try

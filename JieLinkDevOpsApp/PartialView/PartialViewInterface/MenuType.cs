@@ -14,6 +14,11 @@ namespace PartialViewInterface
         Center,
 
         /// <summary>
+        /// jielink3.x
+        /// </summary>
+        CenterV3,
+
+        /// <summary>
         /// 盒子
         /// </summary>
         Box,
@@ -22,6 +27,11 @@ namespace PartialViewInterface
         /// 门禁服务
         /// </summary>
         DoorServer,
+
+        /// <summary>
+        /// 2.x和3.x公用
+        /// </summary>
+        Common,
 
         /// <summary>
         /// 独立菜单

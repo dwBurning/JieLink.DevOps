@@ -45,6 +45,11 @@ namespace PartialViewSyncTool
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         DataSyncViewModel dataSyncViewModel;
         DataCheckViewModel dataCheckViewModel;
         public CenterPartialSyncTool()

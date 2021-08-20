@@ -38,6 +38,11 @@ namespace PartialViewWiki
             get { return MenuType.None; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         public KnowledgeWiki()
         {
             InitializeComponent();

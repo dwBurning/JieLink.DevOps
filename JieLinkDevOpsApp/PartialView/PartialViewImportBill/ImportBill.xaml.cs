@@ -46,6 +46,11 @@ namespace PartialViewImportBill
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void btnChooseInstallPath_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();

@@ -254,7 +254,7 @@ namespace PartialViewCheckUpload.ViewModels
                 {
                     foreach (DataRow dr in dt.Rows)
                     {
-                        TaskInfo taskinfo = new TaskInfo { ServiceName = dr["ServiceName"].ToString(), ServiceId = dr["ServiceID"].ToString(), IsChecked = true };
+                        TaskInfo taskinfo = new TaskInfo { ServiceName = dr["ServiceName"].ToString(), ServiceId = dr["ServiceID"].ToString(), IsChecked = false };
                         TaskInfos.Add(taskinfo);
                     }
                 }

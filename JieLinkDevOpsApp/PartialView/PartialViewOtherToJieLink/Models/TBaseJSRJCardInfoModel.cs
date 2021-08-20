@@ -46,6 +46,8 @@ namespace PartialViewOtherToJieLink.Models
         public int FixMonth { get; set; }
 
         public int DeleteFlag { get; set; }
+
+        public string LGUID { get; set; }
     }
 
     public enum EnumJSRJCardInfoStatus

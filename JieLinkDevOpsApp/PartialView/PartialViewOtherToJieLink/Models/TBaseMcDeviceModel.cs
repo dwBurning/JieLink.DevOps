@@ -50,5 +50,7 @@ namespace PartialViewOtherToJieLink.Models
         /// 设备类型ID
         /// </summary>
         public int DeviceTypeID { get; set; }
+
+        public int Index { get; set; }
     }
 }

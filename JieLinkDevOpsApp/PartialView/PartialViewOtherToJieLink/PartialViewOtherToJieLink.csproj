@@ -68,6 +68,7 @@
     <Compile Include="JSDSViewModels\TCacauthServiceDistrictModel.cs" />
     <Compile Include="JSDSViewModels\TCacAuthServiceModel.cs" />
     <Compile Include="JSDSViewModels\TCacServiceSetModel.cs" />
+    <Compile Include="JSDSViewModels\TCacServiceSetParkModel.cs" />
     <Compile Include="JSDSViewModels\TCacVoucherDataModel.cs" />
     <Compile Include="JSDSViewModels\TCacVoucherModel.cs" />
     <Compile Include="JSDSViewModels\TCacVoucherServiceModel.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Models\JsdsUpgradePolicy.cs" />
     <Compile Include="Models\RecordComboxSelectType.cs" />
     <Compile Include="Models\TBaseDeptModel.cs" />
+    <Compile Include="Models\TBaseDeviceArea.cs" />
     <Compile Include="Models\TBaseHrPersonModel.cs" />
     <Compile Include="Models\TBaseHrRoomPos.cs" />
     <Compile Include="Models\TBaseJSRJCardInfoModel.cs" />
@@ -101,6 +103,7 @@
     <Compile Include="ViewModels\JSOCT2017ToJieLinkViewModel.cs" />
     <Compile Include="ViewModels\JSRJ1116ToJieLinkViewModel.cs" />
     <Compile Include="ViewModels\SysParameter.cs" />
+    <Compile Include="ViewModels\SysSetmealType.cs" />
     <Compile Include="ViewModels\SystemSetDoorServiceToPerson.cs" />
     <Page Include="JsdsOneClickUpgradeToJieLink.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -45,7 +45,12 @@ namespace PartialViewDoorServer
 
         public MenuType MenuType
         {
-            get { return MenuType.DoorServer; }
+            get { return MenuType.Center; }
+        }
+
+        public int Order
+        {
+            get { return 900; }
         }
 
         private void Cmb_SelectionChanged(object sender, SelectionChangedEventArgs e)

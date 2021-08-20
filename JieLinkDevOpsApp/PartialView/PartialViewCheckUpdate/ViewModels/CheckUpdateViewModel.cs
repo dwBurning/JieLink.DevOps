@@ -76,6 +76,8 @@ namespace PartialViewCheckUpdate.ViewModels
                 "V2.8.1#E1.0",
                 "V2.8.2",
                 "V2.8.2#E1.0",
+                "V2.8.2#E2.0",
+                "V2.8.3",
                 "V2.9.0",
             };
 
@@ -426,6 +428,17 @@ namespace PartialViewCheckUpdate.ViewModels
 
                 this.Dispatcher.Invoke(new Action(() =>
                 {
+                    handler.UpdateMessage("数据库校验完成，正在重启服务...");
+                }));
+
+                ProcessHelper.StopProcess("SmartCenter.Host.exe");
+
+                Thread.Sleep(2000);
+
+                ProcessHelper.StartService("JsstJieLinkSmartCenter");
+
+                this.Dispatcher.Invoke(new Action(() =>
+                {
                     handler.Close();
                 }));
             });
@@ -470,7 +483,7 @@ namespace PartialViewCheckUpdate.ViewModels
         {
             if (string.IsNullOrEmpty(jsonText))
             {
-                ShowMessage($"版本{this.EndVersion}的初始化json文件不存在，不执行数据库校验...");
+                ShowMessage($"当前版本的初始化json文件不存在，不执行数据库校验...");
                 ShowMessage("升级已经完成，请留意观察JieLink中心使用是否正常...");
                 return;
             }
@@ -676,7 +689,7 @@ namespace PartialViewCheckUpdate.ViewModels
                     #endregion
 
                     #region datetime
-                    if (field.Type.StartsWith("datetime"))
+                    if (field.Type.StartsWith("datetime") || field.Type.StartsWith("timestamp"))
                     {
                         if (field.IsNull)
                         {
