@@ -87,10 +87,10 @@ namespace PartialViewImportBill.ViewModels
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                if (Message != null && Message.Length > 5000)
-                {
-                    Message = string.Empty;
-                }
+                //if (Message != null && Message.Length > 50000)
+                //{
+                //    Message = string.Empty;
+                //}
 
                 if (message.Length > 0)
                 {
