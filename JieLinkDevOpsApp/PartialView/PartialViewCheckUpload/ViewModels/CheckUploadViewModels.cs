@@ -66,6 +66,7 @@ namespace PartialViewCheckUpload.ViewModels
             try
             {
                 string sql = $"select valuetext from sys_key_value_setting where KeyID='ControlBaseData' limit 1;";
+                List_ParkBase.Clear();
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
                 foreach (var item in dt.Rows[0]["valuetext"].ToString().Split(';'))
                 {
@@ -250,6 +251,7 @@ namespace PartialViewCheckUpload.ViewModels
             {
                 string sql = $"SELECT ServiceName,ServiceID from sys_taskinfo WHERE PlatType=0 AND IsSyncData=1 AND Enabled=1 ORDER BY SendPriority asc;";
                 //获取所有的表
+                TaskInfos.Clear();
                 using (DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0])
                 {
                     foreach (DataRow dr in dt.Rows)
