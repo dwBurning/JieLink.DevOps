@@ -425,10 +425,10 @@ namespace PartialViewFacePicBackUp.ViewModels
 
                 string configpath = string.Empty;
                 //System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
-                //var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-                var process = Process.GetProcessesByName("encsvc").FirstOrDefault();
-                //var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
-                var processcenter = Process.GetProcessesByName("devenv").FirstOrDefault();
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                //var process = Process.GetProcessesByName("encsvc").FirstOrDefault();
+                var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                //var processcenter = Process.GetProcessesByName("devenv").FirstOrDefault();
 
                 if (process != null)
                 {
