@@ -425,16 +425,22 @@ namespace PartialViewFacePicBackUp.ViewModels
 
                 string configpath = string.Empty;
                 //System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
-                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-                var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                //var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                var process = Process.GetProcessesByName("encsvc").FirstOrDefault();
+                //var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                var processcenter = Process.GetProcessesByName("devenv").FirstOrDefault();
 
                 if (process != null)
                 {
                     var existpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
-                    existpath = configpath.Replace("SmartBoxDoor\\", "");
-                    if (!Directory.Exists(existpath))
+                    existpath = existpath.Replace("SmartBoxDoor\\", "");
+                    if (Directory.Exists(existpath))
                     {
                         configpath = existpath;
+                    }
+                    else
+                    {
+                        ShowMessage(existpath + "不存在");
                     }
                 }
                 else 
@@ -444,10 +450,14 @@ namespace PartialViewFacePicBackUp.ViewModels
                 if (processcenter != null)
                 {
                     var existpath = Path.Combine(new FileInfo(processcenter.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
-                    existpath = configpath.Replace("SmartCenter\\", "");
-                    if (!Directory.Exists(existpath))
+                    existpath = existpath.Replace("SmartCenter\\", "");
+                    if (Directory.Exists(existpath))
                     {
                         configpath = existpath;
+                    }
+                    else
+                    {
+                        ShowMessage(existpath + "不存在");
                     }
                 }
                 else
