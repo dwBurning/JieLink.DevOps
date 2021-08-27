@@ -426,23 +426,35 @@ namespace PartialViewFacePicBackUp.ViewModels
                 string configpath = string.Empty;
                 //System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
                 var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-                if (process == null)
-                {
-                    ShowMessage("未发现运行门禁服务");
-                    process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
-                }
+                var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
 
                 if (process != null)
                 {
-                    configpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
-                    configpath = configpath.Replace("SmartBoxDoor\\", "");
-                    configpath = configpath.Replace("SmartCenter\\", "");
+                    var existpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
+                    existpath = configpath.Replace("SmartBoxDoor\\", "");
+                    if (!Directory.Exists(existpath))
+                    {
+                        configpath = existpath;
+                    }
+                }
+                else 
+                {
+                    ShowMessage("未发现运行门禁服务");
+                }
+                if (processcenter != null)
+                {
+                    var existpath = Path.Combine(new FileInfo(processcenter.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
+                    existpath = configpath.Replace("SmartCenter\\", "");
+                    if (!Directory.Exists(existpath))
+                    {
+                        configpath = existpath;
+                    }
                 }
                 else
                 {
                     ShowMessage("未发现运行中心服务");
-                    //return;
                 }
+
                 #endregion
 
                 #region 根据文件服务器config读取文件存储路径:不要写死，万一配置文件增加结点，则取不到配置
@@ -486,7 +498,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                         }
                         else
                         {
-                            ShowMessage("无法获取到文件服务器路径，请手动输入源文件路径：" + FileServerPath);
+                            ShowMessage("无法获取到文件服务器路径，请手动输入源文件路径。例如D:\\FileSavePath");
                         }
                     }
                     else
