@@ -434,7 +434,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                 {
                     var existpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
                     existpath = existpath.Replace("SmartBoxDoor\\", "");
-                    if (Directory.Exists(existpath))
+                    if (File.Exists(existpath))
                     {
                         configpath = existpath;
                     }
@@ -451,7 +451,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                 {
                     var existpath = Path.Combine(new FileInfo(processcenter.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
                     existpath = existpath.Replace("SmartCenter\\", "");
-                    if (Directory.Exists(existpath))
+                    if (File.Exists(existpath))
                     {
                         configpath = existpath;
                     }
