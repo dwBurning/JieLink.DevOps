@@ -72,7 +72,7 @@
             <ContentControl  x:Name="ContentControl"
                         Margin="5,0" />
             <StackPanel VerticalAlignment="Bottom" Grid.Row="1">
-                <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://106.53.255.16:8090/" Click="Hyperlink_Click">由JieLink+团队提供技术支持</Hyperlink></TextBlock>
+                <TextBlock Height="30" HorizontalAlignment="Center"><Hyperlink Foreground="#20A0FF" NavigateUri="http://www.dwburning.top:8090//" Click="Hyperlink_Click">由JieLink+团队提供技术支持</Hyperlink></TextBlock>
             </StackPanel>
         </Grid>
         
