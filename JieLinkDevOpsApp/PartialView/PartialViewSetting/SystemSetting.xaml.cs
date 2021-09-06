@@ -148,11 +148,11 @@ namespace PartialViewSetting
                 txtCenterIp.Text = "127.0.0.1";
             }
 
-            string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog={txtCenterDb.Text};";
+            string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog=mysql;";
 
             try
             {
-                MySqlHelper.ExecuteDataset(connStr, "select * from sys_user limit 1");
+                MySqlHelper.ExecuteDataset(connStr, "select * from `user` limit 1");
 
                 Notice.Show("中心数据库连接成功,已自动保存!", "通知", 3, MessageBoxIcon.Success);
                 //存储中心连接字符串

@@ -125,6 +125,7 @@
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
 
@@ -170,7 +171,21 @@
                      pu:PasswordBoxHelper.CornerRadius="4"
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
-                    <Button Grid.Column="1" Grid.Row="5" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
+                    <ComboBox Margin="5" VerticalAlignment="Center" Height="40" 
+                      SelectedIndex="{Binding SelectIndex}"
+                      SelectedValue="{Binding SelectMonth}" 
+                      ItemsSource="{Binding DataSource}"
+                      DisplayMemberPath="Value" Grid.Column="1" Grid.Row="5"
+                      SelectedValuePath="Key"
+                      pu:ComboBoxHelper.Watermark="请选择JieLink版本"
+                      pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
+                      pu:ComboBoxHelper.SelectedForeground="#20A0FF"
+                      pu:ComboBoxHelper.HoverBackground="#20A0FF"
+                      pu:ComboBoxHelper.HoverForeground="#FFFFFF"
+                      pu:ComboBoxHelper.CornerRadius="4"
+                      pu:TextBoxHelper.IsClearButtonVisible="True" >
+                    </ComboBox>
+                    <Button Grid.Column="1" Grid.Row="6" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>

@@ -40,7 +40,7 @@ namespace PartialViewClearCloudData
 
         public int Order
         {
-            get { return 1100; }
+            get { return 901; }
         }
 
         ClearCloudDeviceDataViewModel vmodel;
@@ -57,10 +57,12 @@ namespace PartialViewClearCloudData
             try
             {
                 MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
+                this.IsEnabled = true;
             }
             catch (Exception)
             {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
+                this.IsEnabled = false;
+                MessageBoxHelper.MessageBoxShowWarning("未查询到jielink2.x的数据库信息，请确认数据库配置信息是否正确？");
             }
         }
     }

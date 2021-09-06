@@ -64,7 +64,7 @@ namespace PartialViewMySqlBackUp
         {
             try
             {
-                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
+                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select UUID();");
                 if (viewModel.Tables.Count == 0)
                 {
                     viewModel.GetTables();

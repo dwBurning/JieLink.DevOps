@@ -94,6 +94,10 @@ namespace PartialViewFacePicBackUp.ViewModels
         /// 文件服务器地址
         /// </summary>
         public string FileServerPath = string.Empty;
+        /// <summary>
+        /// 备份路径
+        /// </summary>
+        public string BackUpPath = string.Empty;
 
         /// <summary>
         /// 根据路径备份
@@ -105,13 +109,14 @@ namespace PartialViewFacePicBackUp.ViewModels
             {
                 ReadFileServerPath();
 
-                if (FileServerPath == "")
-                {
-                    MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
-                    return;
-                }
+
                 this.Dispatcher.Invoke(new Action(() =>
                 {
+                    if (FileServerPath == "")
+                    {
+                        MessageBoxHelper.MessageBoxShowWarning("未获取到文件服务器路径！");
+                        return;
+                    }
                     if (FilePath == "")
                     {
                         MessageBoxHelper.MessageBoxShowWarning("请选择有效的备份路径！");
@@ -223,6 +228,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                     defaultfilePath = fileDialog.SelectedPath;
 
                     FilePath = fileDialog.SelectedPath;
+                    BackUpPath = fileDialog.SelectedPath;
                 }
             }
             catch (Exception ex)
@@ -336,13 +342,14 @@ namespace PartialViewFacePicBackUp.ViewModels
                 string personName = dr["PersonName"].ToString();
 
                 sourcePath = sourcePath.Replace("/", "\\");
-
                 //完整目标文件夹路径
-                string FactSavePath = Path.GetDirectoryName(FilePath + "\\FileSavePath" + sourcePath.Replace("down", ""));
+                //string FactSavePath = Path.GetDirectoryName(FilePath + "\\FileSavePath" + sourcePath.Replace("down", ""));
+                string FactSavePath = Path.GetDirectoryName(BackUpPath + "\\FileSavePath" + sourcePath.Replace("down", ""));
                 //完整源文件路径
                 string FaceSourcePath = sourcePath.Replace("down", FileServerPath);
                 //完整目标文件路径
-                string FaceDestPath = FilePath + "\\FileSavePath" + sourcePath.Replace("down", "");
+                //string FaceDestPath = FilePath + "\\FileSavePath" + sourcePath.Replace("down", "");
+                string FaceDestPath = BackUpPath + "\\FileSavePath" + sourcePath.Replace("down", "");
                 //如果指定的目标文件夹路径不存在，则创建该存储路径
                 if (!Directory.Exists(FactSavePath))
                 {
@@ -419,23 +426,45 @@ namespace PartialViewFacePicBackUp.ViewModels
                 string configpath = string.Empty;
                 //System.Windows.Forms.FolderBrowserDialog fileDialog = new System.Windows.Forms.FolderBrowserDialog();
                 var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-                if (process == null)
-                {
-                    ShowMessage("未发现运行门禁服务");
-                    process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
-                }
+                //var process = Process.GetProcessesByName("encsvc").FirstOrDefault();
+                var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                //var processcenter = Process.GetProcessesByName("devenv").FirstOrDefault();
 
                 if (process != null)
                 {
-                    configpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
-                    configpath = configpath.Replace("SmartBoxDoor\\", "");
-                    configpath = configpath.Replace("SmartCenter\\", "");
+                    var existpath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
+                    existpath = existpath.Replace("SmartBoxDoor\\", "");
+                    if (File.Exists(existpath))
+                    {
+                        configpath = existpath;
+                    }
+                    else
+                    {
+                        ShowMessage(existpath + "不存在");
+                    }
+                }
+                else 
+                {
+                    ShowMessage("未发现运行门禁服务");
+                }
+                if (processcenter != null)
+                {
+                    var existpath = Path.Combine(new FileInfo(processcenter.MainModule.FileName).Directory.FullName, @"SmartFile\down\Config\AppSettings.config");
+                    existpath = existpath.Replace("SmartCenter\\", "");
+                    if (File.Exists(existpath))
+                    {
+                        configpath = existpath;
+                    }
+                    else
+                    {
+                        ShowMessage(existpath + "不存在");
+                    }
                 }
                 else
                 {
                     ShowMessage("未发现运行中心服务");
-                    //return;
                 }
+
                 #endregion
 
                 #region 根据文件服务器config读取文件存储路径:不要写死，万一配置文件增加结点，则取不到配置
@@ -479,7 +508,7 @@ namespace PartialViewFacePicBackUp.ViewModels
                         }
                         else
                         {
-                            ShowMessage("无法获取到文件服务器路径，请手动输入源文件路径：" + FileServerPath);
+                            ShowMessage("无法获取到文件服务器路径，请手动输入源文件路径。例如D:\\FileSavePath");
                         }
                     }
                     else

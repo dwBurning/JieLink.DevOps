@@ -42,6 +42,11 @@ namespace PartialViewCheckUpload.ViewModels
         public CheckUploadViewModels()
         {
             //初始化界面
+            ShowProtocol = "本功能用于检测JIELINK2.X的数据是否上传到平台\r\n";
+            ShowProtocol += "例如在平台未查到设备上传/记录上传/凭证上传/人事上传，可以通过本工具检测jielink2.x是否上传\r\n";
+            ShowProtocol += "使用方法：在左侧勾选对应的任务（例如设备上传勾选上传设备信息。可多选），之后选择检测上传的时间段，以及关键字，例如设备名\r\n";
+            ShowProtocol += "之后会在右边显示出符合条件的上传记录，点击选择之后会在本栏中显示结果的具体信息，例如上传时间，上传是否成功，报错信息等\r\n";
+
             IsSelectedAll = true;
             limit10 = true;
 
@@ -66,6 +71,7 @@ namespace PartialViewCheckUpload.ViewModels
             try
             {
                 string sql = $"select valuetext from sys_key_value_setting where KeyID='ControlBaseData' limit 1;";
+                List_ParkBase.Clear();
                 DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
                 foreach (var item in dt.Rows[0]["valuetext"].ToString().Split(';'))
                 {
@@ -250,6 +256,7 @@ namespace PartialViewCheckUpload.ViewModels
             {
                 string sql = $"SELECT ServiceName,ServiceID from sys_taskinfo WHERE PlatType=0 AND IsSyncData=1 AND Enabled=1 ORDER BY SendPriority asc;";
                 //获取所有的表
+                TaskInfos.Clear();
                 using (DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0])
                 {
                     foreach (DataRow dr in dt.Rows)
