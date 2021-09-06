@@ -137,6 +137,9 @@ namespace PartialViewImportPlate.ViewModels
                     string command = string.Format(@"insert into control_voucher(guid,pguid,lguid,personno,vouchertype,voucherno,cardnum,addoperatorno,addtime,`status`,lasttime,remark,statusfromperson)
             values('{12}','{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}',{11})", voucher.PGUID, voucher.LGUID, voucher.PersonNo, voucher.VoucherType, voucher.VoucherNo, voucher.CardNum, voucher.AddOperatorNo, voucher.AddTime, voucher.Status, voucher.LastTime, voucher.Remark, voucher.StatusFromPerson, vguid);
 
+                    string vehicleSql = string.Format("INSERT INTO `control_vehicle_info` VALUES (UUID(), '{0}', '{1}', null, null, '0', null, '1', '', null, '3');", voucher.PGUID, voucher.VoucherNo);
+                    MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, vehicleSql);
+
                     int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, command);
                     if (result > 0)
                     {

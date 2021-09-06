@@ -87,7 +87,7 @@ namespace PartialViewImportBill.ViewModels
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                //if (Message != null && Message.Length > 50000)
+                //if (Message != null && Message.Length > 5000)
                 //{
                 //    Message = string.Empty;
                 //}
