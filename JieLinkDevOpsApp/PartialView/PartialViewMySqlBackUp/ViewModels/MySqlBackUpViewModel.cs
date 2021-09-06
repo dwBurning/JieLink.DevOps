@@ -382,7 +382,7 @@ namespace PartialViewMySqlBackUp.ViewModels
                     ItemString = CurrentPolicy.PolicyToString,
                     SelectedDatabase = CurrentPolicy.SelectedDatabase
                 });
-                Notice.Show("策略已添加成功", "通知", 3);
+                Notice.Show("策略已添加成功", "通知", 3, MessageBoxIcon.Success);
             }
             else
             {

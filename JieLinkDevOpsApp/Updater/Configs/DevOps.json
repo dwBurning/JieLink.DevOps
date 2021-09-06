@@ -33,6 +33,8 @@
         "ReportProjectInfoJob": "0 0 1 * * ?",
         "TaskDataMonitorJob": "0 30 1 * * ?",
         "AutoArchive": "0",
+        "DataBaseBackUpJob": "00 00 03 ? * 4 db_newg3_main",
+        "TablesBackUpJob": "00 00 03 ? * 2,6 db_newg3_main",
         "AutoArchiveMonth": "3",
         "AutoStartCorectString": "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}",
         "AutoStartSyncString": "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}"

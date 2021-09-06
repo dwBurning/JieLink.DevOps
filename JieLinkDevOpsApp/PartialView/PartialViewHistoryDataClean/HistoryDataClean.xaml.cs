@@ -64,7 +64,7 @@ namespace PartialViewHistoryDataClean
             }
             catch (Exception)
             {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
+                MessageBoxHelper.MessageBoxShowWarning("未查询到jielink2.x的数据库信息，请确认数据库配置信息是否正确？");
                 this.IsEnabled = false;
             }
         }
