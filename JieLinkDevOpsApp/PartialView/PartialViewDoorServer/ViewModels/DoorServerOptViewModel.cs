@@ -15,6 +15,8 @@ using System.Windows;
 using System.Configuration;
 using System.Net;
 using System.Net.Sockets;
+using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace PartialViewDoorServer.ViewModels
 {
@@ -25,11 +27,20 @@ namespace PartialViewDoorServer.ViewModels
     {
         public DoorServerOptViewModel()
         {
+            Message += "无需配置门禁服务，点击修复门禁常见问题可自动检测常见门禁问题\r\n";
+            Message += "目前检测项(ver 1.1.7)：\r\n";
+            Message += "1.sync_doornum导致的新发卡无法自动下载到设备问题\r\n";
+            Message += "2.门禁服务MAC地址配置导致的门禁服务离线问题\r\n";
+            Message += "3.HTTP参数不对导致自动下载、完全下载均无法下载人脸到设备问题\r\n";
+            Message += "4.Y10A、Y10A_T、Y08A-old搜索显示未知设备的问题\r\n";
             SelectPathCommand = new DelegateCommand();
             SelectPathCommand.ExecuteAction = SelectPath;
 
             GetDoorDeviceCommand = new DelegateCommand();
             GetDoorDeviceCommand.ExecuteAction = SelectDoorDevice;
+
+            RepairCommand = new DelegateCommand();
+            RepairCommand.ExecuteAction = RepairDoorClickServer;
 
             //GetDoorServerInfo();
         }
@@ -38,6 +49,10 @@ namespace PartialViewDoorServer.ViewModels
         /// 路径
         /// </summary>
         public DelegateCommand SelectPathCommand { get; set; }
+        /// <summary>
+        /// 修复常见问题
+        /// </summary>
+        public DelegateCommand RepairCommand { get; set; }
 
         public string FilePath
         {
@@ -212,8 +227,16 @@ namespace PartialViewDoorServer.ViewModels
                 SerializationHelper.SerializeToXMLFile<List<DeviceInfo>>(jsipDevicePath, jsipDevList);
 
                 Notice.Show("获取设备成功....", "通知", 3, MessageBoxIcon.Success);
-
-                Notice.Show("直接结束门禁服务进程，重启门禁服务!", "通知", 3, MessageBoxIcon.Success);
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                if (process != null)
+                {
+                    process.Kill();
+                    Notice.Show("已结束门禁服务!等待自动重启门禁服务", "通知", 3, MessageBoxIcon.Success);
+                }
+                else
+                {
+                    Notice.Show("需手动结束门禁服务进程，重启门禁服务!", "通知", 3, MessageBoxIcon.Success);
+                }
 
                 // 非2.8.1会获取不到这个路径导致报错
                 // 2.8.1以后，自动取这个备份文件夹的文件
@@ -311,8 +334,6 @@ namespace PartialViewDoorServer.ViewModels
         {
             try
             {
-                if(_doorServerInfoList.Count == 0)
-                        return false;
                 string sqlstr = "select MAX(ID) from sync_door";
                 MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
                 if (reader.HasRows)
@@ -449,6 +470,395 @@ namespace PartialViewDoorServer.ViewModels
             {
                 LogHelper.CommLogger.Error(ex.ToString());
                 return false;
+            }
+        }
+
+
+        //写日志变量和函数
+        public string Message
+        {
+            get { return (string)GetValue(MessageProperty); }
+            set { SetValue(MessageProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register("Message", typeof(string), typeof(DoorServerOptViewModel));
+        /// <summary>
+        /// 显示消息
+        /// </summary>
+        /// <param name="message"></param>
+        public void ShowMessage(string message)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                if (message.Length > 0)
+                {
+                    Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+                }
+            }));
+        }
+        /// <summary>
+        /// 延迟显示消息，显得在工作一样
+        /// </summary>
+        /// <param name="message"></param>
+        public void ShowMessageDelay(string message)
+        {
+            System.Threading.Thread.Sleep(500);
+            ShowMessage(message);
+            System.Threading.Thread.Sleep(500);
+        }
+
+        /// <summary>
+        /// 后台运行
+        /// </summary>
+        public void RepairDoorClickServer(object parameter)
+        {
+            try
+            {
+                BackgroundWorker bgw = new BackgroundWorker();
+                bgw.DoWork += RepairDoor;
+                bgw.RunWorkerAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBoxHelper.MessageBoxShowWarning(ex.ToString());
+            }
+        }
+        private bool IsRunning = false;
+        private void RepairDoor(object sender, DoWorkEventArgs e)
+        {
+            if (IsRunning)
+                return;
+            else
+                IsRunning = true;
+            if (_doorServerInfoList.Count == 0)
+            {
+                ShowMessage("未能找到任何门禁服务");
+                return ;
+            }
+
+            ShowMessage("=====================");
+            #region 检测卡不能自动下载问题
+            ShowMessageDelay("开始检查sync_doornum......");
+            if (CheckSyncDoorNum())
+            {
+                ShowMessage("检测到sync_doornum数值错误，会导致卡数据无法自动下载！已自动修复！");
+            }
+            else
+            {
+                ShowMessage("sync_doornum无异常 √");
+            }
+            #endregion
+
+            #region 检测门禁服务配置文件中MAC地址
+            ShowMessageDelay("开始检查门禁服务配置.......");
+            if (CheckDoorServerMac())
+            {
+                string str = string.Empty;
+                if (IsConfigMac == "true")
+                {
+                    str = string.Format("检测到门禁服务配置MAC地址错误，CONFIG文件中MAC地址配置为{0}，数据库中门禁服务MAC地址为{1}，是否自动修复？", ConfigMAC, sqlMac);
+                }
+                else
+                {
+                    str = string.Format("检测到门禁服务配置文件未启用MAC地址配置，可自动配置MAC地址为{0}，是否自动配置？", sqlMac);
+                }
+
+                Dispatcher.Invoke(new Action(() =>
+                {
+                    if (MessageBoxHelper.MessageBoxShowQuestion(str) == MessageBoxResult.Yes)
+                    {
+                        if (FixDoorServerMac())
+                            MessageBoxHelper.MessageBoxShowSuccess("配置门禁服务MAC地址完成！已结束门禁进程等待进程自动重启！");
+                        else
+                            MessageBoxHelper.MessageBoxShowError("配置门禁服务MAC地址失败！");
+                    }
+                }));
+            }
+            else
+            {
+                ShowMessage("门禁服务无异常 √");
+            }
+            #endregion
+
+            #region 检测下载HTTP保存参数
+            ShowMessageDelay("开始检查HTTP保存参数......");
+            enumHTTPConfig ret = CheckHttpConfig();
+            switch (ret)
+            {
+                case enumHTTPConfig.ALLRIGHT: ShowMessage("HTTP保存参数无异常 √");break;
+                case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
+                case enumHTTPConfig.RepairAndRestart: 
+                    ShowMessage("HTTP保存参数不一致，已修改为" + AfterRepair_ServerURL + " " + AfterRepair_DownloadServerUrl);
+                    ShowMessage("请确认是否正确" );
+                    ShowMessage("正在重启门禁服务" );
+                    break;
+                case enumHTTPConfig.RepairButNoRestart:
+                    ShowMessage("HTTP保存参数不一致，已修改为" + AfterRepair_ServerURL + " " + AfterRepair_DownloadServerUrl);
+                    ShowMessage("请确认是否正确");
+                    ShowMessage("未发现门禁服务"); 
+                    break;
+            }
+            #endregion
+
+            #region 检测未知设备问题
+            ShowMessageDelay("开始检查未知设备问题......");
+            enumHTTPConfig retUnkown = CheckUnkownDevice();
+            switch(retUnkown)
+            {
+                case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现未知设备 √"); break;
+                case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
+                case enumHTTPConfig.RepairAndRestart:
+                case enumHTTPConfig.RepairButNoRestart:
+                    ShowMessage("检查到未知设备问题，共" + FindSqlError + "个");
+                    ShowMessage("该问题需要手动重启IIS服务中的SmartWeb等，请手动重启后再次搜索设备！");
+                    break;
+            }
+            #endregion
+
+            ShowMessageDelay("检查结束");
+            ShowMessage("=====================");
+            IsRunning = false;
+        }
+        public enum enumHTTPConfig
+        {
+            ERROR = -1,
+            ALLRIGHT = 0,
+            RepairAndRestart = 1,
+            RepairButNoRestart = 2,
+        }
+        public string AfterRepair_ServerURL = string.Empty;
+        public string AfterRepair_DownloadServerUrl = string.Empty;
+        /// <summary>
+        /// 检查下载的HTTP参数 
+        /// 有时候jielink保存的HTTP参数无法正确保存到两个comHttpParam.xml，手动修改后重启门禁服务
+        /// </summary>
+        /// <returns></returns>
+        public enumHTTPConfig CheckHttpConfig()
+        {
+            try
+            {
+                //查询JIELINK上显示的文件服务器地址
+                string sqlstr = "select serverURL,DownloadServerUrl from control_http_param where type = 1 and status = 0;";
+                MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                if (reader.HasRows)
+                    reader.Read();
+                else
+                    return enumHTTPConfig.ERROR;
+                //数据库内的文件服务器地址 例http://10.101.98.117:9011
+                string DB_ServerURL = reader["serverURL"].ToString();
+                string DB_DownloadServerUrl = reader["DownloadServerUrl"].ToString();
+                AfterRepair_ServerURL = DB_ServerURL;
+                AfterRepair_DownloadServerUrl = DB_DownloadServerUrl;
+                LogHelper.CommLogger.Info("CheckHttpConfig():DB_ServerURL:" + DB_ServerURL);
+                LogHelper.CommLogger.Info("CheckHttpConfig():DB_DownloadServerUrl:" + DB_DownloadServerUrl);
+
+                //查询programdata内的文件服务器地址 例http://10.101.98.117:9011
+                XElement xe = XElement.Load(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
+                string PD_ServerURL = (from ele in xe.Elements("uploadServerUrl") select ele).First().Value;
+                string PD_DownloadServerUrl = (from ele in xe.Elements("downloadServerUrl") select ele).First().Value;
+                LogHelper.CommLogger.Info("CheckHttpConfig():PD_ServerURL:" + PD_ServerURL);
+                LogHelper.CommLogger.Info("CheckHttpConfig():PD_DownloadServerUrl:" + PD_DownloadServerUrl);
+                ////查询门禁服务下保存的的文件服务器地址 例http://10.101.98.117:9011
+                //XElement smartdoorxe = XElement.Load(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
+                //string Para_ServerURL = (from ele in smartdoorxe.Elements("uploadServerUrl") select ele).First().Value;
+                //string Para_DownloadServerUrl = (from ele in smartdoorxe.Elements("downloadServerUrl") select ele).First().Value;
+
+                if (DB_ServerURL == PD_ServerURL && DB_DownloadServerUrl == PD_DownloadServerUrl)
+                {
+                    return enumHTTPConfig.ALLRIGHT;
+                }
+                else
+                {
+                    //修改programdata里的para 
+                    (from ele in xe.Elements("uploadServerUrl") select ele).First().ReplaceNodes("", DB_ServerURL);
+                    (from ele in xe.Elements("downloadServerUrl") select ele).First().ReplaceNodes("", DB_DownloadServerUrl);
+                    LogHelper.CommLogger.Info(@"修改C:\ProgramData\JieLinkDoor\para\comHttpParam.xml文件");
+                    xe.Save(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
+
+                    //修改门禁盒子路径下的comHttpParam.xml
+                    var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                    if (process != null)
+                    {
+                        var ParaPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartBoxDoor\para\comHttpParam.xml");
+                        XElement xe_smartdoor = XElement.Load(ParaPath);
+                        (from ele in xe_smartdoor.Elements("uploadServerUrl") select ele).First().ReplaceNodes("", DB_ServerURL);
+                        (from ele in xe_smartdoor.Elements("downloadServerUrl") select ele).First().ReplaceNodes("", DB_DownloadServerUrl);
+                        LogHelper.CommLogger.Info("修改" + ParaPath + "文件");
+                        xe.Save(ParaPath);
+
+                        //最后击杀门禁线程
+                        process.Kill();
+
+                        return enumHTTPConfig.RepairAndRestart;
+                    }
+                    else { 
+                        return enumHTTPConfig.RepairButNoRestart;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                ShowMessage(ex.ToString());
+                return enumHTTPConfig.ERROR;
+            }
+        }
+        /// <summary>
+        /// 错误计数
+        /// </summary>
+        private int FindSqlError = 0;
+        public enumHTTPConfig CheckUnkownDevice()
+        {
+            try
+            {
+                FindSqlError = 0;
+                //项目版本号检查 270版本才加入Y10
+                string SQL_ProjectVersion = "select valuetext from sys_key_value_setting where keyid = 'ProjectVersion'";
+                MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, SQL_ProjectVersion);
+                if (reader.HasRows)
+                    reader.Read();
+                else
+                    return enumHTTPConfig.ERROR;
+                int version = Convert.ToInt32( reader["valuetext"].ToString().Replace(".","").Replace("V","").Substring(0,3));
+                LogHelper.CommLogger.Info("CheckUnkownDevice:版本号:" + version);
+                if (version >= 270)
+                {
+                    #region Y10A修复
+                    string sqlstr = "select * from dic_detail where DicDetailId=108 and DicTypeId=1000;";
+                    MySqlDataReader readertemp = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                    if(!readertemp.HasRows)
+                    {
+                        FindSqlError++;
+                        string temp = @"INSERT INTO `dic_detail` (`DicTypeId`, `DicDetailId`, `DicDetailName`, `DicEnDetailName`, `NisspCode`, `NisspName`, `Seq`, `Valid`) VALUES (1000, 108, 'Y10A门禁', 'JSMJY10A', '0203', 'Y10A门禁', 108, 1);";
+                        LogHelper.CommLogger.Info("SQL语句执行:" + temp);
+                        int ret = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString,temp);
+                        if(ret >= 0)
+                        {
+                            ShowMessage("修复成功一句");
+                        }
+                        else
+                        {
+                            ShowMessage("修复失败一句");
+                        }
+                    }
+
+                    sqlstr = "select * from control_device_param where devicetype=108;";
+                    readertemp = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                    if (!readertemp.HasRows)
+                    {
+                        FindSqlError++;
+                        string temp = @"INSERT INTO control_device_param(deviceid,devicetype,deviceparam,remark,lastdatetime) VALUE(NULL, 108, '{""deviceId"":0,""name"":"""",""alarmType"":7,""alarmTime"":30,""ewmTime"":1440,""autoWeekSet"":{""day0"":false,""day1"":false,""day2"":false,""day3"":false,""day4"":false,""day5"":false,""day6"":false},""autoTime"":""00:00"",""ownAuth"":1,""doorCfg"":[{""doorId"":0,""doorName"":"""",""doorType"":0,""doorProperty"":1,""doorOverTime"":5,""doorDelayTime"":3,""publicPasswd"":111111,""forcePasswd"":222222,""buzzerAlarmMute"":1,""doorsMagnetFlag"":1,""escapeDoorFlag"":1,""masterIp"":"""",""picServerIp"":"""",""manyCardCount"":1,""manyCardGroup"":[],""doorTimerNo"":[{""mode"":57,""periods"":{""end"":""23:59"",""start"":""00:00""},""weeks"":{""day0"":true,""day1"":true,""day2"":true,""day3"":true,""day4"":true,""day5"":true,""day6"":true}}],""holidayMonth"":[],""holiday"":[],""antiDoorFlag"":0,""allowCallRoom"":1}],""ntpServer"":"""",""speakServer"":"""",""speakId"":"""",""speakToId"":"""",""projectKey"": 0,""antiPryFlag"":1,""faceCaptureFlag"":0}', 'Y10A门禁控制器的默认参数', NOW());";
+                        LogHelper.CommLogger.Info("SQL语句执行:" + temp);
+                        int ret = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, temp);
+                        if (ret >= 0)
+                        {
+                            ShowMessage("修复成功一句");
+                        }
+                        else
+                        {
+                            ShowMessage("修复失败一句");
+                        }
+                    }
+                    #endregion
+                }
+                if (version >= 281)
+                {
+                    #region Y10A_T修复
+                    string sqlstr = "select * from dic_detail where DicDetailId=118 and DicTypeId=1000;";
+                    MySqlDataReader readertemp = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                    if (!readertemp.HasRows)
+                    {
+                        FindSqlError++;
+                        string temp = $"INSERT INTO `dic_detail` (`DicTypeId`, `DicDetailId`, `DicDetailName`, `DicEnDetailName`, `NisspCode`, `NisspName`, `Seq`, `Valid`) VALUES (1000, 118, 'JSMJY10A-T', 'JSMJY10A-T', '0203', '可视对讲门禁星眸第三代标准版', 118, 1);";
+                        LogHelper.CommLogger.Info("SQL语句执行:" + temp);
+                        int ret = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, temp);
+                        if (ret >= 0)
+                        {
+                            ShowMessage("修复成功一句");
+                        }
+                        else
+                        {
+                            ShowMessage("修复失败一句");
+                        }
+                    }
+
+                    sqlstr = "select * from control_device_param where devicetype=118;";
+                    readertemp = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                    if (!readertemp.HasRows)
+                    {
+                        FindSqlError++;
+                        string temp = @"INSERT INTO control_device_param(deviceid,devicetype,deviceparam,remark,lastdatetime) VALUE(NULL,118, '{""deviceId"":0,""name"":"""",""alarmType"":7,""alarmTime"":30,""ewmTime"":1440,""autoWeekSet"":{""day0"":false,""day1"":false,""day2"":false,""day3"":false,""day4"":false,""day5"":false,""day6"":false},""autoTime"":""00:00"",""ownAuth"":1,""doorCfg"":[{""doorId"":0,""doorName"":"""",""doorType"":0,""doorProperty"":1,""doorOverTime"":5,""doorDelayTime"":3,""publicPasswd"":111111,""forcePasswd"":222222,""buzzerAlarmMute"":1,""doorsMagnetFlag"":1,""escapeDoorFlag"":1,""masterIp"":"""",""picServerIp"":"""",""manyCardCount"":1,""manyCardGroup"":[],""doorTimerNo"":[{""mode"":57,""periods"":{""end"":""23:59"",""start"":""00:00""},""weeks"":{""day0"":true,""day1"":true,""day2"":true,""day3"":true,""day4"":true,""day5"":true,""day6"":true}}],""holidayMonth"":[],""holiday"":[],""antiDoorFlag"":0,""allowCallRoom"":1}],""ntpServer"":"""",""speakServer"":"""",""speakId"":"""",""speakToId"":"""",""projectKey"": 0,""antiPryFlag"":1,""faceCaptureFlag"":0}', 'Y10A_T门禁控制器的默认参数', NOW());";
+                        LogHelper.CommLogger.Info("SQL语句执行:" + temp);
+                        int ret = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, temp);
+                        if (ret >= 0)
+                        {
+                            ShowMessage("修复成功一句");
+                        }
+                        else
+                        {
+                            ShowMessage("修复失败一句");
+                        }
+                    }
+                    #endregion
+
+                    #region JSEY08A-old修复
+                    sqlstr = "select * from dic_detail where DicDetailId=252 and DicTypeId=1000;";
+                    readertemp = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                    if (!readertemp.HasRows)
+                    {
+                        FindSqlError++;
+                        string temp = $"INSERT INTO `dic_detail` (`DicTypeId`, `DicDetailId`, `DicDetailName`, `DicEnDetailName`, `NisspCode`, `NisspName`, `Seq`, `Valid`) VALUES (1000, 252, 'JSMJY08A', 'JSMJY08A', '0203', 'JSMJY08A-Old', 252, 1);";
+                        LogHelper.CommLogger.Info("SQL语句执行:" + temp);
+                        int ret = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, temp);
+                        if (ret >= 0)
+                        {
+                            ShowMessage("修复成功一句");
+                        }
+                        else
+                        {
+                            ShowMessage("修复失败一句");
+                        }
+                    }
+
+                    sqlstr = "select * from control_device_param where devicetype=252;";
+                    readertemp = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sqlstr);
+                    if (!readertemp.HasRows)
+                    {
+                        FindSqlError++;
+                        string temp = @"INSERT INTO control_device_param(deviceid,devicetype,deviceparam,remark,lastdatetime) VALUE(NULL,118, '{""deviceId"":0,""name"":"""",""alarmType"":7,""alarmTime"":30,""ewmTime"":1440,""autoWeekSet"":{""day0"":false,""day1"":false,""day2"":false,""day3"":false,""day4"":false,""day5"":false,""day6"":false},""autoTime"":""00:00"",""ownAuth"":1,""doorCfg"":[{""doorId"":0,""doorName"":"""",""doorType"":0,""doorProperty"":1,""doorOverTime"":5,""doorDelayTime"":3,""publicPasswd"":111111,""forcePasswd"":222222,""buzzerAlarmMute"":1,""doorsMagnetFlag"":1,""escapeDoorFlag"":1,""masterIp"":"""",""picServerIp"":"""",""manyCardCount"":1,""manyCardGroup"":[],""doorTimerNo"":[{""mode"":57,""periods"":{""end"":""23:59"",""start"":""00:00""},""weeks"":{""day0"":true,""day1"":true,""day2"":true,""day3"":true,""day4"":true,""day5"":true,""day6"":true}}],""holidayMonth"":[],""holiday"":[],""antiDoorFlag"":0,""allowCallRoom"":1}],""ntpServer"":"""",""speakServer"":"""",""speakId"":"""",""speakToId"":"""",""projectKey"": 0,""antiPryFlag"":1,""faceCaptureFlag"":0}', 'Y10A_T门禁控制器的默认参数', NOW());";
+                        LogHelper.CommLogger.Info("SQL语句执行:" + temp);
+                        int ret = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, temp);
+                        if (ret >= 0)
+                        {
+                            ShowMessage("修复成功一句");
+                        }
+                        else
+                        {
+                            ShowMessage("修复失败一句");
+                        }
+                    }
+                    #endregion
+                }
+
+                if(FindSqlError == 0)
+                    return enumHTTPConfig.ALLRIGHT;
+                else
+                {
+                    var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                    if(process == null)
+                    {
+                        return enumHTTPConfig.RepairButNoRestart;
+                    }
+                    else
+                    {
+                        return enumHTTPConfig.RepairAndRestart;
+                    }
+                }
+                //return enumHTTPConfig.ERROR;
+            }catch(Exception ex)
+            {
+                ShowMessage(ex.ToString());
+                return enumHTTPConfig.ERROR;
             }
         }
     }
