@@ -28,11 +28,12 @@ namespace PartialViewDoorServer.ViewModels
         public DoorServerOptViewModel()
         {
             Message += "无需配置门禁服务，点击修复门禁常见问题可自动检测常见门禁问题\r\n";
-            Message += "目前检测项(ver 1.1.7)：\r\n";
+            Message += "目前检测项(ver 1.1.71)：\r\n";
             Message += "1.sync_doornum导致的新发卡无法自动下载到设备问题\r\n";
             Message += "2.门禁服务MAC地址配置导致的门禁服务离线问题\r\n";
             Message += "3.HTTP参数不对导致自动下载、完全下载均无法下载人脸到设备问题\r\n";
             Message += "4.Y10A、Y10A_T、Y08A-old搜索显示未知设备的问题\r\n";
+            Message += "5.完全下载时提示检测操作失败，请重试问题\r\n";
             SelectPathCommand = new DelegateCommand();
             SelectPathCommand.ExecuteAction = SelectPath;
 
@@ -537,8 +538,14 @@ namespace PartialViewDoorServer.ViewModels
                 return ;
             }
 
+            ///检测总项目
+            int CountAll = 0;
+            ///通过总项目
+            int CountCorrect = 0;
+
             ShowMessage("=====================");
             #region 检测卡不能自动下载问题
+            CountAll++;
             ShowMessageDelay("开始检查sync_doornum......");
             if (CheckSyncDoorNum())
             {
@@ -546,11 +553,13 @@ namespace PartialViewDoorServer.ViewModels
             }
             else
             {
+                CountCorrect++;
                 ShowMessage("sync_doornum无异常 √");
             }
             #endregion
 
             #region 检测门禁服务配置文件中MAC地址
+            CountAll++;
             ShowMessageDelay("开始检查门禁服务配置.......");
             if (CheckDoorServerMac())
             {
@@ -577,16 +586,18 @@ namespace PartialViewDoorServer.ViewModels
             }
             else
             {
+                CountCorrect++;
                 ShowMessage("门禁服务无异常 √");
             }
             #endregion
 
             #region 检测下载HTTP保存参数
+            CountAll++;
             ShowMessageDelay("开始检查HTTP保存参数......");
             enumHTTPConfig ret = CheckHttpConfig();
             switch (ret)
             {
-                case enumHTTPConfig.ALLRIGHT: ShowMessage("HTTP保存参数无异常 √");break;
+                case enumHTTPConfig.ALLRIGHT: ShowMessage("HTTP保存参数无异常 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
                 case enumHTTPConfig.RepairAndRestart: 
                     ShowMessage("HTTP保存参数不一致，已修改为" + AfterRepair_ServerURL + " " + AfterRepair_DownloadServerUrl);
@@ -602,11 +613,12 @@ namespace PartialViewDoorServer.ViewModels
             #endregion
 
             #region 检测未知设备问题
+            CountAll++;
             ShowMessageDelay("开始检查未知设备问题......");
             enumHTTPConfig retUnkown = CheckUnkownDevice();
             switch(retUnkown)
             {
-                case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现未知设备 √"); break;
+                case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现未知设备 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
                 case enumHTTPConfig.RepairAndRestart:
                 case enumHTTPConfig.RepairButNoRestart:
@@ -616,7 +628,20 @@ namespace PartialViewDoorServer.ViewModels
             }
             #endregion
 
-            ShowMessageDelay("检查结束");
+            #region 检测操作失败，请重试问题
+            CountAll++;
+            ShowMessageDelay("开始检查完全下载操作失败，请重试问题......");
+            retUnkown = CheckFailProblem();
+            switch (retUnkown)
+            {
+                case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现操作失败情况 √"); CountCorrect++; break;
+                case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发"); break;
+                case enumHTTPConfig.RepairButNoRestart:
+                    ShowMessage("已修复完全下载操作失败，请重试问题，请重新完全下载！");
+                    break;
+            }
+            #endregion
+            ShowMessageDelay("检查结束，检查项:" + CountAll +"个,通过项:"+ CountCorrect + "个");
             ShowMessage("=====================");
             IsRunning = false;
         }
@@ -626,12 +651,13 @@ namespace PartialViewDoorServer.ViewModels
             ALLRIGHT = 0,
             RepairAndRestart = 1,
             RepairButNoRestart = 2,
+            NoFileOrDire = 3,
         }
         public string AfterRepair_ServerURL = string.Empty;
         public string AfterRepair_DownloadServerUrl = string.Empty;
         /// <summary>
         /// 检查下载的HTTP参数 
-        /// 有时候jielink保存的HTTP参数无法正确保存到两个comHttpParam.xml，手动修改后重启门禁服务
+        /// 有时候jielink保存的HTTP参数无法正确保存到两个comHttpParam.xml，修改后重启门禁服务
         /// </summary>
         /// <returns></returns>
         public enumHTTPConfig CheckHttpConfig()
@@ -648,54 +674,71 @@ namespace PartialViewDoorServer.ViewModels
                 //数据库内的文件服务器地址 例http://10.101.98.117:9011
                 string DB_ServerURL = reader["serverURL"].ToString();
                 string DB_DownloadServerUrl = reader["DownloadServerUrl"].ToString();
+                bool changeflag = false;
                 AfterRepair_ServerURL = DB_ServerURL;
                 AfterRepair_DownloadServerUrl = DB_DownloadServerUrl;
                 LogHelper.CommLogger.Info("CheckHttpConfig():DB_ServerURL:" + DB_ServerURL);
                 LogHelper.CommLogger.Info("CheckHttpConfig():DB_DownloadServerUrl:" + DB_DownloadServerUrl);
 
                 //查询programdata内的文件服务器地址 例http://10.101.98.117:9011
-                XElement xe = XElement.Load(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
-                string PD_ServerURL = (from ele in xe.Elements("uploadServerUrl") select ele).First().Value;
-                string PD_DownloadServerUrl = (from ele in xe.Elements("downloadServerUrl") select ele).First().Value;
-                LogHelper.CommLogger.Info("CheckHttpConfig():PD_ServerURL:" + PD_ServerURL);
-                LogHelper.CommLogger.Info("CheckHttpConfig():PD_DownloadServerUrl:" + PD_DownloadServerUrl);
-                ////查询门禁服务下保存的的文件服务器地址 例http://10.101.98.117:9011
-                //XElement smartdoorxe = XElement.Load(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
-                //string Para_ServerURL = (from ele in smartdoorxe.Elements("uploadServerUrl") select ele).First().Value;
-                //string Para_DownloadServerUrl = (from ele in smartdoorxe.Elements("downloadServerUrl") select ele).First().Value;
-
-                if (DB_ServerURL == PD_ServerURL && DB_DownloadServerUrl == PD_DownloadServerUrl)
+                if(!File.Exists(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml"))
                 {
-                    return enumHTTPConfig.ALLRIGHT;
+                    ShowMessage(@"预警：未找到C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
                 }
                 else
                 {
-                    //修改programdata里的para 
-                    (from ele in xe.Elements("uploadServerUrl") select ele).First().ReplaceNodes("", DB_ServerURL);
-                    (from ele in xe.Elements("downloadServerUrl") select ele).First().ReplaceNodes("", DB_DownloadServerUrl);
-                    LogHelper.CommLogger.Info(@"修改C:\ProgramData\JieLinkDoor\para\comHttpParam.xml文件");
-                    xe.Save(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
-
-                    //修改门禁盒子路径下的comHttpParam.xml
-                    var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
-                    if (process != null)
+                    XElement xe = XElement.Load(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
+                    string PD_ServerURL = (from ele in xe.Elements("uploadServerUrl") select ele).First().Value;
+                    string PD_DownloadServerUrl = (from ele in xe.Elements("downloadServerUrl") select ele).First().Value;
+                    LogHelper.CommLogger.Info("CheckHttpConfig():PD_ServerURL:" + PD_ServerURL);
+                    LogHelper.CommLogger.Info("CheckHttpConfig():PD_DownloadServerUrl:" + PD_DownloadServerUrl);
+                    //如果数据对不上以数据库为准修改
+                    if (DB_ServerURL != PD_ServerURL || DB_DownloadServerUrl != PD_DownloadServerUrl)
                     {
-                        var ParaPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"SmartBoxDoor\para\comHttpParam.xml");
-                        XElement xe_smartdoor = XElement.Load(ParaPath);
+                        //修改programdata里的para 
+                        (from ele in xe.Elements("uploadServerUrl") select ele).First().ReplaceNodes("", DB_ServerURL);
+                        (from ele in xe.Elements("downloadServerUrl") select ele).First().ReplaceNodes("", DB_DownloadServerUrl);
+                        LogHelper.CommLogger.Info(@"修改C:\ProgramData\JieLinkDoor\para\comHttpParam.xml文件");
+                        xe.Save(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
+                        changeflag = true;
+                    }
+                }
+
+                //修改门禁盒子路径下的comHttpParam.xml
+                var process = Process.GetProcessesByName("SmartBoxDoor.Infrastructures.Server.DoorServer").FirstOrDefault();
+                if (process != null)
+                {
+                    var ParaPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.FullName, @"para\comHttpParam.xml");
+                    XElement xe_smartdoor = XElement.Load(ParaPath);
+                    string P_ServerURL = (from ele in xe_smartdoor.Elements("uploadServerUrl") select ele).First().Value;
+                    string P_DownloadServerUrl = (from ele in xe_smartdoor.Elements("downloadServerUrl") select ele).First().Value;
+                    LogHelper.CommLogger.Info("CheckHttpConfig():P_ServerURL:" + P_ServerURL);
+                    LogHelper.CommLogger.Info("CheckHttpConfig():P_DownloadServerUrl:" + P_DownloadServerUrl); 
+                    if (DB_ServerURL != P_ServerURL || DB_DownloadServerUrl != P_DownloadServerUrl)
+                    {
                         (from ele in xe_smartdoor.Elements("uploadServerUrl") select ele).First().ReplaceNodes("", DB_ServerURL);
                         (from ele in xe_smartdoor.Elements("downloadServerUrl") select ele).First().ReplaceNodes("", DB_DownloadServerUrl);
                         LogHelper.CommLogger.Info("修改" + ParaPath + "文件");
-                        xe.Save(ParaPath);
-
-                        //最后击杀门禁线程
-                        process.Kill();
-
-                        return enumHTTPConfig.RepairAndRestart;
-                    }
-                    else { 
-                        return enumHTTPConfig.RepairButNoRestart;
+                        xe_smartdoor.Save(ParaPath);
+                        changeflag = true;
                     }
                 }
+
+                if(changeflag)
+                {
+                    if (process != null)
+                    {
+                        process.Kill();
+                        return enumHTTPConfig.RepairAndRestart;
+                    }
+                    else
+                        return enumHTTPConfig.RepairButNoRestart;
+                }
+                else
+                {
+                    return enumHTTPConfig.ALLRIGHT;
+                }
+
             }
             catch(Exception ex)
             {
@@ -707,6 +750,10 @@ namespace PartialViewDoorServer.ViewModels
         /// 错误计数
         /// </summary>
         private int FindSqlError = 0;
+        /// <summary>
+        /// 部分dic_detail等表的数据偶发莫名其妙没有插入，手动打脚本无报错也没有插入的问题
+        /// </summary>
+        /// <returns></returns>
         public enumHTTPConfig CheckUnkownDevice()
         {
             try
@@ -856,6 +903,46 @@ namespace PartialViewDoorServer.ViewModels
                 }
                 //return enumHTTPConfig.ERROR;
             }catch(Exception ex)
+            {
+                ShowMessage(ex.ToString());
+                return enumHTTPConfig.ERROR;
+            }
+        }
+
+        /// <summary>
+        /// smartweb下偶发upload文件夹不存在导致完全下载的文件无法写入的问题
+        /// </summary>
+        /// <returns></returns>
+        private enumHTTPConfig CheckFailProblem()
+        {
+            try
+            {
+                var process = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                if (process == null)
+                {
+                    ShowMessage("未找到中心进程,该项不检查");
+                    return enumHTTPConfig.ALLRIGHT;
+                }
+                else
+                {
+                    var ParaPath = Path.Combine(new FileInfo(process.MainModule.FileName).Directory.Parent.FullName, @"SmartWeb\Upload");
+                    if (Directory.Exists(ParaPath))
+                    {
+                        return enumHTTPConfig.ALLRIGHT;
+                    }else
+                    {
+                        var ret = Directory.CreateDirectory(ParaPath);
+                        if(ret != null)
+                            return enumHTTPConfig.RepairButNoRestart;
+                        else
+                        {
+                            ShowMessage("文件夹创建失败，请拉满权限");
+                            return enumHTTPConfig.ERROR;
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
             {
                 ShowMessage(ex.ToString());
                 return enumHTTPConfig.ERROR;

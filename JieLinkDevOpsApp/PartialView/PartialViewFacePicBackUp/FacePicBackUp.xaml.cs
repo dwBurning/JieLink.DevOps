@@ -35,7 +35,7 @@ namespace PartialViewFacePicBackUp
 
         public string MenuName
         {
-            get { return "人脸备份"; }
+            get { return "人脸检测/备份"; }
         }
 
         public string TagName
