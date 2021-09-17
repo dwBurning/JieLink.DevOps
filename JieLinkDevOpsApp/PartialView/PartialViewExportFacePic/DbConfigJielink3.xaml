@@ -1,0 +1,97 @@
+﻿<pu:WindowX x:Class="PartialViewExportFacePic.DbConfigJielink3"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+        xmlns:local="clr-namespace:PartialViewExportFacePic"
+        mc:Ignorable="d" WindowStartupLocation="CenterScreen"
+        Title="jielink3.x数据库连接设置" Height="350" Width="350">
+
+    <Grid Margin="10,0,10,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库地址：</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库名称：</TextBlock>
+        <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库端口：</TextBlock>
+        <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库用户：</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">数据库密码：</TextBlock>
+
+
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtBoxIp" Text="127.0.0.1" VerticalContentAlignment="Center"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库地址"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtBoxDb" Text="jielink"  VerticalContentAlignment="Center"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtBoxPort" Text="3306"  VerticalContentAlignment="Center"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库端口"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbUser" Text="jieLink" VerticalContentAlignment="Center"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库用户名"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <!--<TextBox Grid.Row="4" Grid.Column="1" x:Name="txtBoxDbPwd" Text="" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入盒子密码"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />-->
+        <PasswordBox Grid.Row="4" Grid.Column="1" x:Name="txtBoxDbPwd"  VerticalContentAlignment="Center"
+                     pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
+                     pu:PasswordBoxHelper.Watermark="请输入数据库密码"
+                     pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:PasswordBoxHelper.CornerRadius="4" Password="js*168"
+                     pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
+                     />
+        <Button Grid.Column="1" Grid.Row="5" Content="确定" Name ="btnTest" Click="btnTest_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+    </Grid>
+
+    <!--<Grid>
+        <TextBox x:Name="txtBoxIp" HorizontalAlignment="Left" Height="23" Margin="97,15,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="txtBoxDb" HorizontalAlignment="Left" Height="23" Margin="97,43,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="txtBoxDbPort" HorizontalAlignment="Left" Height="23" Margin="97,71,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="txtBoxDbUser" HorizontalAlignment="Left" Height="23" Margin="97,99,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.464,-0.531"/>
+        <TextBox x:Name="txtBoxDbPwd" HorizontalAlignment="Left" Height="23" Margin="97,127,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <Button x:Name="button" HorizontalAlignment="Left" Margin="68,167,0,0" VerticalAlignment="Top" Width="75">
+            <Button x:Name="btnTest" Content="确定" Width="75" Click="btnTest_Click"/>
+        </Button>
+        <Label x:Name="label1" Content="盒子IP地址" HorizontalAlignment="Left" Margin="10,11,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label2" Content="数据库名称" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label3" Content="数据库端口" HorizontalAlignment="Left" Margin="10,67,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label4" Content="数据库用户" HorizontalAlignment="Left" Margin="10,97,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="label5" Content="数据库密码" HorizontalAlignment="Left" Margin="10,125,0,0" VerticalAlignment="Top"/>
+
+    </Grid>-->
+</pu:WindowX>

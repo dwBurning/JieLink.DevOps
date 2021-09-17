@@ -46,6 +46,7 @@ namespace PartialViewCheckUpload.ViewModels
             ShowProtocol += "例如在平台未查到设备上传/记录上传/凭证上传/人事上传，可以通过本工具检测jielink2.x是否上传\r\n";
             ShowProtocol += "使用方法：在左侧勾选对应的任务（例如设备上传勾选上传设备信息。可多选），之后选择检测上传的时间段，以及关键字，例如设备名\r\n";
             ShowProtocol += "之后会在右边显示出符合条件的上传记录，点击选择之后会在本栏中显示结果的具体信息，例如上传时间，上传是否成功，报错信息等\r\n";
+            ShowProtocol += "注意：jielink凭证设备等数据不上传天启\r\n";
 
             IsSelectedAll = true;
             limit10 = true;

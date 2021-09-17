@@ -751,7 +751,7 @@ namespace PartialViewDoorServer.ViewModels
         /// </summary>
         private int FindSqlError = 0;
         /// <summary>
-        /// 部分dic_detail等表的数据偶发莫名其妙没有插入，手动打脚本无报错也没有插入的问题
+        /// 部分dic_detail等表的数据偶发莫名其妙没有插入，手动打脚本无报错也没有插入的问题。程序再执行总能插入了吧
         /// </summary>
         /// <returns></returns>
         public enumHTTPConfig CheckUnkownDevice()
