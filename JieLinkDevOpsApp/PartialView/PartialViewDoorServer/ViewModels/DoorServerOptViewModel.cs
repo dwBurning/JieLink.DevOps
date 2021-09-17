@@ -609,8 +609,7 @@ namespace PartialViewDoorServer.ViewModels
             #region 检测下载HTTP保存参数
             CountAll++;
             ShowMessageDelay("开始检查HTTP保存参数......");
-            enumHTTPConfig ret = CheckHttpConfig();
-            switch (ret)
+            switch (CheckHttpConfig())
             {
                 case enumHTTPConfig.ALLRIGHT: ShowMessage("HTTP保存参数无异常 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
@@ -630,8 +629,7 @@ namespace PartialViewDoorServer.ViewModels
             #region 检测未知设备问题
             CountAll++;
             ShowMessageDelay("开始检查未知设备问题......");
-            enumHTTPConfig retUnkown = CheckUnkownDevice();
-            switch(retUnkown)
+            switch(CheckUnkownDevice())
             {
                 case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现未知设备 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
@@ -646,8 +644,7 @@ namespace PartialViewDoorServer.ViewModels
             #region 检测操作失败，请重试问题
             CountAll++;
             ShowMessageDelay("开始检查完全下载操作失败，请重试问题......");
-            retUnkown = CheckFailProblem();
-            switch (retUnkown)
+            switch (CheckFailProblem())
             {
                 case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现操作失败情况 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发"); break;
