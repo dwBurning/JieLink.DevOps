@@ -244,7 +244,7 @@ namespace PartialViewExportFacePic.ViewModels
                             fails++;
                         }
                     }
-                    if (total > 100)
+                    if (total >= 100)
                         ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}，详见信息见日志", total, success, fails));
                     ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}", total, success, fails));
                 }
