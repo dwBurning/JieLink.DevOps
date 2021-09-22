@@ -150,15 +150,18 @@ namespace PartialViewExportFacePic.ViewModels
 
                 //目标文件路径
                 string dsFullFilePath = string.Empty;
+                string dstPath = string.Empty;
                 //多线程调用依赖对象
                 this.Dispatcher.Invoke(new Action(() =>
                 {
-
                     dsFullFilePath = FilePath_jielink3;
+                    dstPath = FilePath;
+
                 }));
 
                 ShowMessage(string.Format("使用文件服务器地址为:{0}", dsFullFilePath));
-
+                ShowMessage(string.Format("文件备份到:{0}", dstPath));
+                
                 List<PersonInfo> list = bllProcess.GetJielink3PersonImage();
                 if (list != null && list.Count > 0)
                 {
@@ -169,12 +172,14 @@ namespace PartialViewExportFacePic.ViewModels
                         {
                             if (string.IsNullOrEmpty(info.Photo))
                             {
-                                ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
+                                if(total < 100)
+                                    ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
+                                LogHelper.CommLogger.Info(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径不存在", info.PersonName, info.PersonNO));
                                 fails++;
                                 continue;
                             }
                             info.Photo = info.Photo.Replace("/", "\\");
-                            string photoUrl = dsFullFilePath + "\\" + info.Photo;
+                            string photoUrl = dstPath + "\\" + info.Photo;
                             //源文件名
                             string sFilePath = info.Photo.Substring(0, 1) != @"\" ? @"\" + info.Photo : info.Photo;
 
@@ -202,13 +207,17 @@ namespace PartialViewExportFacePic.ViewModels
                             //复制文件
                             if (!File.Exists(photoUrl))
                             {
-                                ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}不存在", info.PersonName, info.PersonNO, photoUrl));
+                                if(total < 100)
+                                    ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}不存在", info.PersonName, info.PersonNO, photoUrl));
+                                LogHelper.CommLogger.Info(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}不存在", info.PersonName, info.PersonNO, photoUrl));
                                 fails++;
                                 continue;
                             }
                             if (File.Exists(dFullFileName))
                             {
-                                ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},目标图片{2}已存在", info.PersonName, info.PersonNO, dFullFileName));
+                                if(total < 100)
+                                    ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},目标图片{2}已存在", info.PersonName, info.PersonNO, dFullFileName));
+                                LogHelper.CommLogger.Info(string.Format("图片导出失败,姓名:{0},编号:{1},目标图片{2}已存在", info.PersonName, info.PersonNO, dFullFileName));
                                 fails++;
                                 continue;
                             }
@@ -219,18 +228,24 @@ namespace PartialViewExportFacePic.ViewModels
                             }
                             else
                             {
-                                ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                                if(total < 100)
+                                    ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                                LogHelper.CommLogger.Info(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                                 fails++;
                             }
                             System.Threading.Thread.Sleep(5);
                         }
                         catch (Exception ex)
                         {
-                            ShowMessage(ex.ToString());
+                             if(total < 100)
+                                ShowMessage(ex.ToString());
+                            LogHelper.CommLogger.Error(ex.ToString());
                             //ShowMessage(string.Format("图片转换失败,姓名:{0},编号:{1},图片路径{2},路径:{3}", info.PersonName, info.PersonNO, info.Photo, info.Photo));
                             fails++;
                         }
                     }
+                    if (total > 100)
+                        ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}，详见信息见日志", total, success, fails));
                     ShowMessage(string.Format("图片导出完成，本次导出人员总数：{0}，成功:{1},失败{2}", total, success, fails));
                 }
                 else

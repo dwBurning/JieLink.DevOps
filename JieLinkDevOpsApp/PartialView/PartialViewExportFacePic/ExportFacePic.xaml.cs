@@ -42,7 +42,7 @@ namespace PartialViewExportFacePic
 
         public MenuType MenuType
         {
-            get { return MenuType.Common; }
+            get { return MenuType.Center; }
         }
 
         public int Order
