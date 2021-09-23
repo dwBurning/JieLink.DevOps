@@ -55,6 +55,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbConfigJielink3.xaml.cs">
+      <DependentUpon>DbConfigJielink3.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DbConfig.xaml.cs">
       <DependentUpon>DbConfig.xaml</DependentUpon>
     </Compile>
@@ -63,6 +66,10 @@
     <Compile Include="DBUtility\MySqlHelper.cs" />
     <Compile Include="ViewModels\PersonInfo.cs" />
     <Compile Include="DBUtility\SQLHelper.cs" />
+    <Page Include="DbConfigJielink3.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DbConfig.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

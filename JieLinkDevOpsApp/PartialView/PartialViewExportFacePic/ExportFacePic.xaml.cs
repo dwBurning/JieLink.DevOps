@@ -64,5 +64,16 @@ namespace PartialViewExportFacePic
         {
             RichTextBox_Text.Document.Blocks.Clear();
         }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            btnChooseFilePath.IsEnabled = true;
+            
+        }
+
+        private void RadioButton_Unchecked(object sender, RoutedEventArgs e)
+        {
+            btnChooseFilePath.IsEnabled = false;
+        }
     }
 }

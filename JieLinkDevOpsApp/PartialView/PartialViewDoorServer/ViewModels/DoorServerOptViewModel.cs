@@ -30,7 +30,7 @@ namespace PartialViewDoorServer.ViewModels
             Message += "无需配置门禁服务，点击修复门禁常见问题可自动检测常见门禁问题\r\n";
             Message += "目前检测项(ver 1.1.71)：\r\n";
             Message += "1.sync_doornum导致的新发卡无法自动下载到设备问题\r\n";
-            Message += "2.门禁服务MAC地址配置导致的门禁服务离线问题\r\n";
+            Message += "2.门禁服务MAC地址配置导致的门禁服务离线问题，以及是否共机部署的端口问题\r\n";
             Message += "3.HTTP参数不对导致自动下载、完全下载均无法下载人脸到设备问题\r\n";
             Message += "4.Y10A、Y10A_T、Y08A-old搜索显示未知设备的问题\r\n";
             Message += "5.完全下载时提示检测操作失败，请重试问题\r\n";
@@ -397,6 +397,21 @@ namespace PartialViewDoorServer.ViewModels
                 IsConfigMac = config.AppSettings.Settings["IsConfigMac"].Value;
                 ConfigMAC = config.AppSettings.Settings["MAC"].Value;
 
+                //顺便检测中心通讯8021端口
+                string ClientPort8021 = config.AppSettings.Settings["ClientPort8021"].Value;
+                //string ClientPort8022 = config.AppSettings.Settings["ClientPort8022"].Value;
+                //string ClientPort8023 = config.AppSettings.Settings["ClientPort8023"].Value;
+                //string ClientPort8025 = config.AppSettings.Settings["ClientPort8025"].Value;
+                var processcenter = Process.GetProcessesByName("SmartCenter.Host").FirstOrDefault();
+                if(processcenter!= null && ClientPort8021 == "8021")
+                {
+                    ShowMessage("警告：检测到共机部署、门禁配置端口为8021，或导致设备无法通讯！需手动校验！如果该问题无法自行处理请捷服务帮助");
+                }
+                else if(processcenter == null &&  ClientPort8021 == "9021")
+                {
+                    ShowMessage("警告：检测到非共机部署、门禁配置端口为9021，或导致设备无法通讯！需手动校验！如果该问题无法自行处理请捷服务帮助");
+                }
+
                 //有可能有多个IP
                 string sql = string.Format("select MAC from control_devices where IP in ({0}) and devicetype = 42", GetIP());
                 MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, sql);
@@ -594,8 +609,7 @@ namespace PartialViewDoorServer.ViewModels
             #region 检测下载HTTP保存参数
             CountAll++;
             ShowMessageDelay("开始检查HTTP保存参数......");
-            enumHTTPConfig ret = CheckHttpConfig();
-            switch (ret)
+            switch (CheckHttpConfig())
             {
                 case enumHTTPConfig.ALLRIGHT: ShowMessage("HTTP保存参数无异常 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
@@ -615,8 +629,7 @@ namespace PartialViewDoorServer.ViewModels
             #region 检测未知设备问题
             CountAll++;
             ShowMessageDelay("开始检查未知设备问题......");
-            enumHTTPConfig retUnkown = CheckUnkownDevice();
-            switch(retUnkown)
+            switch(CheckUnkownDevice())
             {
                 case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现未知设备 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发");break;
@@ -631,8 +644,7 @@ namespace PartialViewDoorServer.ViewModels
             #region 检测操作失败，请重试问题
             CountAll++;
             ShowMessageDelay("开始检查完全下载操作失败，请重试问题......");
-            retUnkown = CheckFailProblem();
-            switch (retUnkown)
+            switch (CheckFailProblem())
             {
                 case enumHTTPConfig.ALLRIGHT: ShowMessage("没有发现操作失败情况 √"); CountCorrect++; break;
                 case enumHTTPConfig.ERROR: ShowMessage("检查过程中报错，请联系研发"); break;
@@ -683,7 +695,7 @@ namespace PartialViewDoorServer.ViewModels
                 //查询programdata内的文件服务器地址 例http://10.101.98.117:9011
                 if(!File.Exists(@"C:\ProgramData\JieLinkDoor\para\comHttpParam.xml"))
                 {
-                    ShowMessage(@"预警：未找到C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
+                    ShowMessage(@"提示：未找到C:\ProgramData\JieLinkDoor\para\comHttpParam.xml");
                 }
                 else
                 {
@@ -723,8 +735,12 @@ namespace PartialViewDoorServer.ViewModels
                         changeflag = true;
                     }
                 }
+                else
+                {
+                    ShowMessage(@"提示：未找到门禁服务进程");
+                }
 
-                if(changeflag)
+                if (changeflag)
                 {
                     if (process != null)
                     {
@@ -751,7 +767,7 @@ namespace PartialViewDoorServer.ViewModels
         /// </summary>
         private int FindSqlError = 0;
         /// <summary>
-        /// 部分dic_detail等表的数据偶发莫名其妙没有插入，手动打脚本无报错也没有插入的问题
+        /// 部分dic_detail等表的数据偶发莫名其妙没有插入，手动打脚本无报错也没有插入的问题。程序再执行总能插入了吧
         /// </summary>
         /// <returns></returns>
         public enumHTTPConfig CheckUnkownDevice()
@@ -936,7 +952,7 @@ namespace PartialViewDoorServer.ViewModels
                             return enumHTTPConfig.RepairButNoRestart;
                         else
                         {
-                            ShowMessage("文件夹创建失败，请拉满权限");
+                            ShowMessage("文件夹创建失败，拉满权限或手动检查");
                             return enumHTTPConfig.ERROR;
                         }
                     }
