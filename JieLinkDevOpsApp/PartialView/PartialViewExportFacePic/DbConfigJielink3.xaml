@@ -50,7 +50,7 @@
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbUser" Text="jieLink" VerticalContentAlignment="Center"
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtBoxDbUser" Text="root" VerticalContentAlignment="Center"
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库用户名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
