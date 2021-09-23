@@ -20,6 +20,8 @@ namespace PartialViewExportFacePic.ViewModels
     {
         public ExportFacePicOptViewModel()
         {
+            Message += "使用前务必检查新的以及旧的人事资料中是否能够正常显示人脸图片\r\n";
+
             rbNoAndName = true;
             rbNo = false;
             rbjielink = true;
