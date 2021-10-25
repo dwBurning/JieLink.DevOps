@@ -34,12 +34,14 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
         <TextBlock VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4">1.本功能将所有人脸图片按格式导出到指定的文件夹下面</TextBlock>
-        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">2.Jielink只要能连接文件服务器就能导出,G3需在文件服务器电脑下运行</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">2.Jielink2只要能连接文件服务器就能导出,jielink3需在文件服务器电脑下运行</TextBlock>
         <TextBlock VerticalAlignment="Center" Grid.Row="4" Grid.Column="0">导出路径：</TextBlock>
+        <TextBlock VerticalAlignment="Center" Grid.Row="5" Grid.Column="0">文件服务存储路径：</TextBlock>
         <TextBlock VerticalAlignment="Center" Grid.Row="3" Grid.Column="0">导出格式选择：</TextBlock>
         <TextBlock VerticalAlignment="Center" Grid.Row="2" Grid.Column="0">软件类型选择：</TextBlock>
 
@@ -53,6 +55,17 @@
                             BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand}"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+        <TextBox x:Name="txtFilePath" Margin="5"
+                            VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="仅jielink3导出需要选择该项！选择文件服务器的路径！"
+                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                            pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                            pu:TextBoxHelper.CornerRadius="4" Text="{Binding FilePath_jielink3}"
+                            pu:TextBoxHelper.IsClearButtonVisible="True" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3"/>
+        <Button Grid.Row="5" Margin="5" Grid.Column="5" Content="jielink3文件服务器路径" Name ="btnChooseFilePath"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                IsEnabled="False"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding SelectPathCommand_jielink3}"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
         <Button Grid.Row="3" Margin="5" Grid.Column="5" Content="导出" Name ="btnCheckPic"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Command="{Binding ExportCommand}"
@@ -60,7 +73,7 @@
 
 
         <RichTextBox x:Name="RichTextBox_Text" BorderBrush="#20A0FF" ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="5"
-                     Grid.Row="5" Grid.Column="0"  Grid.ColumnSpan="5" IsReadOnly="True" TextChanged="RichTextBox_Text_TextChanged">
+                     Grid.Row="6" Grid.Column="0"  Grid.ColumnSpan="5" IsReadOnly="True" TextChanged="RichTextBox_Text_TextChanged">
             <RichTextBox.ContextMenu>
                 <ContextMenu Name="cm" StaysOpen="true">
                     <MenuItem Header="清屏" Click="Clear_Click" >
@@ -92,7 +105,7 @@ pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="type"/>
         <RadioButton  Grid.Row="2" Grid.Column="1"  Height="30"
-Content="jieLink"
+Content="jieLink2"
 pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
@@ -103,5 +116,13 @@ pu:RadioButtonHelper.RadioButtonStyle="Switch"
 pu:RadioButtonHelper.BoxHeight="16"
 pu:RadioButtonHelper.BoxWidth="32"
 pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="software" IsChecked="{Binding rbG3}" />
+        <RadioButton  Grid.Row="2" Grid.Column="3"  Height="30"
+Content="jieLink3"
+pu:RadioButtonHelper.RadioButtonStyle="Switch"
+pu:RadioButtonHelper.BoxHeight="16"
+pu:RadioButtonHelper.BoxWidth="32"
+Checked="RadioButton_Checked"
+Unchecked="RadioButton_Unchecked"
+pu:RadioButtonHelper.CheckedBackground="#20A0FF" GroupName="software" IsChecked="{Binding rbjielink3}"/>
     </Grid>
 </UserControl>

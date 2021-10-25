@@ -11,5 +11,7 @@ namespace PartialViewExportFacePic.ViewModels
         public string Photo { get; set; }
         public string PersonNO { get; set; }
         public string PersonName { get; set; }
+
+        public string Mobile { get; set; }
     }
 }

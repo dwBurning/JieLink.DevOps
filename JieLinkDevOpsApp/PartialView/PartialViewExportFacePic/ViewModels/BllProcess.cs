@@ -59,7 +59,7 @@ namespace PartialViewExportFacePic.ViewModels
         public List<PersonInfo> GetJielinkPersonImage()
         {
             List<PersonInfo> list = new List<PersonInfo>();
-            string sql = string.Format("select PhotoPath,PersonNo,PersonName from control_person where status = 0 and LENGTH(photopath) > 0");
+            string sql = string.Format("select PhotoPath,PersonNo,PersonName,mobile from control_person where status = 0 and LENGTH(photopath) > 0");
             MySqlDataReader reader = DBUtility.MySqlHelper.ExecuteReader(sql, null);
             while (reader.Read())
             {
@@ -67,9 +67,34 @@ namespace PartialViewExportFacePic.ViewModels
                 info.Photo = reader[0].ToString();
                 info.PersonNO = reader[1].ToString();
                 info.PersonName = reader[2].ToString();
+                info.Mobile = reader[3].ToString();
                 list.Add(info);
             }
             return list;
+        }
+
+        public List<PersonInfo> GetJielink3PersonImage()
+        {
+            try
+            {
+                List<PersonInfo> list = new List<PersonInfo>();
+                string sql = string.Format("select PhotoPath,personno,personname from sc_credential where status = 1 and credentialtype = 169 and LENGTH(photopath) > 0");
+                MySqlDataReader reader = DBUtility.MySqlHelper.ExecuteReader(sql, null);
+                while (reader.Read())
+                {
+                    PersonInfo info = new PersonInfo();
+                    info.Photo = reader[0].ToString().Replace("api/fileServer/down/", "");
+                    info.PersonNO = reader[1].ToString();
+                    info.PersonName = reader[2].ToString();
+                    info.Mobile = "";
+                    list.Add(info);
+                }
+                return list;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public bool TestConnect(string connection, int type)
