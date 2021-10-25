@@ -20,6 +20,7 @@ using Quartz.Impl;
 using System.Windows.Forms;
 using System.Windows.Documents;
 using System.Diagnostics;
+using PartialViewInterface.DB;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -30,12 +31,14 @@ namespace JieShun.JieLink.DevOps.App
     {
         BackgroundWorker backgroundWorker = new BackgroundWorker();
 
+
         #region Property
         private MainWindowViewModel viewModel;
 
         public string Text { get; set; }
 
         private NotifyIcon notifyIcon;
+        KeyValueSettingManager manager;
         #endregion
 
         public MainWindow()
@@ -45,6 +48,7 @@ namespace JieShun.JieLink.DevOps.App
             DataContext = viewModel;
             ContentControl.Content = MainWindowViewModel.partialViewDic["Information"];//加载介绍窗口
 
+            manager = new KeyValueSettingManager();
 
             backgroundWorker.WorkerReportsProgress = true;
             backgroundWorker.DoWork += BackgroundWorker_DoWork;
@@ -143,9 +147,8 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Loaded(object sender, RoutedEventArgs e)
         {
-            string url = ConfigHelper.ReadAppConfig("ServerUrl");
-            EnvironmentInfo.ServerUrl = url;
-            string projectInfoConfig = ConfigHelper.ReadAppConfig("ProjectInfo");
+            string projectInfoConfig = manager.ReadSetting("ProjectInfo").ValueText;
+            //ConfigHelper.ReadAppConfig("ProjectInfo");
             if (string.IsNullOrEmpty(projectInfoConfig))
             {
                 if (!backgroundWorker.IsBusy)
@@ -174,16 +177,16 @@ namespace JieShun.JieLink.DevOps.App
             scheduler.Start();
             foreach (var jobType in viewModel.jobs)
             {
-                var jobCronConfigs = ConfigHelper.GetJobCronConfig(jobType.Name);
+                var jobCronConfigs = GetJobCronConfig(jobType.Name);
                 foreach (var config in jobCronConfigs)
                 {
                     var job = JobBuilder.Create(jobType)
-                    .WithIdentity(config.JobIdentity, "scheduler")
-                    .UsingJobData("DatabaseName", config.DatabaseName)
+                    .WithIdentity(config.JobIdentity, config.GroupName)
+                    .UsingJobData("DataBaseName", config.DataBaseName)
                     .Build();
 
                     var trigger = TriggerBuilder.Create()
-                        .WithIdentity(config.JobIdentity, "scheduler")
+                        .WithIdentity(config.JobIdentity, config.GroupName)
                         .StartNow()
                         .WithCronSchedule(config.Cron)
                         .Build();
@@ -197,6 +200,58 @@ namespace JieShun.JieLink.DevOps.App
             Hyperlink link = sender as Hyperlink;
             // 激活的是当前默认的浏览器
             Process.Start(new ProcessStartInfo(link.NavigateUri.AbsoluteUri));
+        }
+
+        /// <summary>
+        /// 获取job实际的cron表达式
+        /// </summary>
+        /// <param name="jobTypeName">配置文件中原始的表达式</param>
+        /// <returns></returns>
+        public List<JobCronConfig> GetJobCronConfig(string jobTypeName)
+        {
+            var ret = new List<JobCronConfig>();
+            if (jobTypeName.Equals("DataBaseBackUpJob"))
+            {
+                EnvironmentInfo.BackUpJobConfigs.Where(x => x.BackUpType == 0).ToList().ForEach(x =>
+                {
+                    var jobCronConfig1 = new JobCronConfig() { JobIdentity = x.Id, JobTypeName = jobTypeName, Cron = x.Cron, DataBaseName = x.DataBaseName, GroupName = "BackUp" };
+                    ret.Add(jobCronConfig1);
+                });
+
+                return ret;
+            }
+            else if (jobTypeName.Equals("TablesBackUpJob"))
+            {
+                EnvironmentInfo.BackUpJobConfigs.Where(x => x.BackUpType == 1).ToList().ForEach(x =>
+                {
+                    var jobCronConfig2 = new JobCronConfig() { JobIdentity = x.Id, JobTypeName = jobTypeName, Cron = x.Cron, DataBaseName = x.DataBaseName, GroupName = "BackUp" };
+                    ret.Add(jobCronConfig2);
+                });
+                return ret;
+            }
+
+            var setting = manager.ReadSetting(jobTypeName, "0 0 0 * * ?");
+            var originalCron = setting.ValueText;
+            if (string.IsNullOrEmpty(originalCron))
+            { return ret; }
+
+            if (setting.KeyType == 5)//公共定时任务
+            {
+                var jobCronConfig3 = new JobCronConfig() { JobIdentity = jobTypeName, JobTypeName = jobTypeName, Cron = originalCron, GroupName = "scheduler" };
+                ret.Add(jobCronConfig3);
+            }
+            else if (EnvironmentInfo.IsJieLink3x && setting.KeyType == 4)//3.x的定时任务
+            {
+                var jobCronConfig4 = new JobCronConfig() { JobIdentity = jobTypeName, JobTypeName = jobTypeName, Cron = originalCron, GroupName = "scheduler" };
+                ret.Add(jobCronConfig4);
+            }
+            else if (!EnvironmentInfo.IsJieLink3x && setting.KeyType == 3)//2.x的定时任务
+            {
+                var jobCronConfig5 = new JobCronConfig() { JobIdentity = jobTypeName, JobTypeName = jobTypeName, Cron = originalCron, GroupName = "scheduler" };
+                ret.Add(jobCronConfig5);
+            }
+
+            return ret;
         }
     }
 }

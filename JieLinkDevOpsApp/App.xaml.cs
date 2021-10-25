@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using PartialViewInterface;
+using PartialViewInterface.DB;
 using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using System;
@@ -12,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using System.Xml.Linq;
 
 namespace JieShun.JieLink.DevOps.App
 {
@@ -62,6 +64,84 @@ namespace JieShun.JieLink.DevOps.App
             {
                 WriteLog(ex);
             }
+
+            OnStart();
+        }
+
+        void OnStart()
+        {
+            KeyValueSettingManager keyValueSettingManager = new KeyValueSettingManager();
+            BackUpJobConfigManger backUpJobConfigManger = new BackUpJobConfigManger();
+            EnvironmentInfo.Settings.AddRange(keyValueSettingManager.KeyValueSettings());
+            EnvironmentInfo.BackUpJobConfigs.AddRange(backUpJobConfigManger.BackUpJobConfigs());
+
+            //迁移到数据库中
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "JieShun.JieLink.DevOps.App.exe.config");
+            var setting = keyValueSettingManager.ReadSetting("IsTransfered");
+            if (setting != null && setting.ValueText == "0")
+            {
+                XDocument myXDoc = XDocument.Load(filePath);
+                XElement rootNode = myXDoc.Element("configuration");
+                foreach (XElement node in rootNode.Elements("appSettings"))
+                {
+                    foreach (XElement element in node.Elements("add"))
+                    {
+                        keyValueSettingManager.WriteSetting(new KeyValueSetting()
+                        {
+                            KeyId = element.Attribute("key").Value,
+                            ValueText = element.Attribute("value").Value
+                        });
+                    }
+                }
+
+                EnvironmentInfo.Settings.Clear();
+                EnvironmentInfo.Settings.AddRange(keyValueSettingManager.KeyValueSettings());
+
+                if (keyValueSettingManager.ReadSetting("ServerUrl").ValueText != "http://www.dwburning.top:1688")
+                {
+                    keyValueSettingManager.WriteSetting(new KeyValueSetting()
+                    {
+                        KeyId = "ServerUrl",
+                        ValueText = "http://www.dwburning.top:1688"//强制搞一下
+                    });
+                }
+
+                backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    DataBaseName = EnvironmentInfo.DbConnEntity.DbName,
+                    Cron = "00 00 03 ? * 4",
+                    BackUpType = 0
+                });
+
+                backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    DataBaseName = EnvironmentInfo.DbConnEntity.DbName,
+                    Cron = "00 00 03 ? * 2,6",
+                    BackUpType = 1
+                });
+
+                keyValueSettingManager.WriteSetting(new KeyValueSetting()
+                {
+                    KeyId = "IsTransfered",
+                    ValueText = "1"
+                });
+            }
+
+            EnvironmentInfo.ServerUrl = keyValueSettingManager.ReadSetting("ServerUrl").ValueText;
+
+            EnvironmentInfo.DbConnEntity = JsonHelper.DeserializeObject<DbConnEntity>(keyValueSettingManager.ReadSetting("ConnectionString").ValueText);
+
+            EnvironmentInfo.AutoStartCorectEntity = JsonHelper.DeserializeObject<AutoStartCorectEntity>(keyValueSettingManager.ReadSetting("AutoStartCorectString").ValueText);
+
+            EnvironmentInfo.AutoStartSyncEntity = JsonHelper.DeserializeObject<AutoStartSyncEntity>(keyValueSettingManager.ReadSetting("AutoStartSyncString").ValueText);
+
+            EnvironmentInfo.IsAutoArchive = keyValueSettingManager.ReadSetting("AutoStartSyncString").ValueText == "1";
+
+            EnvironmentInfo.AutoArchiveMonth = int.Parse(keyValueSettingManager.ReadSetting("AutoArchiveMonth").ValueText);
+
+            EnvironmentInfo.IsJieLink3x = keyValueSettingManager.ReadSetting("IsJieLink3x").ValueText == "1";
         }
 
         public static void OnChanged(object sender, FileSystemEventArgs e)
@@ -169,7 +249,7 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WriteLog(object exception)
         {
-            Console.WriteLine(exception.ToString());
+            LogHelper.CommLogger.Info(exception.ToString());
         }
 
         private string GetCurrentVersion()

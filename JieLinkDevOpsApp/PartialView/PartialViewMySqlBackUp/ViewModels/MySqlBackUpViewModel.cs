@@ -4,6 +4,8 @@ using Panuon.UI.Silver;
 using Panuon.UI.Silver.Core;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
+using PartialViewInterface.DB;
+using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using PartialViewMySqlBackUp.BackUp;
 using PartialViewMySqlBackUp.Models;
@@ -28,6 +30,7 @@ namespace PartialViewMySqlBackUp.ViewModels
     {
         private static MySqlBackUpViewModel instance;
         private static readonly object locker = new object();
+        private BackUpJobConfigManger manger;
 
         public static MySqlBackUpViewModel Instance()
         {
@@ -60,9 +63,12 @@ namespace PartialViewMySqlBackUp.ViewModels
 
         public DelegateCommand EditPolicyCommand { get; set; }
 
+        public DelegateCommand SaveFileDayCommand { get; set; }
 
+        KeyValueSettingManager manager;
         private MySqlBackUpViewModel()
         {
+            manger = new BackUpJobConfigManger();
             TaskStartCommand = new DelegateCommand();
             TaskStopCommand = new DelegateCommand();
             ManualExecuteCommand = new DelegateCommand();
@@ -71,6 +77,9 @@ namespace PartialViewMySqlBackUp.ViewModels
             ChooseAllCommand = new DelegateCommand();
             RecoverDefaultCommand = new DelegateCommand();
             EditPolicyCommand = new DelegateCommand();
+            SaveFileDayCommand = new DelegateCommand();
+
+            manager = new KeyValueSettingManager();
 
             TaskStartCommand.ExecuteAction = Start;
             TaskStopCommand.ExecuteAction = Stop;
@@ -82,20 +91,37 @@ namespace PartialViewMySqlBackUp.ViewModels
             RecoverDefaultCommand.ExecuteAction = RecoverDefault;
             EditPolicyCommand.ExecuteAction = EditPolicy;
 
+            SaveFileDayCommand.ExecuteAction = SaveFileDayAction;
 
             Policys = new ObservableCollection<BackUpPolicy>();
             Tables = new ObservableCollection<BackUpTable>();
             Databases = new ObservableCollection<BackUpDatabase>();
             CurrentPolicy = new BackUpPolicy();
-            CurrentPolicy.SelectedDatabase = EnvironmentInfo.SelectedDatabase;
+            CurrentPolicy.DataBaseName = EnvironmentInfo.DbConnEntity.DbName;
             CurrentPolicyBak = DeepCopy(CurrentPolicy);
 
             ReadPolicyConfig();
             GetTables();
 
+            int saveday = 7;
+            int.TryParse(EnvironmentInfo.Settings.FirstOrDefault(x => x.KeyId == "SaveFileDay")?.ValueText, out saveday);
+            SaveFileDay = saveday;
+
             ProcessHelper.ShowOutputMessage += ProcessHelper_ShowOutputMessage;
 
             Message = "说明：\r\n1)全库备份，是完整备份。基础业务备份，是只备份核心业务数据。\r\n2)哪些表数据属于核心业务，系统已经默认配置了，也可以自行勾选，但是建议只多不少。\r\n3)如果要全部勾选，建议就不要配置为基础业务备份，直接使用全库备份即可。\r\n4)基础业务的备份频率一定要高于全库备份，因为全库备份包含了一些历史表，会很大。\r\n5)配置策略之后，重新启动不需要再去点执行任务，系统会自动执行。\r\n";
+        }
+
+        private void SaveFileDayAction(object parameter)
+        {
+            if (SaveFileDay < 7)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("文件个数必须大于等于7天！");
+                return;
+            }
+
+            manager.WriteSetting(new KeyValueSetting() { KeyId = "SaveFileDay", ValueText = SaveFileDay.ToString() });
+            Notice.Show("配置保存成功", "通知", 3, MessageBoxIcon.Success);
         }
 
         private void ProcessHelper_ShowOutputMessage(string message)
@@ -123,46 +149,40 @@ namespace PartialViewMySqlBackUp.ViewModels
             foreach (var policy in Policys)
             {
                 string cron = ConvertToCron(policy);
-                string cronNoDB = ConvertToCronNoDbName(policy);
+
+                var jobIdentity = policy.Id;
+                var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("BackUp")).Where(x => x.Name == jobIdentity).FirstOrDefault();
+                if (triggerKey != null)
+                {
+                    scheduler.UnscheduleJob(triggerKey);
+                }
                 if (policy.BackUpType == BackUpType.DataBase)
                 {
-                    var jobIdentity = $"DataBaseBackUpJob-{cron}";
-                    var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("scheduler")).Where(x => x.Name == jobIdentity).FirstOrDefault();
-                    if (triggerKey != null)
-                    {
-                        scheduler.UnscheduleJob(triggerKey);
-                    }
                     var job = JobBuilder.Create(typeof(DataBaseBackUpJob))
-                                    .WithIdentity(jobIdentity, "scheduler")
-                                    .UsingJobData("DatabaseName", policy.SelectedDatabase)
+                                    .WithIdentity(jobIdentity, "BackUp")
+                                    .UsingJobData("DataBaseName", policy.DataBaseName)
                                     .Build();
                     var trigger = TriggerBuilder.Create()
                                     .StartNow()
-                                    .WithIdentity(jobIdentity, "scheduler")
-                                    .WithCronSchedule(cronNoDB)
+                                    .WithIdentity(jobIdentity, "BackUp")
+                                    .WithCronSchedule(cron)
                                     .Build();
                     scheduler.ScheduleJob(job, trigger);
                 }
                 else
                 {
-                    var jobIdentity = $"TablesBackUpJob-{cron}";
-                    var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("scheduler")).Where(x => x.Name == jobIdentity).FirstOrDefault();
-                    if (triggerKey != null)
-                    {
-                        scheduler.UnscheduleJob(triggerKey);
-                    }
-
                     var job = JobBuilder.Create(typeof(TablesBackUpJob))
-                                    .WithIdentity(jobIdentity, "scheduler")
-                                    .UsingJobData("DatabaseName", policy.SelectedDatabase)
-                                    .Build();
+                                        .WithIdentity(jobIdentity, "BackUp")
+                                        .UsingJobData("DataBaseName", policy.DataBaseName)
+                                        .Build();
                     var trigger = TriggerBuilder.Create()
                                     .StartNow()
-                                    .WithIdentity(jobIdentity, "scheduler")
-                                    .WithCronSchedule(cronNoDB)
+                                    .WithIdentity(jobIdentity, "BackUp")
+                                    .WithCronSchedule(cron)
                                     .Build();
                     scheduler.ScheduleJob(job, trigger);
                 }
+
             }
 
             Notice.Show("定时任务已经启动....", "通知", 3, MessageBoxIcon.Success);
@@ -198,18 +218,16 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             if (CurrentPolicy.IsTaskBackUpDataBase)
             {
-                var policies = Policys.Where(x => x.BackUpType == BackUpType.DataBase);
-                if (policies.Any())
+                var policy = Policys.Where(x => x.BackUpType == BackUpType.DataBase
+                && x.DataBaseName == CurrentPolicy.DataBaseName).FirstOrDefault();
+                if (policy != null)
                 {
-                    foreach (var policy in Policys)
+                    ExecuteBackUp executeBackUp = new ExecuteBackUp();
+                    string dbName = policy.DataBaseName;
+                    Task.Factory.StartNew(() =>
                     {
-                        var databaseName = policy.SelectedDatabase;
-                        ExecuteBackUp executeBackUp = new ExecuteBackUp();
-                        Task.Factory.StartNew(() =>
-                        {
-                            executeBackUp.BackUpDataBase(databaseName);
-                        });
-                    }
+                        executeBackUp.BackUpDataBase(dbName);
+                    });
                 }
                 else
                 {
@@ -220,18 +238,16 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             if (CurrentPolicy.IsTaskBackUpTables)
             {
-                var policies = Policys.Where(x => x.BackUpType == BackUpType.Tables);
-                if (policies.Any())
+                var policy = Policys.Where(x => x.BackUpType == BackUpType.Tables
+                && x.DataBaseName == CurrentPolicy.DataBaseName).FirstOrDefault();
+                if (policy != null)
                 {
-                    foreach (var policy in policies)
+                    ExecuteBackUp executeBackUp = new ExecuteBackUp();
+                    string dbName = policy.DataBaseName;
+                    Task.Factory.StartNew(() =>
                     {
-                        var databaseName = policy.SelectedDatabase;
-                        ExecuteBackUp executeBackUp = new ExecuteBackUp();
-                        Task.Factory.StartNew(() =>
-                        {
-                            executeBackUp.BackUpTables(databaseName);
-                        });
-                    }
+                        executeBackUp.BackUpTables(dbName);
+                    });
                 }
                 else
                 {
@@ -242,10 +258,10 @@ namespace PartialViewMySqlBackUp.ViewModels
         }
 
         #region 数据转换
-        private BackUpPolicy ConvertToPolicy(string cron)
+        private BackUpPolicy ConvertToPolicy(BackUpJobConfig backUpJobConfig)
         {
             BackUpPolicy policy = new BackUpPolicy();
-            string[] cronArry = cron.Split(' ');
+            string[] cronArry = backUpJobConfig.Cron.Split(' ');
             int second = int.Parse(cronArry[0]);
             int minute = int.Parse(cronArry[1]);
             int hour = int.Parse(cronArry[2]);
@@ -279,13 +295,11 @@ namespace PartialViewMySqlBackUp.ViewModels
                         break;
                 }
             }
-
-            var databaseName = cronArry[6];
-            policy.SelectedDatabase = databaseName;
+            policy.DataBaseName = backUpJobConfig.DataBaseName;
             return policy;
         }
 
-        private string ConvertToCronNoDbName(BackUpPolicy policy)
+        private string ConvertToCron(BackUpPolicy policy)
         {
             //周日 1 周一 2...
             //0 15 10 ? * 1,5 每周日，周四 上午10:15分执行
@@ -324,21 +338,15 @@ namespace PartialViewMySqlBackUp.ViewModels
 
             return $"{second} {minute} {hour} ? * {dayOfWeek.Trim(',')}";
         }
-
-        private string ConvertToCron(BackUpPolicy policy)
-        {
-            var cron = ConvertToCronNoDbName(policy);
-            return $"{cron} {policy.SelectedDatabase}";
-        }
         #endregion
 
         private void RemovePolicy(object parameter)
         {
-            BackUpPolicy policy = Policys.FirstOrDefault(x => x.PolicyToString == CurrentPolicyBak.PolicyToString);
+            BackUpPolicy policy = Policys.FirstOrDefault(x => x.Id == CurrentPolicy.Id);
             if (policy != null)
             {
                 Policys.Remove(policy);
-                WritePolicyConfig();
+                manger.RemoveBackUpJobConfig(policy.Id);
                 Clear();
                 Notice.Show("策略已移除成功", "通知", 3, MessageBoxIcon.Success);
             }
@@ -351,24 +359,18 @@ namespace PartialViewMySqlBackUp.ViewModels
         private void AddPolicy(object parameter)
         {
             if (CheckDayOfWeek())
-            { 
-                return; 
-            }
-
-            if (CurrentPolicy.BackUpType == BackUpType.Tables && !Tables.Any(x => x.IsChecked))
             {
-                MessageBoxHelper.MessageBoxShowWarning("当前备份类型为按业务表备份，但是未选择需要备份的表，请确认！");
                 return;
             }
 
             CurrentPolicy.SelectedTime = (DateTime)parameter;//通过绑定无法获取到值 原因不明
-            BackUpPolicy policy = Policys.FirstOrDefault(x => x.BackUpType == CurrentPolicy.BackUpType //备份类型
-                                                           && x.SelectedDatabase == CurrentPolicy.SelectedDatabase); //选中的数据库
+            BackUpPolicy policy = Policys.FirstOrDefault(x => x.Id == CurrentPolicy.Id);
 
             if (policy == null)
             {
                 Policys.Add(new BackUpPolicy()
                 {
+                    Id = Guid.NewGuid().ToString(),
                     Sunday = CurrentPolicy.Sunday,
                     Monday = CurrentPolicy.Monday,
                     Tuesday = CurrentPolicy.Tuesday,
@@ -380,12 +382,13 @@ namespace PartialViewMySqlBackUp.ViewModels
                     IsTaskBackUpDataBase = CurrentPolicy.IsTaskBackUpDataBase,
                     IsTaskBackUpTables = CurrentPolicy.IsTaskBackUpTables,
                     ItemString = CurrentPolicy.PolicyToString,
-                    SelectedDatabase = CurrentPolicy.SelectedDatabase
+                    DataBaseName = CurrentPolicy.DataBaseName
                 });
                 Notice.Show("策略已添加成功", "通知", 3, MessageBoxIcon.Success);
             }
             else
             {
+                policy.Id = CurrentPolicy.Id;
                 policy.Sunday = CurrentPolicy.Sunday;
                 policy.Monday = CurrentPolicy.Monday;
                 policy.Tuesday = CurrentPolicy.Tuesday;
@@ -397,12 +400,12 @@ namespace PartialViewMySqlBackUp.ViewModels
                 policy.IsTaskBackUpDataBase = CurrentPolicy.IsTaskBackUpDataBase;
                 policy.IsTaskBackUpTables = CurrentPolicy.IsTaskBackUpTables;
                 policy.ItemString = CurrentPolicy.PolicyToString;
-                policy.SelectedDatabase = CurrentPolicy.SelectedDatabase;
+                policy.DataBaseName = CurrentPolicy.DataBaseName;
                 Notice.Show("策略已更新成功", "通知", 3, MessageBoxIcon.Success);
             }
 
             WritePolicyConfig();
-            WriteTablesConfig(CurrentPolicy.SelectedDatabase);
+            WriteTablesConfig(CurrentPolicy.DataBaseName);
         }
 
         /// <summary>
@@ -414,6 +417,7 @@ namespace PartialViewMySqlBackUp.ViewModels
         {
             var model = new BackUpPolicy()
             {
+                Id = currentPolicy.Id,
                 Sunday = currentPolicy.Sunday,
                 Monday = currentPolicy.Monday,
                 Tuesday = currentPolicy.Tuesday,
@@ -425,7 +429,7 @@ namespace PartialViewMySqlBackUp.ViewModels
                 IsTaskBackUpDataBase = currentPolicy.IsTaskBackUpDataBase,
                 IsTaskBackUpTables = currentPolicy.IsTaskBackUpTables,
                 ItemString = currentPolicy.PolicyToString,
-                SelectedDatabase = currentPolicy.SelectedDatabase
+                DataBaseName = currentPolicy.DataBaseName
             };
             return model;
         }
@@ -436,9 +440,9 @@ namespace PartialViewMySqlBackUp.ViewModels
         /// <param name="parameter"></param>
         private void EditPolicy(object parameter)
         {
-            if (CurrentPolicy.BackUpType != CurrentPolicyBak.BackUpType)
+            if (CurrentPolicy.Id == null)
             {
-                MessageBoxHelper.MessageBoxShowWarning("不允许修改备份类型，如需要该类型的策略可选择新增。");
+                MessageBoxHelper.MessageBoxShowWarning("请先选择要编辑的策略！");
                 return;
             }
 
@@ -452,31 +456,15 @@ namespace PartialViewMySqlBackUp.ViewModels
         public void ReadPolicyConfig()
         {
             Policys.Clear();
-            string config = ConfigHelper.ReadAppConfig("TablesBackUpJob");
-            if (!string.IsNullOrEmpty(config))
+            EnvironmentInfo.BackUpJobConfigs.ForEach(x =>
             {
-                var policyStrs = config.Split('|');
-                foreach (var policyStr in policyStrs)
-                {
-                    BackUpPolicy policy = ConvertToPolicy(policyStr);
-                    policy.IsTaskBackUpTables = true;
-                    policy.ItemString = policy.PolicyToString;
-                    Policys.Add(policy);
-                }
-            }
-
-            config = ConfigHelper.ReadAppConfig("DataBaseBackUpJob");
-            if (!string.IsNullOrEmpty(config))
-            {
-                var policyStrs = config.Split('|');
-                foreach (var policyStr in policyStrs)
-                {
-                    BackUpPolicy policy = ConvertToPolicy(policyStr);
-                    policy.IsTaskBackUpDataBase = true;
-                    policy.ItemString = policy.PolicyToString;
-                    Policys.Add(policy);
-                }
-            }
+                BackUpPolicy policy = ConvertToPolicy(x);
+                policy.Id = x.Id;
+                policy.IsTaskBackUpTables = x.BackUpType == 1 ? true : false;
+                policy.IsTaskBackUpDataBase = x.BackUpType == 0 ? true : false;
+                policy.ItemString = policy.PolicyToString;
+                Policys.Add(policy);
+            });
         }
 
         /// <summary>
@@ -488,26 +476,15 @@ namespace PartialViewMySqlBackUp.ViewModels
             if (Policys == null)
                 return;
 
-            string dataBaseBackUpJobConfig = string.Empty;
-            string tablesBackUpJobConfig = string.Empty;
-            foreach (var policy in Policys)
+            Policys.ToList().ForEach(x =>
             {
-                var currentPolicyConfig = ConvertToCron(policy);
-                if (policy.BackUpType == BackUpType.DataBase)
-                {
-                    dataBaseBackUpJobConfig = $"{dataBaseBackUpJobConfig}|{currentPolicyConfig}";
-                }
-                else if (policy.BackUpType == BackUpType.Tables)
-                {
-                    tablesBackUpJobConfig = $"{tablesBackUpJobConfig}|{currentPolicyConfig}";
-                }
-            }
-
-            dataBaseBackUpJobConfig = dataBaseBackUpJobConfig.TrimStart('|');
-            tablesBackUpJobConfig = tablesBackUpJobConfig.TrimStart('|');
-
-            ConfigHelper.WriterAppConfig("DataBaseBackUpJob", dataBaseBackUpJobConfig);
-            ConfigHelper.WriterAppConfig("TablesBackUpJob", tablesBackUpJobConfig);
+                BackUpJobConfig config = new BackUpJobConfig();
+                config.Id = x.Id;
+                config.DataBaseName = x.DataBaseName;
+                config.Cron = ConvertToCron(x);
+                config.BackUpType = x.BackUpType == BackUpType.DataBase ? 0 : 1;
+                manger.WriteBackUpJobConfig(config);
+            });
         }
 
         /// <summary>
@@ -522,16 +499,28 @@ namespace PartialViewMySqlBackUp.ViewModels
             var tablesConfig = BackUpConfig.TablesConfig.FirstOrDefault(x => x.DbName == dbName);
             if (tablesConfig == null) //避免数据库名称不是配置文件中的默认数据库名称
             {
-                tablesConfig = new TablesConfig { DbName = dbName, Tables = new List<Table>() };
+                tablesConfig = new TablesConfig
+                {
+                    DbName = dbName,
+                    Tables = new List<Table>(),
+                    IgnoreTables = new List<Table>(),
+                    DefaultIgnoreTables = new List<Table>()
+                };
+                BackUpConfig.TablesConfig.Add(tablesConfig);
             }
 
             tablesConfig.Tables.Clear();
             Tables.ToList().ForEach((x) =>
             {
-                if (x.IsChecked)
+                if (!x.IsChecked)
                 {
                     tablesConfig.Tables.Add(new Table() { TableName = x.TableName });
                 }
+                else
+                {
+                    tablesConfig.IgnoreTables.Add(new Table() { TableName = x.TableName });
+                }
+
             });
 
             File.WriteAllText(path, JsonConvert.SerializeObject(BackUpConfig), Encoding.UTF8);
@@ -552,12 +541,12 @@ namespace PartialViewMySqlBackUp.ViewModels
         /// <param name="parameter"></param>
         private void RecoverDefault(object parameter)
         {
-            var tablesConfig = BackUpConfig.TablesConfig.FirstOrDefault(x => x.DbName == CurrentPolicy.SelectedDatabase);
+            var tablesConfig = BackUpConfig.TablesConfig.FirstOrDefault(x => x.DbName == CurrentPolicy.DataBaseName);
             if (tablesConfig != null)
             {
                 Tables.ToList().ForEach((x) =>
                 {
-                    x.IsChecked = tablesConfig.IgnoreTables.FindIndex(t => t.TableName == x.TableName) < 0;
+                    x.IsChecked = tablesConfig.DefaultIgnoreTables.FindIndex(t => t.TableName == x.TableName) >= 0;
                 });
             }
         }
@@ -576,16 +565,13 @@ namespace PartialViewMySqlBackUp.ViewModels
                 {
                     BackUpConfig.TablesConfig = new List<TablesConfig>() { };
                 }
+
                 TaskBackUpPath = BackUpConfig.SavePath;//文件保存路径
                 EnvironmentInfo.TaskBackUpPath = BackUpConfig.SavePath;
                 if (!Directory.Exists(TaskBackUpPath))
                 {
                     Directory.CreateDirectory(TaskBackUpPath);
                 }
-
-                //string cmd = "select @@basedir as mysqlpath from dual";
-                //DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, cmd).Tables[0];
-                //MySqlBinPath = dt.Rows[0][0].ToString() + "\\bin";//获取mysql的bin路径
 
                 MySqlBinPath = BaseDirectoryPath;//如果不是在服务器上，那么可能无法获取到mysqldump文件
 
@@ -596,11 +582,10 @@ namespace PartialViewMySqlBackUp.ViewModels
                 {
                     BackUpDatabase database = new BackUpDatabase() { DatabaseName = dr["DATABASE"].ToString() };
                     Databases.Add(database);
-
-                    if (dr["DATABASE"].ToString() == EnvironmentInfo.DatabaseName2x) //默认选中2.x数据库，触发选中事件，展示左侧数据库表
+                    //默认选中2.x数据库，触发选中事件，展示左侧数据库表
+                    if (dr["DATABASE"].ToString() == EnvironmentInfo.DbConnEntity.DbName) 
                     {
-                        EnvironmentInfo.SelectedDatabase = EnvironmentInfo.DatabaseName2x;
-                        SetTables(EnvironmentInfo.DatabaseName2x);
+                        SetTables(database.DatabaseName);
                     }
                 }
                 #endregion
@@ -630,9 +615,12 @@ namespace PartialViewMySqlBackUp.ViewModels
                 tablesConfig = new TablesConfig
                 {
                     DbName = dbName,
-                    Tables = new List<Table>()
+                    Tables = new List<Table>(),
+                    IgnoreTables = new List<Table>(),
+                    DefaultIgnoreTables = new List<Table>()
                 };
             }
+            AddArchiveTable(tablesConfig);
 
             Tables.Clear();
             var sql = $"select table_name from information_schema.`TABLES` where TABLE_SCHEMA='{dbName}';";
@@ -642,7 +630,7 @@ namespace PartialViewMySqlBackUp.ViewModels
             {
                 BackUpTable backUpTable = new BackUpTable() { TableName = dr["table_name"].ToString(), IsChecked = false };
 
-                tablesConfig.Tables.ForEach((x) =>
+                tablesConfig.IgnoreTables.ForEach((x) =>
                 {
                     if (x.TableName == dr["table_name"].ToString())
                     {
@@ -650,6 +638,63 @@ namespace PartialViewMySqlBackUp.ViewModels
                     }
                 });
                 Tables.Add(backUpTable);
+            }
+        }
+
+        private static void AddArchiveTable(TablesConfig tablesConfig)
+        {
+            if (!EnvironmentInfo.IsJieLink3x)
+            {
+                for (int year = 2020; year <= DateTime.Now.Year; year++)
+                {
+                    if (tablesConfig.IgnoreTables.FindIndex(x => x.TableName == $"box_enter_record_{year}") < 0)
+                    { tablesConfig.IgnoreTables.Add(new Table() { TableName = $"box_enter_record_{year}" }); }
+
+                    if (tablesConfig.IgnoreTables.FindIndex(x => x.TableName == $"box_out_record_{year}") < 0)
+                    { tablesConfig.IgnoreTables.Add(new Table() { TableName = $"box_out_record_{year}" }); }
+
+                    if (tablesConfig.IgnoreTables.FindIndex(x => x.TableName == $"boxdoor_door_record_{year}") < 0)
+                    { tablesConfig.IgnoreTables.Add(new Table() { TableName = $"boxdoor_door_record_{year}" }); }
+
+                    if (tablesConfig.IgnoreTables.FindIndex(x => x.TableName == $"business_discount_{year}") < 0)
+                    { tablesConfig.IgnoreTables.Add(new Table() { TableName = $"business_discount_{year}" }); }
+
+                    if (tablesConfig.IgnoreTables.FindIndex(x => x.TableName == $"etc_pay_detail_{year}") < 0)
+                    { tablesConfig.IgnoreTables.Add(new Table() { TableName = $"etc_pay_detail_{year}" }); }
+
+                    if (tablesConfig.IgnoreTables.FindIndex(x => x.TableName == $"box_bill_{year}") < 0)
+                    { tablesConfig.IgnoreTables.Add(new Table() { TableName = $"box_bill_{year}" }); }
+
+                    if (tablesConfig.DefaultIgnoreTables.FindIndex(x => x.TableName == $"box_enter_record_{year}") < 0)
+                    {
+                        tablesConfig.DefaultIgnoreTables.Add(new Table() { TableName = $"box_enter_record_{year}" });
+                    }
+
+                    if (tablesConfig.DefaultIgnoreTables.FindIndex(x => x.TableName == $"box_out_record_{year}") < 0)
+                    {
+                        tablesConfig.DefaultIgnoreTables.Add(new Table() { TableName = $"box_out_record_{year}" });
+                    }
+
+                    if (tablesConfig.DefaultIgnoreTables.FindIndex(x => x.TableName == $"boxdoor_door_record_{year}") < 0)
+                    {
+                        tablesConfig.DefaultIgnoreTables.Add(new Table() { TableName = $"boxdoor_door_record_{year}" });
+                    }
+
+                    if (tablesConfig.DefaultIgnoreTables.FindIndex(x => x.TableName == $"business_discount_{year}") < 0)
+                    {
+                        tablesConfig.DefaultIgnoreTables.Add(new Table() { TableName = $"business_discount_{year}" });
+                    }
+
+                    if (tablesConfig.DefaultIgnoreTables.FindIndex(x => x.TableName == $"etc_pay_detail_{year}") < 0)
+                    {
+                        tablesConfig.DefaultIgnoreTables.Add(new Table() { TableName = $"etc_pay_detail_{year}" });
+                    }
+
+                    if (tablesConfig.DefaultIgnoreTables.FindIndex(x => x.TableName == $"box_bill_{year}") < 0)
+                    {
+                        tablesConfig.DefaultIgnoreTables.Add(new Table() { TableName = $"box_bill_{year}" });
+                    }
+                }
             }
         }
 
@@ -698,58 +743,114 @@ namespace PartialViewMySqlBackUp.ViewModels
             BackUpPolicy policy;
             if (CurrentPolicy.Sunday)
             {
-                policy = Policys.FirstOrDefault(x => x.Sunday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Sunday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Sunday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Sunday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Sunday = false;
+                    }
                 }
             }
             if (CurrentPolicy.Monday)
             {
-                policy = Policys.FirstOrDefault(x => x.Monday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Monday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Monday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Monday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Monday = false;
+                    }
                 }
             }
             if (CurrentPolicy.Tuesday)
             {
-                policy = Policys.FirstOrDefault(x => x.Tuesday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Tuesday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Tuesday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Tuesday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Tuesday = false;
+                    }
                 }
             }
             if (CurrentPolicy.Wednesday)
             {
-                policy = Policys.FirstOrDefault(x => x.Wednesday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Wednesday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Wednesday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Wednesday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Wednesday = false;
+                    }
                 }
             }
             if (CurrentPolicy.Thursday)
             {
-                policy = Policys.FirstOrDefault(x => x.Thursday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Thursday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Thursday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Thursday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Thursday = false;
+                    }
                 }
             }
             if (CurrentPolicy.Friday)
             {
-                policy = Policys.FirstOrDefault(x => x.Friday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Friday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Friday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Friday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Friday = false;
+                    }
                 }
             }
             if (CurrentPolicy.Saturday)
             {
-                policy = Policys.FirstOrDefault(x => x.Saturday && x.SelectedDatabase != CurrentPolicy.SelectedDatabase);
+                policy = Policys.FirstOrDefault(x => x.Saturday
+                && x.DataBaseName == CurrentPolicy.DataBaseName);
                 if (policy != null)
                 {
-                    CurrentPolicy.Saturday = false;
+                    if (policy.Id == CurrentPolicy.Id)//编辑
+                    {
+                        CurrentPolicy.Saturday = true;
+                    }
+                    else//新增
+                    {
+                        CurrentPolicy.Saturday = false;
+                    }
                 }
             }
 
@@ -865,6 +966,16 @@ namespace PartialViewMySqlBackUp.ViewModels
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register("Message", typeof(string), typeof(MySqlBackUpViewModel));
 
+
+        public int SaveFileDay
+        {
+            get { return (int)GetValue(SaveFileDayProperty); }
+            set { SetValue(SaveFileDayProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SaveFileCount.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SaveFileDayProperty =
+            DependencyProperty.Register("SaveFileDay", typeof(int), typeof(MySqlBackUpViewModel));
 
         #endregion
     }

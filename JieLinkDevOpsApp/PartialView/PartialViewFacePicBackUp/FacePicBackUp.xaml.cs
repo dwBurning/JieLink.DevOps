@@ -55,18 +55,15 @@ namespace PartialViewFacePicBackUp
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Global.ValidV2(new Action<string, bool>((message, result) =>
             {
-                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-                //viewModel.GetDoorServerInfo();
-                this.IsEnabled = true;
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
 
-            }
-            catch (Exception)
-            {
-                MessageBoxHelper.MessageBoxShowWarning("未查询到jielink2.x的数据库信息，请确认数据库配置信息是否正确？");
-                this.IsEnabled = false;
-            }
+                this.IsEnabled = result;
+            }));
         }
 
         /// <summary>

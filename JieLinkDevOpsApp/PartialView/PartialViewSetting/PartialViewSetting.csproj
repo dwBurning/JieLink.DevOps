@@ -59,6 +59,7 @@
     <Compile Include="SystemSetting.xaml.cs">
       <DependentUpon>SystemSetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModel\DBConnViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="SystemSetting.xaml">
@@ -76,5 +77,6 @@
       <Name>PartialViewInterface</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

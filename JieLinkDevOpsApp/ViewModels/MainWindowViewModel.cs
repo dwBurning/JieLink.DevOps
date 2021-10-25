@@ -33,9 +33,9 @@ namespace JieShun.JieLink.DevOps.App.ViewModels
                     continue;
                 var asm = Assembly.LoadFile(plug);
                 asm.GetTypes()
-                .Where(t => typeof(IPartialView).IsAssignableFrom(t)) //获取间接或直接继承t的所有类型
-                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl))) //获取非抽象类 排除接口继承
-                .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() //创造实例，并返回结果（项目需求，可删除）
+                .Where(t => typeof(IPartialView).IsAssignableFrom(t))
+                .Where(t => !t.IsAbstract && t.IsClass && t.IsSubclassOf(typeof(UserControl)))
+                .Select(t => (IPartialView)Activator.CreateInstance(t)).ToList() 
                 .ForEach(x => partialViewDic.Add(x.TagName, x));
                 //获取插件的Startup启动类
                 startups.AddRange(asm.GetExportedTypes()

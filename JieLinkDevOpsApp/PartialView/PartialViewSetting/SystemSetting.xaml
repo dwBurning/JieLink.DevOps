@@ -135,28 +135,28 @@
                     <TextBlock Grid.Row="3" Grid.Column="0" >数据库用户：</TextBlock>
                     <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
 
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="127.0.0.1" 
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="{Binding Ip}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" 
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="{Binding DbName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="3306" 
+                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="{Binding Port}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="jieLink" 
+                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="{Binding UserName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -171,9 +171,8 @@
                      pu:PasswordBoxHelper.CornerRadius="4"
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
-                    <ComboBox Margin="5" VerticalAlignment="Center" Height="40" 
+                    <ComboBox VerticalAlignment="Center" Height="40" 
                       SelectedIndex="{Binding SelectIndex}"
-                      SelectedValue="{Binding SelectMonth}" 
                       ItemsSource="{Binding DataSource}"
                       DisplayMemberPath="Value" Grid.Column="1" Grid.Row="5"
                       SelectedValuePath="Key"

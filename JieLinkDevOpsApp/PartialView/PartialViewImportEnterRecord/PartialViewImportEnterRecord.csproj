@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -41,6 +42,7 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -55,8 +57,13 @@
     <Compile Include="ImportEnterRecord.xaml.cs">
       <DependentUpon>ImportEnterRecord.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ImportEnterRecordV3.xaml.cs">
+      <DependentUpon>ImportEnterRecordV3.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SetmealType.cs" />
     <Compile Include="ViewModels\ImportEnterRecordViewModel.cs" />
+    <Compile Include="ViewModels\ImportEnterRecordViewModel3.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -70,6 +77,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="ImportEnterRecord.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImportEnterRecordV3.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

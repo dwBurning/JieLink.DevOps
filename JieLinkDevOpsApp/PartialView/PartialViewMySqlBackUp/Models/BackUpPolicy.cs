@@ -10,6 +10,8 @@ namespace PartialViewMySqlBackUp.Models
 {
     public class BackUpPolicy : DependencyObject
     {
+        public string Id { get; set; }
+
         /// <summary>
         /// 星期天
         /// </summary>
@@ -171,7 +173,7 @@ namespace PartialViewMySqlBackUp.Models
         /// <summary>
         /// 当前选中的需要备份的数据库
         /// </summary>
-        public string SelectedDatabase
+        public string DataBaseName
         {
             get { return (string)GetValue(SelectedDatabaseProperty); }
             set { SetValue(SelectedDatabaseProperty, value); }
@@ -194,7 +196,7 @@ namespace PartialViewMySqlBackUp.Models
                 }
 
                 var entity = EnvironmentInfo.DbConnEntity;
-                return $"Data Source={entity.Ip};port={entity.Port};User ID={entity.UserName};Password={entity.Password};Initial Catalog={SelectedDatabase};Pooling=true;charset=utf8;"; ; 
+                return $"Data Source={entity.Ip};port={entity.Port};User ID={entity.UserName};Password={entity.Password};Initial Catalog={DataBaseName};Pooling=true;charset=utf8;"; ; 
             }
         }
 
@@ -211,7 +213,7 @@ namespace PartialViewMySqlBackUp.Models
                 if (Friday) policyStr.Append("周五").Append(",");
                 if (Saturday) policyStr.Append("周六").Append(",");
                 policyStr.Append(SelectedTime.ToString("HH:mm:ss")).Append(" ");
-                policyStr.Append(SelectedDatabase).Append(" ");
+                policyStr.Append(DataBaseName).Append(" ");
 
                 if (IsTaskBackUpDataBase) 
                     policyStr.Append("全库备份");

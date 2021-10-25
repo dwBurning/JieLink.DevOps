@@ -1,10 +1,8 @@
-﻿using MySql.Data.MySqlClient;
-using PartialViewImportEnterRecord.ViewModels;
+﻿using PartialViewImportEnterRecord.ViewModels;
 using PartialViewInterface;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,16 +19,15 @@ using System.Windows.Shapes;
 namespace PartialViewImportEnterRecord
 {
     /// <summary>
-    /// ImportEnterRecord.xaml 的交互逻辑
+    /// ImportEnterRecordV3.xaml 的交互逻辑
     /// </summary>
-    public partial class ImportEnterRecord : UserControl, IPartialView
+    public partial class ImportEnterRecordV3 : UserControl, IPartialView
     {
-        ImportEnterRecordViewModel viewModel;
-
-        public ImportEnterRecord()
+        ImportEnterRecordViewModel3 viewModel;
+        public ImportEnterRecordV3()
         {
             InitializeComponent();
-            viewModel = new ImportEnterRecordViewModel();
+            viewModel = new ImportEnterRecordViewModel3();
             DataContext = viewModel;
         }
 
@@ -41,30 +38,17 @@ namespace PartialViewImportEnterRecord
 
         public string TagName
         {
-            get { return "ImportEnterRecord"; }
+            get { return "ImportEnterRecordV3"; }
         }
 
         public MenuType MenuType
         {
-            get { return MenuType.Center; }
+            get { return MenuType.CenterV3; }
         }
 
         public int Order
         {
             get { return 800; }
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            Global.ValidV2(new Action<string, bool>((message, result) =>
-            {
-                if (!result)
-                {
-                    MessageBoxHelper.MessageBoxShowWarning(message);
-                }
-
-                this.IsEnabled = result;
-            }));
         }
 
         private void btnChoosePath_Click(object sender, RoutedEventArgs e)
@@ -81,6 +65,19 @@ namespace PartialViewImportEnterRecord
         private void OpenTemplate_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("explorer.exe", "Template");
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Global.ValidV3(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
         }
     }
 }

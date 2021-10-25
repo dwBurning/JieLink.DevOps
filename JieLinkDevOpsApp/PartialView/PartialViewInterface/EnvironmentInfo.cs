@@ -2,8 +2,13 @@
 using PartialViewInterface.Utils;
 using Quartz;
 using Quartz.Impl;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace PartialViewInterface
 {
@@ -16,14 +21,7 @@ namespace PartialViewInterface
                 DbConnEntity = new DbConnEntity();
             }
 
-            ConfigHelper.AddAppConfig("DataArchiveJob", "0 0 0 * * ?");
-            ConfigHelper.AddAppConfig("ReportProjectInfoJob", "0 0 1 * * ?");
-            ConfigHelper.AddAppConfig("TaskDataMonitorJob", "0 30 1 * * ?");
-            ConfigHelper.AddAppConfig("AutoArchive", "0");
-            ConfigHelper.AddAppConfig("AutoArchiveMonth", "3");
-            ConfigHelper.AddAppConfig("AutoStartCorectString", "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}");
-            ConfigHelper.AddAppConfig("AutoStartSyncString", "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}");
-            ConfigHelper.AddAppConfig("CheckDiskSpaceJob", "0 0 4 * * ?");
+            
         }
 
         public static string ProjectNo { get; set; }
@@ -101,23 +99,17 @@ namespace PartialViewInterface
         }
 
         /// <summary>
-        /// 2.x 数据库默认名字
+        /// 是否为jielink3.x true表示是 false表示不是
         /// </summary>
-        public static string DatabaseName2x = "db_newg3_main";
+        public static bool IsJieLink3x { get; set; }
+
+        public static SqliteHelper SqliteHelper = new SqliteHelper("app.db");
 
         /// <summary>
-        /// 3.x 主数据库默认名字
+        /// 配置信息
         /// </summary>
-        public static string DatabaseName3xMain = "jielink";
+        public static List<KeyValueSetting> Settings = new List<KeyValueSetting>();
 
-        /// <summary>
-        /// 3.x pcs数据库默认名字
-        /// </summary>
-        public static string DatabaseName3xPCS = "jielink_pcs";
-
-        /// <summary>
-        /// 默认选择2.x数据库备份
-        /// </summary>
-        public static string SelectedDatabase = DatabaseName2x;
+        public static List<BackUpJobConfig> BackUpJobConfigs = new List<BackUpJobConfig>();
     }
 }
