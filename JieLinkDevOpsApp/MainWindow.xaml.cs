@@ -82,18 +82,13 @@ namespace JieShun.JieLink.DevOps.App
             this.Activate();
         }
 
-        bool isExit = false;
+        //bool isExit = false;
         private void Exit(object sender, EventArgs e)
         {
             this.Show(sender, e);
             if (MessageBoxHelper.MessageBoxShowQuestion("退出后将无法实时监控JieLink软件的运行状态，确定退出么？") == MessageBoxResult.Yes)
             {
-                isExit = true;
-                StdSchedulerFactory.GetDefaultScheduler().Shutdown();
-                foreach (var startup in viewModel.startups)
-                {
-                    startup.Exit();
-                }
+                EnvironmentInfo.IsExit = true;
                 this.Close();
             }
         }
@@ -132,8 +127,13 @@ namespace JieShun.JieLink.DevOps.App
 
         private void WindowX_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (isExit)
+            if (EnvironmentInfo.IsExit)
             {
+                StdSchedulerFactory.GetDefaultScheduler().Shutdown();
+                foreach (var startup in viewModel.startups)
+                {
+                    startup.Exit();
+                }
                 System.Windows.Application.Current.Shutdown();
             }
             else
@@ -173,7 +173,7 @@ namespace JieShun.JieLink.DevOps.App
                 startup.Start();
             }
             //运行后台任务
-            IScheduler scheduler = EnvironmentInfo.scheduler;
+            IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
             scheduler.Start();
             foreach (var jobType in viewModel.jobs)
             {

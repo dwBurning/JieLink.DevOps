@@ -91,7 +91,7 @@ namespace PartialViewInterface
         /// <summary>
         /// 定时任务全局实例
         /// </summary>
-        public static IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+        //public static IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
 
         public static string GetValue(string key, string value = "")
         {
@@ -102,6 +102,8 @@ namespace PartialViewInterface
         /// 是否为jielink3.x true表示是 false表示不是
         /// </summary>
         public static bool IsJieLink3x { get; set; }
+
+        public static bool IsExit { get; set; }
 
         public static SqliteHelper SqliteHelper = new SqliteHelper("app.db");
 

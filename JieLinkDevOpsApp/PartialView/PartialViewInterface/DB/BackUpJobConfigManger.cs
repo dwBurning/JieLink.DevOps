@@ -65,5 +65,12 @@ namespace PartialViewInterface.DB
         {
             return EnvironmentInfo.BackUpJobConfigs.Find(x => x.Id == id);
         }
+
+        public void Clear()
+        {
+            string error = "";
+            EnvironmentInfo.SqliteHelper.UpdateData(out error, $"delete from sys_backup_job;");
+            EnvironmentInfo.BackUpJobConfigs.Clear();
+        }
     }
 }

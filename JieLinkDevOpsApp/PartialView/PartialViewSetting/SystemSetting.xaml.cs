@@ -26,6 +26,7 @@ namespace PartialViewSetting
         private ProjectInfoWindowViewModel viewModel;
         private DBConnViewModel dbConnViewModel;
         private KeyValueSettingManager manager;
+        private BackUpJobConfigManger backUpJobConfigManger;
         public SystemSetting()
         {
             InitializeComponent();
@@ -36,6 +37,7 @@ namespace PartialViewSetting
             gridDBConfig.DataContext = dbConnViewModel;
 
             manager = new KeyValueSettingManager();
+            backUpJobConfigManger = new BackUpJobConfigManger();
         }
 
         public string MenuName
@@ -109,9 +111,6 @@ namespace PartialViewSetting
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!IsLoaded)
-                return;
-            
             txtServerUrl.Text = EnvironmentInfo.ServerUrl;
             if (string.IsNullOrEmpty(EnvironmentInfo.ProjectVersion))
             {
@@ -162,7 +161,7 @@ namespace PartialViewSetting
             txtCenterDbPwd.Password = EnvironmentInfo.DbConnEntity.Password;
             dbConnViewModel.Password = EnvironmentInfo.DbConnEntity.Password;
             dbConnViewModel.DbName = EnvironmentInfo.DbConnEntity.DbName;
-            dbConnViewModel.SelectIndex = EnvironmentInfo.IsJieLink3x ? 1 : 0;
+
 
 
         }
@@ -182,10 +181,7 @@ namespace PartialViewSetting
             try
             {
                 MySqlHelper.ExecuteDataset(connStr, "select * from `user` limit 1");
-
-                Notice.Show("中心数据库连接成功,已自动保存!", "通知", 3, MessageBoxIcon.Success);
                 //存储中心连接字符串
-
                 EnvironmentInfo.DbConnEntity.Ip = dbConnViewModel.Ip;
                 EnvironmentInfo.DbConnEntity.Port = dbConnViewModel.Port;
                 EnvironmentInfo.DbConnEntity.UserName = dbConnViewModel.UserName;
@@ -217,10 +213,116 @@ namespace PartialViewSetting
                         ValueText = "1"
                     });
                 }
+
+                MessageBoxHelper.MessageBoxShowInfo("中心数据库连接成功，程序需要重启！");
+                System.Threading.Thread.Sleep(500);
+                EnvironmentInfo.IsExit = true;
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = "restart.bat",
+                    CreateNoWindow = true
+                });
+                Application.Current.MainWindow.Close();
+
             }
             catch (Exception)
             {
                 Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void cmbJKVersion_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                dbConnViewModel.SelectIndex = EnvironmentInfo.IsJieLink3x ? 1 : 0;
+                return;
+            }
+
+            if (MessageBoxHelper.MessageBoxShowQuestion("切换前端软件版本会重装数据库备份策略，是否继续？") == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            EnvironmentInfo.IsJieLink3x = dbConnViewModel.SelectIndex == 1;
+            EnvironmentInfo.DbConnEntity.Ip = dbConnViewModel.Ip;
+            EnvironmentInfo.DbConnEntity.Port = dbConnViewModel.Port;
+            EnvironmentInfo.DbConnEntity.UserName = dbConnViewModel.UserName;
+            EnvironmentInfo.DbConnEntity.Password = dbConnViewModel.Password;
+            EnvironmentInfo.DbConnEntity.DbName = dbConnViewModel.DbName;
+
+            if (dbConnViewModel.SelectIndex == 0)
+            {
+                Global.ValidV2(new Action<string, bool>((message, result) =>
+                {
+                    if (!result)
+                    {
+                        MessageBoxHelper.MessageBoxShowWarning(message);
+                    }
+
+                    btnTestConn.IsEnabled = result;
+                    if (!result) return;
+                }));
+
+                if (EnvironmentInfo.BackUpJobConfigs.FindIndex(x => x.DataBaseName == dbConnViewModel.DbName) < 0)
+                {
+                    backUpJobConfigManger.Clear();
+
+                    backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        DataBaseName = dbConnViewModel.DbName,
+                        Cron = "00 00 03 ? * 4",
+                        BackUpType = 0
+                    });
+
+                    backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        DataBaseName = dbConnViewModel.DbName,
+                        Cron = "00 00 03 ? * 2,6",
+                        BackUpType = 1
+                    });
+
+                }
+
+            }
+            else if (dbConnViewModel.SelectIndex == 1)
+            {
+                Global.ValidV3(new Action<string, bool>((message, result) =>
+                {
+                    if (!result)
+                    {
+                        MessageBoxHelper.MessageBoxShowWarning(message);
+                    }
+
+                    btnTestConn.IsEnabled = result;
+                    if (!result) return;
+                }));
+
+                if (EnvironmentInfo.BackUpJobConfigs.FindIndex(x => x.DataBaseName == dbConnViewModel.DbName) < 0)
+                {
+                    backUpJobConfigManger.Clear();
+                    string[] dbs = new string[] { "jielink", "jielink_pcs" };
+                    foreach (var db in dbs)
+                    {
+                        backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            DataBaseName = db,
+                            Cron = "00 00 03 ? * 4",
+                            BackUpType = 0
+                        });
+
+                        backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            DataBaseName = db,
+                            Cron = "00 00 03 ? * 2,6",
+                            BackUpType = 1
+                        });
+                    }
+                }
             }
         }
     }

@@ -129,7 +129,7 @@ namespace PartialViewMySqlBackUp.ViewModels
             ShowMessage(message);
         }
 
-        IScheduler scheduler = EnvironmentInfo.scheduler;
+        IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
         private void Start(object parameter)
         {
             if (string.IsNullOrEmpty(TaskBackUpPath))
