@@ -61,7 +61,7 @@
                  />
                 <PasswordBox Grid.Row="1" Grid.Column="1" x:Name="txtPassword" 
                      pu:PasswordBoxHelper.Icon="&#xf11c;" Height="40"
-                     pu:PasswordBoxHelper.Watermark="请输入密码"
+                     pu:PasswordBoxHelper.Watermark="请输入密码" Password="Jsst*168"
                      pu:PasswordBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:PasswordBoxHelper.FocusedShadowColor="#20A0FF"
                      pu:PasswordBoxHelper.CornerRadius="4"

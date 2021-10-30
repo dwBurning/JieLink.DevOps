@@ -45,9 +45,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Panuon.UI.Silver.1.1.3\lib\net45\Panuon.UI.Silver.dll</HintPath>
     </Reference>
-    <Reference Include="PartialViewInterface">
-      <HintPath>..\JieLinkDevOpsApp\PartialView\PartialViewInterface\bin\Debug\PartialViewInterface.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
@@ -102,6 +99,12 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PartialViewInterface\PartialViewInterface.csproj">
+      <Project>{3FACC984-5886-4C2B-BFA3-C722125EE56D}</Project>
+      <Name>PartialViewInterface</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -31,6 +31,8 @@ namespace PartialViewJSRMOrder.ViewModel
 
             LoginCommand = new DelegateCommand();
             LoginCommand.ExecuteAction = Login;
+
+            UserName = "104542";
         }
 
         private void GetVerifyCode(object parameter)
