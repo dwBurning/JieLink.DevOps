@@ -57,7 +57,10 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\ReturnData.cs" />
+    <Compile Include="Model\Order.cs" />
+    <Compile Include="Model\QueryOrder.cs" />
+    <Compile Include="Model\ReturnMsg.cs" />
+    <Compile Include="Model\Token.cs" />
     <Compile Include="ViewModel\Operator.cs" />
     <Compile Include="ViewModel\OrderMonitorViewModel.cs" />
     <Page Include="JSRMOrderMonitor.xaml">

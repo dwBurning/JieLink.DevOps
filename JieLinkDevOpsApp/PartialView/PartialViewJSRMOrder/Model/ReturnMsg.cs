@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PartialViewJSRMOrder.Model
 {
-    public class ReturnMsg
+    public class ReturnMsg<T> where T : class
     {
         public int status { get; set; }
 
@@ -15,5 +15,7 @@ namespace PartialViewJSRMOrder.Model
         public string respMsg { get; set; }
 
         public bool success { get; set; }
+
+        public T respData { get; set; }
     }
 }

@@ -6,9 +6,11 @@ using PartialViewJSRMOrder.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using static PartialViewInterface.Utils.HttpHelper;
 
 namespace PartialViewJSRMOrder.ViewModel
 {
@@ -39,20 +41,38 @@ namespace PartialViewJSRMOrder.ViewModel
         {
             Operator user = new Operator();
             user.username = this.UserName;
-            //ReturnMsg returnMsg = HttpHelper.Post<ReturnMsg>(getVerifyCode, user);
-            //Notice.Show(returnMsg.respMsg, "通知", 3, MessageBoxIcon.Warning);
+            ReturnMsg<object> returnMsg = Post<ReturnMsg<object>>(getVerifyCode, user);
+            Notice.Show(returnMsg.respMsg, "通知", 3, MessageBoxIcon.Warning);
         }
 
+        Token token = new Token();
         private void Login(object parameter)
         {
             this.Password = (string)parameter;
-            string miweng = MD5(this.Password);
+            string password = getMD5(this.Password);
 
             Operator user = new Operator();
             user.username = this.UserName;
-            user.password = this.Password;
+            user.password = password;
             user.verifyCode = this.VerifyCode;
-            //HttpHelper.Post<ReturnMsg>(getToken, user);
+
+            ReturnMsg<Token> returnMsg = Post<ReturnMsg<Token>>(getToken, user);
+            if (returnMsg.success)
+            {
+                token.token = returnMsg.respData.token;
+                token.userId = returnMsg.respData.userId;
+
+                getOrder();
+            }
+        }
+
+        private void getOrder()
+        {
+            HttpRequestArgs httpRequestArgs = new HttpRequestArgs();
+            httpRequestArgs.Url = queryAuthProblemList;
+            httpRequestArgs.Heads.Add("userId", token.userId);
+            httpRequestArgs.Heads.Add("X-Token", token.userId);
+            ReturnMsg<List<Order>> returnMsg = Post<ReturnMsg<List<Order>>>(httpRequestArgs);
         }
 
 
@@ -61,9 +81,16 @@ namespace PartialViewJSRMOrder.ViewModel
         /// </summary>
         /// <param name="Text">要加密的字符串</param>
         /// <returns>密文</returns>
-        public string MD5(string Text)
+        public string getMD5(string password)
         {
-            return System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(Text, "MD5").ToLower();
+            MD5 algorithm = MD5.Create();
+            byte[] data = algorithm.ComputeHash(Encoding.UTF8.GetBytes(password));
+            string md5 = "";
+            for (int i = 0; i < data.Length; i++)
+            {
+                md5 += data[i].ToString("x2");
+            }
+            return md5;
         }
 
 
