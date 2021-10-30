@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewClearCloudData",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewImportVoucherInfo", "PartialView\PartialViewImportVoucherInfo\PartialViewImportVoucherInfo.csproj", "{875ADC67-062C-4A02-9703-2A8B4D2E2BCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartialViewJSRMOrder", "PartialView\PartialViewJSRMOrder\PartialViewJSRMOrder.csproj", "{4628408A-0243-4E88-80C2-B71FD47DD86A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -165,6 +167,10 @@ Global
 		{875ADC67-062C-4A02-9703-2A8B4D2E2BCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{875ADC67-062C-4A02-9703-2A8B4D2E2BCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{875ADC67-062C-4A02-9703-2A8B4D2E2BCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4628408A-0243-4E88-80C2-B71FD47DD86A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4628408A-0243-4E88-80C2-B71FD47DD86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4628408A-0243-4E88-80C2-B71FD47DD86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4628408A-0243-4E88-80C2-B71FD47DD86A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

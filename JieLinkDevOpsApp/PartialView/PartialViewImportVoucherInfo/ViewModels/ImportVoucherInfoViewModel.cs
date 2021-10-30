@@ -99,7 +99,7 @@ namespace PartialViewImportVoucherInfo.ViewModels
                     credential.CredentialType = reader["CredentialType"].ToString();
 
 
-                   
+
                     result = true;
                 }
                 else
@@ -146,7 +146,7 @@ namespace PartialViewImportVoucherInfo.ViewModels
                 }
 
 
-                if(credentialChannelRels.Count==0)
+                if (credentialChannelRels.Count == 0)
                 {
                     ShowMessage("没有查询到该人事对应的凭证所关联的服务，请先手动生成服务！");
                     result = false;
@@ -233,15 +233,14 @@ namespace PartialViewImportVoucherInfo.ViewModels
 
             Task.Factory.StartNew(() =>
             {
-                List<string> insertSqls = new List<string>();
-
-                List<string> pcsSqls = new List<string>();
+                //List<string> pcsSqls = new List<string>();
 
                 //List<string> insertVouchers = new List<string>();
                 //List<string> insertVehicles = new List<string>();
                 //List<string> insertCredentialChannelRels = new List<string>();
                 foreach (var item in arryVoucherInfo)
                 {
+                    List<string> insertSqls = new List<string>();
                     //新增 凭证  (根据从数据库中获取的一个例子为主，主要替换掉ID ,凭证号，创建时间，更新时间，备注，车牌)
                     Credential insertCredential = new Credential()
                     {
@@ -312,7 +311,7 @@ namespace PartialViewImportVoucherInfo.ViewModels
                                                                         credential.Id
                                                  ));
 
-                    
+
 
 
                     insertSqls.Add(string.Format(@" insert into {3}.pms_credential_channel_rel 
@@ -336,51 +335,51 @@ namespace PartialViewImportVoucherInfo.ViewModels
                     //insertSqls.Add(string.Format(@" update jielink_pcs.pms_credential_channel_rel 
                     //                                set  channel=(select LeaseStallId  from jielink_pcs.pms_credential_channel_rel where CredentialId='{0}' and  ChannelId ='11111111111111111111111111111111' )  
                     //                                where CredentialId='{0}' and  ChannelId ='11111111111111111111111111111111'   ", insertCredential.Id));
-                    
-                }
 
-
-                //执行sql 语句
-                try
-                {
-                    using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
+                    //执行sql 语句
+                    try
                     {
-                        conn.Open();
-                        MySqlTransaction transaction = conn.BeginTransaction();
-                        MySqlCommand cmd = conn.CreateCommand();
-                        cmd.CommandTimeout = int.MaxValue;//超时时间设置60分钟
-                        cmd.Transaction = transaction;
-
-                        try
+                        using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
                         {
-                            foreach (var insertSql in insertSqls)
+                            conn.Open();
+                            MySqlTransaction transaction = conn.BeginTransaction();
+                            MySqlCommand cmd = conn.CreateCommand();
+                            cmd.CommandTimeout = int.MaxValue;//超时时间设置60分钟
+                            cmd.Transaction = transaction;
+
+                            try
                             {
-                                LogHelper.CommLogger.Info( DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "导入凭证信息执行sql：" + insertSql);
-                                cmd.CommandText = insertSql;
-                                int x = cmd.ExecuteNonQuery();
-                                if (x <= 0) 
+                                foreach (var insertSql in insertSqls)
                                 {
-                                    throw new Exception("新增失败!sql语句为: "+ insertSql);
+                                    LogHelper.CommLogger.Info(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "导入凭证信息执行sql：" + insertSql);
+                                    cmd.CommandText = insertSql;
+                                    int x = cmd.ExecuteNonQuery();
+                                    if (x <= 0)
+                                    {
+                                        throw new Exception("新增失败!sql语句为: " + insertSql);
+                                    }
+
                                 }
 
+                                transaction.Commit();
+                                ShowMessage($"导入凭证 {item} 成功！");
                             }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                LogHelper.CommLogger.Error("数据新增遇到些问题，事务回滚：" + ex.ToString());
+                                ShowMessage("数据新增遇到些问题，事务回滚：" + ex.ToString());
+                            }
+                        }
 
-                            transaction.Commit();
-                            ShowMessage(string.Format("导入凭证信息成功！"));
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            LogHelper.CommLogger.Error("数据新增遇到些问题，事务回滚：" + ex.ToString());
-                            ShowMessage("数据新增遇到些问题，事务回滚：" + ex.ToString());
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogHelper.CommLogger.Error("数据新增遇到些问题" + ex.ToString());
+                        ShowMessage("数据新增遇到些问题" + ex.ToString());
                     }
                 }
-                catch (Exception ex)
-                {
-                    LogHelper.CommLogger.Error("数据新增遇到些问题"+ex.ToString());
-                    ShowMessage("数据新增遇到些问题" + ex.ToString());
-                }
+
             });
         }
 
