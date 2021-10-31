@@ -11,7 +11,7 @@ namespace PartialViewJSRMOrder.Monitor
     {
         public void Execute(IJobExecutionContext context)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

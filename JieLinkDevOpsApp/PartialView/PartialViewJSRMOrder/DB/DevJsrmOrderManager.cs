@@ -28,22 +28,19 @@ namespace PartialViewJSRMOrder.DB
                 order.remoteAccount = dr["remoteAccount"].ToString();
                 order.softVersion = dr["softVersion"].ToString();
                 order.Dispatched = int.Parse(dr["Dispatched"].ToString());
-                order.ReciveTime = DateTime.Parse(dr["ReciveTime"].ToString());
+                order.ReceiveTime = DateTime.Parse(dr["ReceiveTime"].ToString());
                 order.ResponsiblePerson = dr["ResponsiblePerson"].ToString();
             }
 
             return order;
         }
 
-        public async void AddOrder(Order order)
+        public void AddOrder(Order order)
         {
-            await TaskHelper.Start(() =>
-            {
-                EnvironmentInfo.SqliteHelper.ExecuteSql($"insert into dev_jsrm_order values('{order.problemCode}','{order.projectName}','{order.problemInfo}','{order.userName}','{order.problemTime}','{order.remoteAccount}','{order.softVersion}',{order.Dispatched},'{order.ReciveTime.ToString("yyyy-MM-dd HH:mm:ss")}','{order.ResponsiblePerson}');");
-            });
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"insert into dev_jsrm_order values('{order.problemCode}','{order.projectName}','{order.problemInfo}','{order.userName}','{order.problemTime}','{order.remoteAccount}','{order.softVersion}',{order.Dispatched},'{order.ReceiveTime.ToString("yyyy-MM-dd HH:mm:ss")}','{order.ResponsiblePerson}');");
         }
 
-        public List<Order> GetDispatchingOrders()
+        public List<Order> GetDispatchingOrderList()
         {
             string error = "";
             DataTable dataTable = EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where Dispatched=0;");
@@ -59,11 +56,22 @@ namespace PartialViewJSRMOrder.DB
                 order.remoteAccount = dr["remoteAccount"].ToString();
                 order.softVersion = dr["softVersion"].ToString();
                 order.Dispatched = int.Parse(dr["Dispatched"].ToString());
-                order.ReciveTime = DateTime.Parse(dr["ReciveTime"].ToString());
+                order.ReceiveTime = DateTime.Parse(dr["ReceiveTime"].ToString());
                 order.ResponsiblePerson = dr["ResponsiblePerson"].ToString();
                 orders.Add(order);
             }
             return orders;
+        }
+
+        public DataTable GetDispatchingOrderTable()
+        {
+            string error = "";
+            return  EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where Dispatched=0;");
+        }
+
+        public void UpdateDispatch(string problemCode)
+        {
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set Dispatched=1 where problemCode='{problemCode}';");
         }
     }
 }

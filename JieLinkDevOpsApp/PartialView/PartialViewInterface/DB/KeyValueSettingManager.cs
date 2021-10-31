@@ -13,9 +13,10 @@ namespace PartialViewInterface.DB
         public void WriteSetting(KeyValueSetting keyValueSetting)
         {
             KeyValueSetting setting = ReadSetting(keyValueSetting.KeyId);
-            if (setting == null)//插入
+            if (setting == null || (setting != null && setting.KeyType == -1))//插入
             {
                 string error = "";
+                setting.KeyType = 1;
                 EnvironmentInfo.SqliteHelper.UpdateData(out error, $"insert into sys_key_value_setting(KeyType, KeyID, KeyName, ValueText, Remark)values('{keyValueSetting.KeyType}','{keyValueSetting.KeyId}','{keyValueSetting.KeyName}','{keyValueSetting.ValueText}','{keyValueSetting.Remark}');");
 
                 EnvironmentInfo.Settings.Add(keyValueSetting);

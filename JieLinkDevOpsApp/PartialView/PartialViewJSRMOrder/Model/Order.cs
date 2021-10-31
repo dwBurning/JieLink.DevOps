@@ -51,7 +51,7 @@ namespace PartialViewJSRMOrder.Model
         /// <summary>
         /// 接收问题的时间
         /// </summary>
-        public DateTime ReciveTime { get; set; }
+        public DateTime ReceiveTime { get; set; }
 
         /// <summary>
         /// 问题研发负责人

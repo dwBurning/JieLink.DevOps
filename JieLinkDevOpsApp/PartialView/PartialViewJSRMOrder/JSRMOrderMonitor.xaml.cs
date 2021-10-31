@@ -27,7 +27,7 @@ namespace PartialViewJSRMOrder
         public JSRMOrderMonitor()
         {
             InitializeComponent();
-            viewModel = new OrderMonitorViewModel();
+            viewModel = OrderMonitorViewModel.Instance();
             this.gridOder.DataContext = viewModel;
         }
 

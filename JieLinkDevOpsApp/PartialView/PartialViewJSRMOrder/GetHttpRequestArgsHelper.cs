@@ -46,7 +46,7 @@ namespace PartialViewJSRMOrder
 
             HttpRequestArgs httpRequestArgs = new HttpRequestArgs()
             {
-                Timeout = 3000,
+                Timeout = 5000,
                 Url = url,
                 Content = paramUrlCode,
                 ContentType = "application/x-www-form-urlencoded"

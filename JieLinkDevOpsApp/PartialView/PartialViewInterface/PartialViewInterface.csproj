@@ -152,6 +152,7 @@
     <Compile Include="Utils\MySqlHelperEx.cs" />
     <Compile Include="Utils\NPOIExcelHelper.cs" />
     <Compile Include="Utils\ProcessHelper.cs" />
+    <Compile Include="Utils\SendEmailHelper.cs" />
     <Compile Include="Utils\SerializationHelper.cs" />
     <Compile Include="Utils\MSSqlHelper.cs" />
     <Compile Include="Utils\SqliteHelper.cs" />

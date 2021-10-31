@@ -30,6 +30,24 @@ namespace PartialViewJSRMOrder.ViewModel
         private readonly string queryProblemDisposeList = "http://jsrm.jslife.net/api/jsrm-workorder/workorder/problemDispose/queryProblemDisposeList";
 
 
+        private static OrderMonitorViewModel instance;
+        private static readonly object locker = new object();
+
+        public static OrderMonitorViewModel Instance()
+        {
+            if (instance == null)
+            {
+                lock (locker)
+                {
+                    if (instance == null)
+                    {
+                        instance = new OrderMonitorViewModel();
+                    }
+                }
+            }
+            return instance;
+        }
+
         public DelegateCommand GetVerifyCodeCommand { get; set; }
 
         public DelegateCommand LoginCommand { get; set; }
@@ -82,7 +100,8 @@ namespace PartialViewJSRMOrder.ViewModel
             }
 
             GetOrderJob = keyValueSettingManager.ReadSetting("GetOrderJob")?.ValueText;
-            DispatchJob = keyValueSettingManager.ReadSetting("GetOrderJob")?.ValueText;
+            DispatchJob = keyValueSettingManager.ReadSetting("DispatchJob")?.ValueText;
+            ReceiveEmail = keyValueSettingManager.ReadSetting("ReceiveEmail")?.ValueText;
         }
 
 
@@ -94,20 +113,26 @@ namespace PartialViewJSRMOrder.ViewModel
         IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
         private void StartTask(object parameter)
         {
+            keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "GetOrderJob", ValueText = this.GetOrderJob });
+            keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "DispatchJob", ValueText = this.DispatchJob });
+            keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "ReceiveEmail", ValueText = this.ReceiveEmail });
+
             string[] jobs = new string[] { "GetOrderJob", "DispatchJob" };
             foreach (var jobKey in jobs)
             {
                 string cron = jobKey == "GetOrderJob" ? this.GetOrderJob : this.DispatchJob;
+                Type jobType = jobKey == "GetOrderJob" ? typeof(GetOrderJob) : typeof(DispatchJob);
 
                 var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("JSRM")).Where(x => x.Name == jobKey).FirstOrDefault();
                 if (triggerKey != null)
                 {
                     scheduler.UnscheduleJob(triggerKey);
                 }
-                var job = JobBuilder.Create(typeof(GetOrderJob))
+                var job = JobBuilder.Create(jobType)
                                         .WithIdentity(jobKey, "JSRM")
                                         .UsingJobData("HttpRequestArgs",
                                         JsonHelper.SerializeObject(GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId)))
+                                        .UsingJobData("ReceiveEmail", this.ReceiveEmail)
                                         .Build();
                 var trigger = TriggerBuilder.Create()
                                 .StartNow()
@@ -116,6 +141,8 @@ namespace PartialViewJSRMOrder.ViewModel
                                 .Build();
                 scheduler.ScheduleJob(job, trigger);
             }
+            ShowMessage("定时任务已启动");
+            Notice.Show("定时任务已启动", "通知", 3, MessageBoxIcon.Success);
         }
 
 
@@ -123,7 +150,16 @@ namespace PartialViewJSRMOrder.ViewModel
         {
             Operator user = new Operator();
             user.username = this.UserName;
-            ReturnMsg<object> returnMsg = Post<ReturnMsg<object>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getVerifyCode, user));
+            ReturnMsg<object> returnMsg;
+            try
+            {
+               returnMsg = Post<ReturnMsg<object>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getVerifyCode, user));
+            }
+            catch (Exception)
+            {
+                returnMsg = new ReturnMsg<object>() { success = false };
+            }
+            
             if (returnMsg.success)
             {
                 ShowMessage(returnMsg.respMsg);
@@ -146,8 +182,9 @@ namespace PartialViewJSRMOrder.ViewModel
             if (returnMsg.success)
             {
                 IsNeedLogin = false;
-                ShowMessage("Token有效，已自动登陆，后台任务执行中");
+                ShowMessage("Token有效，已自动登陆");
                 AddOrder(returnMsg.respData.data);
+                StartTask(null);
             }
             else
             {
@@ -165,8 +202,16 @@ namespace PartialViewJSRMOrder.ViewModel
             user.username = this.UserName;
             user.password = password;
             user.verifyCode = this.VerifyCode;
-
-            ReturnMsg<Token> returnMsg = Post<ReturnMsg<Token>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getToken, user));
+            ReturnMsg<Token> returnMsg;
+            try
+            {
+                returnMsg = Post<ReturnMsg<Token>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getToken, user));
+            }
+            catch (Exception)
+            {
+                returnMsg = new ReturnMsg<Token>() { success = false };
+            }
+            
             if (returnMsg.success)
             {
                 IsNeedLogin = false;
@@ -192,24 +237,34 @@ namespace PartialViewJSRMOrder.ViewModel
 
         public async Task<ReturnMsg<PageOrder>> GetOrder()
         {
-            HttpRequestArgs httpRequestArgs = GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId);
-            return await PostAsync<ReturnMsg<PageOrder>>(httpRequestArgs);
+            try
+            {
+                HttpRequestArgs httpRequestArgs = GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId);
+                return await PostAsync<ReturnMsg<PageOrder>>(httpRequestArgs);
+            }
+            catch (Exception)
+            {
+                return new ReturnMsg<PageOrder>() { success = false };
+            }
         }
 
 
         public void AddOrder(List<Order> orders)
         {
-            foreach (var x in orders)
-            {
-                Order order = devJsrmOrderManager.GetOrder(x.problemCode);
-                if (order != null)
-                {
-                    continue;
-                }
-                x.ReciveTime = DateTime.Now;
-                ShowMessage($"新增加工单 {x.problemCode}");
-                devJsrmOrderManager.AddOrder(x);
-            }
+            TaskHelper.Start(() =>
+           {
+               foreach (var x in orders)
+               {
+                   Order order = devJsrmOrderManager.GetOrder(x.problemCode);
+                   if (order != null)
+                   {
+                       continue;
+                   }
+                   x.ReceiveTime = DateTime.Now;
+                   ShowMessage($"新增加工单 {x.problemCode}");
+                   devJsrmOrderManager.AddOrder(x);
+               }
+           });
         }
 
 
@@ -319,6 +374,18 @@ namespace PartialViewJSRMOrder.ViewModel
         // Using a DependencyProperty as the backing store for DispatchJob.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DispatchJobProperty =
             DependencyProperty.Register("DispatchJob", typeof(string), typeof(OrderMonitorViewModel));
+
+
+
+        public string ReceiveEmail
+        {
+            get { return (string)GetValue(ReceiveEmailProperty); }
+            set { SetValue(ReceiveEmailProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ReceiveEmail.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ReceiveEmailProperty =
+            DependencyProperty.Register("ReceiveEmail", typeof(string), typeof(OrderMonitorViewModel));
 
 
 

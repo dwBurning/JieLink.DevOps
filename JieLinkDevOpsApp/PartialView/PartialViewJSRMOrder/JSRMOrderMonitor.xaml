@@ -39,6 +39,7 @@
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
@@ -57,6 +58,7 @@
                 <TextBlock Grid.Row="3" Grid.Column="0" >定时请求：</TextBlock>
 
                 <TextBlock Grid.Row="4" Grid.Column="0" >定时分派：</TextBlock>
+                <TextBlock Grid.Row="5" Grid.Column="0" >接收邮箱：</TextBlock>
 
 
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding UserName}" 
@@ -98,19 +100,27 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
 
-                <Button Grid.Column="1" Grid.Row="5" Content="获取短信验证码" Command="{Binding GetVerifyCodeCommand}"
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding ReceiveEmail}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="接收邮箱"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+
+                <Button Grid.Column="1" Grid.Row="6" Content="获取短信验证码" Command="{Binding GetVerifyCodeCommand}"
                 CommandParameter="{Binding ElementName=txtPassword,Path=Password}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 
-                <Button Grid.Column="1" Grid.Row="6" Content="登录" Command="{Binding LoginCommand}"
+                <Button Grid.Column="1" Grid.Row="7" Content="登录" Command="{Binding LoginCommand}"
                 CommandParameter="{Binding ElementName=txtPassword,Path=Password}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-                <Button Grid.Column="1" Grid.Row="7" Content="开启定时任务" Command="{Binding StartTaskCommand}"
+                <Button Grid.Column="1" Grid.Row="8" Content="开启定时任务" Command="{Binding StartTaskCommand}"
                 CommandParameter="{Binding ElementName=txtPassword,Path=Password}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
