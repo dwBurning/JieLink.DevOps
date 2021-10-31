@@ -44,6 +44,12 @@ namespace PartialViewJSRMOrder.DB
         {
             string error = "";
             DataTable dataTable = EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where Dispatched=0;");
+            List<Order> orders = ConvertToOrderList(dataTable);
+            return orders;
+        }
+
+        public List<Order> ConvertToOrderList(DataTable dataTable)
+        {
             List<Order> orders = new List<Order>();
             foreach (DataRow dr in dataTable.Rows)
             {
@@ -60,13 +66,14 @@ namespace PartialViewJSRMOrder.DB
                 order.ResponsiblePerson = dr["ResponsiblePerson"].ToString();
                 orders.Add(order);
             }
+
             return orders;
         }
 
         public DataTable GetDispatchingOrderTable()
         {
             string error = "";
-            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where Dispatched=0;");
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
 
         public void UpdateDispatch(string problemCode)

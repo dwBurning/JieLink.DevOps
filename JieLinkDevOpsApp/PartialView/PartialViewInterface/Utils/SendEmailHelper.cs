@@ -86,7 +86,15 @@ namespace PartialViewInterface.Utils
             foreach (DataRow dataRow in dataTable.Rows)
             {
                 rowIndex++;
-                htmlBody.Append("<tr>");
+                if (dataRow.Table.Columns.Contains("Dispatched") && dataRow["Dispatched"].ToString() == "1")
+                {
+                    htmlBody.Append("<tr style=\"background-color:#E0EEE0\">");//已经指派过的添加背景色
+                }
+                else
+                {
+                    htmlBody.Append("<tr>");
+                }
+
                 htmlBody.AppendLine($"<td>{rowIndex}</td>");
                 foreach (DataColumn dataColumn in dataTable.Columns)
                 {
