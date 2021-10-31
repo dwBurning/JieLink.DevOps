@@ -12,8 +12,16 @@ namespace PartialViewJSRMOrder.Model
 
         public int pageSize { get; set; }
 
+        public string sidx { get; set; }
+
+        public string sord { get; set; }
+
         public string currentNode { get; set; }
 
         public string currentUserCode { get; set; }
+
+        
+
+        
     }
 }

@@ -167,6 +167,30 @@ namespace PartialViewInterface.Utils
                 return default(T);
             }
         }
+
+        public static async Task<T> PostAsync<T>(HttpRequestArgs httpRequestArgs)
+        {
+            string json = await TaskHelper.Start<object, string>((object o) =>
+            {
+                return Post(httpRequestArgs);
+
+            }, httpRequestArgs);
+
+            if (json == null)
+            {
+                return default(T);
+            }
+            try
+            {
+                return JsonHelper.DeserializeObject<T>(json);
+            }
+            catch (Exception ex)
+            {
+                //可能返回的contxt是404之类的
+                return default(T);
+            }
+        }
+
         public static string Post(string url, string content, int timeout = 20000, string contentType = "application/json")
         {
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(HttpHelper.CheckValidationResult);
@@ -279,7 +303,6 @@ namespace PartialViewInterface.Utils
                 httpWebRequest.CookieContainer = cookieContainer;
                 if (httpRequestArgs.Heads != null)
                 {
-                    httpWebRequest.Headers = new WebHeaderCollection();
                     httpWebRequest.Headers.Add(httpRequestArgs.Heads);
                 }
                 Stream requestStream;

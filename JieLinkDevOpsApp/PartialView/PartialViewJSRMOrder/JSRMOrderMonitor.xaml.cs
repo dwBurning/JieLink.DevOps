@@ -50,5 +50,15 @@ namespace PartialViewJSRMOrder
         {
             get { return 800; }
         }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            viewModel.Load();
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            viewModel.TextChanaged(txtVerifyCode.Text);
+        }
     }
 }

@@ -13,5 +13,9 @@ namespace PartialViewJSRMOrder.ViewModel
         public string password { get; set; }
 
         public string verifyCode { get; set; }
+
+        public string token { get; set; }
+
+        public string userId { get; set; }
     }
 }

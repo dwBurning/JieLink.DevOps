@@ -1,11 +1,19 @@
 ﻿using Panuon.UI.Silver;
 using PartialViewInterface.Commands;
+using PartialViewInterface.DB;
 using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
+using PartialViewJSRMOrder.DB;
 using PartialViewJSRMOrder.Model;
+using PartialViewJSRMOrder.Monitor;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Impl.Matchers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,53 +34,182 @@ namespace PartialViewJSRMOrder.ViewModel
 
         public DelegateCommand LoginCommand { get; set; }
 
+        public DelegateCommand StartTaskCommand { get; set; }
+
+
+        Operator user;
+
+        KeyValueSettingManager keyValueSettingManager;
+
+        DevJsrmOrderManager devJsrmOrderManager;
+
+        public bool IsNeedLogin { get; set; }
+
+        public bool IsCanLogin { get; set; }
+
         public OrderMonitorViewModel()
         {
             GetVerifyCodeCommand = new DelegateCommand();
             GetVerifyCodeCommand.ExecuteAction = GetVerifyCode;
+            GetVerifyCodeCommand.CanExecuteFunc = new Func<object, bool>((object parameter) =>
+            {
+                return !string.IsNullOrEmpty(this.UserName);
+            });
 
+            IsCanLogin = !string.IsNullOrEmpty(this.VerifyCode) && !string.IsNullOrEmpty(this.UserName);
             LoginCommand = new DelegateCommand();
             LoginCommand.ExecuteAction = Login;
+            LoginCommand.CanExecuteFunc = new Func<object, bool>((object parameter) =>
+            {
+                return IsCanLogin;
+            });
+
+            StartTaskCommand = new DelegateCommand();
+            StartTaskCommand.ExecuteAction = StartTask;
+            StartTaskCommand.CanExecuteFunc = new Func<object, bool>((object parameter) =>
+            {
+                return !IsNeedLogin;
+            });
+
+            keyValueSettingManager = new KeyValueSettingManager();
+            devJsrmOrderManager = new DevJsrmOrderManager();
 
             UserName = "104542";
+            user = JsonHelper.DeserializeObject<Operator>(keyValueSettingManager.ReadSetting("JSRMUserInfo")?.ValueText);
+            if (user == null)
+            {
+                user = new Operator();
+            }
+
+            GetOrderJob = keyValueSettingManager.ReadSetting("GetOrderJob")?.ValueText;
+            DispatchJob = keyValueSettingManager.ReadSetting("GetOrderJob")?.ValueText;
         }
+
+
+        public void TextChanaged(string verifyCode)
+        {
+            IsCanLogin = !string.IsNullOrEmpty(verifyCode) && !string.IsNullOrEmpty(this.UserName);
+        }
+
+        IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+        private void StartTask(object parameter)
+        {
+            string[] jobs = new string[] { "GetOrderJob", "DispatchJob" };
+            foreach (var jobKey in jobs)
+            {
+                string cron = jobKey == "GetOrderJob" ? this.GetOrderJob : this.DispatchJob;
+
+                var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("JSRM")).Where(x => x.Name == jobKey).FirstOrDefault();
+                if (triggerKey != null)
+                {
+                    scheduler.UnscheduleJob(triggerKey);
+                }
+                var job = JobBuilder.Create(typeof(GetOrderJob))
+                                        .WithIdentity(jobKey, "JSRM")
+                                        .UsingJobData("HttpRequestArgs",
+                                        JsonHelper.SerializeObject(GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId)))
+                                        .Build();
+                var trigger = TriggerBuilder.Create()
+                                .StartNow()
+                                .WithIdentity(jobKey, "JSRM")
+                                .WithCronSchedule(cron)
+                                .Build();
+                scheduler.ScheduleJob(job, trigger);
+            }
+        }
+
 
         private void GetVerifyCode(object parameter)
         {
             Operator user = new Operator();
             user.username = this.UserName;
-            ReturnMsg<object> returnMsg = Post<ReturnMsg<object>>(getVerifyCode, user);
-            Notice.Show(returnMsg.respMsg, "通知", 3, MessageBoxIcon.Warning);
+            ReturnMsg<object> returnMsg = Post<ReturnMsg<object>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getVerifyCode, user));
+            if (returnMsg.success)
+            {
+                ShowMessage(returnMsg.respMsg);
+                Notice.Show(returnMsg.respMsg, "通知", 3, MessageBoxIcon.Success);
+            }
+            else
+            { MessageBoxHelper.MessageBoxShowWarning(returnMsg.respMsg); }
         }
 
-        Token token = new Token();
-        private void Login(object parameter)
+        public async void Load()
+        {
+            if (string.IsNullOrEmpty(user.token))
+            {
+                IsNeedLogin = true;
+                ShowMessage("请重新登录");
+                return;
+            }
+
+            ReturnMsg<PageOrder> returnMsg = await GetOrder();
+            if (returnMsg.success)
+            {
+                IsNeedLogin = false;
+                ShowMessage("Token有效，已自动登陆，后台任务执行中");
+                AddOrder(returnMsg.respData.data);
+            }
+            else
+            {
+                IsNeedLogin = true;
+                ShowMessage("Token失效，请重新登录");
+            }
+        }
+
+
+        public async void Login(object parameter)
         {
             this.Password = (string)parameter;
-            string password = getMD5(this.Password);
+            string password = GetMD5(this.Password);
 
-            Operator user = new Operator();
             user.username = this.UserName;
             user.password = password;
             user.verifyCode = this.VerifyCode;
 
-            ReturnMsg<Token> returnMsg = Post<ReturnMsg<Token>>(getToken, user);
+            ReturnMsg<Token> returnMsg = Post<ReturnMsg<Token>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getToken, user));
             if (returnMsg.success)
             {
-                token.token = returnMsg.respData.token;
-                token.userId = returnMsg.respData.userId;
+                IsNeedLogin = false;
+                ShowMessage(returnMsg.respMsg);
 
-                getOrder();
+                user.token = returnMsg.respData.token;
+                user.userId = returnMsg.respData.userId;
+                user.password = this.Password;
+
+                keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "JSRMUserInfo", ValueText = JsonHelper.SerializeObject(user) });
+
+                ReturnMsg<PageOrder> returnMsg1 = await GetOrder();
+                if (returnMsg1.success)
+                {
+                    AddOrder(returnMsg1.respData.data);
+                }
+            }
+            else
+            {
+                Notice.Show(returnMsg.respMsg, "通知", 3, MessageBoxIcon.Warning);
             }
         }
 
-        private void getOrder()
+        public async Task<ReturnMsg<PageOrder>> GetOrder()
         {
-            HttpRequestArgs httpRequestArgs = new HttpRequestArgs();
-            httpRequestArgs.Url = queryAuthProblemList;
-            httpRequestArgs.Heads.Add("userId", token.userId);
-            httpRequestArgs.Heads.Add("X-Token", token.userId);
-            ReturnMsg<List<Order>> returnMsg = Post<ReturnMsg<List<Order>>>(httpRequestArgs);
+            HttpRequestArgs httpRequestArgs = GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId);
+            return await PostAsync<ReturnMsg<PageOrder>>(httpRequestArgs);
+        }
+
+
+        public void AddOrder(List<Order> orders)
+        {
+            foreach (var x in orders)
+            {
+                Order order = devJsrmOrderManager.GetOrder(x.problemCode);
+                if (order != null)
+                {
+                    continue;
+                }
+                x.ReciveTime = DateTime.Now;
+                ShowMessage($"新增加工单 {x.problemCode}");
+                devJsrmOrderManager.AddOrder(x);
+            }
         }
 
 
@@ -81,7 +218,7 @@ namespace PartialViewJSRMOrder.ViewModel
         /// </summary>
         /// <param name="Text">要加密的字符串</param>
         /// <returns>密文</returns>
-        public string getMD5(string password)
+        public string GetMD5(string password)
         {
             MD5 algorithm = MD5.Create();
             byte[] data = algorithm.ComputeHash(Encoding.UTF8.GetBytes(password));
@@ -93,6 +230,21 @@ namespace PartialViewJSRMOrder.ViewModel
             return md5;
         }
 
+        public void ShowMessage(string message)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                if (Message != null && Message.Length > 5000)
+                {
+                    Message = string.Empty;
+                }
+
+                if (message.Length > 0)
+                {
+                    Message += $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} {message}{Environment.NewLine}";
+                }
+            }));
+        }
 
         public string UserName
         {
@@ -121,12 +273,54 @@ namespace PartialViewJSRMOrder.ViewModel
         public string VerifyCode
         {
             get { return (string)GetValue(VerifyCodeProperty); }
-            set { SetValue(VerifyCodeProperty, value); }
+            set
+            { SetValue(VerifyCodeProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for VerifyCode.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty VerifyCodeProperty =
             DependencyProperty.Register("VerifyCode", typeof(string), typeof(OrderMonitorViewModel));
+
+
+
+
+        public string Message
+        {
+            get { return (string)GetValue(MessageProperty); }
+            set { SetValue(MessageProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MessageProperty =
+            DependencyProperty.Register("Message", typeof(string), typeof(OrderMonitorViewModel));
+
+
+
+
+        public string GetOrderJob
+        {
+            get { return (string)GetValue(GetOrderJobProperty); }
+            set { SetValue(GetOrderJobProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for GetOrderJob.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty GetOrderJobProperty =
+            DependencyProperty.Register("GetOrderJob", typeof(string), typeof(OrderMonitorViewModel));
+
+
+
+
+        public string DispatchJob
+        {
+            get { return (string)GetValue(DispatchJobProperty); }
+            set { SetValue(DispatchJobProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for DispatchJob.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DispatchJobProperty =
+            DependencyProperty.Register("DispatchJob", typeof(string), typeof(OrderMonitorViewModel));
+
+
 
     }
 }

@@ -251,6 +251,8 @@ namespace JieShun.JieLink.DevOps.App
                 ret.Add(jobCronConfig5);
             }
 
+            // keytype=6 为手动任务
+
             return ret;
         }
     }
