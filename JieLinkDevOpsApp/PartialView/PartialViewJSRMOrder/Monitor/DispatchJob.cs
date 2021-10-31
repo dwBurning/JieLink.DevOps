@@ -31,6 +31,12 @@ namespace PartialViewJSRMOrder.Monitor
 
             DataTable dataTable = devJsrmOrderManager.GetDispatchingOrderTable();
 
+            if (dataTable.Rows.Count <= 0)
+            {
+                OrderMonitorViewModel.Instance().ShowMessage("没有新增的工单");
+                return;
+            }
+
             string content = SendEmailHelper.HtmlBody(dataTable);
             
             SendEmailHelper.SendEmailAsync(receive, $"{DateTime.Now.ToString("yyyyMMddHH")}待处理捷服务工单", content, true);

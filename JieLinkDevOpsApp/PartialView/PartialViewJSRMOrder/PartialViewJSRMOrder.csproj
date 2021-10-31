@@ -73,6 +73,7 @@
     <Compile Include="Model\ReturnMsg.cs" />
     <Compile Include="Model\Token.cs" />
     <Compile Include="Monitor\DispatchJob.cs" />
+    <Compile Include="Monitor\ExecuteGetOrderJob.cs" />
     <Compile Include="Monitor\GetOrderJob.cs" />
     <Compile Include="ViewModel\Operator.cs" />
     <Compile Include="ViewModel\OrderMonitorViewModel.cs" />

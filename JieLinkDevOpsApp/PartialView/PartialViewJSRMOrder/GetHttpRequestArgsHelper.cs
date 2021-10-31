@@ -11,7 +11,6 @@ namespace PartialViewJSRMOrder
 {
     public class GetHttpRequestArgsHelper
     {
-
         public static HttpRequestArgs GetHttpRequestArgs(string userName, string url, string token, string userId)
         {
             QueryOrder queryOrder = new QueryOrder()

@@ -66,12 +66,25 @@ namespace PartialViewJSRMOrder.DB
         public DataTable GetDispatchingOrderTable()
         {
             string error = "";
-            return  EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where Dispatched=0;");
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where Dispatched=0;");
         }
 
         public void UpdateDispatch(string problemCode)
         {
             EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set Dispatched=1 where problemCode='{problemCode}';");
+        }
+
+        public Dictionary<string, int> GetResponsiblePerson()
+        {
+            string error = "";
+            DataTable dataTable = EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select ResponsiblePerson,COUNT(*) as Count from dev_jsrm_order WHERE ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}' GROUP BY ResponsiblePerson;");
+            Dictionary<string, int> responsiblePersons = new Dictionary<string, int>();
+            foreach (DataRow dr in dataTable.Rows)
+            {
+                responsiblePersons.Add(dr["ResponsiblePerson"].ToString(), int.Parse(dr["Count"].ToString()));
+            }
+
+            return responsiblePersons;
         }
     }
 }

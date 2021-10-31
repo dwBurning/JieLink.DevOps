@@ -153,13 +153,13 @@ namespace PartialViewJSRMOrder.ViewModel
             ReturnMsg<object> returnMsg;
             try
             {
-               returnMsg = Post<ReturnMsg<object>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getVerifyCode, user));
+                returnMsg = Post<ReturnMsg<object>>(GetHttpRequestArgsHelper.GetHttpRequestArgs(getVerifyCode, user));
             }
             catch (Exception)
             {
                 returnMsg = new ReturnMsg<object>() { success = false };
             }
-            
+
             if (returnMsg.success)
             {
                 ShowMessage(returnMsg.respMsg);
@@ -178,12 +178,12 @@ namespace PartialViewJSRMOrder.ViewModel
                 return;
             }
 
-            ReturnMsg<PageOrder> returnMsg = await GetOrder();
+            ReturnMsg<PageOrder> returnMsg = await ExecuteGetOrderJob.GetOrder(this.UserName, queryAuthProblemList, user.token, user.userId);
             if (returnMsg.success)
             {
                 IsNeedLogin = false;
                 ShowMessage("Token有效，已自动登陆");
-                AddOrder(returnMsg.respData.data);
+                ExecuteGetOrderJob.AddOrder(returnMsg.respData.data);
                 StartTask(null);
             }
             else
@@ -211,7 +211,7 @@ namespace PartialViewJSRMOrder.ViewModel
             {
                 returnMsg = new ReturnMsg<Token>() { success = false };
             }
-            
+
             if (returnMsg.success)
             {
                 IsNeedLogin = false;
@@ -223,10 +223,10 @@ namespace PartialViewJSRMOrder.ViewModel
 
                 keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "JSRMUserInfo", ValueText = JsonHelper.SerializeObject(user) });
 
-                ReturnMsg<PageOrder> returnMsg1 = await GetOrder();
+                ReturnMsg<PageOrder> returnMsg1 = await ExecuteGetOrderJob.GetOrder(this.UserName, queryAuthProblemList, user.token, user.userId);
                 if (returnMsg1.success)
                 {
-                    AddOrder(returnMsg1.respData.data);
+                    ExecuteGetOrderJob.AddOrder(returnMsg1.respData.data);
                 }
             }
             else
@@ -235,37 +235,7 @@ namespace PartialViewJSRMOrder.ViewModel
             }
         }
 
-        public async Task<ReturnMsg<PageOrder>> GetOrder()
-        {
-            try
-            {
-                HttpRequestArgs httpRequestArgs = GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId);
-                return await PostAsync<ReturnMsg<PageOrder>>(httpRequestArgs);
-            }
-            catch (Exception)
-            {
-                return new ReturnMsg<PageOrder>() { success = false };
-            }
-        }
 
-
-        public void AddOrder(List<Order> orders)
-        {
-            TaskHelper.Start(() =>
-           {
-               foreach (var x in orders)
-               {
-                   Order order = devJsrmOrderManager.GetOrder(x.problemCode);
-                   if (order != null)
-                   {
-                       continue;
-                   }
-                   x.ReceiveTime = DateTime.Now;
-                   ShowMessage($"新增加工单 {x.problemCode}");
-                   devJsrmOrderManager.AddOrder(x);
-               }
-           });
-        }
 
 
         /// <summary>
