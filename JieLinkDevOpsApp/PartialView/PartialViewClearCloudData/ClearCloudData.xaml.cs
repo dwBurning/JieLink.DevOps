@@ -40,7 +40,7 @@ namespace PartialViewClearCloudData
 
         public int Order
         {
-            get { return 1100; }
+            get { return 1000; }
         }
 
         ClearCloudDeviceDataViewModel vmodel;
@@ -54,14 +54,15 @@ namespace PartialViewClearCloudData
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Global.ValidV2(new Action<string, bool>((message, result) =>
             {
-                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-            }
-            catch (Exception)
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
-            }
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
         }
     }
 }

@@ -41,7 +41,7 @@ namespace PartialViewDelRegeist
             get { return MenuType.Center; }
         }
 
-        public int Order { get { return 1000; } }
+        public int Order { get { return 1001; } }
 
         private void button_DelRegist_Click(object sender, RoutedEventArgs e)
         {

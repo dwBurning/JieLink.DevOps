@@ -84,6 +84,18 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
+            <pu:TimelineItem Header="2021-10-29 V1.1.7">
+                <ContentControl>
+                    <TextBlock>
+                        1.将配置迁移到sqlite数据库
+                        2.修改数据库备份工具支持多库备份，支持配置文件保存天数
+                        3.增加jielink3.x场内记录导入工具
+                        4.增加jielink3.x共享汽车导入工具
+                        5.修改数据归档工具，支持定义表名称和归档时间字段
+                        6.优化改造升级工具，解决速通版升级jielink2.x凭证数不对的问题
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
             <pu:TimelineItem Header="2021-06-05 V1.1.6">
                 <ContentControl>
                     <TextBlock>

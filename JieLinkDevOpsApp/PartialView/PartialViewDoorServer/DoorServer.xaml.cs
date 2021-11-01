@@ -62,6 +62,16 @@ namespace PartialViewDoorServer
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            Global.ValidV2(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
+
             try
             {
                 viewModel.GetDoorServerInfo();
@@ -69,7 +79,6 @@ namespace PartialViewDoorServer
             }
             catch (Exception)
             {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
                 this.IsEnabled = false;
             }
         }

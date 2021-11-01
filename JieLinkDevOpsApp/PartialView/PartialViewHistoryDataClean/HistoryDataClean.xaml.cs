@@ -56,17 +56,15 @@ namespace PartialViewHistoryDataClean
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Global.ValidV2(new Action<string, bool>((message, result) =>
             {
-                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-                this.IsEnabled = true;
-                viewModel.Load();
-            }
-            catch (Exception)
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
-                this.IsEnabled = false;
-            }
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
         }
 
         private void btnChoose_Click(object sender, RoutedEventArgs e)

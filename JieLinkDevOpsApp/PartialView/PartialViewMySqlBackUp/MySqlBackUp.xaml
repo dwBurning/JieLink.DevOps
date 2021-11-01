@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PartialViewMySqlBackUp"
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
@@ -57,6 +58,39 @@
                         </Style.Triggers>
                     </Style>
                 </pu:DataGridHelper.AutoGenerateCheckBoxStyle>
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="ToolTip"   Value="" />
+                        <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+                        <!-- 设置ShowDuration时间，尽可能长，只要鼠标不移出，一直显示。-->
+                        <Setter Property="ToolTipService.ShowDuration" Value="{x:Static Member=sys:Int32.MaxValue}"/>
+                        <Setter Property="ToolTipService.HasDropShadow" Value="True"/>
+                        <Setter Property="ToolTipService.Placement" Value="Bottom"/>
+                        <Setter Property="ToolTipService.HorizontalOffset" Value="20"/>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Resources>
+                    <Style TargetType="ToolTip">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Border Background="White"  BorderThickness="1" BorderBrush="#00BCFF" CornerRadius="5" Padding="5">
+                                        <StackPanel Height="Auto" Width="auto">
+                                            <TextBlock HorizontalAlignment="Center" TextWrapping="NoWrap" MaxWidth="400" LineHeight="26" >
+                                                <TextBlock.Text>
+                                                    <MultiBinding StringFormat="{}{0}">
+                                                        <Binding Path="TableName"/>
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Border>
+
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DataGrid.Resources>
             </DataGrid>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
@@ -82,12 +116,12 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"></RowDefinition>
-                        <RowDefinition Height="80"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="60"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                    <Grid Grid.Row="0">
                         <DataGrid x:Name="dgDatabases" Margin="5" ItemsSource="{Binding Databases}"
-                  BorderBrush="LightGray"
-                  BorderThickness="1"
+                  BorderBrush="LightGray" BorderThickness="1"
                   SelectionChanged="dgDatabases_SelectionChanged"
                   pu:DataGridHelper.HeaderMinHeight="30"
                   pu:DataGridHelper.ColumnHorizontalContentAlignment="Left"
@@ -98,7 +132,9 @@
                   CanUserAddRows="False" >
                         </DataGrid>
                     </Grid>
-                    <TextBlock Grid.Row="1" Margin="5" Grid.ColumnSpan="2" TextWrapping="Wrap" TextAlignment="Left"><Run Foreground="#20A0FF">说明：</Run><LineBreak />1)选择数据库后，请切换到自动备份界面配置备份策略，或在手动备份界面执行备份。</TextBlock>
+                    <TextBlock Grid.Row="1" Margin="5"  TextWrapping="Wrap" TextAlignment="Left">当前选择的数据库：<Run Foreground="#20A0FF" Text="{Binding CurrentPolicy.SelectedDatabase}"></Run></TextBlock>
+                    <TextBlock Grid.Row="2" Margin="5"  TextWrapping="Wrap" TextAlignment="Left">
+                        <Run Foreground="#20A0FF">说明：</Run><LineBreak />1)选择数据库后，请切换到自动备份界面配置备份策略，或在手动备份界面执行备份。</TextBlock>
                 </Grid>
             </TabItem>
             <TabItem Header="自动备份">
@@ -109,14 +145,14 @@
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="75"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="35"></RowDefinition>
-                        <RowDefinition Height="35"></RowDefinition>
-                        <RowDefinition Height="35"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <WrapPanel x:Name="wpDayOfWeek" VerticalAlignment="Center">
                         <CheckBox Margin="5" Height="30" Content="周日" 
@@ -143,36 +179,36 @@
                     </WrapPanel>
                     <pu:DateTimePicker x:Name="dtpTime" Grid.Row="1" DateTimePickerMode="Time" 
                                        SelectedDateTime="{Binding SelectedTime}"
-                                       Margin="5" CornerRadius="4" ThemeBrush="#00BCFF" Height="40">
+                                       Margin="5" CornerRadius="4" ThemeBrush="#00BCFF">
                     </pu:DateTimePicker>
                     <Grid x:Name="gridBackUpType" Grid.Row="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
-                        <RadioButton Grid.Column="0" Height="40" Margin="5" Content="全库备份"
+                        <RadioButton Grid.Column="0" Margin="5" Content="全库备份"
                                      Background="LightGray" IsChecked="{Binding IsTaskBackUpDataBase}"
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
-                        <RadioButton Grid.Column="1" Height="40" Margin="5" Content="基础业务备份"
+                        <RadioButton Grid.Column="1" Margin="5" Content="基础业务备份"
                                      Background="LightGray" IsChecked="{Binding IsTaskBackUpTables}"
                                      pu:RadioButtonHelper.RadioButtonStyle="Button"
                                      pu:RadioButtonHelper.CheckedBackground="#00BCFF" />
                     </Grid>
                     <Button Grid.Row="3" Margin="5" Content="新增策略" Name ="btnAddPolicy" Command="{Binding AddPolicyCommand}"
                             CommandParameter="{Binding ElementName=dtpTime, Path=SelectedDateTime}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="25"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" 
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
-                            ToolTipService.ToolTip="提示：如果存在同库同类型的策略，将直接更新。"  ToolTipService.InitialShowDelay="1" ToolTipService.Placement="Bottom"/>
+                            />
                     <Button Grid.Row="4" Margin="5" Content="修改策略" Name ="btnEditPolicy" Command="{Binding EditPolicyCommand}"
                             CommandParameter="{Binding ElementName=dtpTime, Path=SelectedDateTime}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="25"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" 
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
-                            ToolTipService.ToolTip="提示：不允许修改备份类型，如不存在该类型的策略可选择新增。"  ToolTipService.InitialShowDelay="1" ToolTipService.Placement="Bottom"/>
+                            />
                     <Button Grid.Row="5" Margin="5" Content="移除策略" Name ="btnRemovePolicy" Command="{Binding RemovePolicyCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="25"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" 
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     <ListBox Margin="5,5,5,5" BorderBrush="#20A0FF" Grid.Column="1" Grid.Row="0" Grid.RowSpan="6"
@@ -187,23 +223,23 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="txtSavePath" Margin="5" IsReadOnly="True"
-                            VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请选择文件保存路径"
-                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                            VerticalAlignment="Center" pu:TextBoxHelper.Watermark="请选择文件保存路径"
+                            pu:TextBoxHelper.FocusedBorderBrush="#20A0FF" Height="{Binding ElementName=btnChoosePath,Path=ActualHeight}"
                             pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                             pu:TextBoxHelper.CornerRadius="4" Text="{Binding TaskBackUpPath}"
                             pu:TextBoxHelper.IsClearButtonVisible="True"/>
                         <Button Grid.Row="0" Margin="5" Grid.Column="1" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
 
                     <Button Grid.Row="7" Margin="5" Grid.ColumnSpan="2" Content="执行任务" Name ="btnStart" Command="{Binding TaskStartCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     <Button Grid.Row="8" Margin="5" Grid.ColumnSpan="2" Content="终止任务" Name ="btnStop" Command="{Binding TaskStopCommand}"
-                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 </Grid>
@@ -252,6 +288,32 @@
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                     </Grid>
                     <Button Grid.Row="2" Margin="5" Grid.ColumnSpan="2" Content="执行备份" Name ="btnStart1" Command="{Binding ManualExecuteCommand}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="定期清理">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition Width="auto"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock>备份文件保存：</TextBlock>
+                    <TextBox Grid.Column="1" x:Name="txtProjectName"  Text="{Binding SaveFileDay}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入保存天数(≥7)"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"/>
+                    <TextBlock HorizontalAlignment="Left" Grid.Column="2">天</TextBlock>
+                    <Button  Margin="5" Grid.Column="3" Content="保存" Command="{Binding SaveFileDayCommand}"
                             BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                             pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                             pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>

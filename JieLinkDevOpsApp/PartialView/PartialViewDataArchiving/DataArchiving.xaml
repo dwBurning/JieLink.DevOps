@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              xmlns:local="clr-namespace:PartialViewDataArchiving"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
@@ -26,15 +27,110 @@
             <RowDefinition></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
-        <ProgressBar Grid.Row="0" Grid.Column="0"  Height="300" Width="300" 
+        <ProgressBar Margin="5" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" MaxWidth="300"
+                     Height="{Binding RelativeSource={RelativeSource Self}, Path=ActualWidth}"
                      Foreground="#20A0FF" FontSize="40"  BorderBrush="#CDDEEF"
                           pu:ProgressBarHelper.ProgressBarStyle="Ring"
                           pu:ProgressBarHelper.AnimateTo="{Binding Progress}"
                           pu:ProgressBarHelper.CornerRadius="4"
                           IsIndeterminate="{Binding IsIndeterminate}"
                           pu:ProgressBarHelper.IsPercentVisible="{Binding IsPercentVisible}" />
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="0" Grid.Column="2" Margin="5">
+            <TextBlock HorizontalAlignment="Left">表名</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1"   Text="{Binding TableName}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入表名称"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+
+            <TextBlock HorizontalAlignment="Left">时间字段</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DateField}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入时间字段"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+            <TextBlock HorizontalAlignment="Left">附加条件</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Where}" 
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="and ...."
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+
+            <Button Grid.Row="3" Margin="0,5" Height="40" Content="添加→"  Command="{Binding AddTableCommand}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" 
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                            />
+
+            <Button Grid.Row="3" Margin="0,5" Height="40" Content="←移除" Command="{Binding RemoveTableCommand}"
+                            BorderBrush="#20A0FF" Foreground="#20A0FF" 
+                            pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
+                            pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                            />
+        </StackPanel>
+
+        <DataGrid Grid.Column="3" x:Name="dgDatabases" Margin="5" ItemsSource="{Binding ArchiveTables}"
+                  BorderBrush="LightGray"
+                  BorderThickness="1"
+                  SelectedItem="{Binding SelectedTable}"
+                  pu:DataGridHelper.HeaderMinHeight="30"
+                  pu:DataGridHelper.ColumnHorizontalContentAlignment="Left"
+                  pu:DataGridHelper.RowMinHeight="30"
+                  pu:DataGridHelper.SelectedBackground="#220082FF"
+                  pu:DataGridHelper.SelectedForeground="#00BCFF"
+                  pu:DataGridHelper.HoverBackground="#220082FF"
+                  CanUserAddRows="False" >
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ToolTip"   Value="" />
+                    <Setter Property="ToolTipService.InitialShowDelay" Value="100"/>
+                    <!-- 设置ShowDuration时间，尽可能长，只要鼠标不移出，一直显示。-->
+                    <Setter Property="ToolTipService.ShowDuration" Value="{x:Static Member=sys:Int32.MaxValue}"/>
+                    <Setter Property="ToolTipService.HasDropShadow" Value="True"/>
+                    <Setter Property="ToolTipService.Placement" Value="Bottom"/>
+                    <Setter Property="ToolTipService.HorizontalOffset" Value="20"/>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Resources>
+                <Style TargetType="ToolTip">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border Background="White"  BorderThickness="1" BorderBrush="#00BCFF" CornerRadius="5" Padding="5">
+                                    <StackPanel Height="Auto" Width="auto">
+                                        <TextBlock HorizontalAlignment="Center" TextWrapping="NoWrap" MaxWidth="400" LineHeight="26" >
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} {1} {2}">
+                                                    <Binding Path="TableName"/>
+                                                    <Binding Path="DateField"/>
+                                                    <Binding Path="Where"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.Resources>
+        </DataGrid>
+
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="4">
             <TextBlock FontSize="20" Foreground="#20A0FF" Text="{Binding Message}"></TextBlock>
             <Grid >
                 <Grid.ColumnDefinitions>

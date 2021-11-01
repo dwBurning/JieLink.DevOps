@@ -98,8 +98,9 @@ namespace PartialViewDataArchiving.DataArchive
         /// <summary>
         /// 开始归档
         /// </summary>
-        private void DataArchive(string bllTableName, string archiveTableName)
+        private void DataArchive(ArchiveTable table, string archiveTableName)
         {
+            string bllTableName = table.TableName;
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
@@ -113,18 +114,19 @@ namespace PartialViewDataArchiving.DataArchive
                     {
                         DateTime archiveDate = DateTime.Now.Date.AddMonths(-EnvironmentInfo.AutoArchiveMonth);
                         string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
-                        if (bllTableName == "box_enter_record")
+
+                        if (!string.IsNullOrEmpty(table.Where))
                         {
-                            sql += " and wasgone=1";
+                            sql += $" {table.Where}";
                         }
                         cmd.CommandText = sql;
                         LogHelper.CommLogger.Info(sql);
                         int x = cmd.ExecuteNonQuery();
 
                         string script = $"delete from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
-                        if (bllTableName == "box_enter_record")
+                        if (!string.IsNullOrEmpty(table.Where))
                         {
-                            script += " and wasgone=1";
+                            sql += $" {table.Where}";
                         }
                         cmd.CommandText = script;
                         LogHelper.CommLogger.Info(script);
@@ -147,8 +149,9 @@ namespace PartialViewDataArchiving.DataArchive
             }
         }
 
-        private void DataArchiveYear(string bllTableName, string archiveTableName,int year)
+        private void DataArchiveYear(ArchiveTable table, string archiveTableName, int year)
         {
+            string bllTableName = table.TableName;
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
@@ -164,18 +167,18 @@ namespace PartialViewDataArchiving.DataArchive
                         string archiveEndDate = $"{year + 1}-01-01";
                         string timeField = GetTimeField(bllTableName);
                         string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where {timeField} < '{archiveEndDate}' and {timeField} >'{archiveStartDate}'";
-                        if (bllTableName == "box_enter_record")
+                        if (!string.IsNullOrEmpty(table.Where))
                         {
-                            sql += " and wasgone=1";
+                            sql += $" {table.Where}";
                         }
                         cmd.CommandText = sql;
                         LogHelper.CommLogger.Info(sql);
                         int x = cmd.ExecuteNonQuery();
 
                         string script = $"delete from `{bllTableName}` where {timeField} < '{archiveEndDate}' and {timeField} >'{archiveStartDate}'";
-                        if (bllTableName == "box_enter_record")
+                        if (!string.IsNullOrEmpty(table.Where))
                         {
-                            script += " and wasgone=1";
+                            sql += $" {table.Where}";
                         }
                         cmd.CommandText = script;
                         LogHelper.CommLogger.Info(script);
@@ -200,18 +203,12 @@ namespace PartialViewDataArchiving.DataArchive
 
         private string GetTimeField(string tableName)
         {
-            if(tableName.StartsWith("box_enter_record"))
-                return "EnterTime";
-            if(tableName.StartsWith("box_out_record"))
-                return "OutTime";
-            if(tableName.StartsWith("box_bill"))
-                return "PayTime";
-            if(tableName.StartsWith("business_discount"))
-                return "CreateTime";
-            if(tableName.StartsWith("boxdoor_door_record"))
-                return "ActionTime";
-
-            return "";
+            var table = DataArchivingViewModel.Instance().ArchiveTables.FirstOrDefault(x => x.TableName == tableName);
+            if (table == null) return "";
+            else
+            {
+                return table.DateField;
+            }
         }
 
         private void BackUpTables()
@@ -245,32 +242,31 @@ namespace PartialViewDataArchiving.DataArchive
 
             var tasks = new List<Task>();
             DataArchivingViewModel.Instance().ShowMessage($"正在执行归档...请等待...");
-            foreach (var table in DataArchivingViewModel.Instance().Tables)
+            foreach (var table in DataArchivingViewModel.Instance().ArchiveTables)
             {
                 //Thread.Sleep(2000);
                 tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";//2021
+                    string archiveTable = $"{table.TableName}_{DateTime.Now.Year.ToString()}";//2021
                     if (!TableIsExists(archiveTable))
                     {
-                        CreateTable(table, archiveTable);
+                        CreateTable(table.TableName, archiveTable);
                     }
 
-                    CompareColumns(table, archiveTable);
-                    
+                    CompareColumns(table.TableName, archiveTable);
 
-                    string archiveTableV2 = $"{table}_{(DateTime.Now.Year - 1).ToString()}";//2020
+                    string archiveTableV2 = $"{table.TableName}_{(DateTime.Now.Year - 1).ToString()}";//2020
                     if (!TableIsExists(archiveTableV2))
                     {
-                        CreateTable(table, archiveTableV2);
+                        CreateTable(table.TableName, archiveTableV2);
                     }
 
-                    CompareColumns(table, archiveTableV2);
+                    CompareColumns(table.TableName, archiveTableV2);
 
                     //将当前业务表2020年的数据归档到2020年的表
                     DataArchiveYear(table, archiveTableV2, DateTime.Now.Year - 1);
                     //将2021年的归档表中2020年的数据归档到2020年的表
-                    DataArchiveYear(archiveTable, archiveTableV2, DateTime.Now.Year - 1);
+                    DataArchiveYear(new ArchiveTable() { TableName = archiveTable }, archiveTableV2, DateTime.Now.Year - 1);
                     //将当前业务表中2021年的数据归档到2021年的表
                     DataArchive(table, archiveTable);
 
@@ -285,15 +281,15 @@ namespace PartialViewDataArchiving.DataArchive
         /// </summary>
         public void ExecuteEx()
         {
-            foreach (var table in DataArchivingViewModel.Instance().Tables)
+            foreach (var table in DataArchivingViewModel.Instance().ArchiveTables)
             {
-                string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";
+                string archiveTable = $"{table.TableName}_{DateTime.Now.Year.ToString()}";
                 if (!TableIsExists(archiveTable))
                 {
-                    CreateTable(table, archiveTable);
+                    CreateTable(table.TableName, archiveTable);
                 }
 
-                CompareColumns(table, archiveTable);
+                CompareColumns(table.TableName, archiveTable);
             }
         }
     }

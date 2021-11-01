@@ -55,18 +55,15 @@ namespace PartialViewFacePicBackUp
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Global.ValidV2(new Action<string, bool>((message, result) =>
             {
-                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-                //viewModel.GetDoorServerInfo();
-                this.IsEnabled = true;
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
 
-            }
-            catch (Exception)
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
-                this.IsEnabled = false;
-            }
+                this.IsEnabled = result;
+            }));
         }
 
         /// <summary>

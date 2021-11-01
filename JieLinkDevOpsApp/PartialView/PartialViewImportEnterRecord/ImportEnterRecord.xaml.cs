@@ -46,26 +46,25 @@ namespace PartialViewImportEnterRecord
 
         public MenuType MenuType
         {
-            get { return MenuType.Common; }
+            get { return MenuType.Center; }
         }
 
         public int Order
         {
-            get { return 2000; }
+            get { return 800; }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-            //    this.IsEnabled = true;
-            //}
-            //catch (Exception)
-            //{
-            //    MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
-            //    this.IsEnabled = false;
-            //}
+            Global.ValidV2(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
         }
 
         private void btnChoosePath_Click(object sender, RoutedEventArgs e)
@@ -80,22 +79,6 @@ namespace PartialViewImportEnterRecord
         }
 
         private void OpenTemplate_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("explorer.exe", "Template");
-        }
-
-        private void btnSelectPath_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
-            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
-            if (result == System.Windows.Forms.DialogResult.OK)
-            {
-                viewModel.PCSFilePath = fileDialog.FileName.Trim();
-                viewModel.pcsExecute = true;
-            }
-        }
-
-        private void OpenTemplateFile_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("explorer.exe", "Template");
         }

@@ -35,4 +35,13 @@ namespace PartialViewInterface.Models
         OneKeyUpdate = 1,
 
     }
+
+    public enum enumOrder
+    {
+        Center = 800,
+
+        Door = 900,
+
+        Box = 1000,
+    }
 }
