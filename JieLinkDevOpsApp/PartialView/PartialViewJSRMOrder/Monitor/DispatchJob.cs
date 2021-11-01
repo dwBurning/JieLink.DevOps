@@ -59,10 +59,10 @@ namespace PartialViewJSRMOrder.Monitor
             SendEmailHelper.SendEmailAsync(receive, $"{DateTime.Now.ToString("yyyyMMddHH")}待处理捷服务工单", content, true);
             OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，已发送邮件");
 
-            foreach (DataRow dataRow in dataTable.Rows)
+            orders.Where(x => x.Dispatched == 0).ToList().ForEach(x =>
             {
-                devJsrmOrderManager.UpdateDispatch(dataRow["problemCode"].ToString());
-            }
+                devJsrmOrderManager.UpdateDispatch(x.problemCode);
+            });
         }
     }
 }
