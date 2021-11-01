@@ -23,6 +23,13 @@ namespace PartialViewJSRMOrder.Monitor
 
         public async void Execute(IJobExecutionContext context)
         {
+            if (DateTime.Now.Hour > 18)
+            {
+                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
+                return;
+            }
+
+
             JobDataMap data = context.JobDetail.JobDataMap;
             string requestArgs = data.GetString("HttpRequestArgs");
             if (string.IsNullOrEmpty(requestArgs))

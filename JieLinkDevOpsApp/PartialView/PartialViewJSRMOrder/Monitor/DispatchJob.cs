@@ -42,6 +42,12 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
+            if (DateTime.Now.Hour > 18)
+            {
+                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
+                return;
+            }
+
             if (!(count >= 2 || DateTime.Now.Hour > 16))
             {
                 OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，暂不发送邮件");

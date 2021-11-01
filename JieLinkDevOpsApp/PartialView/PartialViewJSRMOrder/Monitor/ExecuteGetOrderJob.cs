@@ -35,6 +35,12 @@ namespace PartialViewJSRMOrder.Monitor
 
         public static void AddOrder(List<Order> orders)
         {
+            if (DateTime.Now.Hour > 18)
+            {
+                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
+                return;
+            }
+
             TaskHelper.Start(() =>
             {
                 foreach (var x in orders)
