@@ -22,6 +22,12 @@ namespace PartialViewJSRMOrder.Monitor
 
         public void Execute(IJobExecutionContext context)
         {
+            if (DateTime.Now.Hour > 18)
+            {
+                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
+                return;
+            }
+
             JobDataMap data = context.JobDetail.JobDataMap;
             string receive = data.GetString("ReceiveEmail");
             if (string.IsNullOrEmpty(receive))
@@ -39,12 +45,6 @@ namespace PartialViewJSRMOrder.Monitor
             if (count <= 0)
             {
                 OrderMonitorViewModel.Instance().ShowMessage("没有新增的工单");
-                return;
-            }
-
-            if (DateTime.Now.Hour > 18)
-            {
-                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
                 return;
             }
 
