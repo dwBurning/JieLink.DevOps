@@ -1,4 +1,5 @@
-﻿using PartialViewInterface.Utils;
+﻿using Panuon.UI.Silver;
+using PartialViewInterface.Utils;
 using PartialViewJSRMOrder.DB;
 using PartialViewJSRMOrder.Model;
 using PartialViewJSRMOrder.ViewModel;
@@ -53,6 +54,10 @@ namespace PartialViewJSRMOrder.Monitor
                     }
                     x.ReceiveTime = DateTime.Now;
                     OrderMonitorViewModel.Instance().ShowMessage($"新增加工单 {x.problemCode}");
+                    OrderMonitorViewModel.Instance().Dispatcher.Invoke(() =>
+                    {
+                        Notice.Show($"新增加工单 {x.problemCode}", "通知", 3, MessageBoxIcon.Success);
+                    });
                     devJsrmOrderManager.AddOrder(x);
                 }
             });
