@@ -303,7 +303,10 @@ namespace PartialViewInterface.Utils
                 httpWebRequest.CookieContainer = cookieContainer;
                 if (httpRequestArgs.Heads != null)
                 {
-                    httpWebRequest.Headers.Add(httpRequestArgs.Heads);
+                    foreach (var head in httpRequestArgs.Heads)
+                    {
+                        httpWebRequest.Headers.Add(head.Key, head.Value);
+                    }
                 }
                 Stream requestStream;
                 stream = (requestStream = httpWebRequest.GetRequestStream());
@@ -376,7 +379,9 @@ namespace PartialViewInterface.Utils
 
             public string ContentType = "application/json";
 
-            public NameValueCollection Heads { get; set; }
+            public Dictionary<string, string> Heads { get; set; }
+
+            //public NameValueCollection Heads { get; set; }
         }
     }
 }

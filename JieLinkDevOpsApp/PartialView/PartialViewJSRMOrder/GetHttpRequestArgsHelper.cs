@@ -24,7 +24,7 @@ namespace PartialViewJSRMOrder
             };
 
             HttpRequestArgs httpRequestArgs = GetHttpRequestArgs(url, queryOrder);
-            httpRequestArgs.Heads = new System.Collections.Specialized.NameValueCollection();
+            httpRequestArgs.Heads = new Dictionary<string, string>();
             httpRequestArgs.Heads.Add("userId", token);
             httpRequestArgs.Heads.Add("X-Token", userId);
             return httpRequestArgs;

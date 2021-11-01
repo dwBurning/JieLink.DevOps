@@ -39,9 +39,11 @@ namespace PartialViewJSRMOrder.Monitor
             }
 
             HttpRequestArgs httpRequestArgs = JsonHelper.DeserializeObject<HttpRequestArgs>(requestArgs);
+            
             ReturnMsg<PageOrder> returnMsg = await PostAsync<ReturnMsg<PageOrder>>(httpRequestArgs);
             if (returnMsg.success)
             {
+                OrderMonitorViewModel.Instance().ShowMessage("工单请求成功");
                 ExecuteGetOrderJob.AddOrder(returnMsg.respData.data);
             }
             else
