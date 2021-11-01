@@ -128,10 +128,10 @@ namespace PartialViewJSRMOrder.ViewModel
                 {
                     scheduler.UnscheduleJob(triggerKey);
                 }
+                string requestArgs = JsonHelper.SerializeObject(GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId));
                 var job = JobBuilder.Create(jobType)
                                         .WithIdentity(jobKey, "JSRM")
-                                        .UsingJobData("HttpRequestArgs",
-                                        JsonHelper.SerializeObject(GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryAuthProblemList, user.token, user.userId)))
+                                        .UsingJobData("HttpRequestArgs", requestArgs)
                                         .UsingJobData("ReceiveEmail", this.ReceiveEmail)
                                         .Build();
                 var trigger = TriggerBuilder.Create()
