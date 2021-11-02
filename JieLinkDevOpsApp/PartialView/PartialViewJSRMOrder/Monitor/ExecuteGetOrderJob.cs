@@ -120,6 +120,28 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
+            if (order.userName == "檀峰")//云托管的问题
+            {
+                bool isExist1 = responsiblePersons.ContainsKey("丁小永");
+                bool isExist2 = responsiblePersons.ContainsKey("钟峰");
+
+                if (!isExist1)
+                {
+                    order.ResponsiblePerson = "丁小永";
+                }
+                else if (!isExist2)
+                {
+                    order.ResponsiblePerson = "钟峰";
+                }
+                else
+                {
+                    var person = responsiblePersons.OrderBy(p => p.Value).Where(p => p.Key == "丁小永"
+                        || p.Key == "钟峰").Select(p => p.Key).FirstOrDefault();
+
+                    order.ResponsiblePerson = person;
+                }
+            }
+
             if (order.softVersion.ToLower().Contains("link3"))
             {
                 bool isExist1 = responsiblePersons.ContainsKey("梁哲");
