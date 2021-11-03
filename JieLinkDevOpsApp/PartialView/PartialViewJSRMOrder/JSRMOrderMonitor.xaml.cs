@@ -51,9 +51,16 @@ namespace PartialViewJSRMOrder
             get { return 800; }
         }
 
+        bool isLoad = false;
+        
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            viewModel.Load();
+            if (!isLoad)
+            {
+                viewModel.Load();//避免每次点进来 都触发
+            }
+
+            isLoad = true;
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)

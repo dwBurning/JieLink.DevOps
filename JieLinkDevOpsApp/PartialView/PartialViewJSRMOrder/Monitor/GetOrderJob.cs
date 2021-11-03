@@ -29,7 +29,6 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-
             JobDataMap data = context.JobDetail.JobDataMap;
             string requestArgs = data.GetString("HttpRequestArgs");
             if (string.IsNullOrEmpty(requestArgs))
