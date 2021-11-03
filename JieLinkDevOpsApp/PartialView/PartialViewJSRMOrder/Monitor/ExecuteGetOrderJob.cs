@@ -67,7 +67,8 @@ namespace PartialViewJSRMOrder.Monitor
 
         private static void GetYanfaTime(Order order)
         {
-            order.YanFaTime = OrderMonitorViewModel.Instance().GetRealReceiveTimeAsync(order.problemCode);
+            string str = "";
+            order.YanFaTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(order.problemCode,false,out str);
         }
 
         private static void GetResponsiblePerson(Order order)

@@ -37,9 +37,18 @@ namespace PartialViewJSRMOrder.Monitor
             }
 
             DataTable dataTable = devJsrmOrderManager.GetDispatchingOrderTable();
-            DataTable dataTableForEmail = devJsrmOrderManager.GetDispatchingOrderTableForEmail();
             
             List<Order> orders = devJsrmOrderManager.ConvertToOrderList(dataTable);
+
+            //获取已处理工单的完成时间
+            orders.Where(x => x.FinishTime == DateTime.MinValue).ToList().ForEach(x =>
+            {
+                string TrueResponsiblePerson = "";
+                x.FinishTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(x.problemCode, true,out TrueResponsiblePerson);
+                if(x.FinishTime != DateTime.MinValue)
+                    devJsrmOrderManager.UpdateFinsihTime(x.problemCode, x.FinishTime, TrueResponsiblePerson);
+            });
+            DataTable dataTableForEmail = devJsrmOrderManager.GetDispatchingOrderTableForEmail();
 
             int count = orders.Where(x => x.Dispatched == 0).Count();
 

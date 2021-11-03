@@ -146,11 +146,12 @@ namespace PartialViewJSRMOrder.ViewModel
         }
 
         /// <summary>
-        /// 根据工单号查询转研发的时间
+        /// 根据工单号查询转研发时间或者完成时间和完成人
         /// </summary>
         /// <param name="GD"></param>
-        public DateTime GetRealReceiveTimeAsync(string GD)
+        public DateTime GetTimePointByGDAsync(string GD,bool isFinishTime,out string responsibleperson)
         {
+            responsibleperson = "";
             HttpHelper.HttpRequestArgs requestArgs = null;
             OrderMonitorViewModel.Instance().Dispatcher.Invoke(() =>
             {
@@ -158,17 +159,33 @@ namespace PartialViewJSRMOrder.ViewModel
             });
             var result = JsonHelper.DeserializeObject<DisposeReturnMsg>(HttpHelper.Post(requestArgs));
             if (result != null)
-            { 
-                foreach(var slice in result.respData)
-                {
-                    if(slice.remark.Contains("转派到【研发】节点"))
+            {
+                if (isFinishTime == false)
+                { 
+                    foreach(var slice in result.respData)
                     {
-                        return Convert.ToDateTime(slice.createTime);
+                        if(slice.remark.Contains("转派到【研发】节点"))
+                        {
+                            return Convert.ToDateTime(slice.createTime);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var slice in result.respData)
+                    {
+                        if (slice.remark.Contains("处理问题，解决方案为"))
+                        {
+                            responsibleperson = slice.userName;
+                            return Convert.ToDateTime(slice.createTime);
+                        }
                     }
                 }
             }
-            return DateTime.Now;
+            return DateTime.MinValue;
         }
+
+
 
         private void GetVerifyCode(object parameter)
         {

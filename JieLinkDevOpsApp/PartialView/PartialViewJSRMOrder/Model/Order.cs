@@ -62,6 +62,11 @@ namespace PartialViewJSRMOrder.Model
         /// 转到研发的时间
         /// </summary>
         public DateTime YanFaTime { get; set; }
+
+        /// <summary>
+        /// 研发完成时间
+        /// </summary>
+        public DateTime FinishTime { get; set; }
     }
 
     public class PageOrder
