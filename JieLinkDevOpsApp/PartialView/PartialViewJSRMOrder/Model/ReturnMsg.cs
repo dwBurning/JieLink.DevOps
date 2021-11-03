@@ -18,4 +18,39 @@ namespace PartialViewJSRMOrder.Model
 
         public T respData { get; set; }
     }
+    public class DisposeReturnMsg
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public int status { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string message { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string respCode { get; set; }
+        /// <summary>
+        /// 成功
+        /// </summary>
+        public string respMsg { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string success { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public List<DisposePageOrder> respData { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string map { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string queryBean { get; set; }
+    }
 }

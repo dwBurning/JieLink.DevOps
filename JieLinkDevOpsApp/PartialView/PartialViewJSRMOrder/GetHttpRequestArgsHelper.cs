@@ -29,7 +29,24 @@ namespace PartialViewJSRMOrder
             httpRequestArgs.Heads.Add("X-Token", userId);
             return httpRequestArgs;
         }
+        public static HttpRequestArgs GetHttpRequestArgs(string userName, string url, string token, string userId,string GD)
+        {
+            QueryOrder queryOrder = new QueryOrder()
+            {
+                pageIndex = 1,
+                pageSize = 40,
+                sidx = "",
+                sord = "desc",
+                currentNode = "RD",
+                currentUserCode = userName
+            };
 
+            HttpRequestArgs httpRequestArgs = GetHttpRequestArgs(url + "?problemCode=" + GD, queryOrder);
+            httpRequestArgs.Heads = new Dictionary<string, string>();
+            httpRequestArgs.Heads.Add("userId", token);
+            httpRequestArgs.Heads.Add("X-Token", userId);
+            return httpRequestArgs;
+        }
 
         public static HttpRequestArgs GetHttpRequestArgs(string url, object data)
         {

@@ -37,7 +37,8 @@ namespace PartialViewJSRMOrder.Monitor
             }
 
             DataTable dataTable = devJsrmOrderManager.GetDispatchingOrderTable();
-
+            DataTable dataTableForEmail = devJsrmOrderManager.GetDispatchingOrderTableForEmail();
+            
             List<Order> orders = devJsrmOrderManager.ConvertToOrderList(dataTable);
 
             int count = orders.Where(x => x.Dispatched == 0).Count();
@@ -54,7 +55,7 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-            string content = SendEmailHelper.HtmlBody(dataTable);
+            string content = SendEmailHelper.HtmlBody(dataTableForEmail);
 
             SendEmailHelper.SendEmailAsync(receive, $"{DateTime.Now.ToString("yyyyMMddHH")}待处理捷服务工单", content, true);
             OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，已发送邮件");

@@ -57,6 +57,11 @@ namespace PartialViewJSRMOrder.Model
         /// 问题研发负责人
         /// </summary>
         public string ResponsiblePerson { get; set; }
+
+        /// <summary>
+        /// 转到研发的时间
+        /// </summary>
+        public DateTime YanFaTime { get; set; }
     }
 
     public class PageOrder
@@ -70,6 +75,60 @@ namespace PartialViewJSRMOrder.Model
         public int pageTotal { get; set; }
 
         public List<Order> data { get; set; }
+
+    }
+    public class DisposePageOrder
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public int id { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string problemCode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string problemType { get; set; }
+        /// <summary>
+        /// </summary>
+        public string remark { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string currentNode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string disposeStatus { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string userCode { get; set; }
+        /// <summary>
+        /// </summary>
+        public string userName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string disposeTime { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string createTime { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string departmentCode { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string departmentName { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public string userMobile { get; set; }
 
     }
 }

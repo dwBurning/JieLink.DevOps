@@ -29,6 +29,7 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
+
             JobDataMap data = context.JobDetail.JobDataMap;
             string requestArgs = data.GetString("HttpRequestArgs");
             if (string.IsNullOrEmpty(requestArgs))
@@ -38,7 +39,6 @@ namespace PartialViewJSRMOrder.Monitor
             }
 
             HttpRequestArgs httpRequestArgs = JsonHelper.DeserializeObject<HttpRequestArgs>(requestArgs);
-            
             ReturnMsg<PageOrder> returnMsg = await PostAsync<ReturnMsg<PageOrder>>(httpRequestArgs);
             if (returnMsg.success)
             {

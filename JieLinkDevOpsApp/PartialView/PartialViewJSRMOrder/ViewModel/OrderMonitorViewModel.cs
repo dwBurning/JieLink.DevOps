@@ -145,6 +145,30 @@ namespace PartialViewJSRMOrder.ViewModel
             Notice.Show("定时任务已启动", "通知", 3, MessageBoxIcon.Success);
         }
 
+        /// <summary>
+        /// 根据工单号查询转研发的时间
+        /// </summary>
+        /// <param name="GD"></param>
+        public DateTime GetRealReceiveTimeAsync(string GD)
+        {
+            HttpHelper.HttpRequestArgs requestArgs = null;
+            OrderMonitorViewModel.Instance().Dispatcher.Invoke(() =>
+            {
+                requestArgs = GetHttpRequestArgsHelper.GetHttpRequestArgs(this.UserName, queryProblemDisposeList, user.token, user.userId, GD);
+            });
+            var result = JsonHelper.DeserializeObject<DisposeReturnMsg>(HttpHelper.Post(requestArgs));
+            if (result != null)
+            { 
+                foreach(var slice in result.respData)
+                {
+                    if(slice.remark.Contains("转派到【研发】节点"))
+                    {
+                        return Convert.ToDateTime(slice.createTime);
+                    }
+                }
+            }
+            return DateTime.Now;
+        }
 
         private void GetVerifyCode(object parameter)
         {
