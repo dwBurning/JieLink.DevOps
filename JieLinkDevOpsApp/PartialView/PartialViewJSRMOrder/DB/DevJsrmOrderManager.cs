@@ -37,7 +37,7 @@ namespace PartialViewJSRMOrder.DB
 
         public void AddOrder(Order order)
         {
-            EnvironmentInfo.SqliteHelper.ExecuteSql($"insert into dev_jsrm_order values('{order.problemCode}','{order.projectName}','{order.problemInfo}','{order.userName}','{order.problemTime}','{order.remoteAccount}','{order.softVersion}',{order.Dispatched},'{order.ReceiveTime.ToString("yyyy-MM-dd HH:mm:ss")}','{order.ResponsiblePerson}','{order.YanFaTime.ToString("yyyy-MM-dd HH:mm:ss")}');");
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"insert into dev_jsrm_order values('{order.problemCode}','{order.projectName}','{order.problemInfo}','{order.userName}','{order.problemTime}','{order.remoteAccount}','{order.softVersion}',{order.Dispatched},'{order.ReceiveTime.ToString("yyyy-MM-dd HH:mm:ss")}','{order.ResponsiblePerson}','{order.YanFaTime.ToString("yyyy-MM-dd HH:mm:ss")}',null);");
         }
 
         public List<Order> GetDispatchingOrderList()
@@ -84,10 +84,20 @@ namespace PartialViewJSRMOrder.DB
             string error = "";
             return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
+        public DataTable GetYesterdayDispatchingOrderTable()
+        {
+            string error = "";
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where ReceiveTime>'{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}' and ReceiveTime<'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+        }
         public DataTable GetDispatchingOrderTableForEmail()
         {
             string error = "";
             return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人' from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+        }
+        public DataTable GetYesterdayDispatchingOrderTableForEmail()
+        {
+            string error = "";
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人' from dev_jsrm_order where ReceiveTime>'{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}' and ReceiveTime<'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
         public void UpdateDispatch(string problemCode)
         {

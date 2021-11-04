@@ -101,6 +101,7 @@ namespace PartialViewJSRMOrder.ViewModel
 
             GetOrderJob = keyValueSettingManager.ReadSetting("GetOrderJob")?.ValueText;
             DispatchJob = keyValueSettingManager.ReadSetting("DispatchJob")?.ValueText;
+            YesterdayReportJob = keyValueSettingManager.ReadSetting("YesterdayReportJob")?.ValueText;
             ReceiveEmail = keyValueSettingManager.ReadSetting("ReceiveEmail")?.ValueText;
         }
 
@@ -115,13 +116,20 @@ namespace PartialViewJSRMOrder.ViewModel
         {
             keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "GetOrderJob", ValueText = this.GetOrderJob });
             keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "DispatchJob", ValueText = this.DispatchJob });
+            keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "YesterdayReportJob", ValueText = this.YesterdayReportJob });
             keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "ReceiveEmail", ValueText = this.ReceiveEmail });
 
-            string[] jobs = new string[] { "GetOrderJob", "DispatchJob" };
+            string[] jobs = new string[] { "GetOrderJob", "DispatchJob", "YesterdayReportJob" };
             foreach (var jobKey in jobs)
             {
-                string cron = jobKey == "GetOrderJob" ? this.GetOrderJob : this.DispatchJob;
-                Type jobType = jobKey == "GetOrderJob" ? typeof(GetOrderJob) : typeof(DispatchJob);
+                string cron = string.Empty;
+                Type jobType = null;
+                switch (jobKey)
+                {
+                    case "GetOrderJob": cron = this.GetOrderJob; jobType = typeof(GetOrderJob); break;
+                    case "DispatchJob": cron = this.DispatchJob; jobType = typeof(DispatchJob); break;
+                    case "YesterdayReportJob": cron = this.YesterdayReportJob; jobType = typeof(YesterdayReportJob); break;
+                }
 
                 var triggerKey = scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.GroupEquals("JSRM")).Where(x => x.Name == jobKey).FirstOrDefault();
                 if (triggerKey != null)
@@ -174,7 +182,7 @@ namespace PartialViewJSRMOrder.ViewModel
                 {
                     foreach (var slice in result.respData)
                     {
-                        if (slice.remark.Contains("处理问题，解决方案为"))
+                        if (slice.remark.Contains("处理问题，解决方案为") || slice.remark.Contains("驳回到【总部节点】节点，原因"))
                         {
                             responsibleperson = slice.userName;
                             return Convert.ToDateTime(slice.createTime);
@@ -386,7 +394,15 @@ namespace PartialViewJSRMOrder.ViewModel
         public static readonly DependencyProperty DispatchJobProperty =
             DependencyProperty.Register("DispatchJob", typeof(string), typeof(OrderMonitorViewModel));
 
+        public string YesterdayReportJob
+        {
+            get { return (string)GetValue(YesterdayReportJobProperty); }
+            set { SetValue(YesterdayReportJobProperty, value); }
+        }
 
+        // Using a DependencyProperty as the backing store for YesterdayReportJob.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty YesterdayReportJobProperty =
+            DependencyProperty.Register("YesterdayReportJob", typeof(string), typeof(OrderMonitorViewModel));
 
         public string ReceiveEmail
         {
