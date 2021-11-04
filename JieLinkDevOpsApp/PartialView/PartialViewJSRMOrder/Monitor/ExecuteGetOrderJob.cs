@@ -47,12 +47,14 @@ namespace PartialViewJSRMOrder.Monitor
                 foreach (var x in orders)
                 {
                     GetResponsiblePerson(x);
+                    GetYanfaTime(x);
                     Order order = devJsrmOrderManager.GetOrder(x.problemCode);
                     if (order != null)
                     {
                         continue;
                     }
                     x.ReceiveTime = DateTime.Now;
+
                     OrderMonitorViewModel.Instance().ShowMessage($"新增加工单 {x.problemCode}");
                     OrderMonitorViewModel.Instance().Dispatcher.Invoke(() =>
                     {
@@ -63,6 +65,11 @@ namespace PartialViewJSRMOrder.Monitor
             });
         }
 
+        private static void GetYanfaTime(Order order)
+        {
+            string str = "";
+            order.YanFaTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(order.problemCode,false,out str);
+        }
 
         private static void GetResponsiblePerson(Order order)
         {

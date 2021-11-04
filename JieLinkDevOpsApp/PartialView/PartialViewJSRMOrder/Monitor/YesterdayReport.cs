@@ -12,22 +12,20 @@ using System.Threading.Tasks;
 
 namespace PartialViewJSRMOrder.Monitor
 {
-    class DispatchJob : IJob
+    class YesterdayReportJob : IJob
     {
         DevJsrmOrderManager devJsrmOrderManager;
-        public DispatchJob()
+        public YesterdayReportJob()
         {
             devJsrmOrderManager = new DevJsrmOrderManager();
         }
 
+        /// <summary>
+        /// 发送昨日报表
+        /// </summary>
+        /// <param name="context"></param>
         public void Execute(IJobExecutionContext context)
         {
-            if (DateTime.Now.Hour > 18)
-            {
-                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
-                return;
-            }
-
             JobDataMap data = context.JobDetail.JobDataMap;
             string receive = data.GetString("ReceiveEmail");
             if (string.IsNullOrEmpty(receive))
@@ -36,7 +34,7 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-            DataTable dataTable = devJsrmOrderManager.GetDispatchingOrderTable();
+            DataTable dataTable = devJsrmOrderManager.GetYesterdayDispatchingOrderTable();
             
             List<Order> orders = devJsrmOrderManager.ConvertToOrderList(dataTable);
 
@@ -48,26 +46,19 @@ namespace PartialViewJSRMOrder.Monitor
                 if(x.FinishTime != DateTime.MinValue)
                     devJsrmOrderManager.UpdateFinsihTime(x.problemCode, x.FinishTime, TrueResponsiblePerson);
             });
-            DataTable dataTableForEmail = devJsrmOrderManager.GetDispatchingOrderTableForEmail();
+            DataTable dataTableForEmail = devJsrmOrderManager.GetYesterdayDispatchingOrderTableForEmail();
 
-            int count = orders.Where(x => x.Dispatched == 0).Count();
-
+            int count = orders.Count();
             if (count <= 0)
             {
-                OrderMonitorViewModel.Instance().ShowMessage("没有新增的工单");
-                return;
-            }
-
-            if (!(count >= 2 || DateTime.Now.Hour > 16))
-            {
-                OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，暂不发送邮件");
+                OrderMonitorViewModel.Instance().ShowMessage("无昨日工单");
                 return;
             }
 
             string content = SendEmailHelper.HtmlBody(dataTableForEmail);
 
-            SendEmailHelper.SendEmailAsync(receive, $"{DateTime.Now.ToString("yyyyMMddHH")}待处理捷服务工单", content, true);
-            OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，已发送邮件");
+            SendEmailHelper.SendEmailAsync(receive, $"{DateTime.Now.AddDays(-1).ToString("yyyyMMdd")}日捷服务处理报表", content, true);
+            OrderMonitorViewModel.Instance().ShowMessage($"已发送昨日报表邮件");
 
             orders.Where(x => x.Dispatched == 0).ToList().ForEach(x =>
             {

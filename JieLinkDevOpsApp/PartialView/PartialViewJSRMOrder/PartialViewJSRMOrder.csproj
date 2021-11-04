@@ -72,6 +72,7 @@
     <Compile Include="Model\QueryOrder.cs" />
     <Compile Include="Model\ReturnMsg.cs" />
     <Compile Include="Model\Token.cs" />
+    <Compile Include="Monitor\YesterdayReport.cs" />
     <Compile Include="Monitor\DispatchJob.cs" />
     <Compile Include="Monitor\ExecuteGetOrderJob.cs" />
     <Compile Include="Monitor\GetOrderJob.cs" />
