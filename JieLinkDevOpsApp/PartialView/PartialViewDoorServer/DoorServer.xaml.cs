@@ -62,6 +62,16 @@ namespace PartialViewDoorServer
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            Global.ValidV2(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
+
             try
             {
                 viewModel.GetDoorServerInfo();
@@ -69,7 +79,6 @@ namespace PartialViewDoorServer
             }
             catch (Exception)
             {
-                MessageBoxHelper.MessageBoxShowWarning("未查询到jielink2.x的数据库信息，请确认数据库配置信息是否正确？");
                 this.IsEnabled = false;
             }
         }

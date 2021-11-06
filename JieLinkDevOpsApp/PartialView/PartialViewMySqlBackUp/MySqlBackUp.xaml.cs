@@ -99,7 +99,7 @@ namespace PartialViewMySqlBackUp
         {
             if (e.AddedItems.Count == 0) return;
             var selectItem = (BackUpPolicy)e.AddedItems[0];
-
+            viewModel.CurrentPolicy.Id = selectItem.Id;
             viewModel.CurrentPolicy.Sunday = selectItem.Sunday;
             viewModel.CurrentPolicy.Monday = selectItem.Monday;
             viewModel.CurrentPolicy.Tuesday = selectItem.Tuesday;
@@ -110,16 +110,15 @@ namespace PartialViewMySqlBackUp
             viewModel.CurrentPolicy.SelectedTime = selectItem.SelectedTime;
             viewModel.CurrentPolicy.IsTaskBackUpDataBase = selectItem.IsTaskBackUpDataBase;
             viewModel.CurrentPolicy.IsTaskBackUpTables = selectItem.IsTaskBackUpTables;
-            viewModel.CurrentPolicy.SelectedDatabase = selectItem.SelectedDatabase;
+            viewModel.CurrentPolicy.DataBaseName = selectItem.DataBaseName;
             viewModel.CurrentPolicyBak = viewModel.DeepCopy(viewModel.CurrentPolicy);
-            viewModel.SetTables(selectItem.SelectedDatabase);
+            viewModel.SetTables(selectItem.DataBaseName);
         }
 
         private void dgDatabases_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var backUpDatabase = dgDatabases.SelectedItem as BackUpDatabase;
-            EnvironmentInfo.SelectedDatabase = backUpDatabase.DatabaseName;
-            viewModel.CurrentPolicy.SelectedDatabase = EnvironmentInfo.SelectedDatabase; //避免选择数据库后直接编辑策略，不触发ListBox_SelectionChanged
+            viewModel.CurrentPolicy.DataBaseName = backUpDatabase.DatabaseName; 
             viewModel.SetTables(backUpDatabase.DatabaseName);
         }
     }

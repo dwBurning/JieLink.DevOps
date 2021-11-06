@@ -25,11 +25,10 @@ namespace PartialViewInterface.Models
         /// <summary>
         /// 当前选中的需要备份的数据库
         /// </summary>
-        public string DatabaseName { get; set; }
+        public string DataBaseName { get; set; }
 
-        public string JobIdentity
-        {
-            get { return string.IsNullOrEmpty(DatabaseName) ? JobTypeName : $"{JobTypeName}-{DatabaseName}-{Cron}"; }
-        }
+        public string JobIdentity { get; set; }
+
+        public string GroupName { get; set; }
     }
 }

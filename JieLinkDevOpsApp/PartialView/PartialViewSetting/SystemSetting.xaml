@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:PartialViewSetting"
              xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
              d:DesignHeight="550" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
@@ -134,29 +135,30 @@
                     <TextBlock Grid.Row="2" Grid.Column="0" >数据库端口：</TextBlock>
                     <TextBlock Grid.Row="3" Grid.Column="0" >数据库用户：</TextBlock>
                     <TextBlock Grid.Row="4" Grid.Column="0" >数据库密码：</TextBlock>
+                    <TextBlock Grid.Row="5" Grid.Column="0" >jielink版本：</TextBlock>
 
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="127.0.0.1" 
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtCenterIp" Text="{Binding Ip}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入IP地址"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="db_newg3_main" 
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtCenterDb"  Text="{Binding DbName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入数据库名"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="3306" 
+                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtCenterDbPort" Text="{Binding Port}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入端口"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                  pu:TextBoxHelper.CornerRadius="4"
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
-                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="jieLink" 
+                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtCenterDbUser" Text="{Binding UserName}" 
                  VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入用户"
                  pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                  pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
@@ -171,10 +173,10 @@
                      pu:PasswordBoxHelper.CornerRadius="4"
                      pu:PasswordBoxHelper.IsShowPwdButtonVisible="True"
                      />
-                    <ComboBox Margin="5" VerticalAlignment="Center" Height="40" 
+                    <ComboBox Name="cmbJKVersion" VerticalAlignment="Center" Height="40" 
                       SelectedIndex="{Binding SelectIndex}"
-                      SelectedValue="{Binding SelectMonth}" 
                       ItemsSource="{Binding DataSource}"
+                      SelectionChanged="cmbJKVersion_SelectionChanged"
                       DisplayMemberPath="Value" Grid.Column="1" Grid.Row="5"
                       SelectedValuePath="Key"
                       pu:ComboBoxHelper.Watermark="请选择JieLink版本"
@@ -183,7 +185,10 @@
                       pu:ComboBoxHelper.HoverBackground="#20A0FF"
                       pu:ComboBoxHelper.HoverForeground="#FFFFFF"
                       pu:ComboBoxHelper.CornerRadius="4"
+                              
                       pu:TextBoxHelper.IsClearButtonVisible="True" >
+                        
+
                     </ComboBox>
                     <Button Grid.Column="1" Grid.Row="6" Content="测试连接" Name ="btnTestConn" Click="btnTestConn_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"

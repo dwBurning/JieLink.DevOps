@@ -1,11 +1,15 @@
 ﻿using MySql.Data.MySqlClient;
 using Panuon.UI.Silver;
 using PartialViewDataArchiving.DataArchive;
+using PartialViewDataArchiving.DB;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
+using PartialViewInterface.DB;
+using PartialViewInterface.Models;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -21,6 +25,10 @@ namespace PartialViewDataArchiving.ViewModels
 
 
         public DelegateCommand ExecuteDataArchiveCommand { get; set; }
+
+        public DelegateCommand AddTableCommand { get; set; }
+
+        public DelegateCommand RemoveTableCommand { get; set; }
 
         public static DataArchivingViewModel Instance()
         {
@@ -38,17 +46,29 @@ namespace PartialViewDataArchiving.ViewModels
         }
 
 
-
+        ArchiveTableManager archiveTableManager;
+        KeyValueSettingManager keyValueSettingManager;
         private DataArchivingViewModel()
         {
-            Tables = new List<string>();
-            Tables.Add("box_enter_record");
-            Tables.Add("box_out_record");
-            Tables.Add("box_bill");
-            Tables.Add("business_discount");
-            Tables.Add("boxdoor_door_record");
+            archiveTableManager = new ArchiveTableManager();
+            keyValueSettingManager = new KeyValueSettingManager();
+            ArchiveTables = new ObservableCollection<ArchiveTable>();
+
+            archiveTableManager.ArchiveTables().ForEach(x =>
+            {
+                ArchiveTables.Add(x);
+            });
+
             ExecuteDataArchiveCommand = new DelegateCommand();
             ExecuteDataArchiveCommand.ExecuteAction = DataArchive;
+
+
+            AddTableCommand = new DelegateCommand();
+            AddTableCommand.ExecuteAction = AddTable;
+
+            RemoveTableCommand = new DelegateCommand();
+            RemoveTableCommand.ExecuteAction = RemoveTable;
+
 
             AutoArchive = EnvironmentInfo.IsAutoArchive;
             ManulArchive = !EnvironmentInfo.IsAutoArchive;
@@ -57,6 +77,52 @@ namespace PartialViewDataArchiving.ViewModels
             Progress = 0;
             IsIndeterminate = false;
             IsPercentVisible = true;
+        }
+
+        private void AddTable(object parameter)
+        {
+            if (string.IsNullOrEmpty(TableName + DateField))
+            {
+                MessageBoxHelper.MessageBoxShowWarning("表名称和时间字段都为必填项！");
+                return;
+            }
+
+            ArchiveTable archiveTable = ArchiveTables.FirstOrDefault(x => x.TableName.ToLower() == TableName.ToLower());
+            if (archiveTable != null)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("添加的表名称已存在！");
+                return;
+            }
+
+            try
+            {
+                MySqlHelper.ExecuteScalar(EnvironmentInfo.ConnectionString, $"select {DateField} from {TableName} limit 1");
+            }
+            catch (Exception)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("添加的表名称或者时间字段在数据库中不存在！");
+                return;
+            }
+
+
+            var table = new ArchiveTable() { TableName = TableName, DateField = DateField, Where = Where };
+            archiveTableManager.AddArchiveTable(table);
+            ArchiveTables.Add(table);
+            this.TableName = "";
+            this.DateField = "";
+            this.Where = "";
+        }
+
+        private void RemoveTable(object parameter)
+        {
+            if (SelectedTable == null)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("请选择你要移除的表！");
+                return;
+            }
+
+            archiveTableManager.RemoveArchiveTable(SelectedTable);
+            ArchiveTables.Remove(SelectedTable);
         }
 
         private void DataArchive(object parameter)
@@ -71,21 +137,25 @@ namespace PartialViewDataArchiving.ViewModels
             DataTable dt = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
             if (dt.Rows.Count > 0 && this.AutoArchive)
             {
-                MessageBoxHelper.MessageBoxShowWarning("当前版本已经支持自动归档！");
-                this.AutoArchive = false;
-                this.ManulArchive = true;
-                return;
+                if (MessageBoxHelper.MessageBoxShowQuestion("当前版本已经支持自动归档，是否继续配置？") == MessageBoxResult.No)
+                {
+                    this.AutoArchive = false;
+                    this.ManulArchive = true;
+                    return;
+                }
             }
 
             if (this.AutoArchive)
             {
-                ConfigHelper.WriterAppConfig("AutoArchive", "1");
+                //ConfigHelper.WriterAppConfig("AutoArchive", "1");
+                keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "AutoArchive", ValueText = "1" });
                 EnvironmentInfo.IsAutoArchive = true;
-                Notice.Show("数据归档任务将于每晚12点执行...", "通知", 3, MessageBoxIcon.Success);
+                Notice.Show("数据归档任务将于每晚2点执行...", "通知", 3, MessageBoxIcon.Success);
             }
             else
             {
-                ConfigHelper.WriterAppConfig("AutoArchive", "0");
+                //ConfigHelper.WriterAppConfig("AutoArchive", "0");
+                keyValueSettingManager.WriteSetting(new KeyValueSetting() { KeyId = "AutoArchive", ValueText = "0" });
                 EnvironmentInfo.IsAutoArchive = false;
 
                 ConfigHelper.WriterAppConfig("AutoArchiveMonth", SelectMonth.ToString());
@@ -211,12 +281,59 @@ namespace PartialViewDataArchiving.ViewModels
 
 
 
+        public string TableName
+        {
+            get { return (string)GetValue(TableNameProperty); }
+            set { SetValue(TableNameProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TableName.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TableNameProperty =
+            DependencyProperty.Register("TableName", typeof(string), typeof(DataArchivingViewModel));
 
 
 
 
+        public string DateField
+        {
+            get { return (string)GetValue(DateFieldProperty); }
+            set { SetValue(DateFieldProperty, value); }
+        }
 
-        public List<string> Tables { get; set; }
+        // Using a DependencyProperty as the backing store for DateField.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DateFieldProperty =
+            DependencyProperty.Register("DateField", typeof(string), typeof(DataArchivingViewModel));
+
+
+        public ObservableCollection<ArchiveTable> ArchiveTables { get; set; }
+
+
+
+        public ArchiveTable SelectedTable
+        {
+            get { return (ArchiveTable)GetValue(SelectedTableProperty); }
+            set { SetValue(SelectedTableProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for SelectedTable.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedTableProperty =
+            DependencyProperty.Register("SelectedTable", typeof(ArchiveTable), typeof(DataArchivingViewModel));
+
+
+
+        public string Where
+        {
+            get { return (string)GetValue(WhereProperty); }
+            set { SetValue(WhereProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Where.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WhereProperty =
+            DependencyProperty.Register("Where", typeof(string), typeof(DataArchivingViewModel));
+
+
+
+        //public List<string> Tables { get; set; }
 
 
         public void ShowMessage(string message, int progress = 0)

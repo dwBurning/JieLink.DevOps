@@ -13,6 +13,9 @@ using System.Windows.Controls;
 using System.Linq;
 using System.IO;
 using MySql.Data;
+using PartialViewSetting.ViewModel;
+using PartialViewInterface.DB;
+
 namespace PartialViewSetting
 {
     /// <summary>
@@ -21,11 +24,20 @@ namespace PartialViewSetting
     public partial class SystemSetting : UserControl, IPartialView
     {
         private ProjectInfoWindowViewModel viewModel;
+        private DBConnViewModel dbConnViewModel;
+        private KeyValueSettingManager manager;
+        private BackUpJobConfigManger backUpJobConfigManger;
         public SystemSetting()
         {
             InitializeComponent();
             viewModel = new ProjectInfoWindowViewModel();
             gridProjectConfig.DataContext = viewModel;
+
+            dbConnViewModel = new DBConnViewModel();
+            gridDBConfig.DataContext = dbConnViewModel;
+
+            manager = new KeyValueSettingManager();
+            backUpJobConfigManger = new BackUpJobConfigManger();
         }
 
         public string MenuName
@@ -52,7 +64,14 @@ namespace PartialViewSetting
         {
             string url = txtServerUrl.Text;
             EnvironmentInfo.ServerUrl = url.Trim();
-            ConfigHelper.WriterAppConfig("ServerUrl", url);
+            //ConfigHelper.WriterAppConfig("ServerUrl", url);
+
+            manager.WriteSetting(new KeyValueSetting()
+            {
+                KeyId = "ServerUrl",
+                ValueText = url
+            });
+
             EnvironmentInfo.ProjectNo = viewModel.ProjectNo;
             EnvironmentInfo.ProjectName = viewModel.ProjectName;
             EnvironmentInfo.ProjectVersion = viewModel.ProjectVersion;
@@ -79,17 +98,20 @@ namespace PartialViewSetting
             projectInfo.ContactName = viewModel.ContactName;
             projectInfo.ContactPhone = viewModel.ContactPhone;
 
-            ConfigHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(projectInfo));
+            //ConfigHelper.WriterAppConfig("ProjectInfo", JsonConvert.SerializeObject(projectInfo));
+
+            manager.WriteSetting(new KeyValueSetting()
+            {
+                KeyId = "ProjectInfo",
+                ValueText = JsonConvert.SerializeObject(projectInfo)
+            });
+
             Notice.Show("保存成功", "通知", 3, MessageBoxIcon.Success);
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!IsLoaded)
-                return;
-            string url = "http://www.dwburning.top:1688";//ConfigHelper.ReadAppConfig("ServerUrl");
-            txtServerUrl.Text = url;
-            EnvironmentInfo.ServerUrl = url;
+            txtServerUrl.Text = EnvironmentInfo.ServerUrl;
             if (string.IsNullOrEmpty(EnvironmentInfo.ProjectVersion))
             {
                 #region 未配置的时候，尝试自动获取
@@ -133,11 +155,15 @@ namespace PartialViewSetting
             viewModel.ContactName = EnvironmentInfo.ContactName;
             viewModel.ContactPhone = EnvironmentInfo.ContactPhone;
 
-            txtCenterIp.Text = EnvironmentInfo.DbConnEntity.Ip;
-            txtCenterDbPort.Text = EnvironmentInfo.DbConnEntity.Port.ToString();
-            txtCenterDbUser.Text = EnvironmentInfo.DbConnEntity.UserName;
+            dbConnViewModel.Ip = EnvironmentInfo.DbConnEntity.Ip;
+            dbConnViewModel.Port = EnvironmentInfo.DbConnEntity.Port;
+            dbConnViewModel.UserName = EnvironmentInfo.DbConnEntity.UserName;
             txtCenterDbPwd.Password = EnvironmentInfo.DbConnEntity.Password;
-            txtCenterDb.Text = EnvironmentInfo.DbConnEntity.DbName;
+            dbConnViewModel.Password = EnvironmentInfo.DbConnEntity.Password;
+            dbConnViewModel.DbName = EnvironmentInfo.DbConnEntity.DbName;
+
+
+
         }
 
         private void btnTestConn_Click(object sender, RoutedEventArgs e)
@@ -148,26 +174,155 @@ namespace PartialViewSetting
                 txtCenterIp.Text = "127.0.0.1";
             }
 
-            string connStr = $"Data Source={txtCenterIp.Text};port={txtCenterDbPort.Text};User ID={txtCenterDbUser.Text};Password={txtCenterDbPwd.Password};Initial Catalog=mysql;";
+            dbConnViewModel.Password = txtCenterDbPwd.Password;
+
+            string connStr = $"Data Source={dbConnViewModel.Ip};port={dbConnViewModel.Port};User ID={dbConnViewModel.UserName};Password={dbConnViewModel.Password};Initial Catalog=mysql;";
 
             try
             {
                 MySqlHelper.ExecuteDataset(connStr, "select * from `user` limit 1");
-
-                Notice.Show("中心数据库连接成功,已自动保存!", "通知", 3, MessageBoxIcon.Success);
                 //存储中心连接字符串
+                EnvironmentInfo.DbConnEntity.Ip = dbConnViewModel.Ip;
+                EnvironmentInfo.DbConnEntity.Port = dbConnViewModel.Port;
+                EnvironmentInfo.DbConnEntity.UserName = dbConnViewModel.UserName;
+                EnvironmentInfo.DbConnEntity.Password = dbConnViewModel.Password;
+                EnvironmentInfo.DbConnEntity.DbName = dbConnViewModel.DbName;
+                //ConfigHelper.WriterAppConfig("ConnectionString", JsonHelper.SerializeObject(EnvironmentInfo.DbConnEntity));
+                manager.WriteSetting(new KeyValueSetting()
+                {
+                    KeyId = "ConnectionString",
+                    ValueText = JsonHelper.SerializeObject(EnvironmentInfo.DbConnEntity)
+                });
 
-                EnvironmentInfo.DbConnEntity.Ip = txtCenterIp.Text;
-                EnvironmentInfo.DbConnEntity.Port = Convert.ToInt32(txtCenterDbPort.Text);
-                EnvironmentInfo.DbConnEntity.UserName = txtCenterDbUser.Text;
-                EnvironmentInfo.DbConnEntity.Password = txtCenterDbPwd.Password;
-                EnvironmentInfo.DbConnEntity.DbName = txtCenterDb.Text;
-                ConfigHelper.WriterAppConfig("ConnectionString", JsonHelper.SerializeObject(EnvironmentInfo.DbConnEntity));
+                if (dbConnViewModel.SelectIndex == 0)
+                {
+                    EnvironmentInfo.IsJieLink3x = false;
+
+                    manager.WriteSetting(new KeyValueSetting()
+                    {
+                        KeyId = "IsJieLink3x",
+                        ValueText = "0"
+                    });
+                }
+                else
+                {
+                    EnvironmentInfo.IsJieLink3x = true;
+                    manager.WriteSetting(new KeyValueSetting()
+                    {
+                        KeyId = "IsJieLink3x",
+                        ValueText = "1"
+                    });
+                }
+
+                MessageBoxHelper.MessageBoxShowInfo("中心数据库连接成功，程序需要重启！");
+                System.Threading.Thread.Sleep(500);
+                EnvironmentInfo.IsExit = true;
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = "restart.bat",
+                    CreateNoWindow = true
+                });
+                Application.Current.MainWindow.Close();
 
             }
             catch (Exception)
             {
                 Notice.Show("数据库连接失败!", "通知", 3, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void cmbJKVersion_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                dbConnViewModel.SelectIndex = EnvironmentInfo.IsJieLink3x ? 1 : 0;
+                return;
+            }
+
+            if (MessageBoxHelper.MessageBoxShowQuestion("切换前端软件版本会重装数据库备份策略，是否继续？") == MessageBoxResult.No)
+            {
+                return;
+            }
+
+            EnvironmentInfo.IsJieLink3x = dbConnViewModel.SelectIndex == 1;
+            EnvironmentInfo.DbConnEntity.Ip = dbConnViewModel.Ip;
+            EnvironmentInfo.DbConnEntity.Port = dbConnViewModel.Port;
+            EnvironmentInfo.DbConnEntity.UserName = dbConnViewModel.UserName;
+            EnvironmentInfo.DbConnEntity.Password = dbConnViewModel.Password;
+            EnvironmentInfo.DbConnEntity.DbName = dbConnViewModel.DbName;
+
+            if (dbConnViewModel.SelectIndex == 0)
+            {
+                Global.ValidV2(new Action<string, bool>((message, result) =>
+                {
+                    if (!result)
+                    {
+                        MessageBoxHelper.MessageBoxShowWarning(message);
+                    }
+
+                    btnTestConn.IsEnabled = result;
+                    if (!result) return;
+                }));
+
+                if (EnvironmentInfo.BackUpJobConfigs.FindIndex(x => x.DataBaseName == dbConnViewModel.DbName) < 0)
+                {
+                    backUpJobConfigManger.Clear();
+
+                    backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        DataBaseName = dbConnViewModel.DbName,
+                        Cron = "00 00 03 ? * 4",
+                        BackUpType = 0
+                    });
+
+                    backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        DataBaseName = dbConnViewModel.DbName,
+                        Cron = "00 00 03 ? * 2,6",
+                        BackUpType = 1
+                    });
+
+                }
+
+            }
+            else if (dbConnViewModel.SelectIndex == 1)
+            {
+                Global.ValidV3(new Action<string, bool>((message, result) =>
+                {
+                    if (!result)
+                    {
+                        MessageBoxHelper.MessageBoxShowWarning(message);
+                    }
+
+                    btnTestConn.IsEnabled = result;
+                    if (!result) return;
+                }));
+
+                if (EnvironmentInfo.BackUpJobConfigs.FindIndex(x => x.DataBaseName == dbConnViewModel.DbName) < 0)
+                {
+                    backUpJobConfigManger.Clear();
+                    string[] dbs = new string[] { "jielink", "jielink_pcs" };
+                    foreach (var db in dbs)
+                    {
+                        backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            DataBaseName = db,
+                            Cron = "00 00 03 ? * 4",
+                            BackUpType = 0
+                        });
+
+                        backUpJobConfigManger.WriteBackUpJobConfig(new BackUpJobConfig()
+                        {
+                            Id = Guid.NewGuid().ToString(),
+                            DataBaseName = db,
+                            Cron = "00 00 03 ? * 2,6",
+                            BackUpType = 1
+                        });
+                    }
+                }
             }
         }
     }

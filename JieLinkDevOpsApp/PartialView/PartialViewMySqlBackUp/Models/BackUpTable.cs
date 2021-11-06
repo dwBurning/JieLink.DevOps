@@ -14,7 +14,7 @@ namespace PartialViewMySqlBackUp.Models
 
         [DisplayName("数据表名")]
         [ReadOnlyColumn]
-        [ColumnWidth("3*")]
+        [ColumnWidth("2*")]
         public string TableName
         {
             get { return _tableName; }
@@ -23,7 +23,7 @@ namespace PartialViewMySqlBackUp.Models
 
         private bool _isChecked;
 
-        [DisplayName("备份")]
+        [DisplayName("忽略备份")]
         [ColumnWidth("*")]
         public bool IsChecked
         {

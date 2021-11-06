@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="PartialViewImportVoucherInfo.ImportVoucherInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             xmlns:local="clr-namespace:PartialViewImportVoucherInfo"
+             mc:Ignorable="d" 
+             d:DesignHeight="500" d:DesignWidth="800" Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Right"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" >人事编号：</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0" >文件路径：</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" x:Name="txtPersonNo" Text="{Binding PersonNo}" Margin="5"
+                 VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请输入人事编号"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+        <Button Grid.Column="2" Grid.Row="2" Content="校验" Name ="btnCheck" Command="{Binding CheckDataCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+
+        <TextBox Grid.Row="1" Grid.Column="1" IsReadOnly="True" Text="{Binding FilePath}" Margin="5"
+                     VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定文件路径"
+                     pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:TextBoxHelper.CornerRadius="4"
+                     pu:TextBoxHelper.IsClearButtonVisible="True"/>
+
+        <Button Grid.Row="1" Grid.Column="2" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
+                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+        <Button Grid.Column="2" Grid.Row="3" Content="导入" Name ="btnImport" Command="{Binding ImportVoucherInfoCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Column="1" Grid.Row="2" Grid.RowSpan="4" IsReadOnly="True" Margin="5">
+            <FlowDocument>
+                <Paragraph>
+                    <Run Text="{Binding Message}"/>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+    </Grid>
+</UserControl>
+

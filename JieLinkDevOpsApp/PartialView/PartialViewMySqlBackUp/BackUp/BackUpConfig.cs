@@ -33,6 +33,8 @@ namespace PartialViewMySqlBackUp.BackUp
         /// 说明：不在此集合中的才需备份
         /// </summary>
         public List<Table> IgnoreTables { get; set; }
+
+        public List<Table> DefaultIgnoreTables { get; set; }
     }
 
     public class Table

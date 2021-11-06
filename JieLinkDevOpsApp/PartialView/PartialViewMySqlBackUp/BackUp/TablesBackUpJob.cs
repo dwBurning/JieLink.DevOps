@@ -20,7 +20,7 @@ namespace PartialViewMySqlBackUp.BackUp
         public void Execute(IJobExecutionContext context)
         {
             JobDataMap data = context.JobDetail.JobDataMap;
-            string databaseName = data.GetString("DatabaseName");
+            string databaseName = data.GetString("DataBaseName");
             ExecuteBackUp executeBackUp = new ExecuteBackUp();
             executeBackUp.BackUpTables(databaseName);
         }

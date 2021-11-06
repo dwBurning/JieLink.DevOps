@@ -73,6 +73,7 @@
     <Compile Include="DataArchiving.xaml.cs">
       <DependentUpon>DataArchiving.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DB\ArchiveTableManager.cs" />
     <Compile Include="Models\TableCharacter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -88,8 +89,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="TaskDataMonitor\IMonitor.cs" />
+    <Compile Include="TaskDataMonitor\MonitorDBNameError.cs" />
     <Compile Include="TaskDataMonitor\MonitorFeeChangeState.cs" />
     <Compile Include="TaskDataMonitor\TaskDataMonitorJob.cs" />
+    <Compile Include="ViewModels\ArchiveTableViewModel.cs" />
     <Compile Include="ViewModels\DataArchivingViewModel.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
