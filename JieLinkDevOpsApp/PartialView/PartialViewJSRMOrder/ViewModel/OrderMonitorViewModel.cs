@@ -185,7 +185,7 @@ namespace PartialViewJSRMOrder.ViewModel
 
                     foreach (var slice in result.respData)
                     {
-                        if (slice.remark.Contains("转派到【研发】节点，处理部门：产品研发五部"))
+                        if (slice.remark.Contains("转派到【研发】节点，处理部门：产品研发五部")|| slice.remark.Contains("验证退回，打回到【研发】节点"))
                         {
                             if (slice.id > YanfaId)
                                 YanfaId = slice.id;
