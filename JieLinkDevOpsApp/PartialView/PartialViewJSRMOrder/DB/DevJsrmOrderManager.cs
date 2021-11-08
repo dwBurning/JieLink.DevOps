@@ -92,7 +92,7 @@ namespace PartialViewJSRMOrder.DB
         public DataTable GetDispatchingOrderTableForEmail()
         {
             string error = "";
-            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人' from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人',dispatched from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
         public DataTable GetYesterdayDispatchingOrderTableForEmail()
         {
