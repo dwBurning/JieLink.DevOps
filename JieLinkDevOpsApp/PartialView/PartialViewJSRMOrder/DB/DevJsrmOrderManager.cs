@@ -107,6 +107,13 @@ namespace PartialViewJSRMOrder.DB
         {
             EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set ResponsiblePerson = '{TrueResponsiblePerson}' ,finishtime='{finishtime.ToString("yyyy-MM-dd HH:mm:ss")}' where problemCode='{problemCode}';");
         }
+        /// <summary>
+        /// 更新未完成并且未分配工单的接收时间，以便再分配
+        /// </summary>
+        public void UpdateYesterdayFinsihTime()
+        {
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set receivetime = '{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")}' where dispatched = 0 and ReceiveTime>'{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}' and ReceiveTime<'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+        }
         public Dictionary<string, int> GetResponsiblePerson()
         {
             string error = "";
