@@ -92,9 +92,15 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-            if (order.problemInfo.Contains("车位引导") || order.softVersion.ToLower().Contains("jsrj"))
+            if (order.problemInfo.Contains("车位引导") || order.softVersion.ToLower().Contains("jsrj11"))
             {
                 order.ResponsiblePerson = "黄其省";
+                return;
+            }
+
+            if (order.problemInfo.Contains("访客机"))
+            {
+                order.ResponsiblePerson = "高国栋";
                 return;
             }
 
