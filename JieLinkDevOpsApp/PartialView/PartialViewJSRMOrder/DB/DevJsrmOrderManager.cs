@@ -92,7 +92,7 @@ namespace PartialViewJSRMOrder.DB
         public DataTable GetDispatchingOrderTableForEmail()
         {
             string error = "";
-            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人' from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人',dispatched from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
         public DataTable GetYesterdayDispatchingOrderTableForEmail()
         {
@@ -106,6 +106,13 @@ namespace PartialViewJSRMOrder.DB
         public void UpdateFinsihTime(string problemCode,DateTime finishtime,string TrueResponsiblePerson)
         {
             EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set ResponsiblePerson = '{TrueResponsiblePerson}' ,finishtime='{finishtime.ToString("yyyy-MM-dd HH:mm:ss")}' where problemCode='{problemCode}';");
+        }
+        /// <summary>
+        /// 更新未完成并且未分配工单的接收时间，以便再分配
+        /// </summary>
+        public void UpdateYesterdayFinsihTime()
+        {
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set receivetime = '{DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss")}' where dispatched = 0 and ReceiveTime>'{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}' and ReceiveTime<'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
         public Dictionary<string, int> GetResponsiblePerson()
         {

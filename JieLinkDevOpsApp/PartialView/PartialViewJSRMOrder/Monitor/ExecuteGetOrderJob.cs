@@ -36,11 +36,12 @@ namespace PartialViewJSRMOrder.Monitor
 
         public static void AddOrder(List<Order> orders)
         {
-            if (DateTime.Now.Hour > 18)
-            {
-                OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
-                return;
-            }
+            //18点后工单仍然写入数据库，但是不再分配。避免18点后转到研发并且完成的工单不会被计数
+            //if (DateTime.Now.Hour > 18)
+            //{
+            //    OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
+            //    return;
+            //}
 
             TaskHelper.Start(() =>
             {
@@ -79,7 +80,7 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-            if (order.softVersion.Contains("融合"))
+            if (order.softVersion.Contains("融合") || order.softVersion.Contains("1.0."))
             {
                 order.ResponsiblePerson = "丁小永";
                 return;
@@ -91,9 +92,15 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-            if (order.problemInfo.Contains("车位引导"))
+            if (order.problemInfo.Contains("车位引导") || order.softVersion.ToLower().Contains("jsrj11"))
             {
                 order.ResponsiblePerson = "黄其省";
+                return;
+            }
+
+            if (order.problemInfo.Contains("访客机"))
+            {
+                order.ResponsiblePerson = "高国栋";
                 return;
             }
 

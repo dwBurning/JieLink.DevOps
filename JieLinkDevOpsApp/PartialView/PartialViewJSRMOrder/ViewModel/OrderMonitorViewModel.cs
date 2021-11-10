@@ -172,7 +172,7 @@ namespace PartialViewJSRMOrder.ViewModel
                 { 
                     foreach(var slice in result.respData)
                     {
-                        if(slice.remark.Contains("转派到【研发】节点"))
+                        if(slice.remark.Contains("转派到【研发】节点，处理部门：产品研发五部"))
                         {
                             return Convert.ToDateTime(slice.createTime);
                         }
@@ -180,14 +180,34 @@ namespace PartialViewJSRMOrder.ViewModel
                 }
                 else
                 {
+                    int YanfaId = -1;
+                    int DispathId = -1;
+
                     foreach (var slice in result.respData)
                     {
+                        if (slice.remark.Contains("转派到【研发】节点，处理部门：产品研发五部")|| slice.remark.Contains("验证退回，打回到【研发】节点"))
+                        {
+                            if (slice.id > YanfaId)
+                                YanfaId = slice.id;
+                        }
                         if (slice.remark.Contains("处理问题，解决方案为") || slice.remark.Contains("驳回到【总部节点】节点，原因"))
                         {
-                            responsibleperson = slice.userName;
-                            return Convert.ToDateTime(slice.createTime);
+                            if (slice.id > DispathId)
+                                DispathId = slice.id;
+                            //responsibleperson = slice.userName;
+                            //return Convert.ToDateTime(slice.createTime);
                         }
                     }
+                    //研发节点已处理但是再次转入研发节点的工单被误认为已经处理的问题
+
+                    //研发节点小于解决节点，确实已经解决
+                    if(YanfaId < DispathId)
+                    {
+                        var temp = result.respData.Where(x => x.id == DispathId).First();
+                        responsibleperson = temp.userName;
+                        return Convert.ToDateTime(temp.createTime);
+                    }
+
                 }
             }
             return DateTime.MinValue;
