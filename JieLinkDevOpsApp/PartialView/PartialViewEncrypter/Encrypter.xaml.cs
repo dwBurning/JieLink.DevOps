@@ -1,5 +1,6 @@
 ﻿using PartialViewEncrypter.ViewModels;
 using PartialViewInterface;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,12 +44,24 @@ namespace PartialViewEncrypter
 
         public MenuType MenuType
         {
-            get { return MenuType.Center; }
+            get { return MenuType.CenterV3; }
         }
 
         public int Order
         {
             get { return 800; }
+        }
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            Global.ValidV3(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
         }
     }
 }

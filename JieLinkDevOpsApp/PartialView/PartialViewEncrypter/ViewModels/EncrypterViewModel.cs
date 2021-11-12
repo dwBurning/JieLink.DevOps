@@ -1,4 +1,5 @@
-﻿using Panuon.UI.Silver;
+﻿using MySql.Data.MySqlClient;
+using Panuon.UI.Silver;
 using PartialViewEncrypter.Models;
 using PartialViewInterface;
 using PartialViewInterface.Commands;
@@ -47,7 +48,8 @@ namespace PartialViewEncrypter.ViewModels
 
         // Using a DependencyProperty as the backing store for Remark.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RemarkProperty =
-            DependencyProperty.Register("Remark", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata($"*生成加/解密SQL功能是生成SQL脚本，需要手动执行到数据库；{Environment.NewLine}生成的SQL脚本在本工具安装目录\\tool\\Encrypter\\script目录下。"));
+            DependencyProperty.Register("Remark", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata($"*【生成加密SQL】【生成解密SQL】功能是生成SQL脚本，需要手动执行到数据库；" +
+                $"生成的SQL脚本在本工具安装目录\\tool\\Encrypter\\script目录下。{Environment.NewLine}*【执行加密】【执行解密】功能是直接操作数据库，对数据库进行加解密，请谨慎操作。"));
 
 
 
@@ -174,6 +176,7 @@ namespace PartialViewEncrypter.ViewModels
         }
         private void CreateEncryptSqlFile(object parameter)
         {
+            if (!CheckDbs(Dbs)) return;
             Params param = new Params
             {
                 database = Dbs,
@@ -187,6 +190,7 @@ namespace PartialViewEncrypter.ViewModels
 
         private void EncryptDatabase(object parameter)
         {
+            if (!CheckDbs(Dbs)) return;
             Params param = new Params
             {
                 database = Dbs,
@@ -200,6 +204,7 @@ namespace PartialViewEncrypter.ViewModels
 
         private void CreateDecryptSqlFile(object parameter)
         {
+            if (!CheckDbs(Dbs)) return;
             Params param = new Params
             {
                 database = Dbs,
@@ -213,6 +218,7 @@ namespace PartialViewEncrypter.ViewModels
 
         private void DecryptDatabse(object parameter)
         {
+            if (!CheckDbs(Dbs)) return;
             Params param = new Params
             {
                 database = Dbs,
@@ -228,6 +234,7 @@ namespace PartialViewEncrypter.ViewModels
         {
             //var fileServerPath = GetFileServcerPath();
             //if (string.IsNullOrEmpty(fileServerPath)) return;
+            if (!CheckDbs(FaceDbs)) return;
             if (!Directory.Exists(HeadPath))
             {
                 Notice.Show("路径不存在!", "通知", 3, MessageBoxIcon.Warning);
@@ -248,6 +255,7 @@ namespace PartialViewEncrypter.ViewModels
         {
             //var fileServerPath = GetFileServcerPath();
             //if (string.IsNullOrEmpty(fileServerPath)) return;
+            if (!CheckDbs(FaceDbs)) return;
             if (!Directory.Exists(HeadPath))
             {
                 Notice.Show("路径不存在!", "通知", 3, MessageBoxIcon.Warning);
@@ -367,6 +375,35 @@ namespace PartialViewEncrypter.ViewModels
                 }
                 HeadPath = path;
             }
+        }
+
+        private bool CheckDbs(string dbsStr)
+        {
+            if (string.IsNullOrWhiteSpace(dbsStr))
+            {
+                Notice.Show("请输入数据库名！", "通知", 3, MessageBoxIcon.Warning);
+                return false;
+            }
+            string[] dbs = dbsStr.Replace('；',';').Split(';');
+            for (int i = 0; i < dbs.Length; i++)
+            {
+                dbs[i] = dbs[i].Trim();
+            }
+            foreach (var item in dbs)
+            {
+                var connStr = GetConnStr().Replace("$db$", item);
+                try
+                {
+                    MySqlHelper.ExecuteDataset(connStr, "select * from sc_operator limit 1");
+                   
+                }
+                catch (Exception)
+                {
+                    Notice.Show("数据库连接失败，请确认数据库配置信息、数据库名是否正确！", "通知", 3, MessageBoxIcon.Warning);
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>

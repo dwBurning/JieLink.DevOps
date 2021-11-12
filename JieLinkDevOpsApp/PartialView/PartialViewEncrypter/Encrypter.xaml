@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:PartialViewEncrypter"
               xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -62,7 +62,15 @@
                 BorderBrush="#20A0FF" Foreground="#20A0FF"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
-                <TextBlock Text="{Binding Remark}" Grid.Row="6" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"></TextBlock>
+                <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage" Margin="5"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Column="1"  Grid.Row="6" IsReadOnly="True">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Remark}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
             </Grid>
         </TabItem>
         <TabItem Header="加/解密人脸">
