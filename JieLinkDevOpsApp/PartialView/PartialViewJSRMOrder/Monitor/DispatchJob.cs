@@ -22,7 +22,14 @@ namespace PartialViewJSRMOrder.Monitor
 
         public void Execute(IJobExecutionContext context)
         {
-            if (DateTime.Now.Hour > 18)
+            //过了晚上十二点，把前一天未完成的 并且未分配的工单的接收时间设为今日
+            if (DateTime.Now.Hour == 1)
+            {
+                devJsrmOrderManager.UpdateYesterdayFinsihTime();
+                OrderMonitorViewModel.Instance().ShowMessage("更新前一晚数据");
+            }
+
+            if (DateTime.Now.Hour >= 18)
             {
                 OrderMonitorViewModel.Instance().ShowMessage("18点之后的工单，隔天处理");
                 return;
@@ -35,7 +42,7 @@ namespace PartialViewJSRMOrder.Monitor
                 OrderMonitorViewModel.Instance().ShowMessage("接收人的邮箱为空");
                 return;
             }
-
+                
             DataTable dataTable = devJsrmOrderManager.GetDispatchingOrderTable();
             
             List<Order> orders = devJsrmOrderManager.ConvertToOrderList(dataTable);
