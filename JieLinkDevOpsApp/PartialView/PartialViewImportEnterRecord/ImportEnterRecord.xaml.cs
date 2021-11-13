@@ -27,11 +27,16 @@ namespace PartialViewImportEnterRecord
     {
         ImportEnterRecordViewModel viewModel;
 
+        ImportWhiteBlackPlateViewModel whiteBlackPlateViewModel;
+
         public ImportEnterRecord()
         {
             InitializeComponent();
             viewModel = new ImportEnterRecordViewModel();
-            DataContext = viewModel;
+            gridER.DataContext = viewModel;
+
+            whiteBlackPlateViewModel = new ImportWhiteBlackPlateViewModel();
+            gridWB.DataContext = whiteBlackPlateViewModel;
         }
 
         public string MenuName
@@ -81,6 +86,17 @@ namespace PartialViewImportEnterRecord
         private void OpenTemplate_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("explorer.exe", "Template");
+        }
+
+        private void btnChooseWBPath_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                whiteBlackPlateViewModel.FilePath = fileDialog.FileName.Trim();
+                whiteBlackPlateViewModel.canExecute = true;
+            }
         }
     }
 }
