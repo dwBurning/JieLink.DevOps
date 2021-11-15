@@ -111,6 +111,10 @@ namespace JieShun.JieLink.DevOps.Encrypter
 
         private string GetConnStr(string dbName,string connStr)
         {
+            if (string.IsNullOrWhiteSpace(connStr))
+            {
+                return "";
+            }
             return connStr.Replace("$db$", dbName);
             //return $"Data Source=10.101.90.133;port=10080;User ID=jieLink;Password=js*168;Initial Catalog={dbName};Pooling=true;charset=utf8;";
             //return $"Data Source=localhost;port=3306;User ID=jieLink;Password=js*168;Initial Catalog={dbName};Pooling=true;charset=utf8;";
