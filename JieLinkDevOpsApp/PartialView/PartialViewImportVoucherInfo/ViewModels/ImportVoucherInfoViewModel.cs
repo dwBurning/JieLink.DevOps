@@ -218,6 +218,23 @@ namespace PartialViewImportVoucherInfo.ViewModels
         {
             string[] arryVoucherInfo = File.ReadAllLines(FilePath);
             arryVoucherInfo = arryVoucherInfo.Distinct().ToArray();
+
+            //去掉已经存在于数据库的
+            #region 
+            List<string> listVoucherInfo = arryVoucherInfo.ToList();
+            string selectVocher = string.Format("select * from sc_credential where status=1 and personno='{0}' ", PersonNo);
+            using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, selectVocher))
+            {
+                while (reader.Read())
+                {
+                    var credentialNoTemp = reader["CredentialNo"].ToString();
+                    listVoucherInfo.Remove(credentialNoTemp);
+                }
+            }
+
+            arryVoucherInfo = listVoucherInfo.ToArray();
+            #endregion
+
             if (arryVoucherInfo.Length == 0)
             {
                 ShowMessage("没有可导入的车牌");

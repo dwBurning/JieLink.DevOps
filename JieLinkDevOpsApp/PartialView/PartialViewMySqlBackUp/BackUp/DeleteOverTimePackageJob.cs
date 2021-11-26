@@ -34,6 +34,15 @@ namespace PartialViewMySqlBackUp.BackUp
             int count = 7;
             int.TryParse(countStr, out count);
             if (files.Count < count) return;//文件小于7个 不删除
+
+            long length = 0;
+            files.ForEach(x =>
+            {
+                length += x.Length;
+            });
+            long m = length / (1024 * 1024);//M
+            if (m < 5 * 1024) return;//文件小于5G 不删除
+
             for (int i = 0; i < files.Count - count; i++)//永远保留7个最新的备份文件
             {
                 var file = files[i];
