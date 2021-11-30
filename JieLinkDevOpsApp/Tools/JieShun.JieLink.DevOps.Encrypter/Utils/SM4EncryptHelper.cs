@@ -43,5 +43,8 @@ namespace JieShun.Udf.Core
 
         [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
         public static extern int sm4_decrypt_binary(string input, int len, out IntPtr intPtr, out int outputlen);
+
+        [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int is_sm4_ciphertext(string input, int len);
     }
 }

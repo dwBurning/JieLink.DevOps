@@ -220,14 +220,22 @@ namespace JieShun.Udf.Core
         {
             if (string.IsNullOrEmpty(value))
                 return "";
+            var ciphertext = SM4EncryptHelper.is_sm4_ciphertext(value, value.Length);
+            if (ciphertext == (int)SM4_ERROR_CODE.SM4_SUCCESS)
+            {
+                return value;
+            }
             int outlen = 0;
             IntPtr ip = IntPtr.Zero;
             var iflg = SM4EncryptHelper.sm4_encrypt(value, value.Length, out ip, out outlen);
 
-            byte[] array = new byte[outlen];
-            Marshal.Copy(ip, array, 0, outlen);
-
-            var result = Encoding.UTF8.GetString(array);
+            string result = "";
+            if (iflg==(int)SM4_ERROR_CODE.SM4_SUCCESS)
+            {
+                byte[] array = new byte[outlen];
+                Marshal.Copy(ip, array, 0, outlen);
+                result = Encoding.UTF8.GetString(array);
+            }
             SM4EncryptHelper.sm4_freebuf(out ip);
             return result;
         }
@@ -243,6 +251,12 @@ namespace JieShun.Udf.Core
             int deoutlen = 0;
             IntPtr deip = IntPtr.Zero;
             var deiflg = SM4EncryptHelper.sm4_decrypt(text, text.Length, out deip, out deoutlen);
+            if (deiflg!=(int)SM4_ERROR_CODE.SM4_SUCCESS)
+            {
+                SM4EncryptHelper.sm4_freebuf(out deip);
+                return text;
+            }
+
             byte[] dearray = new byte[deoutlen];
             Marshal.Copy(deip, dearray, 0, deoutlen);
 
@@ -259,11 +273,17 @@ namespace JieShun.Udf.Core
         {
             if (value.Length < 1)
                 return value;
+            string basestri = Encoding.UTF8.GetString(value);
+            var ciphertext = SM4EncryptHelper.is_sm4_ciphertext(basestri, basestri.Length);
+            if (ciphertext==(int)SM4_ERROR_CODE.SM4_SUCCESS)
+            {
+                return value;
+            }
             string base64str = Convert.ToBase64String(value);
             int outlen = 0;
             IntPtr ip = IntPtr.Zero;
             var iflg = SM4EncryptHelper.sm4_encrypt_binary(base64str, base64str.Length, out ip, out outlen);
-            if (iflg == 0)
+            if (iflg == (int)SM4_ERROR_CODE.SM4_SUCCESS)
             {
                 byte[] array = new byte[outlen];
                 Marshal.Copy(ip, array, 0, outlen);
@@ -282,7 +302,7 @@ namespace JieShun.Udf.Core
             IntPtr deip = IntPtr.Zero;
             string base64str = Encoding.UTF8.GetString(value);
             var deiflg = SM4EncryptHelper.sm4_decrypt_binary(base64str, base64str.Length, out deip, out deoutlen);
-            if (deiflg == 0)
+            if (deiflg == (int)SM4_ERROR_CODE.SM4_SUCCESS)
             {
                 byte[] dearray = new byte[deoutlen];
                 Marshal.Copy(deip, dearray, 0, deoutlen);
@@ -292,7 +312,7 @@ namespace JieShun.Udf.Core
                 return result;
             }
             SM4EncryptHelper.sm4_freebuf(out deip);
-            return new byte[0];
+            return value;
         }
 
 
@@ -315,5 +335,41 @@ namespace JieShun.Udf.Core
             return outlen;
         }
 
+    }
+
+    public enum SM4_ERROR_CODE
+    {
+        /// <summary>
+        /// 成功
+        /// </summary>
+        SM4_SUCCESS,
+        /// <summary>
+        /// 参数错误
+        /// </summary>
+        SM4_PARAM_ERR,
+        /// <summary>
+        /// 秘钥长度不为16
+        /// </summary>
+        SM4_KEY_LEN_ERR,
+        /// <summary>
+        /// 入参长度错误
+        /// </summary>
+        SM4_LENGTH_ERR,
+        /// <summary>
+        /// 文件相关错误
+        /// </summary>
+        SM4_FILE_ERR,
+        /// <summary>
+        /// 是密文
+        /// </summary>
+        SM4_CIPHER_TEXT,
+        /// <summary>
+        /// 非密文
+        /// </summary>
+        SM4_NOT_CIPHER,
+        /// <summary>
+        /// 校验码错误
+        /// </summary>
+        SM4_CHECK_CODE_ERR,
     }
 }

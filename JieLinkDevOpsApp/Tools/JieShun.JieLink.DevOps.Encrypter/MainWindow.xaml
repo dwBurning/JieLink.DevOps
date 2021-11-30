@@ -6,10 +6,11 @@
         xmlns:local="clr-namespace:JieShun.JieLink.DevOps.Encrypter"
         xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
         mc:Ignorable="d"
-        Title="jieLink加解密工具"  MinHeight="320" MinWidth="480" Height="320" Width="480"  Topmost="True" ShowInTaskbar="False"
+        WindowStartupLocation="CenterScreen"
+        Title="JieLink加解密工具" MinHeight="320" MinWidth="480" Height="320" Width="480"  Topmost="True" ShowInTaskbar="False"
         Closing="Window_Closing"
         Loaded="WindowX_Loaded">
-    <Grid>
+    <Grid Margin="20 20 20 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
@@ -22,10 +23,10 @@
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <ProgressBar  Grid.Row="1" Grid.Column="1" pu:ProgressBarHelper.ProgressBarStyle="Ring"
-                      VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200" Height="200"
-                      BorderBrush="#1E00B7FF" Foreground="#FF00B7FF" Value="{Binding EncryptProgress}"
-                      pu:ProgressBarHelper.IsPercentVisible="True"  FontSize="45"  />
+        <ProgressBar Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200" Height="200"
+                     Value="{Binding EncryptProgress}" BorderBrush="#CDDEEF"
+                     pu:ProgressBarHelper.ProgressBarStyle="Ring"
+                     pu:ProgressBarHelper.IsPercentVisible="True" FontSize="45"  Foreground="#20A0FF"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="13"
                    Text="{Binding EncryptMessage}" />
         <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="10"

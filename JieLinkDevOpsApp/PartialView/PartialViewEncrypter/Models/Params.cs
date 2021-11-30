@@ -22,8 +22,13 @@ namespace PartialViewEncrypter.Models
         /// connStr
         /// </summary>
         public string connStr { get; set; }
+        /// <summary>
+        /// sqlFindColumn
+        /// </summary>
+        public string sqlFindColumn { get; set; }
 
     }
+
 
     public enum EnumCMD
     {

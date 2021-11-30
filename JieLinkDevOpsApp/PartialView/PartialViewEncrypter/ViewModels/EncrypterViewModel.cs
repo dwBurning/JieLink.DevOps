@@ -6,6 +6,7 @@ using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -48,8 +49,8 @@ namespace PartialViewEncrypter.ViewModels
 
         // Using a DependencyProperty as the backing store for Remark.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RemarkProperty =
-            DependencyProperty.Register("Remark", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata($"*【生成加密SQL】【生成解密SQL】功能是生成SQL脚本，需要手动执行到数据库；" +
-                $"生成的SQL脚本在本工具安装目录\\tool\\Encrypter\\script目录下。{Environment.NewLine}*【执行加密】【执行解密】功能是直接操作数据库，对数据库进行加解密，请谨慎操作。"));
+            DependencyProperty.Register("Remark", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata($"*【生成加密SQL】功能是生成SQL脚本，需要手动执行到数据库；" +
+                $"生成的SQL脚本在本工具安装目录\\tool\\Encrypter\\script目录下。{Environment.NewLine}{Environment.NewLine}*【执行加密】功能是直接操作数据库，对数据库进行加解密，请谨慎操作。"));
 
 
 
@@ -183,6 +184,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.EncryptToSQL,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -197,6 +199,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.EncryptToDatabase,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -211,6 +214,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.DecryptToSQL,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -225,6 +229,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.DecryptToDataBase,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -469,5 +474,48 @@ namespace PartialViewEncrypter.ViewModels
         {
             return $"Data Source={EnvironmentInfo.DbConnEntity.Ip};port={EnvironmentInfo.DbConnEntity.Port};User ID={EnvironmentInfo.DbConnEntity.UserName};Password={EnvironmentInfo.DbConnEntity.Password};Initial Catalog=$db$;Pooling=true;charset=utf8;";
         }
+
+        /// <summary>
+        /// 获取待加密表
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
+        private string GetSqlFindTables()
+        {
+            return $"SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA = '$db$' AND (" +
+                                $"COLUMN_NAME LIKE '%mobile%' OR " +
+                                "COLUMN_NAME LIKE '%phone%' OR " +
+                                "COLUMN_NAME LIKE '%idnumber%' OR " +
+                                "COLUMN_NAME LIKE '%tel%' );";
+        }
+
+        /*还是觉的用sql语句的方式更灵活
+        private List<Table> GetTableInfos(string[] dbs,string connStr)
+        {
+            List<Table> tables = new List<Table>();
+            List<TableInfo> tableInfos = new List<TableInfo>();
+            foreach (var item in dbs)
+            {
+                var conn = GetConnStr().Replace("$db$", item);
+                string sql = $"SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA = '{item}' AND (" +
+                                $"COLUMN_NAME LIKE '%mobile%' OR " +
+                                "COLUMN_NAME LIKE '%phone%' OR " +
+                                "COLUMN_NAME LIKE '%idnumber%' OR " +
+                                "COLUMN_NAME LIKE '%tel%' );";
+
+                using (DataTable dt = MySqlHelper.ExecuteDataset(conn, sql).Tables[0])
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        TableInfo info = new TableInfo { table = dr["TABLE_NAME"].ToString(), column = dr["COLUMN_NAME"].ToString() };
+                        tableInfos.Add(info);
+                        LogHelper.CommLogger.Info($"查询到待加密表：{info.table}，字段：{info.column}");
+                    }
+                }
+                Table table = new Table() { db = item, tableInfos = tableInfos };
+                tables.Add(table);
+            }
+            return tables;
+        }*/
     }
 }
