@@ -67,7 +67,8 @@ namespace JieShun.JieLink.DevOps.Encrypter
                 LogHelper.CommLogger.Error("解析参数失败!");
                 return;
             }
-            LogHelper.CommLogger.Info($"解析参数完成：{JsonHelper.SerializeObject(param)}");
+            //LogHelper.CommLogger.Info($"解析参数完成：{JsonHelper.SerializeObject(param)}");
+            LogHelper.CommLogger.Info($"解析参数完成");
             Dictionary<string, string> connStrs = new Dictionary<string, string>();
             Dictionary<string, string> sqlFindColumns = new Dictionary<string, string>();
             var dbs = param.database.Replace('；',';').Split(';');

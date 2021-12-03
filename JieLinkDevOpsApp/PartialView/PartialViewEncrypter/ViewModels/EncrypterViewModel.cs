@@ -486,6 +486,7 @@ namespace PartialViewEncrypter.ViewModels
                                 $"COLUMN_NAME LIKE '%mobile%' OR " +
                                 "COLUMN_NAME LIKE '%phone%' OR " +
                                 "COLUMN_NAME LIKE '%idnumber%' OR " +
+                                "COLUMN_NAME LIKE '%EmergencyContact%' OR " +
                                 "COLUMN_NAME LIKE '%tel%' );";
         }
 
