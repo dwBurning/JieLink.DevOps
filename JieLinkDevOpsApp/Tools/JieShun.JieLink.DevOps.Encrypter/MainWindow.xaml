@@ -26,6 +26,7 @@
         <ProgressBar Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200" Height="200"
                      Value="{Binding EncryptProgress}" BorderBrush="#CDDEEF"
                      pu:ProgressBarHelper.ProgressBarStyle="Ring"
+                     IsIndeterminate="True"
                      pu:ProgressBarHelper.IsPercentVisible="True" FontSize="45"  Foreground="#20A0FF"/>
         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="13"
                    Text="{Binding EncryptMessage}" />

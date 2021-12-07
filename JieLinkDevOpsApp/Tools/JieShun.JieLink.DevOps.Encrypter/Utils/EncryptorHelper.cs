@@ -140,7 +140,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     try
                     {
                         LogHelper.CommLogger.Info($"正在加密表{item.Key}");
-                        callback?.Invoke(Math.Min(progress += each, 90), $"正在加密表{item.Key}");
+                        callback?.Invoke(Math.Min(progress += each, 90), $"正在加密表{item.Key}，请勿关闭窗口……");
                         Encrypt(item, connStrs[db], cmd, path);
                         LogHelper.CommLogger.Info($"加密表{item.Key}完成");
                     }
@@ -192,7 +192,11 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                                 {
                                     sqlEmcryptColumn += encryptSql;
                                 }
-                                WriteSql(encryptSql, cmd, path);
+                                else
+                                {
+                                    WriteSql(encryptSql, cmd, path);
+                                }
+                                
                             }
                         }
                     }
@@ -207,7 +211,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                         int result = MySqlHelper.ExecuteNonQuery(connStr, sqlEmcryptColumn);
                         LogHelper.CommLogger.Info($"执行到数据库成功：{result}");
                     }
-                    offset += 100;
+                    offset += 2000;
                 }
                 catch (Exception ex)
                 {
@@ -468,7 +472,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 sql += $" {item},";
             }
             sql = sql.TrimEnd(',');
-            sql += $" from {table} limit {offset},100"; 
+            sql += $" from {table} limit {offset},2000"; 
             return sql;
         }
 

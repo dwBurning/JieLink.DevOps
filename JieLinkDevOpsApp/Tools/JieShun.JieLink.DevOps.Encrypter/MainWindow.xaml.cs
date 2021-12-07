@@ -35,6 +35,8 @@ namespace JieShun.JieLink.DevOps.Encrypter
 
         public static string paramsFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "params.json");
 
+
+
         public MainWindow()
         {
             InitializeComponent();
