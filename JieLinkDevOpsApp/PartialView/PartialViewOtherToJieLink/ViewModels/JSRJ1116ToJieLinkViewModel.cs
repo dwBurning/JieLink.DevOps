@@ -386,7 +386,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                         {
                             ControlRoleGroup currentGroup = null;
                             string currentDeptId = personModel.DeptId;
-                            string currentGuid = new Guid((G3GroupList.FirstOrDefault(e => e.ID == currentDeptId)).GUID).ToString();
+                            string currentGuid = "";
+
+                            try
+                            {
+                                currentGuid = new Guid((G3GroupList.FirstOrDefault(e => e.ID == currentDeptId)).GUID).ToString();
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBoxHelper.MessageBoxShowWarning("JSRJ1116数据库中的组织Guid异常：" + ex.ToString());
+                                return;
+                            }
                             //寻找当前组织是否已存在：判断是否重复升级
                             DataSet currentGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_role_group WHERE RGGUID='{0}'", currentGuid));
                             if (currentGroupDs != null && currentGroupDs.Tables[0] != null)
@@ -574,7 +584,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                                 string uniqueServiceNo = CommonHelper.GetUniqueId();
 
                                                 string sql = string.Format("INSERT INTO control_lease_stall(LGUID,PGUID,SetmealNo,StartTime,EndTime,OperatorNO,OperatorName,OperateTime,`Status`,PersonName,PersonNo,NisspId,CarNumber,VehiclePosCount,StopServiceTime,UniqueServiceNo,`Timestamp`) VALUE('{0}','{1}','{10}','{2}','{3}','9999','超级管理员','{4}',0,'{5}','{6}','{0}','{7}','{7}','{8}','{9}',0)",
-                                                            lguid, new Guid(hrPerson1.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson1.NAME, hrPerson1.NO, hrPerson1.CarCount, stopServiceTime, uniqueServiceNo,size);
+                                                            lguid, new Guid(hrPerson1.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson1.NAME, hrPerson1.NO, hrPerson1.CarCount, stopServiceTime, uniqueServiceNo, size);
                                                 int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                                 if (flag > 0)
                                                 {
