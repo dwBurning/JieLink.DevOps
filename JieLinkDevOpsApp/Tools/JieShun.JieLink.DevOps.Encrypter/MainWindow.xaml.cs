@@ -51,6 +51,12 @@ namespace JieShun.JieLink.DevOps.Encrypter
             #region 初始化
             LogHelper.CommLogger.Info("--------------------------------------------------------------------------------");
             LogHelper.CommLogger.Info("开始初始化Encrypter");
+            System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName("JieShun.JieLink.DevOps.Encrypter");
+            if (ps.Length>1)
+            {
+                LogHelper.CommLogger.Info("检测到相同进程，退出");
+                OnClose();
+            }
             Params param = null;
             try
             {

@@ -472,7 +472,7 @@ namespace PartialViewEncrypter.ViewModels
 
         private string GetConnStr()
         {
-            return $"Data Source={EnvironmentInfo.DbConnEntity.Ip};port={EnvironmentInfo.DbConnEntity.Port};User ID={EnvironmentInfo.DbConnEntity.UserName};Password={EnvironmentInfo.DbConnEntity.Password};Initial Catalog=$db$;Pooling=true;charset=utf8;";
+            return $"Data Source={EnvironmentInfo.DbConnEntity.Ip};port={EnvironmentInfo.DbConnEntity.Port};User ID={EnvironmentInfo.DbConnEntity.UserName};Password={EnvironmentInfo.DbConnEntity.Password};Initial Catalog=$db$;Pooling=true;charset=utf8;Connection Timeout=45";
         }
 
         /// <summary>

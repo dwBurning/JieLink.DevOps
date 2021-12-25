@@ -171,13 +171,16 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 list.Add(item.column);
             }
             var offset = 0;
+            var num = 2000;
             string[] columns = list.ToArray(); //待加密字段
+            Stopwatch sw = new Stopwatch();
             while (true)
             {
+                string sqlEmcryptColumn = string.Empty;
                 try
                 {
-                    string sqlFindColumn = GetSqlFindColumn(pair.Key, columns, offset);
-                    string sqlEmcryptColumn = string.Empty;
+                    sw.Restart();
+                    string sqlFindColumn = GetSqlFindColumn(pair.Key, columns, offset,num);
                     DataTable dt = MySqlHelper.ExecuteDataset(connStr, sqlFindColumn).Tables[0];
                     if (dt != null && dt.Rows != null && dt.Rows.Count > 0)
                     {
@@ -188,15 +191,10 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                             {
                                 string encryptSql = GetSqlEncryptColumn(pair.Key, columns, row, cmd);
                                 LogHelper.CommLogger.Info(encryptSql);
-                                if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase) //直接执行加密到数据库
-                                {
+                                if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
                                     sqlEmcryptColumn += encryptSql;
-                                }
                                 else
-                                {
-                                    WriteSql(encryptSql, cmd, path);
-                                }
-                                
+                                    sqlEmcryptColumn += encryptSql + Environment.NewLine;
                             }
                         }
                     }
@@ -205,20 +203,48 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                         LogHelper.CommLogger.Info($"查询到表{pair.Key}待加密数据条数：0");
                         break;
                     }
-                    if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
-                    {
-                        LogHelper.CommLogger.Info("开始执行到数据库……");
-                        int result = MySqlHelper.ExecuteNonQuery(connStr, sqlEmcryptColumn);
-                        LogHelper.CommLogger.Info($"执行到数据库成功：{result}");
-                    }
-                    offset += 2000;
+                    LogHelper.CommLogger.Info($"表{pair.Key}加密数据条数：{dt.Rows.Count}，耗时：{sw.ElapsedMilliseconds}");
+                    ExecuteSql(sqlEmcryptColumn,cmd, connStr, path);
+                    offset += num;
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.CommLogger.Error($"对表{pair.Key}加密出现异常：{ex}");
-                    throw ex;
+                    LogHelper.CommLogger.Error($"对表{pair.Key}加密出现异常，重新执行：{ex}");
+                    if (!string.IsNullOrWhiteSpace(sqlEmcryptColumn))
+                    {
+                        ExecuteSql(sqlEmcryptColumn, cmd, connStr, path);  //重新执行一次，处理测试出现执行sql超时情况
+                    }
                 }
+            }
+            sw.Stop();
+        }
 
+        private void ExecuteSql(string sqlEmcryptColumn, EnumCMD cmd, string connStr = "", string path = "")
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            try
+            {
+                if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
+                {
+                    LogHelper.CommLogger.Info("开始执行到数据库……");
+                    int result = MySqlHelper.ExecuteNonQuery(connStr, sqlEmcryptColumn);
+                    LogHelper.CommLogger.Info($"执行到数据库成功：{result}，耗时：{sw.ElapsedMilliseconds}");
+                }
+                else
+                {
+                    LogHelper.CommLogger.Info("开始写入到脚本……");
+                    WriteSql(sqlEmcryptColumn, cmd, path);
+                    LogHelper.CommLogger.Info($"执行写入到脚本完成，耗时：{sw.ElapsedMilliseconds}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.CommLogger.Error($"ExecuteSql出现错误：{ex}");
+            }
+            finally
+            {
+                sw.Stop();
             }
         }
 
@@ -256,8 +282,8 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 progress = 10;
                 callback?.Invoke(progress, "开始查询待处理文件)");
                 LogHelper.CommLogger.Info("开始查询待处理文件");
-                var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg") || s.EndsWith(".jepg")).ToArray();
-                //var files = Directory.GetFiles(path, "*.jpg", SearchOption.AllDirectories);
+                var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);//.Where(s => s.EndsWith(".png") || s.EndsWith(".jpg") || s.EndsWith(".jepg")).ToArray();
+                files = files.Where(s => !s.EndsWith(".db")).ToArray();
                 LogHelper.CommLogger.Info($"查询到待处理文件数量：{files.Length}");
                 if (files.Length % 100 > 0)
                 {
@@ -463,7 +489,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
         /// <param name="cloumns"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        private string GetSqlFindColumn(string table,string[] cloumns,int offset)
+        private string GetSqlFindColumn(string table,string[] cloumns,int offset,int num)
         {
             //select * from table as a inner join (select id from table order by id limit m, n) as b on a.id = b.id order by a.id; //limit性能较差，可以尝试遍历id
             var sql = "select ID, ";
@@ -472,7 +498,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 sql += $" {item},";
             }
             sql = sql.TrimEnd(',');
-            sql += $" from {table} limit {offset},2000"; 
+            sql += $" from {table} limit {offset},{num}"; 
             return sql;
         }
 
