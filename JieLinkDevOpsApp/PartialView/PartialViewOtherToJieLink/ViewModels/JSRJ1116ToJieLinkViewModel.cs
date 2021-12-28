@@ -211,6 +211,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     groupRoot = dbGroupList.FirstOrDefault(x => x.ParentId == GROUPROOTPARENTID);
                 }
                 DataTable groupDt = MSSqlHelper.ExecuteQuery("SELECT * from hr.dept WHERE deleteFlag = '0' ORDER BY id ASC;", null);
+                ShowMessage("正在迁移组织");
                 if (groupDt != null)
                 {
                     List<TBaseDeptModel> tempGroupList = CommonHelper.DataTableToList<TBaseDeptModel>(groupDt).OrderBy(x => x.PARENTID).ToList();
@@ -352,6 +353,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     return;
                 }
 
+                ShowMessage("正在迁移人事");
                 //3、人事
                 DataTable personDts = MSSqlHelper.ExecuteQuery("SELECT * from hr.person where deleteflag = 0  ORDER BY id asc;", null);
                 List<TBaseHrPersonModel> personList = new List<TBaseHrPersonModel>();
@@ -502,7 +504,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     {
                         JSRJCardInfoList = CommonHelper.DataTableToList<TBaseJSRJCardInfoModel>(JSRJCardInfoDts).OrderBy(x => x.ID).ToList();
                     }
-
+                    ShowMessage("正在迁移车场服务");
                     //车场服务
                     if (JSRJCardInfoList.Count > 0)
                     {
@@ -627,7 +629,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     }
 
                 }
-
+                ShowMessage("正在迁移场内记录");
                 //入场记录
                 if (isContinue)
                 {
