@@ -27,11 +27,16 @@ namespace PartialViewImportEnterRecord
     {
         ImportEnterRecordViewModel viewModel;
 
+        ImportWhiteBlackPlateViewModel whiteBlackPlateViewModel;
+
         public ImportEnterRecord()
         {
             InitializeComponent();
             viewModel = new ImportEnterRecordViewModel();
-            DataContext = viewModel;
+            gridER.DataContext = viewModel;
+
+            whiteBlackPlateViewModel = new ImportWhiteBlackPlateViewModel();
+            gridWB.DataContext = whiteBlackPlateViewModel;
         }
 
         public string MenuName
@@ -49,18 +54,22 @@ namespace PartialViewImportEnterRecord
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            Global.ValidV2(new Action<string, bool>((message, result) =>
             {
-                MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "select * from sys_user limit 1");
-                this.IsEnabled = true;
-            }
-            catch (Exception)
-            {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
-                this.IsEnabled = false;
-            }
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
         }
 
         private void btnChoosePath_Click(object sender, RoutedEventArgs e)
@@ -77,6 +86,17 @@ namespace PartialViewImportEnterRecord
         private void OpenTemplate_Click(object sender, RoutedEventArgs e)
         {
             System.Diagnostics.Process.Start("explorer.exe", "Template");
+        }
+
+        private void btnChooseWBPath_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
+            System.Windows.Forms.DialogResult result = fileDialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                whiteBlackPlateViewModel.FilePath = fileDialog.FileName.Trim();
+                whiteBlackPlateViewModel.canExecute = true;
+            }
         }
     }
 }

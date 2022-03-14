@@ -84,7 +84,98 @@
         <pu:Timeline Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" ItemToggleFill="#20A0FF" 
                      ItemToggleMargin="10"  ItemToggleStroke="#20A0FF" ItemToggleShadowColor="#20A0FF"
                      ItemLineBrush="#20A0FF" ItemToggleSize="15">
-            <pu:TimelineItem Header="2020-11-26 V1.0.7">
+            <pu:TimelineItem Header="2021-11-15 V1.1.7">
+                <ContentControl>
+                    <TextBlock>
+                        1.将配置迁移到sqlite数据库
+                        2.修改数据库备份工具支持多库备份，支持配置文件保存天数
+                        3.增加jielink3.x场内记录导入工具
+                        4.增加jielink3.x共享汽车导入工具（暂不发布）
+                        5.增加jielink2.x黑白名单导入工具
+                        6.修改数据归档工具，支持定义表名称和归档时间字段
+                        7.优化改造升级工具，解决速通版升级jielink2.x凭证数不对的问题
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-06-05 V1.1.6">
+                <ContentControl>
+                    <TextBlock>
+                        1.解决遗漏JieLink2.8.3脚本导致升级一直等待中的问题
+                        2.监控dm_park_event_feechangestate事件，预防数据积压
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-05-26 V1.1.5">
+                <ContentControl>
+                    <TextBlock>
+                        1.更换服务器IP地址为域名地址
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-05-19 V1.1.4">
+                <ContentControl>
+                    <TextBlock>
+                        1.优化JSDS一键切换到JieLink工具
+                        2.其他优化项
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-03-19 V1.1.3">
+                <ContentControl>
+                    <TextBlock>
+                        1.优化数据库归档问题，将相应年份的数据归档到对应的归档表
+                        2.优化JSDS一键切换到JieLink工具
+                        3.其他优化项
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-02-04 V1.1.2">
+                <ContentControl>
+                    <TextBlock>
+                        1.支持低版本升级到JieLink2.8.2版本
+                        2.优化数据归档的SQL，提升归档执行效率
+                        3.上报工具版本信息的同时上班JieLink的版本信息
+                        4.其他优化项
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2021-01-22 V1.1.1">
+                <ContentControl>
+                    <TextBlock>
+                        1.日志分析增加xmpp断线分析
+                        2.项目信息增加项目名称和项目版本
+                        3.增加人脸图片备份和人脸图片导出功能
+                        4.增加融合版，速通版一键切换到JieLink的数据库导入工具
+                        5.数据库备份文件调整为保留7天，但是删除旧文件的逻辑不变
+                        6.去掉辅助升级中去掉版本1.0.0的选项，并且不允许从1.0.0版本开始升级
+                        7.知识百科中增加更多解决方案：更换主板后场内月租车收费，人事资料入库失败等
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-12-23 V1.1.0">
+                <ContentControl>
+                    <TextBlock>
+                        1.增加了门禁人脸图片备份工具
+                        2.升级辅助工具中增加了替换中心补丁功能
+                        3.修订了数据备份，文件较大时压缩失败的问题
+                        4.优化了数据归档的效率，并行任务执行，效率提升4倍
+                        5.升级辅助升级版本跨度大的项目，提示先执行备份，再做升级，缩减升级影响的时间
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-12-16 V1.0.9">
+                <ContentControl>
+                    <TextBlock>
+                        1.增加XMPP表的清理功能
+                        2.项目编号和数据库连接自动获取
+                        3.优化内存和CPU监控区分系统和进程
+                        4.修订VC++检测没有区分x86和x64的问题
+                        5.修订辅助升级工具数据量大时增加字段失败的问题
+                        6.修订归档工具数据比较大，归档操作数据库超时，导致实际没有归档成功的问题
+                    </TextBlock>
+                </ContentControl>
+            </pu:TimelineItem>
+            <pu:TimelineItem Header="2020-12-03 V1.0.8">
                 <ContentControl>
                     <TextBlock>
                         1.增加主动版本升级功能

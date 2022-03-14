@@ -22,7 +22,7 @@
 
     </UserControl.Resources>
 
-    <Grid MaxWidth="{Binding ActualWidth}">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
@@ -35,12 +35,13 @@
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
         <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                     Grid.Column="1" Grid.Row="3" Grid.RowSpan="4" IsReadOnly="True" Margin="5">
+                     Grid.Column="1" Grid.Row="3" Grid.RowSpan="5" IsReadOnly="True" Margin="5">
             <FlowDocument>
                 <Paragraph>
                     <Run Text="{Binding Message}"/>
@@ -62,7 +63,7 @@
                       SelectedValue="{Binding StartVersion}" 
                       ItemsSource="{Binding Versions}"
                       IsEditable="True"
-                      pu:ComboBoxHelper.Watermark="请选择当前版本（V1.0.0）"
+                      pu:ComboBoxHelper.Watermark="请选择当前版本（V1.0.1）"
                       pu:ComboBoxHelper.SelectedBackground="#CDDEEF"
                       pu:ComboBoxHelper.SelectedForeground="#20A0FF"
                       pu:ComboBoxHelper.HoverBackground="#20A0FF"
@@ -101,12 +102,12 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <Button Grid.Column="2" Grid.Row="1" Content="浏览" Name="btnChooseInstallPath" Click="btnChooseInstallPath_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 />
         <Button Grid.Column="2" Grid.Row="2" Content="浏览" Name="btnChooseSetUpPackagePath" Click="btnChooseSetUpPackagePath_Click"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 />
@@ -123,6 +124,11 @@
                 />
         <Button Grid.Column="2" Grid.Row="5" Content="只执行脚本" Command="{Binding RepairCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="2"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        <Button Grid.Column="2" Grid.Row="6" Content="替换中心补丁" Command="{Binding RepairCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40" CommandParameter="3"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
                 />

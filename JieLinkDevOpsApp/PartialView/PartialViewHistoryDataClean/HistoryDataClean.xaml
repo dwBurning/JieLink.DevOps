@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="PartialViewHistoryDataClean.HistoryDataClean"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PartialViewHistoryDataClean"
+             xmlns:pu="clr-namespace:Panuon.UI.Silver;assembly=Panuon.UI.Silver"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Panuon.UI.Silver;component/Control.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="TextBlock">
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                <Setter Property="Margin" Value="5"></Setter>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="2*"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="20" Foreground="#20A0FF" Text="{Binding Message}" ></TextBlock>
+        <Grid  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="4*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="txtInstall" pu:TextBoxHelper.Watermark="D:\Program Files (x86)\mysql-5.6.24-winx64\data\db_newg3_main"
+                 VerticalAlignment="Center" Height="40" Margin="5"
+                 pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                 pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                 pu:TextBoxHelper.CornerRadius="4" Text="{Binding DBJKDataPath,Mode=TwoWay}"
+                 pu:TextBoxHelper.IsClearButtonVisible="True"
+                 />
+            <Button Grid.Column="1" Content="浏览" Name="btnChoose" Click="btnChoose_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        </Grid>
+        
+        <Button Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" Content="清理XMPP表" Command="{Binding CleanDataCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"
+                />
+        <pu:Badge Grid.Column="1" Height="200" Width="200" FontSize="40"  Grid.Row="0" IsWaving="True" Foreground="White" Text="{Binding TableSpace}" Background="{Binding WarningColor}" />
+    </Grid>
+</UserControl>

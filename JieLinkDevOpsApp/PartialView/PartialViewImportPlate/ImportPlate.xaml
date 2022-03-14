@@ -44,7 +44,7 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
         <Button Grid.Column="2" Grid.Row="2" Content="校验" Name ="btnCheck" Command="{Binding CheckDataCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
@@ -57,12 +57,12 @@
                      pu:TextBoxHelper.IsClearButtonVisible="True"/>
 
             <Button Grid.Row="1" Grid.Column="2" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
-                    BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                     pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
         
         <Button Grid.Column="2" Grid.Row="3" Content="导入" Name ="btnImport" Command="{Binding ImportPlateCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 

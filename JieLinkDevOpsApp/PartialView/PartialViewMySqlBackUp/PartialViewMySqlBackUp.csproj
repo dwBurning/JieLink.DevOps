@@ -69,6 +69,7 @@
     <Compile Include="BackUp\ExecuteBackUp.cs" />
     <Compile Include="BackUp\DataBaseBackUpJob.cs" />
     <Compile Include="BackUp\TablesBackUpJob.cs" />
+    <Compile Include="Models\BackUpDatabase.cs" />
     <Compile Include="Models\BackUpPolicy.cs" />
     <Compile Include="Models\BackUpTable.cs" />
     <Compile Include="Models\BackUpType.cs" />
@@ -90,6 +91,7 @@
     <None Include="BackUpTables.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="doc\设计文档-增加多库备份功能.md" />
     <None Include="job_scheduling_data_2_0.xsd">
       <SubType>Designer</SubType>
     </None>

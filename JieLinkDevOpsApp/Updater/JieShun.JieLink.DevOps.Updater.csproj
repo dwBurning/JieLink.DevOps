@@ -106,9 +106,15 @@
     <None Include="Configs\JSOCT2016.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Configs\JSOCT2016_Patch.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\JSOCT2016_Patch-20201222.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -137,5 +143,15 @@
       <Name>PartialViewInterface</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="nLog-config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties Configs_4DevOps_1json__JSONSchema="https://carafe.fm/schema/draft-02/bundle.schema.json" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

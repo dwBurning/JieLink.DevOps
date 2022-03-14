@@ -16,6 +16,8 @@ namespace PartialViewInterface.Utils
             opsEvent.EventType = (int)warning.WarningType;
             opsEvent.OperatorDate = DateTime.Now;
             opsEvent.ProjectNo = EnvironmentInfo.ProjectNo ?? string.Empty;
+            opsEvent.ProjectName = EnvironmentInfo.ProjectName ?? string.Empty;
+            opsEvent.ProjectVersion = EnvironmentInfo.ProjectVersion ?? string.Empty;
             opsEvent.RemoteAccount = EnvironmentInfo.RemoteAccount ?? string.Empty;
             opsEvent.RemotePassword = EnvironmentInfo.RemotePassword ?? string.Empty;
             opsEvent.ContactPhone = EnvironmentInfo.ContactPhone ?? string.Empty;
@@ -38,6 +40,8 @@ namespace PartialViewInterface.Utils
                 string url = string.Format("{0}/devops/reportProjectInfo", EnvironmentInfo.ServerUrl);
                 ProjectInfo projectInfo = new ProjectInfo();
                 projectInfo.ProjectNo = EnvironmentInfo.ProjectNo ?? "";
+                projectInfo.ProjectName = EnvironmentInfo.ProjectName ?? "";
+                projectInfo.ProjectVersion = EnvironmentInfo.ProjectVersion ?? "";
                 projectInfo.DevopsVersion = EnvironmentInfo.CurrentVersion;
                 projectInfo.ProductType = enumProductType.DevOps;
                 return HttpHelper.Post<DevOpsProduct>(url, projectInfo, 3000);

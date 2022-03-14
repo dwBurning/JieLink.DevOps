@@ -48,6 +48,18 @@ namespace PartialViewInterface
                             {
                                 pi.SetValue(t, Convert.ToString(value), null);
                             }
+                            else if (pi.PropertyType.Name == "Int32")
+                            {
+                                if (value.ToString().ToLower() == "true")
+                                {
+                                    value = 1;
+                                }
+                                else if (value.ToString().ToLower() == "false")
+                                {
+                                    value = 0;
+                                }
+                                pi.SetValue(t, int.Parse(value.ToString()), null);
+                            }
                             else
                             {
                                 pi.SetValue(t, value, null);
@@ -107,6 +119,101 @@ namespace PartialViewInterface
             var random = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0));
             string uniqueId = DateTime.Now.ToString("yyMMddHHmmssffff") + random.Next(1000, 9999);
             return uniqueId;
+        }
+
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>=
+        /// <returns></returns>
+        public static int GetIntValue(object objValue, int intDefault = 0)
+        {
+            if (objValue == null)
+            {
+                return intDefault;
+            }
+            return GetIntValue(objValue.ToString(), intDefault);
+        }
+
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>
+        /// <param name="dtmDefault"></param>
+        /// <returns></returns>
+        public static int GetIntValue(string strValue, int intDefault)
+        {
+            if (string.IsNullOrWhiteSpace(strValue))
+            {
+                return intDefault;
+            }
+            int iValue = 0;
+            if (!int.TryParse(strValue, out iValue))
+            {
+                iValue = intDefault;
+            }
+            return iValue;
+        }
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>=
+        /// <returns></returns>
+        public static uint GetUIntValue(object objValue, uint uintDefault = 0)
+        {
+            if (objValue == null)
+            {
+                return uintDefault;
+            }
+            return GetUIntValue(objValue.ToString(), uintDefault);
+        }
+
+        /// <summary>
+        /// Int32类型转换
+        /// </summary>
+        /// <param name="objValue"></param>
+        /// <param name="dtmDefault"></param>
+        /// <returns></returns>
+        public static uint GetUIntValue(string strValue, uint uintDefault)
+        {
+            if (string.IsNullOrWhiteSpace(strValue))
+            {
+                return uintDefault;
+            }
+            uint iValue = 0;
+            if (!uint.TryParse(strValue, out iValue))
+            {
+                iValue = uintDefault;
+            }
+            return iValue;
+        }
+
+        /// <summary>
+        /// 时间戳
+        /// </summary>
+        public static long GetTimeStamp()
+        {
+            DateTime d = DateTime.Now;
+            TimeSpan ts = d.ToUniversalTime() - new DateTime(1970, 1, 1);
+            return (long)ts.TotalMilliseconds;
+        }
+
+        /// <summary>
+        /// MAC后3位加00 生成设备Id
+        /// </summary>
+        /// <param name="mac"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public static string ConvertDevicesId(string mac = "00-00-00-00-00-00-00-00", string index = "")
+        {
+            string empty = string.Empty;
+            if (string.IsNullOrEmpty(mac))
+            {
+                return empty;
+            }
+            mac = mac.Replace("-", "").Replace(":", "").Substring(6, 6);
+            mac = (string.IsNullOrEmpty(index) ? (mac + "00") : (mac + index));
+            return Convert.ToUInt32(mac, 16).ToString();
         }
     }
 }

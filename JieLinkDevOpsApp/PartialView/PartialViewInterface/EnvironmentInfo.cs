@@ -2,7 +2,13 @@
 using PartialViewInterface.Utils;
 using Quartz;
 using Quartz.Impl;
+using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
+using System.IO;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace PartialViewInterface
 {
@@ -15,16 +21,14 @@ namespace PartialViewInterface
                 DbConnEntity = new DbConnEntity();
             }
 
-            ConfigHelper.AddAppConfig("DataArchiveJob", "0 0 0 * * ?");
-            ConfigHelper.AddAppConfig("ReportProjectInfoJob", "0 0 1 * * ?");
-            ConfigHelper.AddAppConfig("AutoArchive", "0");
-            ConfigHelper.AddAppConfig("AutoArchiveMonth", "3");
-            ConfigHelper.AddAppConfig("AutoStartCorectString", "{\"AutoStartFlag\":\"false\",\"LoopTime\":\"30\"}");
-            ConfigHelper.AddAppConfig("AutoStartSyncString", "{\"autoStartFlag\":false,\"loopTime\":5,\"day\":1,\"limit\":100,\"versionCheck\":false}");
-            ConfigHelper.AddAppConfig("CheckDiskSpaceJob", "0 0 4 * * ?");
+            
         }
 
         public static string ProjectNo { get; set; }
+
+        public static string ProjectName { get; set; }
+
+        public static string ProjectVersion { get; set; }
 
         public static string RemoteAccount { get; set; }
 
@@ -60,7 +64,7 @@ namespace PartialViewInterface
             get
             {
                 if (DbConnEntity == null) return "";
-                return $"Data Source={DbConnEntity.Ip};port={DbConnEntity.Port};User ID={DbConnEntity.UserName};Password={DbConnEntity.Password};Initial Catalog={DbConnEntity.DbName};Pooling=true;";
+                return $"Data Source={DbConnEntity.Ip};port={DbConnEntity.Port};User ID={DbConnEntity.UserName};Password={DbConnEntity.Password};Initial Catalog={DbConnEntity.DbName};Pooling=true;charset=utf8;";
             }
         }
 
@@ -87,11 +91,27 @@ namespace PartialViewInterface
         /// <summary>
         /// 定时任务全局实例
         /// </summary>
-        public static IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
+        //public static IScheduler scheduler = StdSchedulerFactory.GetDefaultScheduler();
 
         public static string GetValue(string key, string value = "")
         {
             return ConfigurationManager.AppSettings[key] ?? value;
         }
+
+        /// <summary>
+        /// 是否为jielink3.x true表示是 false表示不是
+        /// </summary>
+        public static bool IsJieLink3x { get; set; }
+
+        public static bool IsExit { get; set; }
+
+        public static SqliteHelper SqliteHelper = new SqliteHelper("app.db");
+
+        /// <summary>
+        /// 配置信息
+        /// </summary>
+        public static List<KeyValueSetting> Settings = new List<KeyValueSetting>();
+
+        public static List<BackUpJobConfig> BackUpJobConfigs = new List<BackUpJobConfig>();
     }
 }

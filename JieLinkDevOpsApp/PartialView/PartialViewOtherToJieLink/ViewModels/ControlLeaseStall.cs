@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PartialViewJsdsOneClickUpgradeToJieLink.ViewModels
+namespace PartialViewOtherToJieLink.ViewModels
 {
     public class ControlLeaseStall
     {
@@ -83,5 +83,9 @@ namespace PartialViewJsdsOneClickUpgradeToJieLink.ViewModels
         // (get) Token: 0x0600294B RID: 10571 RVA: 0x00023373 File Offset: 0x00021573
         // (set) Token: 0x0600294C RID: 10572 RVA: 0x0002337B File Offset: 0x0002157B
         public string UniqueServiceNo { get; set; }
+        /// <summary>
+        /// 预付费用户余额
+        /// </summary>
+        public decimal Balance { get; set; }
     }
 }

@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CheckDisk\CheckDiskSpaceJob.cs" />
+    <Compile Include="CheckLog\LogStatusMonitor.cs" />
     <Compile Include="CheckUpdate\CheckUpdateHelper.cs" />
     <Compile Include="CheckUpdate\CheckUpdateOnStartupJob.cs" />
     <Compile Include="CheckUpdate\ReportProjectInfoJob.cs" />
@@ -69,6 +70,10 @@
       <Project>{3facc984-5886-4c2b-bfa3-c722125ee56d}</Project>
       <Name>PartialViewInterface</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\PartialViewLogAnalyse\PartialViewLogAnalyse.csproj">
+      <Project>{4C7D7504-431A-421A-AE6C-CC48CB9EAF47}</Project>
+      <Name>PartialViewLogAnalyse</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

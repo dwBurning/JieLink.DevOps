@@ -59,10 +59,25 @@ namespace PartialViewDataArchiving
             get { return MenuType.Center; }
         }
 
+        public int Order
+        {
+            get { return 800; }
+        }
+
         Dictionary<int, string> archiveMonths = new Dictionary<int, string>();
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            Global.ValidV2(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
+
             try
             {
                 viewModel.DataSource.Clear();
@@ -92,7 +107,6 @@ namespace PartialViewDataArchiving
             }
             catch (Exception)
             {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
                 this.IsEnabled = false;
             }
         }

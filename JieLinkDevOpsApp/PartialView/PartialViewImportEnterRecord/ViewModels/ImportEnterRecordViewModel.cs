@@ -25,10 +25,8 @@ namespace PartialViewImportEnterRecord.ViewModels
             ImportEnterRecordCommand = new DelegateCommand();
             ImportEnterRecordCommand.ExecuteAction = ImportEnterRecord;
             ImportEnterRecordCommand.CanExecuteFunc = new Func<object, bool>((object parameter) => { return canExecute; });
-
             ClearEnterRecordCommand = new DelegateCommand();
             ClearEnterRecordCommand.ExecuteAction = Clear;
-
             Message = "说明：本工具是给其他车场切换到jielink车场，导入场内记录使用的。\r\n欢迎加入jielink阵营!!!\r\n1).导入的记录会有标记，且存在场内记录时，会自动跳过，规避风险。\r\n2).清理功能，只会清理用工具导入的场内记录，其余记录不受影响。\r\n3).请善用此工具！\r\n";
         }
 
@@ -51,17 +49,13 @@ namespace PartialViewImportEnterRecord.ViewModels
                 MessageBoxHelper.MessageBoxShowWarning("请选择Excel文件！");
                 return;
             }
-
             Task.Factory.StartNew(() =>
             {
                 try
                 {
-
                     DataTable dt = NPOIExcelHelper.ExcelToDataTable(filePath, true);
                     int count = 0;
-
                     List<string> sqls = new List<string>();
-
                     foreach (DataRow dr in dt.Rows)
                     {
                         string plate = dr["车牌"].ToString();
@@ -119,7 +113,7 @@ namespace PartialViewImportEnterRecord.ViewModels
                     }
                     else
                     {
-                        OutPut(sqls);
+                        OutPut(sqls, "box_enter_record");
                     }
 
                 }
@@ -131,7 +125,7 @@ namespace PartialViewImportEnterRecord.ViewModels
             });
         }
 
-        private void OutPut(List<string> cmds)
+        private void OutPut(List<string> cmds, string tableName)
         {
             if (cmds.Count <= 0)
             {
@@ -145,8 +139,8 @@ namespace PartialViewImportEnterRecord.ViewModels
                 stringBuilder.AppendLine(cmd);
             }
 
-            File.WriteAllText("Box_EnterRecord.sql", stringBuilder.ToString());
-            ProcessHelper.StartProcessV2("notepad.exe", "Box_EnterRecord.sql");
+            File.WriteAllText(tableName + ".sql", stringBuilder.ToString());
+            ProcessHelper.StartProcessV2("notepad.exe", tableName + ".sql");
         }
 
         private bool IsExists(string plate)
@@ -158,7 +152,6 @@ namespace PartialViewImportEnterRecord.ViewModels
             }
         }
 
-
         public string FilePath
         {
             get { return (string)GetValue(FilePathProperty); }
@@ -168,7 +161,6 @@ namespace PartialViewImportEnterRecord.ViewModels
         // Using a DependencyProperty as the backing store for FilePath.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FilePathProperty =
             DependencyProperty.Register("FilePath", typeof(string), typeof(ImportEnterRecordViewModel));
-
 
         public string Message
         {
@@ -190,7 +182,6 @@ namespace PartialViewImportEnterRecord.ViewModels
         public static readonly DependencyProperty IsInsertDataProperty =
             DependencyProperty.Register("IsInsertData", typeof(bool), typeof(ImportEnterRecordViewModel));
 
-
         public void ShowMessage(string message)
         {
             this.Dispatcher.Invoke(new Action(() =>
@@ -206,8 +197,5 @@ namespace PartialViewImportEnterRecord.ViewModels
                 }
             }));
         }
-
-
-
     }
 }

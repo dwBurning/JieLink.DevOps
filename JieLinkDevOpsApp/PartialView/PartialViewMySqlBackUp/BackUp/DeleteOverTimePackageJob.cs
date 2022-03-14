@@ -1,4 +1,5 @@
-﻿using PartialViewInterface.Utils;
+﻿using PartialViewInterface;
+using PartialViewInterface.Utils;
 using PartialViewMySqlBackUp.ViewModels;
 using Quartz;
 using System;
@@ -26,12 +27,27 @@ namespace PartialViewMySqlBackUp.BackUp
             }));
 
             List<FileInfo> files = FileHelper.GetAllFileInfo(filePath, "*.zip");
-            if (files.Count < 7) return;//文件小于7个 不删除
-            for (int i = 0; i < files.Count - 7; i++)//永远保留7个最新的备份文件
+            //有存在压缩失败 的情况
+            List<FileInfo> fileInfos = FileHelper.GetAllFileInfo(filePath, "*.sql");
+            files.AddRange(fileInfos);
+            string countStr = EnvironmentInfo.Settings.FirstOrDefault(x => x.KeyId == "SaveFileCount")?.ValueText;
+            int count = 7;
+            int.TryParse(countStr, out count);
+            if (files.Count < count) return;//文件小于7个 不删除
+
+            long length = 0;
+            files.ForEach(x =>
+            {
+                length += x.Length;
+            });
+            long m = length / (1024 * 1024);//M
+            if (m < 5 * 1024) return;//文件小于5G 不删除
+
+            for (int i = 0; i < files.Count - count; i++)//永远保留7个最新的备份文件
             {
                 var file = files[i];
                 DateTime lastWriteTime = file.LastWriteTime;
-                if ((DateTime.Now - lastWriteTime).TotalDays > 30)//删掉30天之前的文件
+                if ((DateTime.Now - lastWriteTime).TotalDays > count)//删掉30天之前的文件
                 {
                     File.Delete(file.FullName);
                 }

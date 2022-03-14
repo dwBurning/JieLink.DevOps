@@ -22,5 +22,11 @@ namespace PartialViewInterface
         /// 菜单类型
         /// </summary>
         MenuType MenuType { get; }
+
+        /// <summary>
+        /// 排序规则
+        /// 中心800 门禁900 车场1000 公共2000
+        /// </summary>
+        int Order { get; }
     }
 }

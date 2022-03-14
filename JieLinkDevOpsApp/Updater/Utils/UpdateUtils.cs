@@ -44,7 +44,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
 
         public static void ExtractZip(string zipFile, string dstDir)
         {
-            Console.WriteLine("解压文件:{0}", zipFile);
+            LogHelper.CommLogger.Info("解压文件:{0}", zipFile);
             ZipHelper.UnzipFile(zipFile, dstDir);
         }
         public static T TryParsePackageInfo<T>(string filePath)
@@ -55,13 +55,13 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("TryParsePackageInfo:" + ex.Message);
+                LogHelper.CommLogger.Error("TryParsePackageInfo:" + ex.Message);
                 return default(T);
             }
         }
         public static T ParsePackageInfo<T>(string filePath)
         {
-            Console.WriteLine("解析升级包json文件:{0}", filePath);
+            LogHelper.CommLogger.Info("解析升级包json文件:{0}", filePath);
             if (!File.Exists(filePath))
             {
                 throw new Exception("文件不存在：" + filePath);
@@ -87,12 +87,12 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
 
                 if (!string.IsNullOrEmpty(info.ProcessName))
                 {
-                    Console.WriteLine("结束进程:{0}", info.ProcessName);
+                    LogHelper.CommLogger.Info("结束进程:{0}", info.ProcessName);
                     ProcessHelper.StopProcess(info.ProcessName);
                 }
                 else if (!string.IsNullOrEmpty(info.ServiceName))
                 {
-                    Console.WriteLine("停止服务:{0}", info.ServiceName);
+                    LogHelper.CommLogger.Info("停止服务:{0}", info.ServiceName);
                     ProcessHelper.StopService(info.ServiceName);
                 }
 
@@ -128,7 +128,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("TryReplaceFile:" + ex.Message);
+                LogHelper.CommLogger.Error("TryReplaceFile:" + ex.Message);
                 return false;
             }
         }
@@ -144,7 +144,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                 if (ignores.Any(x => IsFileMatch(fi.FullName, fi.Extension, x)))
                     continue;
                 string dstFilePath = Path.Combine(dstPath, fi.Name);
-                Console.WriteLine("复制文件:{0}", dstFilePath);
+                LogHelper.CommLogger.Info("复制文件:{0}", dstFilePath);
                 File.Copy(sourceFilePath, dstFilePath, true);
             }
             //递归复制子文件夹
@@ -165,7 +165,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("TryStartProcess:" + ex.Message);
+                LogHelper.CommLogger.Error("TryStartProcess:" + ex.Message);
                 return false;
             }
         }
@@ -187,7 +187,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                         {
                             filePath = Path.Combine(root, info.ExecutablePath);
                         }
-                        Console.WriteLine("启动进程:{0}", info.ProcessName);
+                        LogHelper.CommLogger.Info("启动进程:{0}", info.ProcessName);
                         ProcessHelper.StartProcess(filePath, info.Args);
                     }
 
@@ -200,7 +200,7 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                     {
                         if (!ProcessHelper.IsServiceRunning(info.ServiceName))
                         {
-                            Console.WriteLine("启动服务:{0}", info.ServiceName);
+                            LogHelper.CommLogger.Info("启动服务:{0}", info.ServiceName);
                             ProcessHelper.StartService(info.ServiceName);
                         }
 

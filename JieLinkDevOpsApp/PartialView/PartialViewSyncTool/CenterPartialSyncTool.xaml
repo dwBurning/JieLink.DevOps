@@ -60,7 +60,7 @@
                 <TextBlock Grid.Row="4" Grid.Column="0" x:Name="TextBlock10" >命令字：</TextBlock>
 
                 <Button Grid.Column="1" Grid.Row="5" Content="获取盒子数据库配置" Name ="btnTestConn" Command="{Binding GetBoxConnStringCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
                 <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtLoopSecond" Text="{Binding LoopSecond}" 
@@ -102,12 +102,12 @@
                  pu:TextBoxHelper.IsClearButtonVisible="True"
                  />
                 <Button Grid.Column="1" Grid.Row="6" Content="开启检测" Command="{Binding StartDataSyncCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
                 <Button Grid.Column="1" Grid.Row="7" Content="停止检测" Command="{Binding StopDataSyncCommand}"
-                BorderBrush="#20A0FF" Foreground="#20A0FF" MaxWidth="{Binding ActualWidth}" Height="40"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>

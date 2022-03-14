@@ -31,7 +31,7 @@ namespace PartialViewImportPlate.ViewModels
             ImportPlateCommand.ExecuteAction = ImportPlate;
             ImportPlateCommand.CanExecuteFunc = new Func<object, bool>((object parameter) => { return canExecute; });
 
-           Message = "说明：本工具是为共享汽车导入凭证而制作，在用工具导入之前，至少要通过界面发行一个凭证信息。\r\n1)将需要导入的车牌粘贴到txt文件中,一个车牌一行，比如plates.txt\r\n2)将记事本文件另存为UTF8编码，必须为UTF8，否则汉字会乱码\r\n";
+            Message = "说明：本工具是为共享汽车导入凭证而制作，在用工具导入之前，至少要通过界面发行一个凭证信息。\r\n1)将需要导入的车牌粘贴到txt文件中,一个车牌一行，比如plates.txt\r\n2)将记事本文件另存为UTF8编码，必须为UTF8，否则汉字会乱码\r\n";
 
         }
 
@@ -53,7 +53,7 @@ namespace PartialViewImportPlate.ViewModels
 
 
             bool result = false;
-            string cmd = "select * from control_voucher where personno='{0}' limit 1";
+            string cmd = "select * from control_voucher where status!=4 and personno='{0}' limit 1";
             using (MySqlDataReader reader = MySqlHelper.ExecuteReader(EnvironmentInfo.ConnectionString, string.Format(cmd, PersonNo)))
             {
                 if (reader.Read())
@@ -109,12 +109,27 @@ namespace PartialViewImportPlate.ViewModels
         private void ImportPlate(object parameter)
         {
             string[] arryPlate = File.ReadAllLines(FilePath);
+            arryPlate = arryPlate.Distinct().ToArray();
+            if (arryPlate.Length == 0)
+            {
+                ShowMessage("没有可导入的车牌");
+                return;
+            }
             Task.Factory.StartNew(() =>
             {
+                //先查詢出已有的一個憑證的設備權限
+                string sql = string.Format("select * from control_voucher_device where VGuid='{0}'", voucher.VGUID);
+                DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
+
                 for (int i = 0; i < arryPlate.Length; i++)
                 {
-                    voucher.VoucherNo = arryPlate[i].Trim();
-                    voucher.CardNum = arryPlate[i].Trim();
+                    string[] voucherNos = arryPlate[i].Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    voucher.VoucherNo = string.Join("", voucherNos);
+                    if (string.IsNullOrWhiteSpace(voucher.VoucherNo))
+                    {
+                        continue;
+                    }
+                    voucher.CardNum = voucher.VoucherNo;
                     voucher.AddTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     voucher.LastTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                     string vguid = Guid.NewGuid().ToString();
@@ -122,13 +137,14 @@ namespace PartialViewImportPlate.ViewModels
                     string command = string.Format(@"insert into control_voucher(guid,pguid,lguid,personno,vouchertype,voucherno,cardnum,addoperatorno,addtime,`status`,lasttime,remark,statusfromperson)
             values('{12}','{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}',{11})", voucher.PGUID, voucher.LGUID, voucher.PersonNo, voucher.VoucherType, voucher.VoucherNo, voucher.CardNum, voucher.AddOperatorNo, voucher.AddTime, voucher.Status, voucher.LastTime, voucher.Remark, voucher.StatusFromPerson, vguid);
 
+                    string vehicleSql = string.Format("INSERT INTO `control_vehicle_info` VALUES (UUID(), '{0}', '{1}', null, null, '0', null, '1', '', null, '3');", voucher.PGUID, voucher.VoucherNo);
+                    MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, vehicleSql);
+
                     int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, command);
                     if (result > 0)
                     {
                         ShowMessage(string.Format("凭证 {0} 添加成功！", voucher.VoucherNo));
                         //开始插入权限
-                        string sql = string.Format("select * from control_voucher_device where VGuid='{0}'", voucher.VGUID);
-                        DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
                         foreach (DataRow dr in table.Rows)
                         {
                             string rights = string.Format("insert into control_voucher_device values(UUID(),'{0}','{1}','{2}',0)", vguid, dr["DGuid"].ToString(), dr["DeviceId"].ToString());

@@ -9,6 +9,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PartialViewDataArchiving.DataArchive
@@ -63,7 +64,7 @@ namespace PartialViewDataArchiving.DataArchive
                     builder.Append($" DEFAULT '{tableCharacter.Default}'");
                 }
 
-                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, builder.ToString());
+                MySqlHelperEx.ExecuteNonQueryEx(EnvironmentInfo.ConnectionString, builder.ToString());
             }
         }
 
@@ -92,11 +93,14 @@ namespace PartialViewDataArchiving.DataArchive
             return tableCharacters;
         }
 
+        object obj = new object();
+
         /// <summary>
         /// 开始归档
         /// </summary>
-        private void DataArchive(string bllTableName, string archiveTableName)
+        private void DataArchive(ArchiveTable table, string archiveTableName)
         {
+            string bllTableName = table.TableName;
             try
             {
                 using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
@@ -104,57 +108,107 @@ namespace PartialViewDataArchiving.DataArchive
                     conn.Open();
                     MySqlTransaction transaction = conn.BeginTransaction();
                     MySqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandTimeout = int.MaxValue;//超时时间设置60分钟
                     cmd.Transaction = transaction;
                     try
                     {
-                        string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
-                        if (bllTableName == "box_enter_record")
+                        DateTime archiveDate = DateTime.Now.Date.AddMonths(-EnvironmentInfo.AutoArchiveMonth);
+                        string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
+
+                        if (!string.IsNullOrEmpty(table.Where))
                         {
-                            sql += " and wasgone=1";
+                            sql += $" {table.Where}";
                         }
                         cmd.CommandText = sql;
+                        LogHelper.CommLogger.Info(sql);
                         int x = cmd.ExecuteNonQuery();
 
-                        string script = $"delete from `{bllTableName}` where  DATE_ADD({GetTimeField(bllTableName)},INTERVAL {EnvironmentInfo.AutoArchiveMonth} Month) < now()";
-                        if (bllTableName == "box_enter_record")
+                        string script = $"delete from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
+                        if (!string.IsNullOrEmpty(table.Where))
                         {
-                            script += " and wasgone=1";
+                            sql += $" {table.Where}";
                         }
                         cmd.CommandText = script;
+                        LogHelper.CommLogger.Info(script);
                         int y = cmd.ExecuteNonQuery();
                         transaction.Commit();
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        DataArchivingViewModel.Instance().ShowMessage("数据归档遇到些问题");
+                        LogHelper.CommLogger.Error("数据归档遇到些问题，事务回滚：" + ex.ToString());
                     }
-
                 }
+                progress += 20;
+                DataArchivingViewModel.Instance().ShowMessage($"表{bllTableName}归档完成...请继续等待...", progress);
+
             }
             catch (Exception ex)
             {
-                DataArchivingViewModel.Instance().ShowMessage("数据归档遇到些问题");
+                LogHelper.CommLogger.Error("数据归档遇到些问题：" + ex.ToString());
+            }
+        }
+
+        private void DataArchiveYear(ArchiveTable table, string archiveTableName, int year)
+        {
+            string bllTableName = table.TableName;
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(EnvironmentInfo.ConnectionString))
+                {
+                    conn.Open();
+                    MySqlTransaction transaction = conn.BeginTransaction();
+                    MySqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandTimeout = int.MaxValue;//超时时间设置60分钟
+                    cmd.Transaction = transaction;
+                    try
+                    {
+                        string archiveStartDate = $"{year}-01-01";
+                        string archiveEndDate = $"{year + 1}-01-01";
+                        string timeField = GetTimeField(bllTableName);
+                        string sql = $"insert into `{archiveTableName}` select * from `{bllTableName}` where {timeField} < '{archiveEndDate}' and {timeField} >'{archiveStartDate}'";
+                        if (!string.IsNullOrEmpty(table.Where))
+                        {
+                            sql += $" {table.Where}";
+                        }
+                        cmd.CommandText = sql;
+                        LogHelper.CommLogger.Info(sql);
+                        int x = cmd.ExecuteNonQuery();
+
+                        string script = $"delete from `{bllTableName}` where {timeField} < '{archiveEndDate}' and {timeField} >'{archiveStartDate}'";
+                        if (!string.IsNullOrEmpty(table.Where))
+                        {
+                            sql += $" {table.Where}";
+                        }
+                        cmd.CommandText = script;
+                        LogHelper.CommLogger.Info(script);
+                        int y = cmd.ExecuteNonQuery();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        LogHelper.CommLogger.Error("数据归档遇到些问题，事务回滚：" + ex.ToString());
+                    }
+                }
+                //progress += 20;
+                //DataArchivingViewModel.Instance().ShowMessage($"表{bllTableName}归档完成...请继续等待...", progress);
+
+            }
+            catch (Exception ex)
+            {
+                LogHelper.CommLogger.Error("数据归档遇到些问题：" + ex.ToString());
             }
         }
 
         private string GetTimeField(string tableName)
         {
-            switch (tableName.ToLower())
+            var table = DataArchivingViewModel.Instance().ArchiveTables.FirstOrDefault(x => tableName.Contains(x.TableName));
+            if (table == null) return "";
+            else
             {
-                case "box_enter_record":
-                    return "EnterTime";
-                case "box_out_record":
-                    return "OutTime";
-                case "box_bill":
-                    return "PayTime";
-                case "business_discount":
-                    return "CreateTime";
-                case "boxdoor_door_record":
-                    return "ActionTime";
+                return table.DateField;
             }
-
-            return "";
         }
 
         private void BackUpTables()
@@ -179,31 +233,47 @@ namespace PartialViewDataArchiving.DataArchive
             File.Delete(filePath);
         }
 
+        int progress = 0;
+
         public void Execute()
         {
             //BackUpTables();
+            progress = 0;
 
-            int step = 100 / DataArchivingViewModel.Instance().Tables.Count;
-            int progress = 0;
-            foreach (var table in DataArchivingViewModel.Instance().Tables)
+            var tasks = new List<Task>();
+            DataArchivingViewModel.Instance().ShowMessage($"正在执行归档...请等待...");
+            foreach (var table in DataArchivingViewModel.Instance().ArchiveTables)
             {
-                if (progress > 100) progress = 100;
-
-                DataArchivingViewModel.Instance().ShowMessage($"正在归档{table}表...请等待...", progress);
-
-                string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";
-
-                if (!TableIsExists(archiveTable))
+                //Thread.Sleep(2000);
+                tasks.Add(Task.Factory.StartNew(() =>
                 {
-                    CreateTable(table, archiveTable);
-                }
+                    string archiveTable = $"{table.TableName}_{DateTime.Now.Year.ToString()}";//2021
+                    if (!TableIsExists(archiveTable))
+                    {
+                        CreateTable(table.TableName, archiveTable);
+                    }
 
-                CompareColumns(table, archiveTable);
-                DataArchive(table, archiveTable);
-                progress += step;
+                    CompareColumns(table.TableName, archiveTable);
+
+                    string archiveTableV2 = $"{table.TableName}_{(DateTime.Now.Year - 1).ToString()}";//2020
+                    if (!TableIsExists(archiveTableV2))
+                    {
+                        CreateTable(table.TableName, archiveTableV2);
+                    }
+
+                    CompareColumns(table.TableName, archiveTableV2);
+
+                    //将当前业务表2020年的数据归档到2020年的表
+                    DataArchiveYear(table, archiveTableV2, DateTime.Now.Year - 1);
+                    //将2021年的归档表中2020年的数据归档到2020年的表
+                    DataArchiveYear(new ArchiveTable() { TableName = archiveTable }, archiveTableV2, DateTime.Now.Year - 1);
+                    //将当前业务表中2021年的数据归档到2021年的表
+                    DataArchive(table, archiveTable);
+
+                }));
             }
-
-            DataArchivingViewModel.Instance().ShowMessage($"数据归档完成", 100);
+            Task.WaitAll(tasks.ToArray());
+            DataArchivingViewModel.Instance().ShowMessage($"数据归档已全部完成", 100);
         }
 
         /// <summary>
@@ -211,15 +281,15 @@ namespace PartialViewDataArchiving.DataArchive
         /// </summary>
         public void ExecuteEx()
         {
-            foreach (var table in DataArchivingViewModel.Instance().Tables)
+            foreach (var table in DataArchivingViewModel.Instance().ArchiveTables)
             {
-                string archiveTable = $"{table}_{DateTime.Now.Year.ToString()}";
+                string archiveTable = $"{table.TableName}_{DateTime.Now.Year.ToString()}";
                 if (!TableIsExists(archiveTable))
                 {
-                    CreateTable(table, archiveTable);
+                    CreateTable(table.TableName, archiveTable);
                 }
 
-                CompareColumns(table, archiveTable);
+                CompareColumns(table.TableName, archiveTable);
             }
         }
     }

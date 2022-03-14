@@ -2,6 +2,7 @@
 using JieShun.JieLink.DevOps.Updater.Utils;
 using JieShun.JieLink.DevOps.Updater.ViewModels;
 using Panuon.UI.Silver;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,11 +74,12 @@ namespace JieShun.JieLink.DevOps.Updater
             {
                 viewModel.UpdateMessage = "缺少升级所需的参数UpdateRequest.json,程序即将退出！";
             }
-            await Task.Delay(5000);
+            await Task.Delay(10*60*1000);
             OnClose();
         }
         void UpdateProgressSafely(int progress, string message)
         {
+            LogHelper.CommLogger.Info(message);
             Dispatcher.Invoke(() =>{
                 UpdateProgress(progress, message);
             });

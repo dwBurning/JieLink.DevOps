@@ -45,7 +45,12 @@ namespace PartialViewDoorServer
 
         public MenuType MenuType
         {
-            get { return MenuType.DoorServer; }
+            get { return MenuType.Center; }
+        }
+
+        public int Order
+        {
+            get { return 900; }
         }
 
         private void Cmb_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -57,6 +62,16 @@ namespace PartialViewDoorServer
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            Global.ValidV2(new Action<string, bool>((message, result) =>
+            {
+                if (!result)
+                {
+                    MessageBoxHelper.MessageBoxShowWarning(message);
+                }
+
+                this.IsEnabled = result;
+            }));
+
             try
             {
                 viewModel.GetDoorServerInfo();
@@ -64,9 +79,29 @@ namespace PartialViewDoorServer
             }
             catch (Exception)
             {
-                MessageBoxHelper.MessageBoxShowWarning("请先在【设置】菜单中配置数据库连接");
                 this.IsEnabled = false;
             }
+        }
+
+        /// <summary>
+        /// 右击菜单清屏
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Clear_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Message = "";
+            //RichTextBox_Text.Document.Blocks.Clear();
+        }
+
+        /// <summary>
+        /// 滚屏
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RichTextBox_Text_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RichTextBox_Text.ScrollToEnd();
         }
     }
 }
