@@ -77,14 +77,17 @@ namespace PartialViewJSRMOrder.Monitor
 
                 string content = SendEmailHelper.HtmlBody(dataTableForEmail);
 
-                if(isDelay.Count > 0)
+                //仅在上班时间报这个警
+                if(isDelay.Count > 0 && DateTime.Now.Hour >= 9 && DateTime.Now.Hour < 18)
                 {
                     string title = isDelay[0] + "等" + isDelay.Count +  "个工单即将超时，需优先处理";
                     SendEmailHelper.SendEmailAsync(receive, title, content, true);
                 }
-                else
+                else if(count > 0)
+                {
                     SendEmailHelper.SendEmailAsync(receive, $"{DateTime.Now.ToString("yyyyMMddHH")}待处理捷服务工单", content, true);
-                OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，已发送邮件");
+                    OrderMonitorViewModel.Instance().ShowMessage($"新增工单{count}单，已发送邮件");
+                }
 
                 orders.Where(x => x.Dispatched == 0).ToList().ForEach(x =>
                 {

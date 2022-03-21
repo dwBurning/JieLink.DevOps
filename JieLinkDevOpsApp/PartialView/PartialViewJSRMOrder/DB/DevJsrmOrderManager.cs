@@ -141,7 +141,8 @@ namespace PartialViewJSRMOrder.DB
                     if(!string.IsNullOrEmpty(dr["YanfaTime"].ToString()))
                     {
                         var yanfatime = (DateTime)dr["YanfaTime"];
-                        if (yanfatime.AddHours(delaytime) < DateTime.Now)
+                        //超时7小时的警报处理 超过7+24的不管了
+                        if (yanfatime.AddHours(delaytime) < DateTime.Now && yanfatime.AddHours(delaytime+24) > DateTime.Now)
                             ret.Add(dr["projectName"].ToString());
                     }
                 }
