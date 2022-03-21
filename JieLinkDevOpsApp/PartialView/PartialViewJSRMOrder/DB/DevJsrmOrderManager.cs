@@ -142,7 +142,9 @@ namespace PartialViewJSRMOrder.DB
                     {
                         var yanfatime = (DateTime)dr["YanfaTime"];
                         //超时7小时的警报处理 超过7+24的不管了
-                        if (yanfatime.AddHours(delaytime) < DateTime.Now && yanfatime.AddHours(delaytime+24) > DateTime.Now)
+                        //周末的不再报警
+                        if (yanfatime.AddHours(delaytime) < DateTime.Now && yanfatime.AddHours(delaytime+24) > DateTime.Now 
+                            && yanfatime.DayOfWeek != DayOfWeek.Sunday && yanfatime.DayOfWeek != DayOfWeek.Saturday)
                             ret.Add(dr["projectName"].ToString());
                     }
                 }

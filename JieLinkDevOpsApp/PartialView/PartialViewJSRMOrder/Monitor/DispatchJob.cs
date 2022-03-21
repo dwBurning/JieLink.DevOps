@@ -82,6 +82,7 @@ namespace PartialViewJSRMOrder.Monitor
                 {
                     string title = isDelay[0] + "等" + isDelay.Count +  "个工单即将超时，需优先处理";
                     SendEmailHelper.SendEmailAsync(receive, title, content, true);
+                    OrderMonitorViewModel.Instance().ShowMessage(title);
                 }
                 else if(count > 0)
                 {
