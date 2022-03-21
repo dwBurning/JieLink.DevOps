@@ -92,7 +92,8 @@ namespace PartialViewJSRMOrder.DB
         public DataTable GetDispatchingOrderTableForEmail()
         {
             string error = "";
-            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人',dispatched from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+            string sql = $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人',dispatched from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';";
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error,sql);
         }
         public DataTable GetYesterdayDispatchingOrderTableForEmail()
         {
@@ -125,6 +126,32 @@ namespace PartialViewJSRMOrder.DB
             }
 
             return responsiblePersons;
+        }
+
+        public List<string> GetIsDelay(int delaytime)
+        {
+            List<string> ret = new List<string>();
+            try
+            {
+                string error = "";
+                DataTable dataTable = EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select projectName,YanfaTime from dev_jsrm_order where FinishTime is null");
+                //Dictionary<string, DateTime> DelayJob = new Dictionary<string, DateTime>();
+                foreach (DataRow dr in dataTable.Rows)
+                {
+                    if(!string.IsNullOrEmpty(dr["YanfaTime"].ToString()))
+                    {
+                        var yanfatime = (DateTime)dr["YanfaTime"];
+                        if (yanfatime.AddHours(delaytime) < DateTime.Now)
+                            ret.Add(dr["projectName"].ToString());
+                    }
+                }
+                return ret;
+            }
+            catch (Exception)
+            {
+                return ret;
+            }
+            
         }
     }
 }

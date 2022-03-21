@@ -92,9 +92,33 @@ namespace PartialViewJSRMOrder.Monitor
                 return;
             }
 
-            if (order.problemInfo.Contains("车位引导") || order.softVersion.ToLower().Contains("jsrj11"))
+            if (order.problemInfo.Contains("车位引导") || order.softVersion.ToLower().Contains("jsrj11") || order.softVersion.Contains("车位引导"))
             {
-                order.ResponsiblePerson = "黄其省";
+                var responsiblePersons_ = devJsrmOrderManager.GetResponsiblePerson();
+                bool isExist1 = responsiblePersons_.ContainsKey("王超");
+                bool isExist2 = responsiblePersons_.ContainsKey("李志魁");
+                bool isExist3 = responsiblePersons_.ContainsKey("黄其省");
+                if (!isExist1)
+                {
+                    order.ResponsiblePerson = "王超";
+                }
+                else if (!isExist2)
+                {
+                    order.ResponsiblePerson = "李志魁";
+                }
+                else if (!isExist3)
+                {
+                    order.ResponsiblePerson = "黄其省";
+                }
+                else
+                {
+                    var person = responsiblePersons_.OrderBy(p => p.Value).Where(p => p.Key == "王超"
+                    || p.Key == "李志魁"
+                    || p.Key == "黄其省").Select(p => p.Key).FirstOrDefault();
+
+                    order.ResponsiblePerson = person;
+                }
+
                 return;
             }
 

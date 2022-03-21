@@ -326,6 +326,7 @@ namespace PartialViewJSRMOrder.ViewModel
 
         public void ShowMessage(string message)
         {
+            LogHelper.CommLogger.Info(message);
             this.Dispatcher.Invoke(new Action(() =>
             {
                 if (Message != null && Message.Length > 5000)
