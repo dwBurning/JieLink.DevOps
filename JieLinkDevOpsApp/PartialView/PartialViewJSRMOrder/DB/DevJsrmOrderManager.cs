@@ -84,6 +84,11 @@ namespace PartialViewJSRMOrder.DB
             string error = "";
             return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
+        public DataTable GetAllNotFinsihOrderTable()
+        {
+            string error = "";
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select * from dev_jsrm_order where finishtime is null;");
+        }
         public DataTable GetYesterdayDispatchingOrderTable()
         {
             string error = "";
@@ -134,18 +139,22 @@ namespace PartialViewJSRMOrder.DB
             try
             {
                 string error = "";
-                DataTable dataTable = EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select projectName,YanfaTime from dev_jsrm_order where FinishTime is null");
+                DataTable dataTable = EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select projectName,YanfaTime,problemcode from dev_jsrm_order where FinishTime is null and Dispatched <> 2");
                 //Dictionary<string, DateTime> DelayJob = new Dictionary<string, DateTime>();
                 foreach (DataRow dr in dataTable.Rows)
                 {
                     if(!string.IsNullOrEmpty(dr["YanfaTime"].ToString()))
                     {
                         var yanfatime = (DateTime)dr["YanfaTime"];
+                        var problemcode = dr["problemcode"].ToString();
                         //超时7小时的警报处理 超过7+24的不管了
                         //周末的不再报警
                         if (yanfatime.AddHours(delaytime) < DateTime.Now && yanfatime.AddHours(delaytime+24) > DateTime.Now 
                             && yanfatime.DayOfWeek != DayOfWeek.Sunday && yanfatime.DayOfWeek != DayOfWeek.Saturday)
+                        {
                             ret.Add(dr["projectName"].ToString());
+                            EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set dispatched = 2 where problemcode = '{problemcode}';");
+                        }
                     }
                 }
                 return ret;
