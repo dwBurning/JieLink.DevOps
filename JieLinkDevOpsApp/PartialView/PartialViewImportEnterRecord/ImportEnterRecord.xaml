@@ -21,36 +21,39 @@
         </ResourceDictionary>
 
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"></ColumnDefinition>
-            <ColumnDefinition Width="3*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="50"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
+    <TabControl
+        pu:TabControlHelper.SelectedForeground="#00BCFF" >
+        <TabItem Header="导入场内记录">
+            <Grid x:Name="gridER">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" >文件路径：</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="0" >文件路径：</TextBlock>
 
-        <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding FilePath}" Margin="5"
+                <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding FilePath}" Margin="5"
                      VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定文件路径"
                      pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
                      pu:TextBoxHelper.CornerRadius="4"
                      pu:TextBoxHelper.IsClearButtonVisible="True"/>
 
-        <Button Grid.Row="0" Grid.Column="2" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
+                <Button Grid.Row="0" Grid.Column="2" Content="选择路径" Name ="btnChoosePath" Click="btnChoosePath_Click"
                     BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                     pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                     pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <CheckBox Grid.Column="2" Grid.Row="1" x:Name="chbVersion" Height="30" Content="生成脚本文件"
+                <CheckBox Grid.Column="2" Grid.Row="1" x:Name="chbVersion" Height="30" Content="生成脚本文件"
                  pu:CheckBoxHelper.CheckBoxStyle="Switch" Margin="5"
                  pu:CheckBoxHelper.BoxHeight="22" IsChecked="{Binding IsInsertData}"
                  pu:CheckBoxHelper.CheckedContent="直接录入数据库"
@@ -59,29 +62,97 @@
                  pu:CheckBoxHelper.CornerRadius="4"
                  />
 
-        <Button Grid.Column="2" Grid.Row="2" Content="执行" Name ="btnImport" Command="{Binding ImportEnterRecordCommand}"
+                <Button Grid.Column="2" Grid.Row="2" Content="执行" Name ="btnImport" Command="{Binding ImportEnterRecordCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <Button Grid.Column="2" Grid.Row="3" Content="清理" Command="{Binding ClearEnterRecordCommand}"
+                <Button Grid.Column="2" Grid.Row="3" Content="清理" Command="{Binding ClearEnterRecordCommand}"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <Button Grid.Column="2" Grid.Row="4" Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
+                <Button Grid.Column="2" Grid.Row="4" Content="打开模板文件夹" Name="OpenTemplate" Click="OpenTemplate_Click"
                 BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
 
-        <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage" Margin="5"
+                <RichTextBox BorderBrush="#20A0FF" x:Name="rtxShowMessage" Margin="5"
                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                      Grid.Column="1" Grid.RowSpan="5" Grid.Row="1" IsReadOnly="True">
-            <FlowDocument>
-                <Paragraph>
-                    <Run Text="{Binding Message}"/>
-                </Paragraph>
-            </FlowDocument>
-        </RichTextBox>
-    </Grid>
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Message}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="导入黑白名单">
+            <Grid x:Name="gridWB">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" >文件路径：</TextBlock>
+
+                <TextBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" Text="{Binding FilePath}" Margin="5"
+                     VerticalAlignment="Center" Height="40" pu:TextBoxHelper.Watermark="请指定文件路径"
+                     pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
+                     pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
+                     pu:TextBoxHelper.CornerRadius="4"
+                     pu:TextBoxHelper.IsClearButtonVisible="True"/>
+
+                <Button Grid.Row="0" Grid.Column="2" Content="选择路径" Click="btnChooseWBPath_Click"
+                    BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                    pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                    pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <CheckBox Grid.Column="2" Grid.Row="1" Height="30" Content="生成脚本文件"
+                 pu:CheckBoxHelper.CheckBoxStyle="Switch" Margin="5"
+                 pu:CheckBoxHelper.BoxHeight="22" IsChecked="{Binding IsInsertData}"
+                 pu:CheckBoxHelper.CheckedContent="直接录入数据库"
+                 pu:CheckBoxHelper.BoxWidth="33"
+                 pu:CheckBoxHelper.CheckedBackground="#20A0FF"
+                 pu:CheckBoxHelper.CornerRadius="4"
+                 />
+
+                <Button Grid.Column="2" Grid.Row="2" Content="执行" Command="{Binding ImportWhiteBlackCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <Button Grid.Column="2" Grid.Row="3" Content="清理" Command="{Binding ClearWhiteBlackCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <Button Grid.Column="2" Grid.Row="4" Content="打开模板文件夹" Click="OpenTemplate_Click"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="40"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <RichTextBox BorderBrush="#20A0FF" Margin="5"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Column="1" Grid.RowSpan="5" Grid.Row="1" IsReadOnly="True">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding Message}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+            </Grid>
+        </TabItem>
+    </TabControl>
 </UserControl>
