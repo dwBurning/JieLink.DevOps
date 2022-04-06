@@ -203,7 +203,7 @@ namespace PartialViewDataArchiving.DataArchive
 
         private string GetTimeField(string tableName)
         {
-            var table = DataArchivingViewModel.Instance().ArchiveTables.FirstOrDefault(x => x.TableName == tableName);
+            var table = DataArchivingViewModel.Instance().ArchiveTables.FirstOrDefault(x => tableName.Contains(x.TableName));
             if (table == null) return "";
             else
             {
