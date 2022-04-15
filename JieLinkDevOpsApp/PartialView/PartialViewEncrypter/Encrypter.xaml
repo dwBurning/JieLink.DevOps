@@ -179,5 +179,49 @@
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
         </TabItem>
+        <TabItem Header="加/解密字符串">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="150"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Height="18" Margin="5,16">密文：</TextBlock>
+                <RichTextBox BorderBrush="#20A0FF" x:Name="EncryptText" Margin="5"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Row="0" Grid.Column="1" IsReadOnly="False">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding EncryptText}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+
+                <Button Grid.Column="2" Grid.Row="0" Content="解密" Command="{Binding DecryptTextCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="50" Width="100"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <Button Grid.Column="2" Grid.Row="1" Content="加密" Command="{Binding EncryptTextCommand}"
+                BorderBrush="#20A0FF" Foreground="#20A0FF" Height="50" Width="100"
+                pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
+                pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Height="18" Margin="5,16">原文：</TextBlock>
+                <RichTextBox BorderBrush="#20A0FF" x:Name="DecryptText" Margin="5"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     Grid.Row="2" Grid.Column="1" IsReadOnly="False">
+                    <FlowDocument>
+                        <Paragraph>
+                            <Run Text="{Binding DecryptText}"/>
+                        </Paragraph>
+                    </FlowDocument>
+                </RichTextBox>
+            </Grid>
+        </TabItem>
     </TabControl>
 </UserControl>
