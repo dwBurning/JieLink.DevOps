@@ -99,7 +99,7 @@
                      pu:TextBoxHelper.CornerRadius="4"
                      pu:TextBoxHelper.IsClearButtonVisible="True"></TextBox>
                 <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,16" Height="18">请选择文件位置：</TextBlock>
-                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding HeadPath}" pu:TextBoxHelper.Watermark="请选择文件服务器的文件存储路径，如 D:\jieshun\jielink\files\head" Margin="5"
+                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding HeadPath}" pu:TextBoxHelper.Watermark="请选择文件服务器的文件存储路径，如 D:\jieshun\jielink\files" Margin="5"
                      VerticalAlignment="Center" Height="40" 
                      pu:TextBoxHelper.FocusedBorderBrush="#20A0FF"
                      pu:TextBoxHelper.FocusedShadowColor="#20A0FF"
