@@ -78,6 +78,7 @@ namespace PartialViewCheckUpdate.ViewModels
                 "V2.8.2#E1.0",
                 "V2.8.2#E2.0",
                 "V2.8.3",
+                "V2.8.3#E1.0",
                 "V2.9.0",
             };
 
@@ -226,6 +227,12 @@ namespace PartialViewCheckUpdate.ViewModels
             if (this.StartVersion == "V1.0.0" || this.EndVersion == "V1.0.0")
             {
                 MessageBoxHelper.MessageBoxShowWarning("V1.0.0版本会初始化数据库，请重新选择！");
+                return;
+            }
+
+            if (this.PackagePath.Length > 150)
+            {
+                MessageBoxHelper.MessageBoxShowWarning("sys文件夹的路径太深，请将sys拷贝到浅目录或者磁盘根目录！");
                 return;
             }
 

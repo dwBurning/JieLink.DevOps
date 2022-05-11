@@ -1,6 +1,7 @@
 ﻿using JieShun.JieLink.DevOps.Updater.Models;
 using JieShun.JieLink.DevOps.Updater.Utils;
 using Newtonsoft.Json;
+using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -70,7 +71,8 @@ namespace JieShun.JieLink.DevOps.Updater.Utils
                 ok = false;
                 message = ex.Message;
                 Console.WriteLine(ex.Message);
-                callback?.Invoke(100, ex.Message);
+                callback?.Invoke(0, ex.Message);
+                MessageBoxHelper.MessageBoxShowError("升级过程中遇到些错误，程序升级失败");
                 throw ex;
             }
             finally
