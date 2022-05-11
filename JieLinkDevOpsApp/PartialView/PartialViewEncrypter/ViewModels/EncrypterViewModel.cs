@@ -139,6 +139,37 @@ namespace PartialViewEncrypter.ViewModels
 
         #endregion
 
+        #region 加/解密字符串
+
+        public DelegateCommand DecryptTextCommand { get; set; }
+
+        public DelegateCommand EncryptTextCommand { get; set; }
+
+        public string DecryptText
+        {
+            get { return (string)GetValue(DecryptTextProperty); }
+            set { SetValue(DecryptTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EncryptFilePath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DecryptTextProperty =
+            DependencyProperty.Register("DecryptText", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata(""));
+
+
+
+        public string EncryptText
+        {
+            get { return (string)GetValue(EncryptTextProperty); }
+            set { SetValue(EncryptTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EncryptDirectoryPath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty EncryptTextProperty =
+            DependencyProperty.Register("EncryptText", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata(""));
+
+
+
+        #endregion
 
         #endregion
 
@@ -174,6 +205,12 @@ namespace PartialViewEncrypter.ViewModels
             EncryptDirectoryCommand.ExecuteAction = EncryptDirectory;
             DecryptDirectoryCommand = new DelegateCommand();
             DecryptDirectoryCommand.ExecuteAction = DecryptDirectory;
+
+            EncryptTextCommand = new DelegateCommand();
+            EncryptTextCommand.ExecuteAction = EncryptTextFun;
+            DecryptTextCommand = new DelegateCommand();
+            DecryptTextCommand.ExecuteAction = DecryptTextFun;
+
         }
         private void CreateEncryptSqlFile(object parameter)
         {
@@ -345,7 +382,81 @@ namespace PartialViewEncrypter.ViewModels
             Start();
         }
 
+        /// <summary>
+        /// 加密字符串
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void EncryptTextFun(object parameter)
+        {
+            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\EncrypterConsole.exe");
+            //ProcessHelper.StartProcessDotNet(executePath, null);
+            //实例化一个进程类
+            Process cmd = new Process();
 
+            //获得系统信息，使用的是 systeminfo.exe 这个控制台程序
+            cmd.StartInfo.FileName = executePath;
+            cmd.StartInfo.Arguments = $"2 {this.DecryptText}";
+
+            //将cmd的标准输入和输出全部重定向到.NET的程序里
+
+            cmd.StartInfo.UseShellExecute = false; //此处必须为false否则引发异常
+
+            cmd.StartInfo.RedirectStandardInput = true; //标准输入
+            cmd.StartInfo.RedirectStandardOutput = true; //标准输出
+
+            //不显示命令行窗口界面
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            cmd.Start(); //启动进程
+
+            //获取输出
+            //需要说明的：此处是指明开始获取，要获取的内容，
+            //只有等进程退出后才能真正拿到
+            var result = cmd.StandardOutput.ReadToEnd();
+            cmd.WaitForExit();//等待控制台程序执行完成
+            cmd.Close();//关闭该进程
+
+            this.EncryptText = result.Replace("\r", "").Replace("\n", "");
+        }
+
+        /// <summary>
+        /// 解密字符串
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void DecryptTextFun(object parameter)
+        {
+            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\EncrypterConsole.exe");
+            //ProcessHelper.StartProcessDotNet(executePath, null);
+            //实例化一个进程类
+            Process cmd = new Process();
+
+            //获得系统信息，使用的是 systeminfo.exe 这个控制台程序
+            cmd.StartInfo.FileName = executePath;
+            cmd.StartInfo.Arguments = $"1 {this.EncryptText}";
+
+            //将cmd的标准输入和输出全部重定向到.NET的程序里
+
+            cmd.StartInfo.UseShellExecute = false; //此处必须为false否则引发异常
+
+            cmd.StartInfo.RedirectStandardInput = true; //标准输入
+            cmd.StartInfo.RedirectStandardOutput = true; //标准输出
+
+            //不显示命令行窗口界面
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            cmd.Start(); //启动进程
+
+            //获取输出
+            //需要说明的：此处是指明开始获取，要获取的内容，
+            //只有等进程退出后才能真正拿到
+            var result = cmd.StandardOutput.ReadToEnd();
+            cmd.WaitForExit();//等待控制台程序执行完成
+            cmd.Close();//关闭该进程
+
+            this.DecryptText = result.Replace("\r", "").Replace("\n", "");
+        }
         private void GetFileWindow(object parameter)
         {
             System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -417,7 +528,7 @@ namespace PartialViewEncrypter.ViewModels
         private void Start()
         {
             string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\JieShun.JieLink.DevOps.Encrypter.exe");
-           ProcessHelper.StartProcessDotNet(executePath, null);
+            ProcessHelper.StartProcessDotNet(executePath, null);
         }
 
         /// <summary>
@@ -490,33 +601,5 @@ namespace PartialViewEncrypter.ViewModels
                                 "COLUMN_NAME LIKE '%tel%' );";
         }
 
-        /*还是觉的用sql语句的方式更灵活
-        private List<Table> GetTableInfos(string[] dbs,string connStr)
-        {
-            List<Table> tables = new List<Table>();
-            List<TableInfo> tableInfos = new List<TableInfo>();
-            foreach (var item in dbs)
-            {
-                var conn = GetConnStr().Replace("$db$", item);
-                string sql = $"SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA = '{item}' AND (" +
-                                $"COLUMN_NAME LIKE '%mobile%' OR " +
-                                "COLUMN_NAME LIKE '%phone%' OR " +
-                                "COLUMN_NAME LIKE '%idnumber%' OR " +
-                                "COLUMN_NAME LIKE '%tel%' );";
-
-                using (DataTable dt = MySqlHelper.ExecuteDataset(conn, sql).Tables[0])
-                {
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        TableInfo info = new TableInfo { table = dr["TABLE_NAME"].ToString(), column = dr["COLUMN_NAME"].ToString() };
-                        tableInfos.Add(info);
-                        LogHelper.CommLogger.Info($"查询到待加密表：{info.table}，字段：{info.column}");
-                    }
-                }
-                Table table = new Table() { db = item, tableInfos = tableInfos };
-                tables.Add(table);
-            }
-            return tables;
-        }*/
     }
 }

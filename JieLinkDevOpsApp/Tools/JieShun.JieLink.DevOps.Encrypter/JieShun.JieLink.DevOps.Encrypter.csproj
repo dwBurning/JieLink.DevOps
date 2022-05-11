@@ -128,7 +128,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /r /y $(ProjectDir)Ciphertext.dll
-xcopy /r /y $(ProjectDir)nLog-config.xml</PreBuildEvent>
+    <PreBuildEvent>
+		xcopy /r /y $(ProjectDir)Ciphertext.dll
+		xcopy /r /y $(ProjectDir)nLog-config.xml
+	</PreBuildEvent>
   </PropertyGroup>
 </Project>
