@@ -61,6 +61,10 @@ namespace PartialViewJSRMOrder.Monitor
                     {
                         Notice.Show($"新增加工单 {x.problemCode}", "通知", 3, MessageBoxIcon.Success);
                     });
+                    //
+                    if (x.problemInfo.Contains('\''))
+                        x.problemInfo = x.problemInfo.Replace('\'', ' ');
+
                     devJsrmOrderManager.AddOrder(x);
                 }
             });
@@ -95,14 +99,9 @@ namespace PartialViewJSRMOrder.Monitor
             if (order.problemInfo.Contains("车位引导") || order.softVersion.ToLower().Contains("jsrj11") || order.softVersion.Contains("车位引导"))
             {
                 var responsiblePersons_ = devJsrmOrderManager.GetResponsiblePerson();
-                bool isExist1 = responsiblePersons_.ContainsKey("王超");
                 bool isExist2 = responsiblePersons_.ContainsKey("李志魁");
                 bool isExist3 = responsiblePersons_.ContainsKey("黄其省");
-                if (!isExist1)
-                {
-                    order.ResponsiblePerson = "王超";
-                }
-                else if (!isExist2)
+                if (!isExist2)
                 {
                     order.ResponsiblePerson = "李志魁";
                 }
@@ -112,8 +111,7 @@ namespace PartialViewJSRMOrder.Monitor
                 }
                 else
                 {
-                    var person = responsiblePersons_.OrderBy(p => p.Value).Where(p => p.Key == "王超"
-                    || p.Key == "李志魁"
+                    var person = responsiblePersons_.OrderBy(p => p.Value).Where(p =>  p.Key == "李志魁"
                     || p.Key == "黄其省").Select(p => p.Key).FirstOrDefault();
 
                     order.ResponsiblePerson = person;
