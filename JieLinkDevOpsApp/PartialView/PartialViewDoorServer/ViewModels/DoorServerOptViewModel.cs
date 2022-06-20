@@ -349,11 +349,15 @@ namespace PartialViewDoorServer.ViewModels
                 {
                     int GetNum = Convert.ToInt32(readerGetNum["GetNum"].ToString());
                     //getnum远大于maxid时，对所有有问题的getnum执行更新
-                    if (GetNum > maxid + 200 || GetNum > maxid * 2)
+                    if (GetNum > maxid + 100 || GetNum > maxid * 2)
                     {
                         sqlstr = string.Format("update sync_doornum set GetNum = {0} where GetNum > {0}",maxid);
                         MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sqlstr);
                         return true;
+                    }
+                    if(GetNum> maxid)
+                    {
+                        ShowMessage("GetNum>maxId，需要手动检查sync_doornum");
                     }
                 }
                 

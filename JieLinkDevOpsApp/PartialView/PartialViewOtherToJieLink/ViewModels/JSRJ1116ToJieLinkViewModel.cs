@@ -217,6 +217,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     List<TBaseDeptModel> tempGroupList = CommonHelper.DataTableToList<TBaseDeptModel>(groupDt).OrderBy(x => x.PARENTID).ToList();
 
                     List<TBaseDeptModel> groupList = GetHrDeptChildren(tempGroupList, "0");
+
                     G3GroupList = groupList;
                     if (groupList.Count > 0)
                     {
@@ -235,8 +236,20 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 //根组织节点
                                 if (groupRoot == null)
                                 {
-                                    string orgCode = new Random().ToString().Substring(2, 8);
-                                    string sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');", new Guid(group.GUID).ToString(), group.NAME, orgCode, GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), group.REMARK, group.NAME + ";");
+                                    string sql = "";
+                                    try
+                                    {
+                                        //注意！超低版本速通是没有GUID字段，会导致报错无法升级，先让现场升级速通版本！
+                                        string orgCode = new Random().Next(100000, 999999).ToString();
+                                         sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');",
+                                            new Guid(group.GUID).ToString(), group.NAME, orgCode, GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                                            group.REMARK, group.NAME + ";");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        ShowMessage(ex.ToString());
+                                    }
+
                                     try
                                     {
                                         int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
@@ -280,6 +293,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             else
                             {
                                 string currentGuid = new Guid(group.GUID).ToString();
+                                ShowMessage(currentGuid);
                                 //寻找当前组织是否已存在：判断是否重复升级
                                 DataSet currentGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_role_group WHERE `Status`=0 AND RGGUID='{0}'", currentGuid));
                                 ControlRoleGroup currentGroup = null;
@@ -317,7 +331,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 }
                                 string rgFullPath = string.Format("{0}|{1};", parentGroup.RGFullPath.Trim(';'), group.NAME);
                                 //其他子组织
-                                string orgCode = new Random().ToString().Substring(2, 8);
+                                string orgCode = new Random().Next(100000, 999999).ToString();
                                 string sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');", currentGuid, group.NAME, orgCode, parentGroup.RGGUID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), group.REMARK, rgFullPath);
                                 try
                                 {
@@ -706,6 +720,7 @@ namespace PartialViewOtherToJieLink.ViewModels
             }
             catch (Exception ex)
             {
+                ShowMessage(ex.ToString());
             }
             finally
             {
