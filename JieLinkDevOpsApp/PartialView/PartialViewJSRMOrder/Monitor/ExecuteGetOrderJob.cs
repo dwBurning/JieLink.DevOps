@@ -122,19 +122,19 @@ namespace PartialViewJSRMOrder.Monitor
 
             if (order.problemInfo.Contains("访客机"))
             {
-                order.ResponsiblePerson = "高国栋";
+                order.ResponsiblePerson = "王浩东";
                 return;
             }
 
             var responsiblePersons = devJsrmOrderManager.GetResponsiblePerson();
             if (order.problemInfo.Contains("门禁"))
             {
-                bool isExist1 = responsiblePersons.ContainsKey("高国栋");
+                bool isExist1 = responsiblePersons.ContainsKey("王浩东");
                 bool isExist2 = responsiblePersons.ContainsKey("马成杰");
                 bool isExist3 = responsiblePersons.ContainsKey("胡敏");
                 if (!isExist1)
                 {
-                    order.ResponsiblePerson = "高国栋";
+                    order.ResponsiblePerson = "王浩东";
                 }
                 else if (!isExist2)
                 {
@@ -146,7 +146,7 @@ namespace PartialViewJSRMOrder.Monitor
                 }
                 else
                 {
-                    var person = responsiblePersons.OrderBy(p => p.Value).Where(p => p.Key == "高国栋"
+                    var person = responsiblePersons.OrderBy(p => p.Value).Where(p => p.Key == "王浩东"
                     || p.Key == "马成杰"
                     || p.Key == "胡敏").Select(p => p.Key).FirstOrDefault();
 
@@ -208,7 +208,7 @@ namespace PartialViewJSRMOrder.Monitor
             else
             {
                 bool isExist1 = responsiblePersons.ContainsKey("丁小永");
-                bool isExist2 = responsiblePersons.ContainsKey("龙凯");
+                bool isExist2 = responsiblePersons.ContainsKey("段扬扬");
                 bool isExist3 = responsiblePersons.ContainsKey("马成杰");
                 bool isExist4 = responsiblePersons.ContainsKey("邱大发");
                 bool isExist5 = responsiblePersons.ContainsKey("钟峰");
@@ -219,7 +219,7 @@ namespace PartialViewJSRMOrder.Monitor
                 }
                 else if (!isExist2)
                 {
-                    order.ResponsiblePerson = "龙凯";
+                    order.ResponsiblePerson = "段扬扬";
                 }
                 else if (!isExist3)
                 {
@@ -236,7 +236,7 @@ namespace PartialViewJSRMOrder.Monitor
                 else
                 {
                     var person = responsiblePersons.OrderBy(p => p.Value).Where(p => p.Key == "丁小永"
-                    || p.Key == "龙凯"
+                    || p.Key == "段扬扬"
                     || p.Key == "马成杰"
                     || p.Key == "邱大发"
                     || p.Key == "钟峰").Select(p => p.Key).FirstOrDefault();
