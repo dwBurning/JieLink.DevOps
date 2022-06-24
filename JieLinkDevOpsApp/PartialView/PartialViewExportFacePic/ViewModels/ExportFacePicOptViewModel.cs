@@ -329,7 +329,9 @@ namespace PartialViewExportFacePic.ViewModels
                         }
                         else
                         {
-                            ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                            if (total < 100)
+                                ShowMessage(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
+                            LogHelper.CommLogger.Info(string.Format("图片导出失败,姓名:{0},编号:{1},图片路径{2}", info.PersonName, info.PersonNO, info.Photo));
                             fails++;
                         }
                         System.Threading.Thread.Sleep(5);
