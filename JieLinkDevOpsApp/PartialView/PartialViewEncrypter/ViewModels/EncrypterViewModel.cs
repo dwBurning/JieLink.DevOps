@@ -6,6 +6,7 @@ using PartialViewInterface.Commands;
 using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -48,8 +49,8 @@ namespace PartialViewEncrypter.ViewModels
 
         // Using a DependencyProperty as the backing store for Remark.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty RemarkProperty =
-            DependencyProperty.Register("Remark", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata($"*【生成加密SQL】【生成解密SQL】功能是生成SQL脚本，需要手动执行到数据库；" +
-                $"生成的SQL脚本在本工具安装目录\\tool\\Encrypter\\script目录下。{Environment.NewLine}*【执行加密】【执行解密】功能是直接操作数据库，对数据库进行加解密，请谨慎操作。"));
+            DependencyProperty.Register("Remark", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata($"*【生成加密SQL】功能是生成SQL脚本，需要手动执行到数据库；" +
+                $"生成的SQL脚本在本工具安装目录\\tool\\Encrypter\\script目录下。{Environment.NewLine}{Environment.NewLine}*【执行加密】功能是直接操作数据库，对数据库进行加解密，请谨慎操作。"));
 
 
 
@@ -138,6 +139,37 @@ namespace PartialViewEncrypter.ViewModels
 
         #endregion
 
+        #region 加/解密字符串
+
+        public DelegateCommand DecryptTextCommand { get; set; }
+
+        public DelegateCommand EncryptTextCommand { get; set; }
+
+        public string DecryptText
+        {
+            get { return (string)GetValue(DecryptTextProperty); }
+            set { SetValue(DecryptTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EncryptFilePath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty DecryptTextProperty =
+            DependencyProperty.Register("DecryptText", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata(""));
+
+
+
+        public string EncryptText
+        {
+            get { return (string)GetValue(EncryptTextProperty); }
+            set { SetValue(EncryptTextProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for EncryptDirectoryPath.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty EncryptTextProperty =
+            DependencyProperty.Register("EncryptText", typeof(string), typeof(EncrypterViewModel), new PropertyMetadata(""));
+
+
+
+        #endregion
 
         #endregion
 
@@ -173,6 +205,12 @@ namespace PartialViewEncrypter.ViewModels
             EncryptDirectoryCommand.ExecuteAction = EncryptDirectory;
             DecryptDirectoryCommand = new DelegateCommand();
             DecryptDirectoryCommand.ExecuteAction = DecryptDirectory;
+
+            EncryptTextCommand = new DelegateCommand();
+            EncryptTextCommand.ExecuteAction = EncryptTextFun;
+            DecryptTextCommand = new DelegateCommand();
+            DecryptTextCommand.ExecuteAction = DecryptTextFun;
+
         }
         private void CreateEncryptSqlFile(object parameter)
         {
@@ -183,6 +221,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.EncryptToSQL,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -197,6 +236,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.EncryptToDatabase,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -211,6 +251,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.DecryptToSQL,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -225,6 +266,7 @@ namespace PartialViewEncrypter.ViewModels
                 cmd = (int)EnumCMD.DecryptToDataBase,
                 path = "",
                 connStr = GetConnStr(),
+                sqlFindColumn = GetSqlFindTables(),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -340,7 +382,81 @@ namespace PartialViewEncrypter.ViewModels
             Start();
         }
 
+        /// <summary>
+        /// 加密字符串
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void EncryptTextFun(object parameter)
+        {
+            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\EncrypterConsole.exe");
+            //ProcessHelper.StartProcessDotNet(executePath, null);
+            //实例化一个进程类
+            Process cmd = new Process();
 
+            //获得系统信息，使用的是 systeminfo.exe 这个控制台程序
+            cmd.StartInfo.FileName = executePath;
+            cmd.StartInfo.Arguments = $"2 {this.DecryptText}";
+
+            //将cmd的标准输入和输出全部重定向到.NET的程序里
+
+            cmd.StartInfo.UseShellExecute = false; //此处必须为false否则引发异常
+
+            cmd.StartInfo.RedirectStandardInput = true; //标准输入
+            cmd.StartInfo.RedirectStandardOutput = true; //标准输出
+
+            //不显示命令行窗口界面
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            cmd.Start(); //启动进程
+
+            //获取输出
+            //需要说明的：此处是指明开始获取，要获取的内容，
+            //只有等进程退出后才能真正拿到
+            var result = cmd.StandardOutput.ReadToEnd();
+            cmd.WaitForExit();//等待控制台程序执行完成
+            cmd.Close();//关闭该进程
+
+            this.EncryptText = result.Replace("\r", "").Replace("\n", "");
+        }
+
+        /// <summary>
+        /// 解密字符串
+        /// </summary>
+        /// <param name="parameter"></param>
+        private void DecryptTextFun(object parameter)
+        {
+            string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\EncrypterConsole.exe");
+            //ProcessHelper.StartProcessDotNet(executePath, null);
+            //实例化一个进程类
+            Process cmd = new Process();
+
+            //获得系统信息，使用的是 systeminfo.exe 这个控制台程序
+            cmd.StartInfo.FileName = executePath;
+            cmd.StartInfo.Arguments = $"1 {this.EncryptText}";
+
+            //将cmd的标准输入和输出全部重定向到.NET的程序里
+
+            cmd.StartInfo.UseShellExecute = false; //此处必须为false否则引发异常
+
+            cmd.StartInfo.RedirectStandardInput = true; //标准输入
+            cmd.StartInfo.RedirectStandardOutput = true; //标准输出
+
+            //不显示命令行窗口界面
+            cmd.StartInfo.CreateNoWindow = true;
+            cmd.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+            cmd.Start(); //启动进程
+
+            //获取输出
+            //需要说明的：此处是指明开始获取，要获取的内容，
+            //只有等进程退出后才能真正拿到
+            var result = cmd.StandardOutput.ReadToEnd();
+            cmd.WaitForExit();//等待控制台程序执行完成
+            cmd.Close();//关闭该进程
+
+            this.DecryptText = result.Replace("\r", "").Replace("\n", "");
+        }
         private void GetFileWindow(object parameter)
         {
             System.Windows.Forms.OpenFileDialog fileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -412,7 +528,7 @@ namespace PartialViewEncrypter.ViewModels
         private void Start()
         {
             string executePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\JieShun.JieLink.DevOps.Encrypter.exe");
-           ProcessHelper.StartProcessDotNet(executePath, null);
+            ProcessHelper.StartProcessDotNet(executePath, null);
         }
 
         /// <summary>
@@ -467,7 +583,23 @@ namespace PartialViewEncrypter.ViewModels
 
         private string GetConnStr()
         {
-            return $"Data Source={EnvironmentInfo.DbConnEntity.Ip};port={EnvironmentInfo.DbConnEntity.Port};User ID={EnvironmentInfo.DbConnEntity.UserName};Password={EnvironmentInfo.DbConnEntity.Password};Initial Catalog=$db$;Pooling=true;charset=utf8;";
+            return $"Data Source={EnvironmentInfo.DbConnEntity.Ip};port={EnvironmentInfo.DbConnEntity.Port};User ID={EnvironmentInfo.DbConnEntity.UserName};Password={EnvironmentInfo.DbConnEntity.Password};Initial Catalog=$db$;Pooling=true;charset=utf8;Connection Timeout=45";
         }
+
+        /// <summary>
+        /// 获取待加密表
+        /// </summary>
+        /// <param name="dbName"></param>
+        /// <returns></returns>
+        private string GetSqlFindTables()
+        {
+            return $"SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.`COLUMNS` WHERE TABLE_SCHEMA = '$db$' AND (" +
+                                $"COLUMN_NAME LIKE '%mobile%' OR " +
+                                "COLUMN_NAME LIKE '%phone%' OR " +
+                                "COLUMN_NAME LIKE '%idnumber%' OR " +
+                                "COLUMN_NAME LIKE '%EmergencyContact%' OR " +
+                                "COLUMN_NAME LIKE '%tel%' );";
+        }
+
     }
 }

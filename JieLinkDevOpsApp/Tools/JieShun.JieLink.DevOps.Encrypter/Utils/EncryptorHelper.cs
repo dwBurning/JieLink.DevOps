@@ -6,6 +6,7 @@ using PartialViewInterface.Utils;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,26 +20,27 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
         private int progress;
         private int groupCount;
         private object locker = new object();
-        public async Task StartAsync(Action<int, string> callback, string[] dbs, Dictionary<string, string> connStrs, EnumCMD cmd)
+        public async Task StartAsync(Action<int, string> callback, string[] dbs, Dictionary<string, string> connStrs, Dictionary<string, string> sqlFindColumns, EnumCMD cmd)
         {
             await Task.Factory.StartNew(() =>
             {
-                Start(callback, dbs, connStrs ,cmd);
+                Start(callback, dbs, connStrs, sqlFindColumns, cmd);
             });
         }
 
 
-        public void Start(Action<int, string> callback, string[] dbs, Dictionary<string, string> connStrs, EnumCMD cmd)
+        public void Start(Action<int, string> callback, string[] dbs, Dictionary<string, string> connStrs, Dictionary<string, string> sqlFindColumns, EnumCMD cmd)
         {
             bool ok = false;
             string message = "升级成功";
             try
             {
-                ok = ExecuteEncryptDatabase(callback, dbs, connStrs, cmd);
-                if (ok)
-                {
-                    callback?.Invoke(100, "加/解密完成");
-                }
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                ok = ExecuteEncryptDatabase(callback, dbs, connStrs, sqlFindColumns, cmd);
+                sw.Stop();
+                LogHelper.CommLogger.Info($"加密总耗时：{sw.ElapsedMilliseconds}");
+                Thread.Sleep(500);
             }
             catch (Exception ex)
             {
@@ -66,11 +68,12 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
             string message = "升级成功";
             try
             {
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
                 ok = ExecuteEncryptFile(callback, path, cmd, connStr);
-                if (ok)
-                {
-                    callback?.Invoke(100, "加/解密完成");
-                }
+                sw.Stop();
+                LogHelper.CommLogger.Info($"加密总耗时：{sw.ElapsedMilliseconds}");
+                Thread.Sleep(500);
             }
             catch (Exception ex)
             {
@@ -92,7 +95,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
         /// <param name="sqlFindColumns">查找语句</param>
         /// <param name="cmd">命令</param>
         /// <returns></returns>
-        bool ExecuteEncryptDatabase(Action<int, string> callback, string[] dbs, Dictionary<string, string> connStrs,  EnumCMD cmd)
+        bool ExecuteEncryptDatabase(Action<int, string> callback, string[] dbs, Dictionary<string, string> connStrs, Dictionary<string, string> sqlFindColumns, EnumCMD cmd)
         {
             int progress = 10;
             callback?.Invoke(progress, "开始查询待加密表和字段");
@@ -101,7 +104,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
             {
                 callback?.Invoke(progress, $"开始加密数据库{db}");
                 LogHelper.CommLogger.Info($"开始加密数据库{db}");
-                var sqlFindTable = GetSqlFindTables(db);
+                var sqlFindTable = sqlFindColumns[db];
                 LogHelper.CommLogger.Info("获取待加密表和字段：{0}", sqlFindTable);
                 List<TableInfo> tables = new List<TableInfo>();
                 using (DataTable dt = MySqlHelper.ExecuteDataset(connStrs[db], sqlFindTable).Tables[0])
@@ -130,10 +133,6 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 }
                 callback?.Invoke(progress, "查询待加密表和字段完成");
                 var path = GetScriptPath(db);
-                if ((cmd == EnumCMD.EncryptToSQL || cmd == EnumCMD.DecryptToSQL) && File.Exists(path))
-                {
-                    File.Delete(path);
-                }
                 int total = pairs.Count;
                 int each = 90 / dbs.Length / total;
                 foreach (var item in pairs)
@@ -141,7 +140,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     try
                     {
                         LogHelper.CommLogger.Info($"正在加密表{item.Key}");
-                        callback?.Invoke(Math.Min(progress += each, 100), $"正在加密表{item.Key}");
+                        callback?.Invoke(Math.Min(progress += each, 90), $"正在加密表{item.Key}，请勿关闭窗口……");
                         Encrypt(item, connStrs[db], cmd, path);
                         LogHelper.CommLogger.Info($"加密表{item.Key}完成");
                     }
@@ -154,6 +153,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 }
                 LogHelper.CommLogger.Info($"加密数据库{db}完成");
             }
+            callback.Invoke(100, "加/解密完成");
             LogHelper.CommLogger.Info("所有数据库加密完成");
             return true;
         }
@@ -171,13 +171,16 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 list.Add(item.column);
             }
             var offset = 0;
+            var num = 2000;
             string[] columns = list.ToArray(); //待加密字段
+            Stopwatch sw = new Stopwatch();
             while (true)
             {
+                string sqlEmcryptColumn = string.Empty;
                 try
                 {
-                    string sqlFindColumn = GetSqlFindColumn(pair.Key, columns, offset);
-                    string sqlEmcryptColumn = string.Empty;
+                    sw.Restart();
+                    string sqlFindColumn = GetSqlFindColumn(pair.Key, columns, offset,num);
                     DataTable dt = MySqlHelper.ExecuteDataset(connStr, sqlFindColumn).Tables[0];
                     if (dt != null && dt.Rows != null && dt.Rows.Count > 0)
                     {
@@ -187,12 +190,17 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                             if (row != null)
                             {
                                 string encryptSql = GetSqlEncryptColumn(pair.Key, columns, row, cmd);
-                                LogHelper.CommLogger.Info(encryptSql);
-                                if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase) //直接执行加密到数据库
+                                if (string.IsNullOrEmpty(encryptSql))
                                 {
-                                    sqlEmcryptColumn += encryptSql;
+                                    //LogHelper.CommLogger.Info($"加密字段为空，无需加密……");
+                                    continue;
                                 }
-                                WriteSql(encryptSql, cmd, path);
+                                LogHelper.CommLogger.Info(encryptSql);
+                                if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
+                                    sqlEmcryptColumn += encryptSql;
+                                else
+                                    sqlEmcryptColumn += encryptSql + Environment.NewLine;
+                                    
                             }
                         }
                     }
@@ -201,20 +209,52 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                         LogHelper.CommLogger.Info($"查询到表{pair.Key}待加密数据条数：0");
                         break;
                     }
-                    if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
-                    {
-                        LogHelper.CommLogger.Info("开始执行到数据库……");
-                        int result = MySqlHelper.ExecuteNonQuery(connStr, sqlEmcryptColumn);
-                        LogHelper.CommLogger.Info($"执行到数据库成功：{result}");
-                    }
-                    offset += 100;
+                    LogHelper.CommLogger.Info($"表{pair.Key}加密数据条数：{dt.Rows.Count}，耗时：{sw.ElapsedMilliseconds}");
+                    ExecuteSql(sqlEmcryptColumn,cmd, connStr, path);
+                    offset += num;
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.CommLogger.Error($"对表{pair.Key}加密出现异常：{ex}");
-                    throw ex;
+                    LogHelper.CommLogger.Error($"对表{pair.Key}加密出现异常，重新执行：{ex}");
+                    if (!string.IsNullOrWhiteSpace(sqlEmcryptColumn))
+                    {
+                        ExecuteSql(sqlEmcryptColumn, cmd, connStr, path);  //重新执行一次，处理测试出现执行sql超时情况
+                    }
                 }
+            }
+            sw.Stop();
+        }
 
+        private void ExecuteSql(string sqlEmcryptColumn, EnumCMD cmd, string connStr = "", string path = "")
+        {
+            if (string.IsNullOrWhiteSpace(sqlEmcryptColumn))
+            {
+                return;
+            }
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            try
+            {
+                if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
+                {
+                    LogHelper.CommLogger.Info("开始执行到数据库……");
+                    int result = MySqlHelper.ExecuteNonQuery(connStr, sqlEmcryptColumn);
+                    LogHelper.CommLogger.Info($"执行到数据库成功：{result}，耗时：{sw.ElapsedMilliseconds}");
+                }
+                else
+                {
+                    LogHelper.CommLogger.Info("开始写入到脚本……");
+                    WriteSql(sqlEmcryptColumn, cmd, path);
+                    LogHelper.CommLogger.Info($"执行写入到脚本完成，耗时：{sw.ElapsedMilliseconds}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.CommLogger.Error($"ExecuteSql出现错误：{ex}");
+            }
+            finally
+            {
+                sw.Stop();
             }
         }
 
@@ -252,8 +292,8 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 progress = 10;
                 callback?.Invoke(progress, "开始查询待处理文件)");
                 LogHelper.CommLogger.Info("开始查询待处理文件");
-                var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories).Where(s => s.EndsWith(".png") || s.EndsWith(".jpg") || s.EndsWith(".jepg")).ToArray();
-                //var files = Directory.GetFiles(path, "*.jpg", SearchOption.AllDirectories);
+                var files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);//.Where(s => s.EndsWith(".png") || s.EndsWith(".jpg") || s.EndsWith(".jepg")).ToArray();
+                files = files.Where(s => !s.EndsWith(".db")).ToArray();
                 LogHelper.CommLogger.Info($"查询到待处理文件数量：{files.Length}");
                 if (files.Length % 100 > 0)
                 {
@@ -264,10 +304,15 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     groupCount = files.Length / 100;
                 }
                 int each = 90 / groupCount == 0 ? 1 : 90 / groupCount;
+                ThreadPool.SetMaxThreads(3,3);
                 for (int i = 0; i < files.Length; i += 100)
                 {
                     string[] paths = files.Skip(i).Take(100).ToArray();
-                    Task.Run(() => ImgEncrypt(paths, cmd == EnumCMD.EncryptFolder ? EnumCMD.EncryptFile : EnumCMD.DecryptFile, each, callback));
+                    EnumCMD cmd1 = cmd == EnumCMD.EncryptFolder ? EnumCMD.EncryptFile : EnumCMD.DecryptFile;
+                    ThreadParam pa = new ThreadParam() { paths = paths, cmd = cmd1, each = each, callback = callback };
+
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(ImgEncrypt), pa);
+                    //Task.Run(() => ImgEncrypt(paths, cmd == EnumCMD.EncryptFolder ? EnumCMD.EncryptFile : EnumCMD.DecryptFile, each, callback));
                     Thread.Sleep(200);
                 }
             }
@@ -315,10 +360,15 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     groupCount = pathsArr.Length / 100;
                 }
                 int each = 90 / groupCount == 0 ? 1 : 90 / groupCount;
+                ThreadPool.SetMaxThreads(3, 3);
                 for (int i = 0; i < pathsArr.Length; i += 100)
                 {
                     string[] paths = pathsArr.Skip(i).Take(100).ToArray();
-                    Task.Run(() => ImgEncrypt(paths, cmd == EnumCMD.EncryptFileOneKey ? EnumCMD.EncryptFile : EnumCMD.DecryptFile, each, callback));
+                    EnumCMD cmd1 = cmd == EnumCMD.EncryptFolder ? EnumCMD.EncryptFile : EnumCMD.DecryptFile;
+                    ThreadParam pa = new ThreadParam() { paths = paths, cmd = cmd1, each = each, callback = callback };
+
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(ImgEncrypt), pa);
+                    //Task.Run(() => ImgEncrypt(paths, cmd == EnumCMD.EncryptFileOneKey ? EnumCMD.EncryptFile : EnumCMD.DecryptFile, each, callback));
                     Thread.Sleep(200);
                 }
             }
@@ -327,7 +377,66 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 Thread.Sleep(200);
             }
             LogHelper.CommLogger.Info("所有图片加密完成");
+            callback.Invoke(100, "加/解密完成");
             return true;
+        }
+
+        /// <summary>
+        /// 图片加密
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <param name="cmd"></param>
+        /// <param name="each"></param>
+        /// <param name="callback"></param>
+        public void ImgEncrypt(object o)
+        {
+            ThreadParam pa = o as ThreadParam;
+            var paths = pa.paths;
+            var cmd = pa.cmd;
+            var callback = pa.callback;
+            var each = pa.each;
+            foreach (var path in paths)
+            {
+                byte[] fileContents = new byte[0];
+                var result = new byte[0];
+                try
+                {
+                    LogHelper.CommLogger.Info($"开始加密图片：{path}");
+                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+                    {
+                        fileContents = new byte[fs.Length];
+                        fs.Read(fileContents, 0, fileContents.Length);
+                    }
+                    if (cmd == EnumCMD.EncryptFile || cmd == EnumCMD.EncryptFileOneKey)
+                    {
+                        result = JieShun.Udf.Core.UdfEncrypt.SM4EncryptBinary(fileContents);
+                    }
+                    else if (cmd == EnumCMD.DecryptFile || cmd == EnumCMD.DecryptFileOneKey)
+                    {
+                        result = JieShun.Udf.Core.UdfEncrypt.SM4DecryptBinary(fileContents);
+                    }
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                    using (FileStream fs = new FileStream(path, FileMode.CreateNew))
+                    {
+                        fs.Write(result, 0, result.Length);
+                    }
+                    LogHelper.CommLogger.Info($"加密图片完成：{path}");
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.CommLogger.Error($"图片加密出现异常：{ex}");
+                    callback?.Invoke(progress, ex.Message);
+                }
+            }
+            lock (locker)
+            {
+                groupCount--;
+                progress = Math.Min(progress + each, 100);
+            }
+            callback?.Invoke(progress, $"已加密{progress}组图片,剩余待加密{groupCount}组图片");
         }
 
         /// <summary>
@@ -380,7 +489,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 groupCount--;
                 progress = Math.Min(progress + each, 100);
             }
-            callback?.Invoke(progress, $"正在加密progress:{progress},groupCount:{groupCount}");
+            callback?.Invoke(progress, $"已加密{progress}组图片,剩余待加密{groupCount}组图片");
         }
 
         /// <summary>
@@ -390,7 +499,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
         /// <param name="cloumns"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        private string GetSqlFindColumn(string table,string[] cloumns,int offset)
+        private string GetSqlFindColumn(string table,string[] cloumns,int offset,int num)
         {
             //select * from table as a inner join (select id from table order by id limit m, n) as b on a.id = b.id order by a.id; //limit性能较差，可以尝试遍历id
             var sql = "select ID, ";
@@ -399,7 +508,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 sql += $" {item},";
             }
             sql = sql.TrimEnd(',');
-            sql += $" from {table} limit {offset},100"; 
+            sql += $" from {table} limit {offset},{num}"; 
             return sql;
         }
 
@@ -429,26 +538,27 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
             var sql = $"update {table} set";
             try
             {
-                int cloumnsIsNull = 0;
+                int cloumnsIsNull = 0;  //计数无需加密字段
                 for (int i = 0; i < cloumns.Length; i++)
                 {
-                    if (dr[cloumns[i]] == null)
+                    if (dr[cloumns[i]] == null||string.IsNullOrEmpty(dr[cloumns[i]].ToString()))
                     {
                         cloumnsIsNull++;
                         continue;
                     }
-                    sql += (i == 0) ? $" {cloumns[i]} = '" : $" , {cloumns[i]} = '";
+                    sql +=  $" {cloumns[i]} = '" ;
                     if (cmd == EnumCMD.EncryptToSQL || cmd == EnumCMD.EncryptToDatabase)
                     {
-                        sql += $"{ UdfEncrypt.SM4Encrypt(dr[cloumns[i]].ToString())}' ";
+                        sql += $"{ UdfEncrypt.SM4Encrypt(dr[cloumns[i]].ToString())}' ,";
                     }
                     else if (cmd == EnumCMD.DecryptToSQL || cmd == EnumCMD.DecryptToDataBase)
                     {
-                        sql += $"{ UdfEncrypt.SM4Decrypt(dr[cloumns[i]].ToString())}' ";
+                        sql += $"{ UdfEncrypt.SM4Decrypt(dr[cloumns[i]].ToString())}' ,";
                     }
                 }
+                sql = sql.TrimEnd(',');
                 sql += $"where id = '{dr["ID"].ToString()}';";
-                if (cloumnsIsNull == cloumns.Length) sql = string.Empty; //校验待加密字段是否全部位null
+                if (cloumnsIsNull == cloumns.Length) sql = string.Empty; //校验待加密字段 == 无需加密字段
             }
             catch (Exception ex)
             {
@@ -476,7 +586,17 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
         /// <returns></returns>
         private string GetScriptPath(string db)
         {
-            return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "script", $"{db}.sql");
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "script", $"{db}.sql");
+            var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "script");
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            return path;
         }
 
         
@@ -490,7 +610,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
         {
             try
             {
-                FileStream fs = new FileStream(path, FileMode.Append);
+                FileStream fs = new FileStream(path, FileMode.Append,FileAccess.Write);
                 StreamWriter sw = new StreamWriter(fs);
                 sw.WriteLine(msg);
                 sw.Flush();
@@ -504,6 +624,14 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
 
         }
 
+    }
+
+    public class ThreadParam
+    {
+        public string[] paths;
+        public EnumCMD cmd;
+        public int each = 90;
+        public Action<int, string> callback = null;
     }
 
 }

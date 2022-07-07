@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Params.cs" />
+    <Compile Include="Models\TableInfo.cs" />
     <Compile Include="ViewModels\EncrypterViewModel.cs" />
     <Page Include="Encrypter.xaml">
       <Generator>MSBuild:Compile</Generator>

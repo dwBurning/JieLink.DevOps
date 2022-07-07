@@ -34,7 +34,7 @@ namespace PartialViewEncrypter
 
         public string MenuName
         {
-            get { return "加密"; }
+            get { return "加/解密"; }
         }
 
         public string TagName

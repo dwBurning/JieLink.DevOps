@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>JieShun.JieLink.DevOps.Encrypter.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AWSSDK.Core.3.7.3.30\lib\net45\AWSSDK.Core.dll</HintPath>
@@ -64,7 +67,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\FileServerConfig.cs" />
-    <Compile Include="Models\TableInfo.cs" />
     <Compile Include="Utils\EncryptorHelper.cs" />
     <Compile Include="Utils\SM4EncryptHelper.cs" />
     <Compile Include="Utils\UdfEncrypt.cs" />
@@ -126,7 +128,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /r /y $(ProjectDir)Ciphertext.dll
-xcopy /r /y $(ProjectDir)nLog-config.xml</PreBuildEvent>
+    <PreBuildEvent>
+		xcopy /r /y $(ProjectDir)Ciphertext.dll
+		xcopy /r /y $(ProjectDir)nLog-config.xml
+	</PreBuildEvent>
   </PropertyGroup>
 </Project>

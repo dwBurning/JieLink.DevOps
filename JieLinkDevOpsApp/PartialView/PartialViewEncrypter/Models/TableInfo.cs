@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JieShun.JieLink.DevOps.Encrypter.Models
+namespace PartialViewEncrypter.Models
 {
-    class TableInfo
+    public class TableInfo
     {
         public string table { get; set; }
         public string column { get; set; }

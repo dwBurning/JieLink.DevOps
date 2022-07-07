@@ -35,6 +35,8 @@ namespace JieShun.JieLink.DevOps.Encrypter
 
         public static string paramsFilePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "params.json");
 
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -49,6 +51,12 @@ namespace JieShun.JieLink.DevOps.Encrypter
             #region 初始化
             LogHelper.CommLogger.Info("--------------------------------------------------------------------------------");
             LogHelper.CommLogger.Info("开始初始化Encrypter");
+            System.Diagnostics.Process[] ps = System.Diagnostics.Process.GetProcessesByName("JieShun.JieLink.DevOps.Encrypter");
+            if (ps.Length>1)
+            {
+                LogHelper.CommLogger.Info("检测到相同进程，退出");
+                OnClose();
+            }
             Params param = null;
             try
             {
@@ -67,8 +75,10 @@ namespace JieShun.JieLink.DevOps.Encrypter
                 LogHelper.CommLogger.Error("解析参数失败!");
                 return;
             }
-            LogHelper.CommLogger.Info($"解析参数完成：{JsonHelper.SerializeObject(param)}");
+            //LogHelper.CommLogger.Info($"解析参数完成：{JsonHelper.SerializeObject(param)}");
+            LogHelper.CommLogger.Info($"解析参数完成");
             Dictionary<string, string> connStrs = new Dictionary<string, string>();
+            Dictionary<string, string> sqlFindColumns = new Dictionary<string, string>();
             var dbs = param.database.Replace('；',';').Split(';');
             string path = param.path;
             int cmd = param.cmd;
@@ -80,7 +90,9 @@ namespace JieShun.JieLink.DevOps.Encrypter
             {
                 dbs[i] = dbs[i].Trim();
                 connStrs.Add(dbs[i], GetConnStr(dbs[i],param.connStr));
+                sqlFindColumns.Add(dbs[i], GetConnStr(dbs[i], param.sqlFindColumn));
             }
+            
             #endregion
 
             EncryptorHelper encrypter = new EncryptorHelper();
@@ -88,9 +100,10 @@ namespace JieShun.JieLink.DevOps.Encrypter
             {
                 var command = (EnumCMD)cmd;
                 LogHelper.CommLogger.Info($"开始执行命令：{command}");
+                UpdateProgressSafely(0, "开始加密！");
                 if (cmd >= 0 && cmd <= 3)
                 {
-                    await encrypter.StartAsync(UpdateProgressSafely, dbs, connStrs, command);
+                    await encrypter.StartAsync(UpdateProgressSafely, dbs, connStrs, sqlFindColumns, command);
                 }
                 else if (cmd >= 4 && cmd <= 9)
                 {
@@ -104,8 +117,7 @@ namespace JieShun.JieLink.DevOps.Encrypter
                 LogHelper.CommLogger.Error(ex.Message + ",程序即将退出！");
             }
             LogHelper.CommLogger.Info("执行完成，关闭Encrypter");
-            UpdateProgress(100, "执行完成，关闭Encrypter！");
-            Thread.Sleep(3*1000);
+            Thread.Sleep(3000);
             OnClose();
         }
 
