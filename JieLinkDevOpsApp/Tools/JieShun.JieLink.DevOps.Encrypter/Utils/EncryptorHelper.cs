@@ -190,11 +190,17 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                             if (row != null)
                             {
                                 string encryptSql = GetSqlEncryptColumn(pair.Key, columns, row, cmd);
+                                if (string.IsNullOrEmpty(encryptSql))
+                                {
+                                    //LogHelper.CommLogger.Info($"加密字段为空，无需加密……");
+                                    continue;
+                                }
                                 LogHelper.CommLogger.Info(encryptSql);
                                 if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
                                     sqlEmcryptColumn += encryptSql;
                                 else
                                     sqlEmcryptColumn += encryptSql + Environment.NewLine;
+                                    
                             }
                         }
                     }
@@ -221,6 +227,10 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
 
         private void ExecuteSql(string sqlEmcryptColumn, EnumCMD cmd, string connStr = "", string path = "")
         {
+            if (string.IsNullOrWhiteSpace(sqlEmcryptColumn))
+            {
+                return;
+            }
             Stopwatch sw = new Stopwatch();
             sw.Start();
             try
@@ -528,26 +538,27 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
             var sql = $"update {table} set";
             try
             {
-                int cloumnsIsNull = 0;
+                int cloumnsIsNull = 0;  //计数无需加密字段
                 for (int i = 0; i < cloumns.Length; i++)
                 {
-                    if (dr[cloumns[i]] == null)
+                    if (dr[cloumns[i]] == null||string.IsNullOrEmpty(dr[cloumns[i]].ToString()))
                     {
                         cloumnsIsNull++;
                         continue;
                     }
-                    sql += (i == 0) ? $" {cloumns[i]} = '" : $" , {cloumns[i]} = '";
+                    sql +=  $" {cloumns[i]} = '" ;
                     if (cmd == EnumCMD.EncryptToSQL || cmd == EnumCMD.EncryptToDatabase)
                     {
-                        sql += $"{ UdfEncrypt.SM4Encrypt(dr[cloumns[i]].ToString())}' ";
+                        sql += $"{ UdfEncrypt.SM4Encrypt(dr[cloumns[i]].ToString())}' ,";
                     }
                     else if (cmd == EnumCMD.DecryptToSQL || cmd == EnumCMD.DecryptToDataBase)
                     {
-                        sql += $"{ UdfEncrypt.SM4Decrypt(dr[cloumns[i]].ToString())}' ";
+                        sql += $"{ UdfEncrypt.SM4Decrypt(dr[cloumns[i]].ToString())}' ,";
                     }
                 }
+                sql = sql.TrimEnd(',');
                 sql += $"where id = '{dr["ID"].ToString()}';";
-                if (cloumnsIsNull == cloumns.Length) sql = string.Empty; //校验待加密字段是否全部位null
+                if (cloumnsIsNull == cloumns.Length) sql = string.Empty; //校验待加密字段 == 无需加密字段
             }
             catch (Exception ex)
             {
