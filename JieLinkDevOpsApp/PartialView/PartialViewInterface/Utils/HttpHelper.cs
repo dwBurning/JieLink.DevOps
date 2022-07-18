@@ -341,6 +341,11 @@ namespace PartialViewInterface.Utils
                     result = streamReader.ReadToEnd();
                 }
             }
+            catch(Exception ex)
+            {
+                result = "";
+                LogHelper.CommLogger.Error(ex.ToString());
+            }
             finally
             {
                 if (stream != null)

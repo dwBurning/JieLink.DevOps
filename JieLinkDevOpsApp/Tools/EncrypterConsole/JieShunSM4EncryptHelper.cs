@@ -4,12 +4,9 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace JieShun.Udf.Core
+namespace EncrypterConsole
 {
-    /// <summary>
-    /// 数据库连接字符串加密解密
-    /// </summary>
-    public static class UdfEncrypt
+    public class JieShunSM4EncryptHelper
     {
         private const string key = "jsst";
         /// <summary>
@@ -48,7 +45,7 @@ namespace JieShun.Udf.Core
         /// <returns></returns> 
         public static string Encrypt(string Text, string sKey)
         {
-            DESCryptoServiceProvider dESCryptoServiceProvider = new DESCryptoServiceProvider();
+            System.Security.Cryptography.DESCryptoServiceProvider dESCryptoServiceProvider = new DESCryptoServiceProvider();
             byte[] bytes = Encoding.Default.GetBytes(Text);
             dESCryptoServiceProvider.Key = Encoding.ASCII.GetBytes(MD5Lower(sKey).Substring(0, 8));
             dESCryptoServiceProvider.IV = Encoding.ASCII.GetBytes(MD5Lower(sKey).Substring(0, 8));
@@ -230,7 +227,7 @@ namespace JieShun.Udf.Core
             var iflg = SM4EncryptHelper.sm4_encrypt(value, value.Length, out ip, out outlen);
 
             string result = "";
-            if (iflg==(int)SM4_ERROR_CODE.SM4_SUCCESS)
+            if (iflg == (int)SM4_ERROR_CODE.SM4_SUCCESS)
             {
                 byte[] array = new byte[outlen];
                 Marshal.Copy(ip, array, 0, outlen);
@@ -251,7 +248,7 @@ namespace JieShun.Udf.Core
             int deoutlen = 0;
             IntPtr deip = IntPtr.Zero;
             var deiflg = SM4EncryptHelper.sm4_decrypt(text, text.Length, out deip, out deoutlen);
-            if (deiflg!=(int)SM4_ERROR_CODE.SM4_SUCCESS)
+            if (deiflg != (int)SM4_ERROR_CODE.SM4_SUCCESS)
             {
                 SM4EncryptHelper.sm4_freebuf(out deip);
                 return text;
@@ -275,7 +272,7 @@ namespace JieShun.Udf.Core
                 return value;
             string basestri = Encoding.UTF8.GetString(value);
             var ciphertext = SM4EncryptHelper.is_sm4_ciphertext(basestri, basestri.Length);
-            if (ciphertext==(int)SM4_ERROR_CODE.SM4_SUCCESS)
+            if (ciphertext == (int)SM4_ERROR_CODE.SM4_SUCCESS)
             {
                 return value;
             }
@@ -294,6 +291,11 @@ namespace JieShun.Udf.Core
             return new byte[0];
         }
 
+        /// <summary>
+        /// 文件解密长字符串专用
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static byte[] SM4DecryptBinary(byte[] value)
         {
             if (value.Length < 1)
@@ -333,6 +335,50 @@ namespace JieShun.Udf.Core
             if (end > 0)
                 outlen += 16;
             return outlen;
+        }
+
+
+        public static class SM4EncryptHelper
+        {
+            private const string LibPath = "Ciphertext";
+            /// <summary>
+            /// sm4加密算法
+            /// </summary>
+            /// <param name="input">输入字符串</param>
+            /// <param name="len">输入长度</param>
+            /// <param name="intPtr">intptr用于接收</param>
+            /// <param name="outputlen">接收数据长度</param>
+            /// <returns></returns>
+            [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int sm4_encrypt(string input, int len, out IntPtr intPtr, out int outputlen);
+
+            /// <summary>
+            /// sm4解密算法
+            /// </summary>
+            /// <param name="input">输入字符串</param>
+            /// <param name="len">输入长度</param>
+            /// <param name="intPtr">intptr用于接收</param>
+            /// <param name="outputlen">接收数据长度</param>
+            /// <returns></returns>
+            [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int sm4_decrypt(string input, int len, out IntPtr intPtr, out int outputlen);
+            /// <summary>
+            /// 释放内存  每次调用加密/解密后，都必须调用该函数释放内存
+            /// </summary>
+            /// <param name="intPtr"></param>
+            /// <returns></returns>
+
+            [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int sm4_freebuf(out IntPtr intPtr);
+
+            [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int sm4_encrypt_binary(string input, int len, out IntPtr intPtr, out int outputlen);
+
+            [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int sm4_decrypt_binary(string input, int len, out IntPtr intPtr, out int outputlen);
+
+            [DllImport(LibPath, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int is_sm4_ciphertext(string input, int len);
         }
 
     }
