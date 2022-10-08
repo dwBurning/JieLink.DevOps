@@ -146,6 +146,7 @@
     <Compile Include="Utils\ConfigHelper.cs" />
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\IniSetting.cs" />
+    <Compile Include="Utils\JieShunSM4EncryptHelper.cs" />
     <Compile Include="Utils\JsonHelper.cs" />
     <Compile Include="Utils\LogHelper.cs" />
     <Compile Include="Utils\MessageBoxHelper.cs" />

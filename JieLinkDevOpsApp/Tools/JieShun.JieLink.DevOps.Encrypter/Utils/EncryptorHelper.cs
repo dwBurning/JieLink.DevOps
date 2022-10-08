@@ -1,5 +1,4 @@
 ﻿using JieShun.JieLink.DevOps.Encrypter.Models;
-using JieShun.Udf.Core;
 using MySql.Data.MySqlClient;
 using PartialViewEncrypter.Models;
 using PartialViewInterface.Utils;
@@ -171,7 +170,7 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                 list.Add(item.column);
             }
             var offset = 0;
-            var num = 2000;
+            var num = 5000;
             string[] columns = list.ToArray(); //待加密字段
             Stopwatch sw = new Stopwatch();
             while (true)
@@ -235,16 +234,17 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
             sw.Start();
             try
             {
+                string sql = "begin;" + sqlEmcryptColumn + "commit;";
                 if (cmd == EnumCMD.EncryptToDatabase || cmd == EnumCMD.DecryptToDataBase)
                 {
                     LogHelper.CommLogger.Info("开始执行到数据库……");
-                    int result = MySqlHelper.ExecuteNonQuery(connStr, sqlEmcryptColumn);
+                    int result = MySqlHelper.ExecuteNonQuery(connStr, sql);
                     LogHelper.CommLogger.Info($"执行到数据库成功：{result}，耗时：{sw.ElapsedMilliseconds}");
                 }
                 else
                 {
                     LogHelper.CommLogger.Info("开始写入到脚本……");
-                    WriteSql(sqlEmcryptColumn, cmd, path);
+                    WriteSql(sql, cmd, path);
                     LogHelper.CommLogger.Info($"执行写入到脚本完成，耗时：{sw.ElapsedMilliseconds}");
                 }
             }
@@ -409,11 +409,11 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     }
                     if (cmd == EnumCMD.EncryptFile || cmd == EnumCMD.EncryptFileOneKey)
                     {
-                        result = JieShun.Udf.Core.UdfEncrypt.SM4EncryptBinary(fileContents);
+                        result = JieShunSM4EncryptHelper.SM4EncryptBinary(fileContents);
                     }
                     else if (cmd == EnumCMD.DecryptFile || cmd == EnumCMD.DecryptFileOneKey)
                     {
-                        result = JieShun.Udf.Core.UdfEncrypt.SM4DecryptBinary(fileContents);
+                        result = JieShunSM4EncryptHelper.SM4DecryptBinary(fileContents);
                     }
                     if (File.Exists(path))
                     {
@@ -462,11 +462,11 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     }
                     if (cmd == EnumCMD.EncryptFile || cmd == EnumCMD.EncryptFileOneKey)
                     {
-                        result = JieShun.Udf.Core.UdfEncrypt.SM4EncryptBinary(fileContents);
+                        result = JieShunSM4EncryptHelper.SM4EncryptBinary(fileContents);
                     }
                     else if (cmd == EnumCMD.DecryptFile || cmd == EnumCMD.DecryptFileOneKey)
                     {
-                        result = JieShun.Udf.Core.UdfEncrypt.SM4DecryptBinary(fileContents);
+                        result = JieShunSM4EncryptHelper.SM4DecryptBinary(fileContents);
                     }
                     if (File.Exists(path))
                     {
@@ -549,11 +549,11 @@ namespace JieShun.JieLink.DevOps.Encrypter.Utils
                     sql +=  $" {cloumns[i]} = '" ;
                     if (cmd == EnumCMD.EncryptToSQL || cmd == EnumCMD.EncryptToDatabase)
                     {
-                        sql += $"{ UdfEncrypt.SM4Encrypt(dr[cloumns[i]].ToString())}' ,";
+                        sql += $"{ JieShunSM4EncryptHelper.SM4Encrypt(dr[cloumns[i]].ToString())}' ,";
                     }
                     else if (cmd == EnumCMD.DecryptToSQL || cmd == EnumCMD.DecryptToDataBase)
                     {
-                        sql += $"{ UdfEncrypt.SM4Decrypt(dr[cloumns[i]].ToString())}' ,";
+                        sql += $"{ JieShunSM4EncryptHelper.SM4Decrypt(dr[cloumns[i]].ToString())}' ,";
                     }
                 }
                 sql = sql.TrimEnd(',');

@@ -120,7 +120,7 @@
 
             </Grid>
         </TabItem>
-       <!-- <TabItem Header="加/解密文件夹">
+        <TabItem Header="加/解密文件夹">
             <Grid>
 
                 <Grid.ColumnDefinitions>
@@ -178,7 +178,7 @@
                 pu:ButtonHelper.ClickStyle="Sink" pu:ButtonHelper.ButtonStyle="Hollow" Margin="5"
                 pu:ButtonHelper.HoverBrush="#00BCFF" pu:ButtonHelper.CornerRadius="4"/>
             </Grid>
-        </TabItem> -->
+        </TabItem> 
         <TabItem Header="加/解密字符串">
             <Grid>
                 <Grid.ColumnDefinitions>
