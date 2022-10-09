@@ -75,39 +75,38 @@ namespace JieShun.JieLink.DevOps.Encrypter
                 LogHelper.CommLogger.Error("解析参数失败!");
                 return;
             }
-            //LogHelper.CommLogger.Info($"解析参数完成：{JsonHelper.SerializeObject(param)}");
             LogHelper.CommLogger.Info($"解析参数完成");
-            Dictionary<string, string> connStrs = new Dictionary<string, string>();
-            Dictionary<string, string> sqlFindColumns = new Dictionary<string, string>();
-            var dbs = param.database.Replace('；',';').Split(';');
+            //Dictionary<string, string> connStrs = new Dictionary<string, string>();
+            //Dictionary<string, string> sqlFindColumns = new Dictionary<string, string>();
+            //var dbs = param.database.Replace('；',';').Split(';');
             string path = param.path;
             int cmd = param.cmd;
-            if (dbs.Length < 1)
-            {
-                return;
-            }
-            for (int i = 0; i < dbs.Length; i++)
-            {
-                dbs[i] = dbs[i].Trim();
-                connStrs.Add(dbs[i], GetConnStr(dbs[i],param.connStr));
-                sqlFindColumns.Add(dbs[i], GetConnStr(dbs[i], param.sqlFindColumn));
-            }
-            
-            #endregion
+            var command = (EnumCMD)cmd;
+            //if (dbs.Length < 1)
+            //{
+            //    return;
+            //}
+            //for (int i = 0; i < dbs.Length; i++)
+            //{
+            //    dbs[i] = dbs[i].Trim();
+            //    connStrs.Add(dbs[i], GetConnStr(dbs[i],param.connStr));
+            //    sqlFindColumns.Add(dbs[i], GetConnStr(dbs[i], param.sqlFindColumn));
+            //}
 
-            EncryptorHelper encrypter = new EncryptorHelper();
+            #endregion
+            LogHelper.CommLogger.Info($"开始执行命令：{command}");
+            UpdateProgressSafely(0, "开始加密！");
+
+            EncryptorHelper encrypter = new EncryptorHelper(UpdateProgressSafely, param.database, param.connStr, param.sqlFindColumn, command, path);
             try
             {
-                var command = (EnumCMD)cmd;
-                LogHelper.CommLogger.Info($"开始执行命令：{command}");
-                UpdateProgressSafely(0, "开始加密！");
                 if (cmd >= 0 && cmd <= 3)
                 {
-                    await encrypter.StartAsync(UpdateProgressSafely, dbs, connStrs, sqlFindColumns, command);
+                    await encrypter.StartAsync();
                 }
                 else if (cmd >= 4 && cmd <= 9)
                 {
-                    await encrypter.StartAsync(UpdateProgressSafely, path, command, connStrs[dbs[0]]);
+                    await encrypter.StartAsync();
                 }
                
             }
