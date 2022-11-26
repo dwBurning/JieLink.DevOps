@@ -220,8 +220,8 @@ namespace PartialViewEncrypter.ViewModels
                 database = Dbs,
                 cmd = (int)EnumCMD.EncryptToSQL,
                 path = "",
-                connStr = GetConnStr(),
-                sqlFindColumn = GetSqlFindTables(),
+                connStr = GetConnStr().Replace("$db$", Dbs),
+                sqlFindColumn = GetSqlFindTables().Replace("$db$", Dbs),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -235,8 +235,8 @@ namespace PartialViewEncrypter.ViewModels
                 database = Dbs,
                 cmd = (int)EnumCMD.EncryptToDatabase,
                 path = "",
-                connStr = GetConnStr(),
-                sqlFindColumn = GetSqlFindTables(),
+                connStr = GetConnStr().Replace("$db$", Dbs),
+                sqlFindColumn = GetSqlFindTables().Replace("$db$", Dbs),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -250,8 +250,8 @@ namespace PartialViewEncrypter.ViewModels
                 database = Dbs,
                 cmd = (int)EnumCMD.DecryptToSQL,
                 path = "",
-                connStr = GetConnStr(),
-                sqlFindColumn = GetSqlFindTables(),
+                connStr = GetConnStr().Replace("$db$", Dbs),
+                sqlFindColumn = GetSqlFindTables().Replace("$db$", Dbs),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -265,8 +265,8 @@ namespace PartialViewEncrypter.ViewModels
                 database = Dbs,
                 cmd = (int)EnumCMD.DecryptToDataBase,
                 path = "",
-                connStr = GetConnStr(),
-                sqlFindColumn = GetSqlFindTables(),
+                connStr = GetConnStr().Replace("$db$", Dbs),
+                sqlFindColumn = GetSqlFindTables().Replace("$db$", Dbs),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -287,7 +287,7 @@ namespace PartialViewEncrypter.ViewModels
                 database = FaceDbs,
                 cmd = (int)EnumCMD.EncryptFileOneKey,
                 path = HeadPath,
-                connStr = GetConnStr(),
+                connStr = GetConnStr().Replace("$db$", Dbs),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -308,7 +308,7 @@ namespace PartialViewEncrypter.ViewModels
                 database = FaceDbs,
                 cmd = (int)EnumCMD.DecryptFileOneKey,
                 path = HeadPath,
-                connStr = GetConnStr(),
+                connStr = GetConnStr().Replace("$db$", Dbs),
             };
             if (!CreateParamsFile(param)) return;
             Start();
@@ -431,13 +431,13 @@ namespace PartialViewEncrypter.ViewModels
             //实例化一个进程类
             Process cmd = new Process();
 
-            //获得系统信息，使用的是 systeminfo.exe 这个控制台程序
+
             cmd.StartInfo.FileName = executePath;
             cmd.StartInfo.Arguments = $"1 {this.EncryptText}";
 
             //将cmd的标准输入和输出全部重定向到.NET的程序里
 
-            cmd.StartInfo.UseShellExecute = false; //此处必须为false否则引发异常
+            cmd.StartInfo.UseShellExecute = false; 
 
             cmd.StartInfo.RedirectStandardInput = true; //标准输入
             cmd.StartInfo.RedirectStandardOutput = true; //标准输出
@@ -500,25 +500,19 @@ namespace PartialViewEncrypter.ViewModels
                 Notice.Show("请输入数据库名！", "通知", 3, MessageBoxIcon.Warning);
                 return false;
             }
-            string[] dbs = dbsStr.Replace('；',';').Split(';');
-            for (int i = 0; i < dbs.Length; i++)
+            dbsStr = dbsStr.Trim();
+
+            var connStr = GetConnStr().Replace("$db$", dbsStr);
+            try
             {
-                dbs[i] = dbs[i].Trim();
+                MySqlHelper.ExecuteDataset(connStr, "select * from sc_operator limit 1"); 
             }
-            foreach (var item in dbs)
+            catch (Exception)
             {
-                var connStr = GetConnStr().Replace("$db$", item);
-                try
-                {
-                    MySqlHelper.ExecuteDataset(connStr, "select * from sc_operator limit 1");
-                   
-                }
-                catch (Exception)
-                {
-                    Notice.Show("数据库连接失败，请确认数据库配置信息、数据库名是否正确！", "通知", 3, MessageBoxIcon.Warning);
-                    return false;
-                }
+                Notice.Show("数据库连接失败，请确认数据库配置信息、数据库名是否正确！", "通知", 3, MessageBoxIcon.Warning);
+                return false;
             }
+            
             return true;
         }
 
@@ -540,7 +534,8 @@ namespace PartialViewEncrypter.ViewModels
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tool\\Encrypter\\params.json");
             try
             {
-                if (File.Exists(path)) File.Delete(path); 
+                if (File.Exists(path)) 
+                    File.Delete(path); 
                 using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
                 {
                     StreamWriter sw = new StreamWriter(fs);

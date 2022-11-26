@@ -68,8 +68,6 @@
     </ApplicationDefinition>
     <Compile Include="Models\FileServerConfig.cs" />
     <Compile Include="Utils\EncryptorHelper.cs" />
-    <Compile Include="Utils\SM4EncryptHelper.cs" />
-    <Compile Include="Utils\UdfEncrypt.cs" />
     <Compile Include="ViewModels\EncrypterViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
