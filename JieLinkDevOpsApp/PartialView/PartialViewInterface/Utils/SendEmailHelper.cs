@@ -83,12 +83,17 @@ namespace PartialViewInterface.Utils
             htmlBody.AppendLine("</tr>");
             htmlBody.AppendLine("</thead>");
             int rowIndex = 0;
+            DateTime dateTemp = new DateTime(2000, 1 ,1);
             foreach (DataRow dataRow in dataTable.Rows)
             {
                 rowIndex++;
-                if (dataRow.Table.Columns.Contains("Dispatched") && dataRow["Dispatched"].ToString() == "1")
+                if (dataRow.Table.Columns.Contains("Dispatched") && dataRow["Dispatched"].ToString() == "1" && dataRow["完成时间"].ToString() != "" && DateTime.Parse(dataRow["完成时间"].ToString()) > dateTemp)
                 {
                     htmlBody.Append("<tr style=\"background-color:#E0EEE0\">");//已经指派过的添加背景色
+                }
+                else if ((DateTime.Parse(dataRow["转到研发时间"].ToString()).DayOfYear < DateTime.Now.DayOfYear || DateTime.Parse(dataRow["最后处理时间"].ToString()) < DateTime.Now) && (!dataRow.Table.Columns.Contains("完成时间") || dataRow["完成时间"].ToString() == "" || DateTime.Parse(dataRow["完成时间"].ToString()) == DateTime.MinValue))
+                {
+                    htmlBody.Append("<tr style=\"background-color:#ff0\">");//跨天或超时未处理的添加背景色，黄色
                 }
                 else
                 {
