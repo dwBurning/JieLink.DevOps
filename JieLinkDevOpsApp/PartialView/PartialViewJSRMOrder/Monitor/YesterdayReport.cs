@@ -42,9 +42,10 @@ namespace PartialViewJSRMOrder.Monitor
             orders.Where(x => x.FinishTime == DateTime.MinValue).ToList().ForEach(x =>
             {
                 string TrueResponsiblePerson = "";
-                x.FinishTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(x.problemCode, true,out TrueResponsiblePerson);
+                string SolutionInfo = "";
+                x.FinishTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(x.problemCode, true,out TrueResponsiblePerson, out SolutionInfo);
                 if(x.FinishTime != DateTime.MinValue)
-                    devJsrmOrderManager.UpdateFinsihTime(x.problemCode, x.FinishTime, TrueResponsiblePerson);
+                    devJsrmOrderManager.UpdateFinsihTime(x.problemCode, x.FinishTime, TrueResponsiblePerson, SolutionInfo);
             });
             DataTable dataTableForEmail = devJsrmOrderManager.GetYesterdayDispatchingOrderTableForEmail();
 

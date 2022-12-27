@@ -49,6 +49,7 @@ namespace PartialViewJSRMOrder.Monitor
                 {
                     GetResponsiblePerson(x);
                     GetYanfaTime(x);
+                    GetOverTime(x);
                     Order order = devJsrmOrderManager.GetOrder(x.problemCode);
                     if (order != null)
                     {
@@ -73,7 +74,101 @@ namespace PartialViewJSRMOrder.Monitor
         private static void GetYanfaTime(Order order)
         {
             string str = "";
-            order.YanFaTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(order.problemCode,false,out str);
+            string str1 = "";
+            order.YanFaTime = OrderMonitorViewModel.Instance().GetTimePointByGDAsync(order.problemCode,false,out str, out str1);
+        }
+
+        /// <summary>
+        /// 计算最后处理时间(超时时间)
+        /// </summary>
+        /// <param name="order"></param>
+        private static void GetOverTime(Order order)
+        {
+            if (order.YanFaTime == DateTime.MinValue)
+            {
+                order.OverTime1 = DateTime.MinValue;
+                return;
+            }
+            if (order.YanFaTime.DayOfWeek != DayOfWeek.Friday || order.YanFaTime.DayOfWeek != DayOfWeek.Saturday || order.YanFaTime.DayOfWeek != DayOfWeek.Sunday)
+            {
+                if (order.YanFaTime.Hour < 19 && order.YanFaTime.Hour >= 9)
+                {
+                    order.OverTime1 = order.YanFaTime.AddHours(8);
+                }
+                else
+                { 
+                    order.OverTime1 = GetOverTime(order.YanFaTime, 1);
+                }
+            }
+            else if (order.YanFaTime.DayOfWeek == DayOfWeek.Friday)
+            {
+                if (order.YanFaTime.Hour < 19 && order.YanFaTime.Hour > 9)
+                {
+                    order.OverTime1 = order.YanFaTime.AddHours(8);
+                }
+                else
+                {
+                    order.OverTime1 = GetOverTime(order.YanFaTime, 3);
+                }
+            }
+            else if (order.YanFaTime.DayOfWeek == DayOfWeek.Saturday)
+            {
+                order.OverTime1 = GetOverTime(order.YanFaTime, 2);
+            }
+            else if (order.YanFaTime.DayOfWeek == DayOfWeek.Sunday)
+            {
+                order.OverTime1 = GetOverTime(order.YanFaTime, 1);
+            }
+        }
+
+        private static DateTime GetOverTime(DateTime YanFaTime, int addDays)
+        {
+            DateTime overTime = new DateTime(1900, 1, 1);
+            if (YanFaTime.Month == 12)
+            {
+                if ((YanFaTime.Day + addDays) > 31)
+                {
+                    overTime = new DateTime(YanFaTime.Year + 1, 1, YanFaTime.Day + addDays - 31, 17, 0, 0);
+                }
+                else
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month, YanFaTime.Day + addDays, 17, 0, 0);
+                }
+            }
+            else if (YanFaTime.Month == 1 || YanFaTime.Month == 3 || YanFaTime.Month == 5 || YanFaTime.Month == 7 || YanFaTime.Month == 8 || YanFaTime.Month == 10)
+            {
+                if ((YanFaTime.Day + addDays) > 31)
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month + 1, YanFaTime.Day + addDays - 31, 17, 0, 0);
+                }
+                else
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month, YanFaTime.Day + addDays, 17, 0, 0);
+                }
+            }
+            else if (YanFaTime.Month == 4 || YanFaTime.Month == 6 || YanFaTime.Month == 9 || YanFaTime.Month == 11)
+            {
+                if ((YanFaTime.Day + addDays) > 30)
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month + 1, YanFaTime.Day + addDays - 30, 17, 0, 0);
+                }
+                else
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month, YanFaTime.Day + addDays, 17, 0, 0);
+                }
+            }
+            else
+            {
+                if ((YanFaTime.Day + addDays) > 28)
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month + 1, YanFaTime.Day + addDays - 28, 17, 0, 0);
+                }
+                else
+                {
+                    overTime = new DateTime(YanFaTime.Year, YanFaTime.Month, YanFaTime.Day + addDays, 17, 0, 0);
+                }
+            }
+            return overTime;
         }
 
         private static void GetResponsiblePerson(Order order)

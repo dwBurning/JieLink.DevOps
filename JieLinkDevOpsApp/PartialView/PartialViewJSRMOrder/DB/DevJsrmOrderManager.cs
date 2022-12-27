@@ -37,7 +37,7 @@ namespace PartialViewJSRMOrder.DB
 
         public void AddOrder(Order order)
         {
-            EnvironmentInfo.SqliteHelper.ExecuteSql($"insert into dev_jsrm_order values('{order.problemCode}','{order.projectName}','{order.problemInfo}','{order.userName}','{order.problemTime}','{order.remoteAccount}','{order.softVersion}',{order.Dispatched},'{order.ReceiveTime.ToString("yyyy-MM-dd HH:mm:ss")}','{order.ResponsiblePerson}','{order.YanFaTime.ToString("yyyy-MM-dd HH:mm:ss")}',null);");
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"insert into dev_jsrm_order (problemCode, projectName, problemInfo, solutionInfo, userName, problemTime, remoteAccount, softVersion, Dispatched, ReceiveTime, ResponsiblePerson, YanFaTime, FinishTime, OverTime) values('{order.problemCode}','{order.projectName}','{order.problemInfo}',null,'{order.userName}','{order.problemTime}','{order.remoteAccount}','{order.softVersion}',{order.Dispatched},'{order.ReceiveTime.ToString("yyyy-MM-dd HH:mm:ss")}','{order.ResponsiblePerson}','{order.YanFaTime.ToString("yyyy-MM-dd HH:mm:ss")}',null,'{order.OverTime1.ToString("yyyy-MM-dd HH:mm:ss")}');");
         }
 
         public List<Order> GetDispatchingOrderList()
@@ -73,6 +73,11 @@ namespace PartialViewJSRMOrder.DB
                 else
                     order.FinishTime = DateTime.MinValue;
 
+                if (dr["OverTime"].ToString() != "")
+                    order.OverTime1 = DateTime.Parse(dr["OverTime"].ToString());
+                else
+                    order.OverTime1 = DateTime.MinValue;
+
                 orders.Add(order);
             }
 
@@ -97,21 +102,22 @@ namespace PartialViewJSRMOrder.DB
         public DataTable GetDispatchingOrderTableForEmail()
         {
             string error = "";
-            string sql = $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人',dispatched from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';";
+            string sql = $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',OverTime as '最后处理时间',finishtime as '完成时间',ResponsiblePerson as '责任人',dispatched from dev_jsrm_order where ReceiveTime>'{DateTime.Now.ToString("yyyy-MM-dd")}';";
             return EnvironmentInfo.SqliteHelper.GetDataTable(out error,sql);
         }
         public DataTable GetYesterdayDispatchingOrderTableForEmail()
         {
             string error = "";
-            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人' from dev_jsrm_order where ReceiveTime>'{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}' and ReceiveTime<'{DateTime.Now.ToString("yyyy-MM-dd")}';");
+            return EnvironmentInfo.SqliteHelper.GetDataTable(out error, $"select problemCode as '工单号',projectName as '项目名称',problemInfo as '问题描述',solutionInfo as '解决方案',softversion as '版本' ,problemtime as '提交时间',YanfaTime as '转到研发时间',finishtime as '完成时间',ResponsiblePerson as '责任人' from dev_jsrm_order where ReceiveTime>'{DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")}' and ReceiveTime<'{DateTime.Now.ToString("yyyy-MM-dd")}';");
         }
         public void UpdateDispatch(string problemCode)
         {
             EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set Dispatched=1 where problemCode='{problemCode}';");
         }
-        public void UpdateFinsihTime(string problemCode,DateTime finishtime,string TrueResponsiblePerson)
+        public void UpdateFinsihTime(string problemCode,DateTime finishtime,string TrueResponsiblePerson, string SolutionInfo)
         {
-            EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set ResponsiblePerson = '{TrueResponsiblePerson}' ,finishtime='{finishtime.ToString("yyyy-MM-dd HH:mm:ss")}' where problemCode='{problemCode}';");
+            SolutionInfo = SolutionInfo.Replace("'", "");
+            EnvironmentInfo.SqliteHelper.ExecuteSql($"update dev_jsrm_order set ResponsiblePerson = '{TrueResponsiblePerson}' ,SolutionInfo = '{SolutionInfo}' ,finishtime='{finishtime.ToString("yyyy-MM-dd HH:mm:ss")}' where problemCode='{problemCode}';");
         }
         /// <summary>
         /// 更新未完成并且未分配工单的接收时间，以便再分配

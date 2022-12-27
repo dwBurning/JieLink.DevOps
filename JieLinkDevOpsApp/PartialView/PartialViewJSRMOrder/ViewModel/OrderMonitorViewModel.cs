@@ -157,9 +157,10 @@ namespace PartialViewJSRMOrder.ViewModel
         /// 根据工单号查询转研发时间或者完成时间和完成人
         /// </summary>
         /// <param name="GD"></param>
-        public DateTime GetTimePointByGDAsync(string GD,bool isFinishTime,out string responsibleperson)
+        public DateTime GetTimePointByGDAsync(string GD,bool isFinishTime,out string responsibleperson, out string solutionInfo)
         {
             responsibleperson = "";
+            solutionInfo = "";
             HttpHelper.HttpRequestArgs requestArgs = null;
             OrderMonitorViewModel.Instance().Dispatcher.Invoke(() =>
             {
@@ -205,6 +206,7 @@ namespace PartialViewJSRMOrder.ViewModel
                     {
                         var temp = result.respData.Where(x => x.id == DispathId).First();
                         responsibleperson = temp.userName;
+                        solutionInfo = temp.remark;
                         return Convert.ToDateTime(temp.createTime);
                     }
 

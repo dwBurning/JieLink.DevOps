@@ -64,6 +64,16 @@ namespace PartialViewJSRMOrder.Model
         public DateTime YanFaTime { get; set; }
 
         /// <summary>
+        /// 最后完成时间(超时时间)
+        /// </summary>
+        public DateTime OverTime1 { get; set; }
+
+        /// <summary>
+        /// 解决方案
+        /// </summary>
+        public string SolutionInfo { get; set; }
+
+        /// <summary>
         /// 研发完成时间
         /// </summary>
         public DateTime FinishTime { get; set; }
