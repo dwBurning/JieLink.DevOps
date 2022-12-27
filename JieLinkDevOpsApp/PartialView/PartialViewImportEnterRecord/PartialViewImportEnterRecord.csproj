@@ -64,9 +64,7 @@
     <Compile Include="SetmealType.cs" />
     <Compile Include="ViewModels\ImportEnterRecordViewModel.cs" />
     <Compile Include="ViewModels\ImportEnterRecordViewModel3.cs" />
-    <Compile Include="ViewModels\ImportWhiteBlackPlateViewModel.cs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
+    <Compile Include="ViewModels\ImportWhiteBlackPlateViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -451,50 +451,84 @@ namespace PartialViewExportFacePic.ViewModels
             }
         }
 
-        #region 定义依赖对象
+
+
+
         public bool rbNoAndName
         {
-            get { return Convert.ToBoolean(GetValue(rbNoAndNameProperty)); }
-            set { SetValue(rbNoAndNameProperty, value.ToString()); }
+            get { return (bool)GetValue(rbNoAndNameProperty); }
+            set { SetValue(rbNoAndNameProperty, value); }
         }
+
+        // Using a DependencyProperty as the backing store for rbNoAndName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty rbNoAndNameProperty =
-            DependencyProperty.Register("rbNoAndName", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("rbNoAndName", typeof(bool), typeof(ExportFacePicOptViewModel));
+
+
+
         public bool rbNo
         {
-            get { return Convert.ToBoolean(GetValue(rbNoProperty)); }
-            set { SetValue(rbNoProperty, value.ToString()); }
+            get { return (bool)GetValue(rbNoProperty); }
+            set { SetValue(rbNoProperty, value); }
         }
+
+        // Using a DependencyProperty as the backing store for rbNo.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty rbNoProperty =
-            DependencyProperty.Register("rbNo", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("rbNo", typeof(bool), typeof(ExportFacePicOptViewModel));
+
+
+
+
+
         public bool rbName
         {
-            get { return Convert.ToBoolean(GetValue(rbNameProperty)); }
-            set { SetValue(rbNameProperty, value.ToString()); }
+            get { return (bool)GetValue(rbNameProperty); }
+            set { SetValue(rbNameProperty, value); }
         }
+
+        // Using a DependencyProperty as the backing store for rbName.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty rbNameProperty =
-            DependencyProperty.Register("rbName", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("rbName", typeof(bool), typeof(ExportFacePicOptViewModel));
+
+
+
+
         public bool rbjielink
         {
-            get { return Convert.ToBoolean(GetValue(rbjielinkProperty)); }
-            set { SetValue(rbjielinkProperty, value.ToString()); }
+            get { return (bool)GetValue(rbjielinkProperty); }
+            set { SetValue(rbjielinkProperty, value); }
         }
+
+        // Using a DependencyProperty as the backing store for rbjielink.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty rbjielinkProperty =
-            DependencyProperty.Register("rbjielink", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("rbjielink", typeof(bool), typeof(ExportFacePicOptViewModel));
+
+
+
+
         public bool rbG3
         {
-            get { return Convert.ToBoolean(GetValue(rbG3Property)); }
-            set { SetValue(rbG3Property, value.ToString()); }
+            get { return (bool)GetValue(rbG3Property); }
+            set { SetValue(rbG3Property, value); }
         }
+
+        // Using a DependencyProperty as the backing store for rbG3.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty rbG3Property =
-            DependencyProperty.Register("rbG3", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("rbG3", typeof(bool), typeof(ExportFacePicOptViewModel));
+
+
+
+
         public bool rbjielink3
         {
-            get { return Convert.ToBoolean(GetValue(rbjielink3Property)); }
-            set { SetValue(rbjielink3Property, value.ToString()); }
+            get { return (bool)GetValue(rbjielink3Property); }
+            set { SetValue(rbjielink3Property, value); }
         }
+
+        // Using a DependencyProperty as the backing store for rbjielink3.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty rbjielink3Property =
-            DependencyProperty.Register("rbjielink3", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
-        #endregion
+            DependencyProperty.Register("rbjielink3", typeof(bool), typeof(ExportFacePicOptViewModel));
+
 
         void CreateDirectory(string dir)
         {
@@ -517,7 +551,7 @@ namespace PartialViewExportFacePic.ViewModels
             set { SetValue(FilePathProperty, value); }
         }
         public static readonly DependencyProperty FilePathProperty =
-            DependencyProperty.Register("FilePath", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("FilePath", typeof(string), typeof(ExportFacePicOptViewModel));
 
         public DelegateCommand SelectPathCommand_jielink3 { get; set; }
         public string FilePath_jielink3
@@ -526,7 +560,7 @@ namespace PartialViewExportFacePic.ViewModels
             set { SetValue(FilePath_jielink3Property, value); }
         }
         public static readonly DependencyProperty FilePath_jielink3Property =
-            DependencyProperty.Register("FilePath_jielink3", typeof(string), typeof(ExportFacePicOptViewModel), new PropertyMetadata(""));
+            DependencyProperty.Register("FilePath_jielink3", typeof(string), typeof(ExportFacePicOptViewModel));
 
         private void SelectPath(object parameter)
         {

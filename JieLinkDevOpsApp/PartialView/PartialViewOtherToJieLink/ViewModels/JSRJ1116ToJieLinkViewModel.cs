@@ -241,9 +241,9 @@ namespace PartialViewOtherToJieLink.ViewModels
                                     {
                                         //注意！超低版本速通是没有GUID字段，会导致报错无法升级，先让现场升级速通版本！
                                         string orgCode = new Random().Next(100000, 999999).ToString();
-                                         sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');",
-                                            new Guid(group.GUID).ToString(), group.NAME, orgCode, GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                                            group.REMARK, group.NAME + ";");
+                                        sql = string.Format("INSERT INTO control_role_group(RGGUID,RGName,RGCode,ParentId,RGType,`Status`,CreatedOnUtc,Remark,RGFullPath) VALUE('{0}','{1}','{2}','{3}',1,0,'{4}','{5}','{6}');",
+                                           new Guid(group.GUID).ToString(), group.NAME, orgCode, GROUPROOTPARENTID, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                                           group.REMARK, group.NAME + ";");
                                     }
                                     catch (Exception ex)
                                     {
@@ -384,6 +384,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                     int relationship = 0;   //与户主关系：本人
                     foreach (TBaseHrPersonModel personModel in personList)
                     {
+                        LogHelper.CommLogger.Info("人事编号：" + personModel.NO);
                         string personGuid = new Guid(personModel.GUID).ToString();
                         //判断是否已升级
                         DataSet currentPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_person WHERE `Status`=0 AND PGUID='{0}'", personGuid));
@@ -404,15 +405,23 @@ namespace PartialViewOtherToJieLink.ViewModels
                             string currentDeptId = personModel.DeptId;
                             string currentGuid = "";
 
-                            try
+                            if (currentDeptId == "1")//针对直接挂在根组织下的人事信息
                             {
-                                currentGuid = new Guid((G3GroupList.FirstOrDefault(e => e.ID == currentDeptId)).GUID).ToString();
+                                currentGuid = groupRoot.RGGUID;
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                MessageBoxHelper.MessageBoxShowWarning("JSRJ1116数据库中的组织Guid异常：" + ex.ToString());
-                                return;
+                                try
+                                {
+                                    currentGuid = new Guid((G3GroupList.FirstOrDefault(e => e.ID == currentDeptId)).GUID).ToString();
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBoxHelper.MessageBoxShowWarning("JSRJ1116数据库中的组织Guid异常：" + ex.ToString());
+                                    return;
+                                }
                             }
+
                             //寻找当前组织是否已存在：判断是否重复升级
                             DataSet currentGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_role_group WHERE RGGUID='{0}'", currentGuid));
                             if (currentGroupDs != null && currentGroupDs.Tables[0] != null)
@@ -461,8 +470,8 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 }
                             } while (currentPerson != null);
                             bool completeFlag = false;  //事务提交标识
-                            string sql = string.Format("INSERT INTO control_person(PGUID,PersonNo,PersonName,Gender,Mobile,Email,Relationship,RID,EnterTime,Type,`Status`,Remark,CreateTime,CurKey,LastKey,RFullPath,PersonId,CanInOut,IsTKService,IsParkService,IsDoorService,IsIssueCard,IDNumber) VALUE('{0}','{1}','{2}',{3},'{4}','{5}',{6},'{7}','{8}',{9},0,'{10}','{11}','{12}','{13}','{14}','{15}',0,0,0,0,0,'{16}')",
-                              personGuid, personModel.NO, personModel.NAME, personModel.SEX, personModel.Mobile, personModel.Email, relationship, currentGroup.RGGUID,
+                            string sql = string.Format("INSERT INTO control_person(PGUID,PersonNo,RoomNo,PersonName,Gender,Mobile,Email,Relationship,RID,EnterTime,Type,`Status`,Remark,CreateTime,CurKey,LastKey,RFullPath,PersonId,CanInOut,IsTKService,IsParkService,IsDoorService,IsIssueCard,IDNumber) VALUE('{0}','{1}','{2}',{3},'{4}','{5}',{6},'{7}','{8}',{9},0,'{10}','{11}','{12}','{13}','{14}','{15}',0,0,0,0,0,'{16}')",
+                              personGuid, personModel.NO, personModel.RoomNO, personModel.NAME, personModel.SEX, personModel.Mobile, personModel.Email, relationship, currentGroup.RGGUID,
                               personModel.OptDate, userType, personModel.Remark, personModel.OptDate, personModel.NewKeyCode, personModel.OldKeyCode, currentGroup.RGFullPath, personId, idNumber);
                             try
                             {
@@ -504,6 +513,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                         }
                     }
                 }
+                LogHelper.CommLogger.Info("isContinue标志：" + isContinue);
                 List<ControlPerson> jielinkPersonList = new List<ControlPerson>();  //jielink数据库的用户列表
                 DataSet jielinkPersonDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, "SELECT * from control_person WHERE `Status`=0 ORDER BY id ASC;");
                 if (jielinkPersonDs != null && jielinkPersonDs.Tables[0] != null)

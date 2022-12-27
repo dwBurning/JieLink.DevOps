@@ -274,7 +274,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                             }
                         }
                     }
-                } 
+                }
                 #endregion
 
                 #region 2、重新查询组织
@@ -330,7 +330,25 @@ namespace PartialViewOtherToJieLink.ViewModels
                         {
                             ControlRoleGroup currentGroup = null;
                             string currentDeptId = personModel.DeptId;
-                            string currentGuid = new Guid((G3GroupList.FirstOrDefault(e => e.ID == currentDeptId)).GUID).ToString();
+                            string currentGuid = "";
+
+                            if (currentDeptId == "1")//针对直接挂在根组织下的人事信息
+                            {
+                                currentGuid = groupRoot.RGGUID;
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    currentGuid = new Guid((G3GroupList.FirstOrDefault(e => e.ID == currentDeptId)).GUID).ToString();
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBoxHelper.MessageBoxShowWarning("JSRJ1116数据库中的组织Guid异常：" + ex.ToString());
+                                    return;
+                                }
+                            }
+
                             //寻找当前组织是否已存在：判断是否重复升级
                             DataSet currentGroupDs = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, string.Format("SELECT * from control_role_group WHERE RGGUID='{0}'", currentGuid));
                             if (currentGroupDs != null && currentGroupDs.Tables[0] != null)
@@ -379,8 +397,8 @@ namespace PartialViewOtherToJieLink.ViewModels
                                 }
                             } while (currentPerson != null);
                             bool completeFlag = false;  //事务提交标识
-                            string sql = string.Format("INSERT INTO control_person(PGUID,PersonNo,PersonName,Gender,Mobile,Email,Relationship,RID,EnterTime,Type,`Status`,Remark,CreateTime,CurKey,LastKey,RFullPath,PersonId,CanInOut,IsTKService,IsParkService,IsDoorService,IsIssueCard,IDNumber,RoomNO) VALUE('{0}','{1}','{2}',{3},'{4}','{5}',{6},'{7}','{8}',{9},0,'{10}','{11}','{12}','{13}','{14}','{15}',0,0,0,0,0,'{16}','{17}')",
-                              personGuid, personModel.NO, personModel.NAME, personModel.SEX, personModel.Mobile, personModel.Email, relationship, currentGroup.RGGUID,
+                            string sql = string.Format("INSERT INTO control_person(PGUID,PersonNo,RoomNo,PersonName,Gender,Mobile,Email,Relationship,RID,EnterTime,Type,`Status`,Remark,CreateTime,CurKey,LastKey,RFullPath,PersonId,CanInOut,IsTKService,IsParkService,IsDoorService,IsIssueCard,IDNumber,RoomNO) VALUE('{0}','{1}','{2}',{3},'{4}','{5}',{6},'{7}','{8}',{9},0,'{10}','{11}','{12}','{13}','{14}','{15}',0,0,0,0,0,'{16}','{17}')",
+                              personGuid, personModel.NO, personModel.RoomNO, personModel.NAME, personModel.SEX, personModel.Mobile, personModel.Email, relationship, currentGroup.RGGUID,
                               personModel.OptDate, userType, personModel.Remark, personModel.OptDate, personModel.NewKeyCode, personModel.OldKeyCode, currentGroup.RGFullPath, personId, idNumber, personModel.RoomNO);
                             try
                             {
@@ -570,17 +588,17 @@ namespace PartialViewOtherToJieLink.ViewModels
                                             if (tcCardinfoList1.Count > 0)
                                             {
                                                 //根据卡类分组
-                                                var tcCardMap = tcCardinfoList1.GroupBy(e => e.CardTypeID).ToList();                                               
-                                                int size ;
+                                                var tcCardMap = tcCardinfoList1.GroupBy(e => e.CardTypeID).ToList();
+                                                int size;
                                                 foreach (var item in tcCardMap)
                                                 {
-                                                    
+
                                                     TBaseTcCardInfoModel tcCardEndDateMax = item.OrderByDescending(e => e.EndDate).FirstOrDefault();
                                                     switch (tcCardEndDateMax.CardTypeID)
                                                     {
                                                         case 5:
                                                             size = 50;
-                                                               break;
+                                                            break;
                                                         case 6:
                                                             size = 59;
                                                             break;
@@ -589,8 +607,8 @@ namespace PartialViewOtherToJieLink.ViewModels
                                                             break;
                                                         case 8:
                                                             size = 61;
-                                                            break;                                                           
-　                                                      default:
+                                                            break;
+                                                        default:
                                                             size = 64;
                                                             break;
                                                     }
@@ -604,7 +622,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                                                 lguid, new Guid(hrPerson.GUID).ToString(), startTime, endTime, DateTime.Now, hrPerson.NAME, hrPerson.NO, hrRoomPos.MaxPos, stopServiceTime, uniqueServiceNo, size);
                                                     int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                                                     if (flag > 0)
-                                                    {                                                       
+                                                    {
                                                         MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, string.Format("UPDATE control_person SET IsParkService=1 WHERE PGUID='{0}';", new Guid(hrPerson.GUID).ToString()));
 
 
@@ -719,7 +737,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                 #endregion
 
                 #region 5、门禁设备迁移（Y08、领域III）
-                
+
                 UpdateG3DoorDeviceToJielink();
                 DeviceRightImport(G3GroupList);
 
@@ -812,10 +830,10 @@ namespace PartialViewOtherToJieLink.ViewModels
                 {
                     continue;
                 }
-                ControlAccessPointGroup area = areaList.FirstOrDefault(x=>x.APGUID == new Guid(dept.GUID).ToString());
+                ControlAccessPointGroup area = areaList.FirstOrDefault(x => x.APGUID == new Guid(dept.GUID).ToString());
                 if (area == null)
                 {
-                    continue; 
+                    continue;
                 }
                 try
                 {
@@ -1193,7 +1211,7 @@ namespace PartialViewOtherToJieLink.ViewModels
                                     $"'{device.Mac}','{mjfuDeivce.DeviceID}','{device.Mask}','{device.GateWay}',{1},{deviceType},0,'{device.Name}','{model}',0,'{device.Mac}','{remark}','{DateTime.Now}'," +
                                     $"'{DateTime.Now}','{device.Ip}',{0},'{macNo}','{qrCodeLink}',1,1)";
 
-                        
+
                             int flag = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, sql);
                             if (flag <= 0)
                             {
@@ -1206,9 +1224,9 @@ namespace PartialViewOtherToJieLink.ViewModels
                             for (int index = 0; index < maxDoorCount; index++)
                             {
                                 string doorGuid = Guid.NewGuid().ToString();
-                                string doorId = (CommonHelper.GetUIntValue(MACConvertDevicesId(device.Mac.Replace("-",":"))) + index + 1).ToString();
+                                string doorId = (CommonHelper.GetUIntValue(MACConvertDevicesId(device.Mac.Replace("-", ":"))) + index + 1).ToString();
                                 string doorName = doorId + "门";
-                                
+
                                 sql = $"INSERT INTO control_devices(DGUID,DeviceID,Mac,ParentID,DeviceStatus,DeviceType,IoType,DeviceName,Model,DeviceClass,Mac2," +
                                 $"Remark,InTime,UpdateTime,MasterIp,AuthStatus,SpeakTecType,SpeakVideoType) VALUE('{doorGuid}','{doorId}','{ConstantHelper.JIELINKDOORMAC}'," +
                                 $"'{device.ID}',{1},{ConstantHelper.JIELINKDOORTYPE},0,'{doorName}','',0,'{ConstantHelper.JIELINKDOORMAC}','{remark}'," +

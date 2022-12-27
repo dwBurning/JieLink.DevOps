@@ -126,7 +126,7 @@ namespace PartialViewDataArchiving.DataArchive
                         string script = $"delete from `{bllTableName}` where {GetTimeField(bllTableName)} < '{archiveDate.ToString("yyyy-MM-dd HH:mm:ss")}'";
                         if (!string.IsNullOrEmpty(table.Where))
                         {
-                            sql += $" {table.Where}";
+                            script += $" {table.Where}";
                         }
                         cmd.CommandText = script;
                         LogHelper.CommLogger.Info(script);
@@ -178,7 +178,7 @@ namespace PartialViewDataArchiving.DataArchive
                         string script = $"delete from `{bllTableName}` where {timeField} < '{archiveEndDate}' and {timeField} >'{archiveStartDate}'";
                         if (!string.IsNullOrEmpty(table.Where))
                         {
-                            sql += $" {table.Where}";
+                            script += $" {table.Where}";
                         }
                         cmd.CommandText = script;
                         LogHelper.CommLogger.Info(script);
