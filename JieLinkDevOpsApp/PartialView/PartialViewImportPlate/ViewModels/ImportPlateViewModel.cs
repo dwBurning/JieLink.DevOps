@@ -115,44 +115,80 @@ namespace PartialViewImportPlate.ViewModels
                 ShowMessage("没有可导入的车牌");
                 return;
             }
+
+            ShowMessage(String.Format("从文件中读取到有效的凭证信息{0}条", arryPlate.Count().ToString()));
+            ShowMessage("正在查询已有凭证信息，请稍候");
+
+            string personno = PersonNo;
+
             Task.Factory.StartNew(() =>
             {
-                //先查詢出已有的一個憑證的設備權限
-                string sql = string.Format("select * from control_voucher_device where VGuid='{0}'", voucher.VGUID);
-                DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
-
-                for (int i = 0; i < arryPlate.Length; i++)
+                try
                 {
-                    string[] voucherNos = arryPlate[i].Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    voucher.VoucherNo = string.Join("", voucherNos);
-                    if (string.IsNullOrWhiteSpace(voucher.VoucherNo))
+                    List<ControlVoucher> vouchers = new List<ControlVoucher>();
+
+                    //先查詢出已有的一個憑證的設備權限
+                    string sql = string.Format("select * from control_voucher_device where VGuid='{0}'", voucher.VGUID);
+                    DataTable table = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, sql).Tables[0];
+
+                    string cmd = "select * from control_voucher where status!=4 and personno='{0}'";
+                    DataTable tableVoucher = MySqlHelper.ExecuteDataset(EnvironmentInfo.ConnectionString, String.Format(cmd, personno)).Tables[0];
+
+                    foreach (DataRow dr in tableVoucher.Rows)
                     {
-                        continue;
+                        ControlVoucher voucher = new ControlVoucher();
+                        voucher.VoucherNo = dr["voucherno"].ToString();
+                        vouchers.Add(voucher);
                     }
-                    voucher.CardNum = voucher.VoucherNo;
-                    voucher.AddTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    voucher.LastTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    string vguid = Guid.NewGuid().ToString();
 
-                    string command = string.Format(@"insert into control_voucher(guid,pguid,lguid,personno,vouchertype,voucherno,cardnum,addoperatorno,addtime,`status`,lasttime,remark,statusfromperson)
-            values('{12}','{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}',{11})", voucher.PGUID, voucher.LGUID, voucher.PersonNo, voucher.VoucherType, voucher.VoucherNo, voucher.CardNum, voucher.AddOperatorNo, voucher.AddTime, voucher.Status, voucher.LastTime, voucher.Remark, voucher.StatusFromPerson, vguid);
+                    ShowMessage(String.Format("查询到数据库已有凭证信息{0}条", vouchers.Count.ToString()));
 
-                    string vehicleSql = string.Format("INSERT INTO `control_vehicle_info` VALUES (UUID(), '{0}', '{1}', null, null, '0', null, '1', '', null, '3');", voucher.PGUID, voucher.VoucherNo);
-                    MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, vehicleSql);
-
-                    int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, command);
-                    if (result > 0)
+                    for (int i = 0; i < arryPlate.Length; i++)
                     {
-                        ShowMessage(string.Format("凭证 {0} 添加成功！", voucher.VoucherNo));
-                        //开始插入权限
-                        foreach (DataRow dr in table.Rows)
+                        string[] voucherNos = arryPlate[i].Trim().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        voucher.VoucherNo = string.Join("", voucherNos);
+                        if (string.IsNullOrWhiteSpace(voucher.VoucherNo))
                         {
-                            string rights = string.Format("insert into control_voucher_device values(UUID(),'{0}','{1}','{2}',0)", vguid, dr["DGuid"].ToString(), dr["DeviceId"].ToString());
-                            MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, rights);
+                            continue;
                         }
 
-                        ShowMessage(string.Format("凭证 {0} 授权成功！", voucher.VoucherNo));
+                        if (vouchers.FindIndex(x => x.VoucherNo == voucher.VoucherNo) >= 0)
+                        {
+                            ShowMessage(String.Format("凭证 {0}数据库中已存在，跳过", voucher.VoucherNo));
+                            continue;
+                        }
+
+                        voucher.CardNum = voucher.VoucherNo;
+                        voucher.AddTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        voucher.LastTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                        string vguid = Guid.NewGuid().ToString();
+
+                        string command = string.Format(@"insert into control_voucher(guid,pguid,lguid,personno,vouchertype,voucherno,cardnum,addoperatorno,addtime,`status`,lasttime,remark,statusfromperson)
+            values('{12}','{0}','{1}','{2}','{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}',{11})", voucher.PGUID, voucher.LGUID, voucher.PersonNo, voucher.VoucherType, voucher.VoucherNo, voucher.CardNum, voucher.AddOperatorNo, voucher.AddTime, voucher.Status, voucher.LastTime, voucher.Remark, voucher.StatusFromPerson, vguid);
+
+                        string vehicleSql = string.Format("INSERT INTO `control_vehicle_info` VALUES (UUID(), '{0}', '{1}', null, null, '0', null, '1', '', null, '3');", voucher.PGUID, voucher.VoucherNo);
+                        MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, vehicleSql);
+
+                        int result = MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, command);
+                        if (result > 0)
+                        {
+                            ShowMessage(string.Format("凭证 {0} 添加成功！", voucher.VoucherNo));
+                            //开始插入权限
+                            foreach (DataRow dr in table.Rows)
+                            {
+                                string rights = string.Format("insert into control_voucher_device values(UUID(),'{0}','{1}','{2}',0)", vguid, dr["DGuid"].ToString(), dr["DeviceId"].ToString());
+                                MySqlHelper.ExecuteNonQuery(EnvironmentInfo.ConnectionString, rights);
+                            }
+
+                            ShowMessage(string.Format("凭证 {0} 授权成功！", voucher.VoucherNo));
+                        }
                     }
+
+                    ShowMessage("处理完成！");
+                }
+                catch (Exception ex)
+                {
+                    ShowMessage(ex.ToString());
                 }
             });
         }
