@@ -91,7 +91,7 @@ namespace PartialViewImportEnterRecord.ViewModels
                             continue;
                         }
 
-                        string sql = $"insert into box_enter_record (CredentialType,CredentialNO,Plate,CarNumOrig,EnterTime,SetmealType,SealName,EGuid,EnterRecordID,EnterDeviceID,EnterDeviceName,WasGone,EventType,EventTypeName,ParkNo,OperatorNo,OperatorName,PersonName,Remark,InDeviceEnterType,OptDate) VALUES(163,'{plate}','{plate}','{plate}','{intime}',{sealId},'{sealName}',UUID(),REPLACE(UUID(),'-',''),'{enterDeviceId}','{enterDeviceName}',0,1,'一般正常记录','00000000-0000-0000-0000-000000000000','9999','超级管理员','临时车主','运维工具导入记录',1,'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}');";
+                        string sql = $"insert into box_enter_record (CredentialType,CredentialNO,EnterPicture,Plate,CarNumOrig,EnterTime,SetmealType,SealName,EGuid,EnterRecordID,EnterDeviceID,EnterDeviceName,WasGone,EventType,EventTypeName,ParkNo,OperatorNo,OperatorName,PersonName,Remark,InDeviceEnterType,OptDate) VALUES(163,'{plate}','','{plate}','{plate}','{intime}',{sealId},'{sealName}',UUID(),REPLACE(UUID(),'-',''),'{enterDeviceId}','{enterDeviceName}',0,1,'一般正常记录','00000000-0000-0000-0000-000000000000','9999','超级管理员','临时车主','运维工具导入记录',1,'{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}');";
 
                         if (isInsert)
                         {
